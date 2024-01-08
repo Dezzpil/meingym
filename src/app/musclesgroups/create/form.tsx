@@ -3,11 +3,12 @@
 import { useForm } from "react-hook-form";
 import { handleSubmitAction } from "@/app/musclesgroups/create/action";
 import { useState } from "react";
+import { MusclesGroupsFormFieldsType } from "@/app/musclesgroups/create/types";
 
 export default function MusclesGroupsCreateForm() {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [error, setError] = useState<null | string>(null);
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit } = useForm<MusclesGroupsFormFieldsType>();
   const onSubmit = handleSubmit(async (data) => {
     setError(null);
     setSubmitting(true);

@@ -12,11 +12,7 @@ export function Layout({ children }: Props) {
   return (
     <div className="container-fluid">
       <nav className="navbar navbar-expand-lg bg-body-tertiary mb-3">
-        <div className="container-fluid">
-          <a className="navbar-brand" href="/">
-            💪 Ты в зале
-          </a>
-
+        <div className="container-fluid gap-2">
           {session.status === "authenticated" ? (
             <Link href={"/api/auth/signout"}>
               👤 {session.data?.user?.name}
@@ -24,6 +20,11 @@ export function Layout({ children }: Props) {
           ) : (
             ""
           )}
+
+          <a className="navbar-brand" href="/">
+            💪 Ты в зале
+          </a>
+
           <button
             className="navbar-toggler"
             type="button"
@@ -37,11 +38,16 @@ export function Layout({ children }: Props) {
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              {/*<li className="nav-item">*/}
-              {/*  <a className="nav-link" href="#">*/}
-              {/*    Link*/}
-              {/*  </a>*/}
-              {/*</li>*/}
+              <li className="nav-item">
+                <Link href={`/musclesgroups`} className="nav-link">
+                  Группы
+                </Link>
+              </li>
+              <li>
+                <Link href={`/muscles`} className="nav-link">
+                  Мышцы
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
