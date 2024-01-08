@@ -3,35 +3,36 @@ import Link from "next/link";
 
 const prisma = new PrismaClient();
 
-export default async function MusclesPage() {
-  const muscles = await prisma.muscle.findMany({ include: { group: true } });
+export default async function ActionsPage() {
+  const actions = await prisma.actions.findMany({
+    include: { muscleAgony: true },
+  });
 
   return (
     <>
-      <header className="mb-3">Список мышц</header>
+      <header className="mb-3">Список движений</header>
       <div className="mb-3">
-        <Link className="btn btn-primary" href={`/muscles/create`}>
+        <Link className="btn btn-primary" href={`/actions/create`}>
           Добавить
         </Link>
       </div>
-
-      {muscles.length ? (
+      {actions.length ? (
         <table className="table">
           <thead>
             <tr>
               <th>ID</th>
               <th>Название</th>
-              <th>Группа</th>
+              <th>Мышца-агонист</th>
             </tr>
           </thead>
           <tbody>
-            {muscles.map((m) => (
-              <tr key={m.id}>
-                <td>{m.id}</td>
+            {actions.map((a) => (
+              <tr key={a.id}>
+                <td>{a.id}</td>
                 <td>
-                  <Link href={`/muscles/${m.id}`}>{m.title}</Link>
+                  <Link href={`/actions/${a.id}`}>{a.title}</Link>
                 </td>
-                <td>{m.group.title}</td>
+                <td>{a.muscleAgony.title}</td>
               </tr>
             ))}
           </tbody>

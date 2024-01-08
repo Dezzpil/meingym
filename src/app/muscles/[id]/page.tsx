@@ -1,3 +1,4 @@
+// @ts-ignore
 import MusclesForm from "@/app/muscles/form";
 import { PrismaClient } from "@prisma/client";
 

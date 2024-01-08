@@ -48,6 +48,11 @@ export function Layout({ children }: Props) {
                   Мышцы
                 </Link>
               </li>
+              <li>
+                <Link href={`/actions`} className="nav-link">
+                  Движения
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

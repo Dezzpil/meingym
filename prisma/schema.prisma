@@ -63,8 +63,39 @@ model MuscleGroup {
 }
 
 model Muscle {
-  id      Int         @id @default(autoincrement())
-  title   String
-  groupId Int
-  group   MuscleGroup @relation(fields: [groupId], references: [id])
+  id           Int         @id @default(autoincrement())
+  title        String
+  groupId      Int
+  group        MuscleGroup @relation(fields: [groupId], references: [id])
+  ActionsAgony Actions[]
+}
+
+model Actions {
+  id               Int                @id @default(autoincrement())
+  muscleAgonyId    Int
+  MuscleAgony      Muscle             @relation(fields: [muscleAgonyId], references: [id])
+  title            String
+  desc             String
+  ApproachesGroups ApproachesGroups[]
+}
+
+model ApproachesGroups {
+  id            Int          @id @default(autoincrement())
+  createdAt     DateTime     @default(now())
+  isBase        Boolean      @default(true)
+  actionId      Int
+  action        Actions      @relation(fields: [actionId], references: [id])
+  Approaches    Approaches[]
+  weightPlanned Int
+  weightLifted  Int          @default(0)
+}
+
+model Approaches {
+  id            Int              @id @default(autoincrement())
+  priority      Int              @default(0)
+  groupId       Int
+  Group         ApproachesGroups @relation(fields: [groupId], references: [id])
+  weight        Int
+  countsPlanned Int
+  countsLifted  Int              @default(0)
 }
