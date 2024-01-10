@@ -1,8 +1,7 @@
 // @ts-ignore
 import ActionsForm from "@/app/actions/form";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { ApproachesManagement } from "@/components/approaches/Managment";
+import { prisma } from "@/tools/db";
 
 type PageParams = {
   params: { id: string };
@@ -10,13 +9,26 @@ type PageParams = {
 
 export default async function ActionPage({ params }: PageParams) {
   const id = parseInt(params.id);
-  const action = await prisma.actions.findUniqueOrThrow({ where: { id } });
+  const action = await prisma.actions.findUniqueOrThrow({
+    where: { id },
+    include: {
+      CurrentApproachGroup: { include: { Approaches: true } },
+    },
+  });
   const muscles = await prisma.muscle.findMany();
+  const lastGroup = action.CurrentApproachGroup;
 
   return (
     <>
       <header className="mb-3">Движение ID {id}</header>
       <ActionsForm action={action} muscles={muscles}></ActionsForm>
+      <hr />
+      {lastGroup && (
+        <ApproachesManagement
+          groupId={lastGroup.id}
+          approaches={lastGroup.Approaches}
+        />
+      )}
     </>
   );
 }

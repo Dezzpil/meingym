@@ -71,23 +71,25 @@ model Muscle {
 }
 
 model Actions {
-  id               Int                @id @default(autoincrement())
-  muscleAgonyId    Int
-  MuscleAgony      Muscle             @relation(fields: [muscleAgonyId], references: [id])
-  title            String
-  desc             String
-  ApproachesGroups ApproachesGroups[]
+  id                     Int               @id @default(autoincrement())
+  muscleAgonyId          Int
+  MuscleAgony            Muscle            @relation(fields: [muscleAgonyId], references: [id])
+  title                  String
+  desc                   String
+  alias                  String?
+  currentApproachGroupId Int?
+  CurrentApproachGroup   ApproachesGroups? @relation(fields: [currentApproachGroupId], references: [id])
 }
 
 model ApproachesGroups {
-  id            Int          @id @default(autoincrement())
-  createdAt     DateTime     @default(now())
-  isBase        Boolean      @default(true)
-  actionId      Int
-  action        Actions      @relation(fields: [actionId], references: [id])
-  Approaches    Approaches[]
-  weightPlanned Int
-  weightLifted  Int          @default(0)
+  id         Int          @id @default(autoincrement())
+  createdAt  DateTime     @default(now())
+  actionId   Int
+  Approaches Approaches[]
+  Actions    Actions[]
+  count      Int          @default(0)
+  sum        Int          @default(0)
+  mean       Float        @default(0.0)
 }
 
 model Approaches {

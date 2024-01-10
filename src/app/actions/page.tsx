@@ -1,11 +1,12 @@
-import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/tools/db";
 
 export default async function ActionsPage() {
   const actions = await prisma.actions.findMany({
-    include: { muscleAgony: true },
+    include: {
+      MuscleAgony: true,
+      CurrentApproachGroup: true,
+    },
   });
 
   return (
@@ -23,6 +24,9 @@ export default async function ActionsPage() {
               <th>ID</th>
               <th>Название</th>
               <th>Мышца-агонист</th>
+              <th>Подходов</th>
+              <th>Σ кг</th>
+              <th>÷ кг</th>
             </tr>
           </thead>
           <tbody>
@@ -32,7 +36,28 @@ export default async function ActionsPage() {
                 <td>
                   <Link href={`/actions/${a.id}`}>{a.title}</Link>
                 </td>
-                <td>{a.muscleAgony.title}</td>
+                <td>{a.MuscleAgony.title}</td>
+                <td>
+                  {a.CurrentApproachGroup ? (
+                    a.CurrentApproachGroup.count
+                  ) : (
+                    <span>&mdash;</span>
+                  )}
+                </td>
+                <td>
+                  {a.CurrentApproachGroup ? (
+                    a.CurrentApproachGroup.sum
+                  ) : (
+                    <span>&mdash;</span>
+                  )}
+                </td>
+                <td>
+                  {a.CurrentApproachGroup ? (
+                    a.CurrentApproachGroup.mean.toPrecision(3)
+                  ) : (
+                    <span>&mdash;</span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

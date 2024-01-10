@@ -9,6 +9,8 @@ import { Layout } from "@/components/Layout";
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Me in Gym",
   description: "Приложение по планированию и исполнению программы тренировок",

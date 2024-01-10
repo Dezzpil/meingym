@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import ActionsForm from "@/app/actions/form";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/tools/db";
 
 export default async function ActionsCreatePage() {
   const muscles = await prisma.muscle.findMany();
