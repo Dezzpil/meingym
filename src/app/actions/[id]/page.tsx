@@ -15,7 +15,7 @@ export default async function ActionPage({ params }: PageParams) {
       CurrentApproachGroup: { include: { Approaches: true } },
     },
   });
-  const muscles = await prisma.muscle.findMany();
+  const muscles = await prisma.muscle.findMany({ include: { Group: true } });
   const lastGroup = action.CurrentApproachGroup;
 
   return (

@@ -5,6 +5,16 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/tools/db";
 
+export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
+  const title = data.title;
+  const muscleAgonyId = data.muscleAgonyId;
+  const desc = data.desc;
+  await prisma.actions.update({
+    where: { id },
+    data: { title, desc, muscleAgonyId },
+  });
+  revalidatePath(`/actions/${id}`);
+}
 export async function handleCreate(data: ActionsFormFieldsType) {
   const title = data.title;
   const muscleAgonyId = data.muscleAgonyId;

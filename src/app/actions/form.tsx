@@ -4,10 +4,10 @@ import type { Actions, Muscle } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { ActionsFormFieldsType } from "@/app/actions/types";
 import { useState } from "react";
-import { handleCreate } from "@/app/actions/actions";
+import { handleCreate, handleUpdate } from "@/app/actions/actions";
 
 type Props = {
-  muscles: Muscle[];
+  muscles: Array<Muscle & { Group: { title: string } }>;
   action?: Actions;
 };
 
@@ -21,7 +21,11 @@ export default function ActionsForm({ muscles, action }: Props) {
     setError(null);
     setHandling(true);
     try {
-      await handleCreate(data);
+      if (action) {
+        await handleUpdate(action.id, data);
+      } else {
+        await handleCreate(data);
+      }
     } catch (e: any) {
       setError(e.message);
     }
@@ -45,7 +49,7 @@ export default function ActionsForm({ muscles, action }: Props) {
           >
             {muscles.map((m) => (
               <option key={m.id} value={m.id}>
-                {m.title}
+                {m.Group.title}: {m.title}
               </option>
             ))}
           </select>
