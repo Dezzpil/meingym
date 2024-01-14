@@ -2,10 +2,11 @@ import Link from "next/link";
 import { prisma } from "@/tools/db";
 
 export default async function ActionsPage() {
-  const actions = await prisma.actions.findMany({
+  const actions = await prisma.action.findMany({
     include: {
-      MuscleAgony: true,
       CurrentApproachGroup: true,
+      MusclesAgony: { include: { Muscle: { include: { Group: true } } } },
+      MusclesSynergy: { include: { Muscle: { include: { Group: true } } } },
     },
   });
 
@@ -23,7 +24,8 @@ export default async function ActionsPage() {
             <tr>
               <th>ID</th>
               <th>Название</th>
-              <th>Мышца-агонист</th>
+              <th>Мышцы-агонисты</th>
+              <th>Мышцы-синергисты</th>
               <th>Подходов</th>
               <th>Σ кг</th>
               <th>÷ кг</th>
@@ -36,7 +38,24 @@ export default async function ActionsPage() {
                 <td>
                   <Link href={`/actions/${a.id}`}>{a.title}</Link>
                 </td>
-                <td>{a.MuscleAgony.title}</td>
+                <td>
+                  <div className="d-flex gap-3">
+                    {a.MusclesAgony.map((l) => (
+                      <span key={l.muscleId}>
+                        {l.Muscle.Group.title}: {l.Muscle.title}
+                      </span>
+                    ))}
+                  </div>
+                </td>
+                <td>
+                  <div className="d-flex gap-3">
+                    {a.MusclesSynergy.map((l) => (
+                      <span key={l.muscleId}>
+                        {l.Muscle.Group.title}: {l.Muscle.title}
+                      </span>
+                    ))}
+                  </div>
+                </td>
                 <td>
                   {a.CurrentApproachGroup ? (
                     a.CurrentApproachGroup.count

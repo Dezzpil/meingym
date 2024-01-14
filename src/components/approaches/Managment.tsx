@@ -1,16 +1,16 @@
 "use client";
 
-import type { Approaches } from "@prisma/client";
 import { FormEvent, useCallback, useMemo, useState } from "react";
 import Loader from "@/components/Loader";
 import { ApproachLiftData } from "@/app/approaches/types";
 import { ApproachesManagementElement } from "@/components/approaches/ManagmentElement";
 import { TbSum } from "react-icons/tb";
 import { handleUpdateApproachesGroup } from "@/app/approaches/actions";
+import type { Approach } from "@prisma/client";
 
 type Props = {
   groupId: number;
-  approaches: Approaches[];
+  approaches: Approach[];
 };
 
 export function ApproachesManagement({ groupId, approaches }: Props) {
@@ -22,7 +22,7 @@ export function ApproachesManagement({ groupId, approaches }: Props) {
     const data: ApproachLiftData[] = [];
     approaches.map((a) => {
       data.push({
-        countsPlanned: a.countsPlanned,
+        count: a.count,
         weight: a.weight,
         priority: a.priority,
       });
@@ -34,17 +34,17 @@ export function ApproachesManagement({ groupId, approaches }: Props) {
   const recalculate = useCallback(() => {
     let curSum = 0;
     data.forEach((d) => {
-      curSum += d.countsPlanned * d.weight;
+      curSum += d.count * d.weight;
     });
     setSum(curSum);
   }, [data]);
 
   const add = useCallback(() => {
     const last = data.length > 0 ? data[data.length - 1] : null;
-    let newOne = { countsPlanned: 1, weight: 0, priority: 0 };
+    let newOne = { count: 1, weight: 0, priority: 0 };
     if (last) {
       newOne = {
-        countsPlanned: Math.max(last.countsPlanned - 4, 1),
+        count: Math.max(last.count - 4, 1),
         weight: last.weight + 5,
         priority: last.priority ? last.priority + 1 : 0,
       };

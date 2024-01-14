@@ -14,8 +14,8 @@ export async function handleUpdateApproachesGroup(
   let sum = 0,
     mean = 0;
   for (const a of data) {
-    sum += a.weight * a.countsPlanned;
-    mean += a.weight / a.countsPlanned;
+    sum += a.weight * a.count;
+    mean += a.weight / a.count;
   }
   mean = mean / count;
   await prisma.$transaction(async (tx) => {

@@ -9,10 +9,12 @@ type PageParams = {
 
 export default async function ActionPage({ params }: PageParams) {
   const id = parseInt(params.id);
-  const action = await prisma.actions.findUniqueOrThrow({
+  const action = await prisma.action.findUniqueOrThrow({
     where: { id },
     include: {
       CurrentApproachGroup: { include: { Approaches: true } },
+      MusclesSynergy: true,
+      MusclesAgony: true,
     },
   });
   const muscles = await prisma.muscle.findMany({ include: { Group: true } });

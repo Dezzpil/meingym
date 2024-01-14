@@ -24,7 +24,7 @@ export function ApproachesManagementElement({
   const onChangeCounts = useCallback(
     (e: ChangeEvent) => {
       const value = (e.nativeEvent.target as HTMLInputElement).value;
-      elem.countsPlanned = parseInt(value) || 0;
+      elem.count = parseInt(value) || 0;
       onChange();
     },
     [elem, onChange],
@@ -49,7 +49,7 @@ export function ApproachesManagementElement({
               type="number"
               min={1}
               className="form-control"
-              defaultValue={elem.countsPlanned}
+              defaultValue={elem.count}
               id={`counts${elem.priority}`}
               onChange={onChangeCounts}
             />

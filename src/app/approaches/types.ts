@@ -1,5 +1,5 @@
 export type ApproachLiftData = {
   weight: number;
-  countsPlanned: number;
+  count: number;
   priority: number;
 };

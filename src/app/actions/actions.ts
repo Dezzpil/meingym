@@ -6,44 +6,77 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/tools/db";
 
 export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
+  console.log(data);
   const title = data.title;
-  const muscleAgonyId = data.muscleAgonyId;
-  const desc = data.desc;
-  await prisma.actions.update({
+  await prisma.action.update({
     where: { id },
-    data: { title, desc, muscleAgonyId },
+    data: {
+      title,
+      desc: data.desc,
+      alias: data.alias,
+      MusclesAgony: {
+        deleteMany: { actionId: id },
+        createMany: {
+          data: data.musclesAgonyIds.map((id) => {
+            return { muscleId: parseInt(id) };
+          }),
+        },
+      },
+      MusclesSynergy: {
+        deleteMany: { actionId: id },
+        createMany: {
+          data: data.musclesSynergyIds.map((id) => {
+            return { muscleId: parseInt(id) };
+          }),
+        },
+      },
+    },
   });
   revalidatePath(`/actions/${id}`);
 }
 export async function handleCreate(data: ActionsFormFieldsType) {
   const title = data.title;
-  const muscleAgonyId = data.muscleAgonyId;
-  const desc = data.desc;
-
-  const existed = await prisma.actions.findFirst({ where: { title } });
+  const existed = await prisma.action.findFirst({ where: { title } });
   if (existed) {
     throw new Error(`Движение ${title} уже существует`);
   } else {
     const action = await prisma.$transaction(async (tx) => {
-      const action = await tx.actions.create({
-        data: { title, muscleAgonyId, desc },
+      const action = await tx.action.create({
+        data: {
+          title,
+          desc: data.desc,
+          MusclesAgony: {
+            createMany: {
+              data: data.musclesAgonyIds.map((id) => {
+                return { muscleId: parseInt(id) };
+              }),
+            },
+          },
+          MusclesSynergy: {
+            createMany: {
+              data: data.musclesSynergyIds.map((id) => {
+                return { muscleId: parseInt(id) };
+              }),
+            },
+          },
+        },
       });
 
       const approaches = [
-        { weight: 20, countsPlanned: 12, priority: 0 },
-        { weight: 30, countsPlanned: 12, priority: 1 },
-        { weight: 40, countsPlanned: 12, priority: 2 },
+        { weight: 20, count: 12, priority: 0 },
+        { weight: 30, count: 12, priority: 1 },
+        { weight: 40, count: 12, priority: 2 },
       ];
       const count = approaches.length;
       let sum = 0,
         mean = 0;
       for (const a of approaches) {
-        sum += a.weight * a.countsPlanned;
-        mean += a.weight / a.countsPlanned;
+        sum += a.weight * a.count;
+        mean += a.weight / a.count;
       }
       mean = mean / count;
 
-      const group = await tx.approachesGroups.create({
+      const group = await tx.approachesGroup.create({
         data: {
           actionId: action.id,
           count,
@@ -57,7 +90,7 @@ export async function handleCreate(data: ActionsFormFieldsType) {
         },
       });
 
-      await tx.actions.update({
+      await tx.action.update({
         where: { id: action.id },
         data: { currentApproachGroupId: group.id },
       });

@@ -4,7 +4,7 @@ import Link from "next/link";
 const prisma = new PrismaClient();
 
 export default async function MusclesPage() {
-  const muscles = await prisma.muscle.findMany({ include: { group: true } });
+  const muscles = await prisma.muscle.findMany({ include: { Group: true } });
 
   return (
     <>
@@ -31,7 +31,7 @@ export default async function MusclesPage() {
                 <td>
                   <Link href={`/muscles/${m.id}`}>{m.title}</Link>
                 </td>
-                <td>{m.group.title}</td>
+                <td>{m.Group.title}</td>
               </tr>
             ))}
           </tbody>
