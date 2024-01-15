@@ -31,7 +31,7 @@ export function ApproachesManagementElement({
   );
   return (
     <>
-      <div className="col-sm-12 col-md-6 col-lg-5 col-xl-4 d-flex gap-2">
+      <div className="d-flex gap-2">
         <div className="row row-cols-3">
           <div className="col-5 form-floating">
             <input

@@ -2,18 +2,23 @@
 
 import { FormEvent, useCallback, useMemo, useState } from "react";
 import Loader from "@/components/Loader";
-import { ApproachLiftData } from "@/app/approaches/types";
+import { ApproachGroupPurpose, ApproachLiftData } from "@/app/approaches/types";
 import { ApproachesManagementElement } from "@/components/approaches/ManagmentElement";
 import { TbSum } from "react-icons/tb";
 import { handleUpdateApproachesGroup } from "@/app/approaches/actions";
 import type { Approach } from "@prisma/client";
 
 type Props = {
-  groupId: number;
+  purpose: ApproachGroupPurpose;
+  purposeId: number;
   approaches: Approach[];
 };
 
-export function ApproachesManagement({ groupId, approaches }: Props) {
+export function ApproachesManagement({
+  purpose,
+  purposeId,
+  approaches,
+}: Props) {
   const [preprocessed, setPreprocessed] = useState<boolean>(false);
   const [data, setData] = useState<ApproachLiftData[]>([]);
   const [sum, setSum] = useState<number>(0);
@@ -82,13 +87,13 @@ export function ApproachesManagement({ groupId, approaches }: Props) {
       setError(null);
       setHandling(true);
       try {
-        await handleUpdateApproachesGroup(groupId, data);
+        await handleUpdateApproachesGroup(purpose, purposeId, data);
       } catch (e: any) {
         setError(e.message);
       }
       setHandling(false);
     },
-    [data, groupId],
+    [data, purpose, purposeId],
   );
 
   return !preprocessed ? (
@@ -96,7 +101,7 @@ export function ApproachesManagement({ groupId, approaches }: Props) {
   ) : (
     <>
       {data && (
-        <form className="row" onSubmit={submit}>
+        <form onSubmit={submit}>
           <ol style={{ paddingLeft: "32px" }}>
             {data.map((d) => (
               <li

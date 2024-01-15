@@ -1,15 +1,30 @@
 "use server";
 
-import { ApproachLiftData } from "@/app/approaches/types";
+import { ApproachGroupPurpose, ApproachLiftData } from "@/app/approaches/types";
 import { prisma } from "@/tools/db";
+import { ActionMass, ActionStrength } from "@prisma/client";
 
 export async function handleUpdateApproachesGroup(
-  groupId: number,
+  purpose: ApproachGroupPurpose,
+  purposeId: number,
   data: Array<ApproachLiftData>,
 ) {
-  const group = await prisma.approachesGroups.findUniqueOrThrow({
-    where: { id: groupId },
-  });
+  let purposeItem: ActionMass | ActionStrength;
+  switch (purpose) {
+    case "mass": {
+      purposeItem = await prisma.actionMass.findUniqueOrThrow({
+        where: { id: purposeId },
+      });
+      break;
+    }
+    case "strength": {
+      purposeItem = await prisma.actionStrength.findUniqueOrThrow({
+        where: { id: purposeId },
+      });
+      break;
+    }
+  }
+
   const count = data.length;
   let sum = 0,
     mean = 0;
@@ -18,10 +33,10 @@ export async function handleUpdateApproachesGroup(
     mean += a.weight / a.count;
   }
   mean = mean / count;
+
   await prisma.$transaction(async (tx) => {
-    const newGroup = await tx.approachesGroups.create({
+    const newGroup = await tx.approachesGroup.create({
       data: {
-        actionId: group.actionId,
         count,
         sum,
         mean,
@@ -32,11 +47,21 @@ export async function handleUpdateApproachesGroup(
         },
       },
     });
-    await tx.actions.update({
-      where: { id: group.actionId },
-      data: {
-        currentApproachGroupId: newGroup.id,
-      },
-    });
+    switch (purpose) {
+      case "mass": {
+        await tx.actionMass.update({
+          where: { id: purposeId },
+          data: { currentApproachGroupId: newGroup.id },
+        });
+        break;
+      }
+      case "strength": {
+        await tx.actionStrength.update({
+          where: { id: purposeId },
+          data: { currentApproachGroupId: newGroup.id },
+        });
+        break;
+      }
+    }
   });
 }

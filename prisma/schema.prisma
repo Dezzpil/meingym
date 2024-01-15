@@ -57,16 +57,20 @@ model VerificationToken {
 }
 
 model MuscleGroup {
-  id     Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
   title  String
   Muscle Muscle[]
 }
 
 model Muscle {
-  id               Int                       @id @default(autoincrement())
-  title            String
-  groupId          Int
-  Group            MuscleGroup               @relation(fields: [groupId], references: [id])
+  id Int @id @default(autoincrement())
+
+  title String
+
+  groupId Int
+  Group   MuscleGroup @relation(fields: [groupId], references: [id])
+
   AgonyInActions   ActionsOnMusclesAgony[]
   SynergyInActions ActionsOnMusclesSynergy[]
 }
@@ -92,32 +96,59 @@ model ActionsOnMusclesSynergy {
 }
 
 model Action {
-  id                     Int                       @id @default(autoincrement())
-  title                  String
-  desc                   String
-  alias                  String?
-  currentApproachGroupId Int?
-  CurrentApproachGroup   ApproachesGroup?          @relation(fields: [currentApproachGroupId], references: [id])
-  MusclesAgony           ActionsOnMusclesAgony[]
-  MusclesSynergy         ActionsOnMusclesSynergy[]
+  id Int @id @default(autoincrement())
+
+  title String
+  desc  String
+  alias String?
+
+  MusclesAgony   ActionsOnMusclesAgony[]
+  MusclesSynergy ActionsOnMusclesSynergy[]
+
+  massId Int
+  Mass   ActionMass @relation(fields: [massId], references: [id])
+
+  strengthId Int
+  Strength   ActionStrength @relation(fields: [strengthId], references: [id])
+}
+
+model ActionMass {
+  id Int @id @default(autoincrement())
+
+  currentApproachGroupId Int
+  CurrentApproachGroup   ApproachesGroup @relation(fields: [currentApproachGroupId], references: [id])
+  Action                 Action[]
+}
+
+model ActionStrength {
+  id Int @id @default(autoincrement())
+
+  currentApproachGroupId Int
+  CurrentApproachGroup   ApproachesGroup @relation(fields: [currentApproachGroupId], references: [id])
+  Action                 Action[]
 }
 
 model ApproachesGroup {
-  id         Int        @id @default(autoincrement())
-  createdAt  DateTime   @default(now())
-  actionId   Int
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  count     Int      @default(0)
+  sum       Int      @default(0)
+  mean      Float    @default(0.0)
+
+  ActionMass     ActionMass[]
+  ActionStrength ActionStrength[]
+
   Approaches Approach[]
-  Actions    Action[]
-  count      Int        @default(0)
-  sum        Int        @default(0)
-  mean       Float      @default(0.0)
 }
 
 model Approach {
-  id       Int             @id @default(autoincrement())
-  priority Int             @default(0)
-  groupId  Int
-  Group    ApproachesGroup @relation(fields: [groupId], references: [id])
+  id Int @id @default(autoincrement())
+
+  priority Int @default(0)
   weight   Int
   count    Int
+
+  groupId Int
+  Group   ApproachesGroup @relation(fields: [groupId], references: [id])
 }

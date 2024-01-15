@@ -2,6 +2,12 @@
 import ActionsForm from "@/app/actions/form";
 import { ApproachesManagement } from "@/components/approaches/Managment";
 import { prisma } from "@/tools/db";
+import type {
+  ActionMass,
+  ActionStrength,
+  Approach,
+  ApproachesGroup,
+} from "@prisma/client";
 
 type PageParams = {
   params: { id: string };
@@ -12,25 +18,52 @@ export default async function ActionPage({ params }: PageParams) {
   const action = await prisma.action.findUniqueOrThrow({
     where: { id },
     include: {
-      CurrentApproachGroup: { include: { Approaches: true } },
+      Mass: {
+        include: { CurrentApproachGroup: { include: { Approaches: true } } },
+      },
+      Strength: {
+        include: { CurrentApproachGroup: { include: { Approaches: true } } },
+      },
       MusclesSynergy: true,
       MusclesAgony: true,
     },
   });
   const muscles = await prisma.muscle.findMany({ include: { Group: true } });
-  const lastGroup = action.CurrentApproachGroup;
+
+  const strength = action.Strength as ActionStrength & {
+    CurrentApproachGroup: ApproachesGroup & { Approaches: Approach[] };
+  };
+  const mass = action.Mass as ActionMass & {
+    CurrentApproachGroup: ApproachesGroup & { Approaches: Approach[] };
+  };
 
   return (
     <>
       <header className="mb-3">Движение ID {id}</header>
       <ActionsForm action={action} muscles={muscles}></ActionsForm>
       <hr />
-      {lastGroup && (
-        <ApproachesManagement
-          groupId={lastGroup.id}
-          approaches={lastGroup.Approaches}
-        />
-      )}
+      <div className="d-flex row">
+        {strength && (
+          <div className="col-md-6 mb-3">
+            <header className="mb-3">На силу</header>
+            <ApproachesManagement
+              purpose="strength"
+              purposeId={strength.id}
+              approaches={strength.CurrentApproachGroup.Approaches}
+            />
+          </div>
+        )}
+        {mass && (
+          <div className="col-md-6 mb-3">
+            <header className="mb-3">На массу</header>
+            <ApproachesManagement
+              purpose="mass"
+              purposeId={mass.id}
+              approaches={mass.CurrentApproachGroup.Approaches}
+            />
+          </div>
+        )}
+      </div>
     </>
   );
 }
