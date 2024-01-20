@@ -139,7 +139,8 @@ model ApproachesGroup {
   ActionMass     ActionMass[]
   ActionStrength ActionStrength[]
 
-  Approaches Approach[]
+  Approaches       Approach[]
+  TrainingExercise TrainingExercise[]
 }
 
 model Approach {
@@ -151,4 +152,49 @@ model Approach {
 
   groupId Int
   Group   ApproachesGroup @relation(fields: [groupId], references: [id])
+}
+
+model Training {
+  id Int @id @default(autoincrement())
+
+  createdAt        DateTime           @default(now())
+  planedTo         DateTime
+  startedAt        DateTime
+  completedAt      DateTime
+  TrainingExercise TrainingExercise[]
+}
+
+enum Purpose {
+  MASS
+  STRENGTH
+}
+
+model TrainingExercise {
+  id Int @id @default(autoincrement())
+
+  trainingId Int
+  Training   Training @relation(references: [id], fields: [trainingId])
+
+  priority Int @default(0)
+
+  approachGroupId Int
+  ApproachGroup   ApproachesGroup @relation(references: [id], fields: [approachGroupId])
+
+  startedAt                 DateTime?
+  completedAt               DateTime?
+  TrainingExerciseExecution TrainingExerciseExecution[]
+
+  purpose Purpose
+}
+
+model TrainingExerciseExecution {
+  id Int @id @default(autoincrement())
+
+  exerciseId Int
+  Exercise   TrainingExercise @relation(references: [id], fields: [exerciseId])
+
+  plannedWeigth Int
+  plannedCount  Int
+  liftedWeight  Int
+  liftedCount   Int
 }
