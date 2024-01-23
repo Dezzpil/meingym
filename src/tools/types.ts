@@ -5,3 +5,7 @@ export type PrismaTransactionClient = Omit<
   PrismaClient,
   runtime.ITXClientDenyList
 >;
+
+export type ItemPageParams = {
+  params: { id: string };
+};

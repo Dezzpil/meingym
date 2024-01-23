@@ -53,6 +53,11 @@ export function Layout({ children }: Props) {
                   Движения
                 </Link>
               </li>
+              <li>
+                <Link href={`/trainings`} className="nav-link">
+                  Тренировки
+                </Link>
+              </li>
             </ul>
           </div>
         </div>

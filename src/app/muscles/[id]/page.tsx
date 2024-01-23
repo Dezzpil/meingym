@@ -1,14 +1,9 @@
 // @ts-ignore
 import MusclesForm from "@/app/muscles/form";
-import { PrismaClient } from "@prisma/client";
+import { ItemPageParams } from "@/tools/types";
+import { prisma } from "@/tools/db";
 
-const prisma = new PrismaClient();
-
-type PageParams = {
-  params: { id: string };
-};
-
-export default async function MusclePage({ params }: PageParams) {
+export default async function MusclePage({ params }: ItemPageParams) {
   const groups = await prisma.muscleGroup.findMany();
   const muscle = await prisma.muscle.findUniqueOrThrow({
     where: { id: parseInt(params.id) },

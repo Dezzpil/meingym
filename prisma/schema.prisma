@@ -159,8 +159,8 @@ model Training {
 
   createdAt        DateTime           @default(now())
   planedTo         DateTime
-  startedAt        DateTime
-  completedAt      DateTime
+  startedAt        DateTime?
+  completedAt      DateTime?
   TrainingExercise TrainingExercise[]
 }
 
