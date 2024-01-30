@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/tools/db";
 
 export default async function MusclesGroupsPage() {
   const data = await prisma.muscleGroup.findMany({});

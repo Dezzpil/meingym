@@ -108,8 +108,9 @@ model Action {
   massId Int
   Mass   ActionMass @relation(fields: [massId], references: [id])
 
-  strengthId Int
-  Strength   ActionStrength @relation(fields: [strengthId], references: [id])
+  strengthId       Int
+  Strength         ActionStrength     @relation(fields: [strengthId], references: [id])
+  TrainingExercise TrainingExercise[]
 }
 
 model ActionMass {
@@ -185,6 +186,9 @@ model TrainingExercise {
   TrainingExerciseExecution TrainingExerciseExecution[]
 
   purpose Purpose
+
+  actionId Int
+  Action   Action @relation(fields: [actionId], references: [id])
 }
 
 model TrainingExerciseExecution {

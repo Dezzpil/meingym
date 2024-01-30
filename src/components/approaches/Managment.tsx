@@ -2,23 +2,27 @@
 
 import { FormEvent, useCallback, useMemo, useState } from "react";
 import Loader from "@/components/Loader";
-import { ApproachGroupPurpose, ApproachLiftData } from "@/app/approaches/types";
+import { ApproachLiftData } from "@/app/approaches/types";
 import { ApproachesManagementElement } from "@/components/approaches/ManagmentElement";
 import { TbSum } from "react-icons/tb";
-import { handleUpdateApproachesGroup } from "@/app/approaches/actions";
-import type { Approach } from "@prisma/client";
+import {
+  handleCreateNewApproachesGroup,
+  handleUpdateApproachGroup,
+} from "@/app/approaches/actions";
+import type { Approach, Purpose } from "@prisma/client";
 
 type Props = {
-  purpose: ApproachGroupPurpose;
-  purposeId: number;
+  create?: {
+    purpose: Purpose;
+    actionPurposeId: number;
+  };
+  update?: {
+    groupId: number;
+  };
   approaches: Approach[];
 };
 
-export function ApproachesManagement({
-  purpose,
-  purposeId,
-  approaches,
-}: Props) {
+export function ApproachesManagement({ create, update, approaches }: Props) {
   const [preprocessed, setPreprocessed] = useState<boolean>(false);
   const [data, setData] = useState<ApproachLiftData[]>([]);
   const [sum, setSum] = useState<number>(0);
@@ -87,13 +91,22 @@ export function ApproachesManagement({
       setError(null);
       setHandling(true);
       try {
-        await handleUpdateApproachesGroup(purpose, purposeId, data);
+        if (create) {
+          await handleCreateNewApproachesGroup(
+            create.purpose,
+            create.actionPurposeId,
+            data,
+          );
+        }
+        if (update) {
+          await handleUpdateApproachGroup(update.groupId, data);
+        }
       } catch (e: any) {
         setError(e.message);
       }
       setHandling(false);
     },
-    [data, purpose, purposeId],
+    [create, data, update],
   );
 
   return !preprocessed ? (
@@ -102,21 +115,17 @@ export function ApproachesManagement({
     <>
       {data && (
         <form onSubmit={submit}>
-          <ol style={{ paddingLeft: "32px" }}>
+          <div>
             {data.map((d) => (
-              <li
-                key={d.priority}
-                className="col-12 mb-3"
-                style={{ paddingLeft: "8px" }}
-              >
+              <div key={d.priority} className="col-12 mb-3">
                 <ApproachesManagementElement
                   elem={d}
                   onChange={recalculate}
                   onRemove={remove}
                 />
-              </li>
+              </div>
             ))}
-          </ol>
+          </div>
           <div className="mb-2 d-flex gap-3 align-items-center">
             <div className="d-inline-flex align-items-center">
               <TbSum />: {sum}

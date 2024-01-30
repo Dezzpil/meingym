@@ -47,8 +47,7 @@ export default async function ActionPage({ params }: PageParams) {
           <div className="col-md-6 mb-3">
             <header className="mb-3">На силу</header>
             <ApproachesManagement
-              purpose="strength"
-              purposeId={strength.id}
+              create={{ purpose: "STRENGTH", actionPurposeId: strength.id }}
               approaches={strength.CurrentApproachGroup.Approaches}
             />
           </div>
@@ -57,8 +56,7 @@ export default async function ActionPage({ params }: PageParams) {
           <div className="col-md-6 mb-3">
             <header className="mb-3">На массу</header>
             <ApproachesManagement
-              purpose="mass"
-              purposeId={mass.id}
+              create={{ purpose: "MASS", actionPurposeId: mass.id }}
               approaches={mass.CurrentApproachGroup.Approaches}
             />
           </div>

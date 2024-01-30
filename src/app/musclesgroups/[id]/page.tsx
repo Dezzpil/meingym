@@ -1,11 +1,9 @@
-import { PrismaClient } from "@prisma/client";
 import MusclesGroupsButtons from "@/app/musclesgroups/[id]/buttons";
+import { prisma } from "@/tools/db";
 
 type Props = {
   params: { id: string };
 };
-
-const prisma = new PrismaClient();
 
 export default async function MusclesGroupsIdPage({ params }: Props) {
   const id = parseInt(params.id);

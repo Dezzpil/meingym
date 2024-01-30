@@ -1,10 +1,8 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { MusclesGroupsFormFieldsType } from "@/app/musclesgroups/create/types";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/tools/db";
 
 export async function handleSubmitAction(data: MusclesGroupsFormFieldsType) {
   const existed = await prisma.muscleGroup.findMany({

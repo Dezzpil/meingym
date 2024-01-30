@@ -1,7 +1,6 @@
 import MusclesForm from "@/app/muscles/form";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/tools/db";
 
-const prisma = new PrismaClient();
 export default async function MusclesCreatePage() {
   const groups = await prisma.muscleGroup.findMany();
 

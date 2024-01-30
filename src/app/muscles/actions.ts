@@ -1,11 +1,9 @@
 "use server";
 
 import { MusclesFormFieldsType } from "@/app/muscles/create/types";
-import { PrismaClient } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/tools/db";
 
 export async function handleCreate(data: MusclesFormFieldsType) {
   const title = data.title as string;
