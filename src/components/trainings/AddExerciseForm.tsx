@@ -1,5 +1,6 @@
 "use client";
-import type { Action, Training, TrainingExercise } from "@prisma/client";
+
+import type { Action, Training } from "@prisma/client";
 import { Purpose } from "@prisma/client";
 import { handleAddExercise } from "@/app/trainings/exercises/actions";
 import { useForm } from "react-hook-form";
@@ -8,15 +9,10 @@ import { ExerciseAddFieldsType } from "@/app/trainings/exercises/types";
 type Props = {
   training: Training;
   actions: Action[];
-  exercises: TrainingExercise[];
 };
 
-export default function AddExerciseForm({
-  training,
-  actions,
-  exercises,
-}: Props) {
-  const form = useForm<ExerciseAddFieldsType>();
+export default function AddExerciseForm({ training, actions }: Props) {
+  const form = useForm<ExerciseAddFieldsType>({});
   const submit = form.handleSubmit(async (data) => {
     try {
       await handleAddExercise(training.id, data);
@@ -49,21 +45,7 @@ export default function AddExerciseForm({
           </select>
         </div>
         <div className="col-auto">
-          <label className="visually-hidden">Порядок</label>
-          <input
-            type="number"
-            className="form-control"
-            readOnly
-            {...form.register("priority", {
-              valueAsNumber: true,
-              value: exercises.length + 1,
-              min: 1,
-              max: 10,
-            })}
-          />
-        </div>
-        <div className="col-auto">
-          <button className="btn btn-success">Добавить</button>
+          <button className="btn btn-primary">Добавить упражнение</button>
         </div>
       </form>
     </>

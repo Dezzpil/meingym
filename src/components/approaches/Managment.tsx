@@ -18,6 +18,7 @@ type Props = {
   };
   update?: {
     groupId: number;
+    trainingId: number;
   };
   approaches: Approach[];
 };
@@ -99,7 +100,11 @@ export function ApproachesManagement({ create, update, approaches }: Props) {
           );
         }
         if (update) {
-          await handleUpdateApproachGroup(update.groupId, data);
+          await handleUpdateApproachGroup(
+            update.groupId,
+            data,
+            update.trainingId,
+          );
         }
       } catch (e: any) {
         setError(e.message);
@@ -130,12 +135,12 @@ export function ApproachesManagement({ create, update, approaches }: Props) {
             <div className="d-inline-flex align-items-center">
               <TbSum />: {sum}
             </div>
-            <button className="btn btn-success" disabled={handling}>
+            <button className="btn btn-sm btn-success" disabled={handling}>
               Сохранить
             </button>
             <button
               type="button"
-              className="btn btn-light"
+              className="btn btn-sm btn-light"
               onClick={() => add()}
             >
               Добавить подход

@@ -3,6 +3,7 @@
 import { ApproachLiftData } from "@/app/approaches/types";
 import { prisma } from "@/tools/db";
 import type { Purpose } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 function calculateStats(data: Array<ApproachLiftData>) {
   const count = data.length;
@@ -19,6 +20,7 @@ function calculateStats(data: Array<ApproachLiftData>) {
 export async function handleUpdateApproachGroup(
   id: number,
   data: Array<ApproachLiftData>,
+  trainingId?: number,
 ) {
   const stats = calculateStats(data);
 
@@ -31,6 +33,9 @@ export async function handleUpdateApproachGroup(
       data: stats,
     });
   });
+  if (trainingId) {
+    revalidatePath(`/trainings/${trainingId}`);
+  }
 }
 
 export async function handleCreateNewApproachesGroup(
