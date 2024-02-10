@@ -28,9 +28,7 @@ export default async function TrainingsPage() {
               <tr key={t.id}>
                 <td>{t.id}</td>
                 <td>
-                  <Link href={`/trainings/${t.id}`}>
-                    {t.planedTo.toString()}
-                  </Link>
+                  <Link href={`/trainings/${t.id}`}>{t.plannedToStr}</Link>
                 </td>
                 <td>{t.TrainingExercise.length}</td>
               </tr>

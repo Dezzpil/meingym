@@ -159,7 +159,8 @@ model Training {
   id Int @id @default(autoincrement())
 
   createdAt        DateTime           @default(now())
-  planedTo         DateTime
+  plannedTo        DateTime
+  plannedToStr     String
   startedAt        DateTime?
   completedAt      DateTime?
   TrainingExercise TrainingExercise[]

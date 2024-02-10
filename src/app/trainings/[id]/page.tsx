@@ -24,9 +24,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
   });
   return (
     <>
-      <header className="mb-3">
-        Тренировка {training.planedTo.toString()}
-      </header>
+      <header className="mb-3">Тренировка {training.plannedToStr}</header>
       {exercises.length ? (
         <ul className="list-group mb-3">
           {exercises.map((e) => (
