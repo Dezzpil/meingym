@@ -151,8 +151,9 @@ model Approach {
   weight   Int
   count    Int
 
-  groupId Int
-  Group   ApproachesGroup @relation(fields: [groupId], references: [id])
+  groupId                   Int
+  Group                     ApproachesGroup             @relation(fields: [groupId], references: [id])
+  TrainingExerciseExecution TrainingExerciseExecution[]
 }
 
 model Training {
@@ -197,6 +198,9 @@ model TrainingExerciseExecution {
 
   exerciseId Int
   Exercise   TrainingExercise @relation(references: [id], fields: [exerciseId])
+
+  approachId Int
+  Approach   Approach @relation(references: [id], fields: [approachId])
 
   plannedWeigth Int
   plannedCount  Int
