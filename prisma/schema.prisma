@@ -191,6 +191,8 @@ model TrainingExercise {
 
   actionId Int
   Action   Action @relation(fields: [actionId], references: [id])
+
+  isPassed Boolean @default(false)
 }
 
 model TrainingExerciseExecution {

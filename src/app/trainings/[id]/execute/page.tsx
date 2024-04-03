@@ -9,7 +9,9 @@ import type {
   Training,
 } from "@prisma/client";
 import React from "react";
-import ExerciseExecutionItem from "@/components/trainings/ExerciseExecutionItem";
+import { TrainingExecutePanel } from "@/app/trainings/[id]/execute/panel";
+import { TrainingExecuteCard } from "@/app/trainings/[id]/execute/card";
+import { TrainingExecuteComplete } from "@/app/trainings/[id]/execute/complete";
 
 type TrainingExerciseType = TrainingExercise & {
   Action: Action;
@@ -60,6 +62,7 @@ async function createExecutions(training: TrainingType): Promise<boolean> {
 
 export default async function TrainingExecutePage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
+
   let training = await findTraining(id);
   if (await createExecutions(training)) {
     training = await findTraining(id);
@@ -67,24 +70,11 @@ export default async function TrainingExecutePage({ params }: ItemPageParams) {
 
   return (
     <div>
+      <TrainingExecutePanel training={training} />
       {training.TrainingExercise.map((e: TrainingExerciseType) => (
-        <div className="card mb-3" key={e.id}>
-          <div className="card-header">
-            {e.Action.alias ? e.Action.alias : e.Action.title}
-          </div>
-          <div className="card-body">
-            <div className="row mb-2">
-              {e.TrainingExerciseExecution.map((exec) => (
-                <ExerciseExecutionItem key={exec.id} exec={exec} />
-              ))}
-            </div>
-            <div className="d-flex justify-content-between">
-              <button>Еще подход!</button>
-              <button>Закончили</button>
-            </div>
-          </div>
-        </div>
+        <TrainingExecuteCard exec={e} key={e.id} />
       ))}
+      <TrainingExecuteComplete training={training} />
     </div>
   );
 }
