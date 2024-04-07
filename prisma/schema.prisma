@@ -148,8 +148,8 @@ model ApproachesGroup {
 model Approach {
   id Int @id @default(autoincrement())
 
-  priority Int @default(0)
-  weight   Int
+  priority Int   @default(0)
+  weight   Float
   count    Int
 
   groupId                   Int
@@ -205,8 +205,8 @@ model TrainingExerciseExecution {
   approachId Int
   Approach   Approach @relation(references: [id], fields: [approachId])
 
-  plannedWeigth Int
+  plannedWeigth Float
   plannedCount  Int
-  liftedWeight  Int
+  liftedWeight  Float
   liftedCount   Int
 }
