@@ -7,23 +7,34 @@ import type {
   TrainingExercise,
   TrainingExerciseExecution,
 } from "@prisma/client";
-import { handleTrainingExerciseExecuted } from "@/app/trainings/[id]/execute/actions";
+import {
+  countExerciseNonExecuted,
+  handleTrainingExerciseExecuted,
+} from "@/app/trainings/[id]/execute/actions";
 import moment from "moment";
+import { GrCheckmark } from "react-icons/gr";
 
 type Props = {
   exercise: TrainingExercise & {
     TrainingExerciseExecution: TrainingExerciseExecution[];
   };
+  disabled: boolean;
 };
 
-export function TrainingExecuteForm({ exercise }: Props) {
+export function TrainingExecuteForm({ exercise, disabled }: Props) {
   const { register, handleSubmit } = useForm<any>();
   const onSubmit = async (data: any) => {
-    await handleTrainingExerciseExecuted(
-      exercise.id,
-      data,
-      exercise.trainingId,
-    );
+    let force = true;
+    const result = await countExerciseNonExecuted(exercise.id);
+    if (result) {
+      force = confirm("Не все подходы выполнены, завершить упражнение?");
+    }
+    if (force)
+      await handleTrainingExerciseExecuted(
+        exercise.id,
+        data,
+        exercise.trainingId,
+      );
   };
 
   return (
@@ -34,6 +45,7 @@ export function TrainingExecuteForm({ exercise }: Props) {
             key={exec.id}
             exec={exec}
             register={register}
+            disabled={disabled}
           />
         ))}
       </div>
@@ -42,9 +54,13 @@ export function TrainingExecuteForm({ exercise }: Props) {
           Упражнение выполнено {moment(exercise.completedAt).fromNow()}
         </div>
       ) : (
-        <div className="d-flex justify-content-start gap-2">
-          <button className="btn btn-success">Закончили</button>
-          <button className="btn btn-default">Еще подход!</button>
+        <div className="d-flex justify-content-between gap-2">
+          <button type="button" disabled={disabled} className="btn btn-default">
+            Еще подход!
+          </button>
+          <button disabled={disabled} className="btn btn-light">
+            <GrCheckmark />
+          </button>
         </div>
       )}
     </form>

@@ -3,36 +3,67 @@
 import { GiWeight } from "react-icons/gi";
 import React, { useCallback, useState } from "react";
 import type { TrainingExerciseExecution } from "@prisma/client";
-import { GrCheckmark, GrLike, GrUpgrade } from "react-icons/gr";
+import { GrCheckmark } from "react-icons/gr";
 import classNames from "classnames";
 import type { RegisterOptions } from "react-hook-form";
-import { handleTrainingExerciseStart } from "@/app/trainings/[id]/execute/actions";
+import { FaSpinner } from "react-icons/fa6";
+import { postApi } from "@/tools/fetch";
+
 type Props = {
   exec: TrainingExerciseExecution;
   register: CallableFunction;
+  disabled: boolean;
 };
-export default function ExerciseExecutionItem({ exec, register }: Props) {
-  const [isCompleted, setCompleted] = useState<boolean>(
-    !!(exec.liftedWeight && exec.liftedCount),
-  );
-  const [isLiked, setLiked] = useState<boolean>(false);
-  const [isUpgraded, setUpgraded] = useState<boolean>(false);
-  const focus = useCallback((e: any) => {
-    const target = e.target;
-    e.target.value = parseInt(target.placeholder as string);
-  }, []);
+export default function ExerciseExecutionItem({
+  exec,
+  register,
+  disabled,
+}: Props) {
+  const [isCompleted, setCompleted] = useState<boolean>(!!exec.executedAt);
+  const [waitForCompleted, setWaitForCompleted] = useState<boolean>(false);
+
+  const [liftedWeight, setLiftedWeight] = useState(0);
+  const [liftedCount, setLiftedCount] = useState(0);
+
   const complete = useCallback(() => {
-    console.log("complete");
-    setCompleted((val) => !val);
+    setWaitForCompleted(true);
+    if (!isCompleted) {
+      postApi(`/api/trainings/exercise/complete?id=${exec.id}`, {
+        id: exec.id,
+        liftedWeight,
+        liftedCount,
+      })
+        .then((data) => {
+          console.log(data);
+          setCompleted(!isCompleted);
+        })
+        .finally(() => {
+          setWaitForCompleted(false);
+        });
+    } else {
+      postApi(`/api/trainings/exercise/uncomplete?id=${exec.id}`, {
+        id: exec.id,
+      })
+        .then((data) => {
+          console.log(data);
+          setCompleted(!isCompleted);
+        })
+        .finally(() => {
+          setWaitForCompleted(false);
+        });
+    }
+  }, [exec.id, isCompleted, liftedCount, liftedWeight]);
+
+  const updateLiftedCount = useCallback((e: any) => {
+    e.preventDefault();
+    setLiftedCount(parseInt(e.target.value));
   }, []);
-  const like = useCallback(() => {
-    console.log("like");
-    setLiked((val) => !val);
+
+  const updateLiftedWeight = useCallback((e: any) => {
+    e.preventDefault();
+    setLiftedWeight(parseInt(e.target.value));
   }, []);
-  const upgrade = useCallback(() => {
-    console.log("upgrade");
-    setUpgraded((val) => !val);
-  }, []);
+
   return (
     <div className="mb-1 d-flex gap-2">
       <div className="input-group">
@@ -41,58 +72,54 @@ export default function ExerciseExecutionItem({ exec, register }: Props) {
         </span>
         <input
           type="number"
-          className="form-control"
-          placeholder={exec.plannedWeigth + ""}
+          step="0.1"
+          className={classNames("form-control", {
+            "text-success":
+              exec.liftedWeight && exec.liftedWeight > exec.plannedWeigth,
+            "text-warning":
+              exec.liftedWeight && exec.liftedWeight < exec.plannedWeigth,
+            "text-muted": exec.isPassed,
+          })}
           disabled={isCompleted}
-          onFocus={focus}
+          onInput={updateLiftedWeight}
           {...register(`[${exec.id}].liftedWeight`, {
             valueAsNumber: true,
             min: 0,
-            value: exec.liftedWeight ? exec.liftedWeight : null,
+            value: exec.liftedWeight ? exec.liftedWeight : exec.plannedWeigth,
+            disabled,
           } as RegisterOptions)}
         />
         <span className="input-group-text">x</span>
         <input
           type="number"
-          className="form-control"
-          placeholder={exec.plannedCount + ""}
+          step="1"
+          className={classNames("form-control", {
+            "text-success":
+              exec.liftedCount && exec.liftedCount > exec.plannedCount,
+            "text-warning":
+              exec.liftedCount && exec.liftedCount < exec.plannedCount,
+            "text-muted": exec.isPassed,
+          })}
           disabled={isCompleted}
-          onFocus={focus}
+          onInput={updateLiftedCount}
           {...register(`[${exec.id}].liftedCount`, {
-            valueAsNumber: true,
+            valueAsNumber: false,
             min: 0,
-            value: exec.liftedCount ? exec.liftedCount : null,
+            value: exec.liftedCount ? exec.liftedCount : exec.plannedCount,
+            disabled,
           } as RegisterOptions)}
         />
       </div>
       <button
+        type="button"
+        disabled={disabled}
         className={classNames("btn", {
           "btn-light": !isCompleted,
           "btn-success": isCompleted,
         })}
         onClick={complete}
       >
-        <GrCheckmark />
-      </button>
-      <button
-        className={classNames("btn", {
-          "btn-default": !isLiked,
-          "btn-outline-success": isLiked,
-        })}
-        type="button"
-        onClick={like}
-      >
-        <GrLike />
-      </button>
-      <button
-        className={classNames("btn", {
-          "btn-default": !isUpgraded,
-          "btn-outline-success": isUpgraded,
-        })}
-        type="button"
-        onClick={upgrade}
-      >
-        <GrUpgrade />
+        {waitForCompleted ? <FaSpinner /> : <GrCheckmark />}
       </button>
     </div>
   );

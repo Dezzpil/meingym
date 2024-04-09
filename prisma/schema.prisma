@@ -209,4 +209,8 @@ model TrainingExerciseExecution {
   plannedCount  Int
   liftedWeight  Float
   liftedCount   Int
+
+  executedAt DateTime?
+  isPassed   Boolean   @default(false)
+  priority   Int       @default(0)
 }

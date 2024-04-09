@@ -21,6 +21,7 @@ type TrainingExerciseType = TrainingExercise & {
 type TrainingType = Training & { TrainingExercise: TrainingExerciseType[] };
 
 async function findTraining(id: number): Promise<TrainingType> {
+  // @ts-ignore
   return prisma.training.findUniqueOrThrow({
     where: { id },
     include: {
@@ -30,8 +31,10 @@ async function findTraining(id: number): Promise<TrainingType> {
           ApproachGroup: {
             include: { Approaches: true },
           },
-          TrainingExerciseExecution: true,
+          // @ts-ignore
+          TrainingExerciseExecution: { orderBy: { priority: "asc" } },
         },
+        orderBy: { priority: "asc" },
       },
     },
   });
@@ -48,6 +51,7 @@ async function createExecutions(training: TrainingType): Promise<boolean> {
           plannedWeigth: a.weight,
           liftedCount: 0,
           liftedWeight: 0,
+          priority: a.priority,
         });
       }
     }
@@ -72,9 +76,13 @@ export default async function TrainingExecutePage({ params }: ItemPageParams) {
     <div>
       <TrainingExecutePanel training={training} />
       {training.TrainingExercise.map((e: TrainingExerciseType) => (
-        <TrainingExecuteCard exec={e} key={e.id} />
+        <TrainingExecuteCard
+          exec={e}
+          key={e.id}
+          disabled={!training.startedAt || !!training.completedAt}
+        />
       ))}
-      <TrainingExecuteComplete training={training} />
+      {training.startedAt && <TrainingExecuteComplete training={training} />}
     </div>
   );
 }

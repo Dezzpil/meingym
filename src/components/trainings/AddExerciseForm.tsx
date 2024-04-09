@@ -5,6 +5,8 @@ import { Purpose } from "@prisma/client";
 import { handleAddExercise } from "@/app/trainings/exercises/actions";
 import { useForm } from "react-hook-form";
 import { ExerciseAddFieldsType } from "@/app/trainings/exercises/types";
+import { BiPlus } from "react-icons/bi";
+import React from "react";
 
 type Props = {
   training: Training;
@@ -45,7 +47,9 @@ export default function AddExerciseForm({ training, actions }: Props) {
           </select>
         </div>
         <div className="col-auto">
-          <button className="btn btn-primary">Добавить упражнение</button>
+          <button className="btn btn-primary">
+            <BiPlus />
+          </button>
         </div>
       </form>
     </>
