@@ -1,7 +1,9 @@
 "use client";
 
 import { ApproachLiftData } from "@/app/approaches/types";
-import { ChangeEvent, useCallback } from "react";
+import React, { ChangeEvent, useCallback } from "react";
+import { GiWeight } from "react-icons/gi";
+import { TiDeleteOutline } from "react-icons/ti";
 
 type Props = {
   elem: ApproachLiftData;
@@ -32,38 +34,36 @@ export function ApproachesManagementElement({
   return (
     <>
       <div className="d-flex gap-2">
-        <div className="row row-cols-3">
-          <div className="col-5 form-floating">
-            <input
-              type="number"
-              min={0}
-              className="form-control"
-              defaultValue={elem.weight}
-              id={`weight${elem.priority}`}
-              onChange={onChangeWeight}
-            />
-            <label htmlFor={`weight${elem.priority}`}>Вес, кг</label>
-          </div>
-          <div className="col-5 form-floating">
-            <input
-              type="number"
-              min={1}
-              className="form-control"
-              defaultValue={elem.count}
-              id={`counts${elem.priority}`}
-              onChange={onChangeCounts}
-            />
-            <label htmlFor={`counts${elem.priority}`}>Повторы</label>
-          </div>
-          <button
-            className="btn col-2"
-            type="button"
-            data-key={elem.priority}
-            onClick={(e) => onRemove(e)}
-          >
-            X
-          </button>
+        <div className="input-group">
+          <span className="input-group-text">
+            <GiWeight />
+          </span>
+          <input
+            type="number"
+            min={0}
+            className="form-control"
+            defaultValue={elem.weight}
+            id={`weight${elem.priority}`}
+            onChange={onChangeWeight}
+          />
+          <span className="input-group-text">x</span>
+          <input
+            type="number"
+            min={1}
+            className="form-control"
+            defaultValue={elem.count}
+            id={`counts${elem.priority}`}
+            onChange={onChangeCounts}
+          />
         </div>
+        <button
+          className="btn btn-dark"
+          type="button"
+          data-key={elem.priority}
+          onClick={(e) => onRemove(e)}
+        >
+          <TiDeleteOutline />
+        </button>
       </div>
     </>
   );
