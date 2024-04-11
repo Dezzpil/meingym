@@ -49,6 +49,11 @@ export function Layout({ children }: Props) {
                 </Link>
               </li>
               <li>
+                <Link href={"/weights"} className="nav-link">
+                  Оборудование
+                </Link>
+              </li>
+              <li>
                 <Link href={`/actions`} className="nav-link">
                   Движения
                 </Link>
