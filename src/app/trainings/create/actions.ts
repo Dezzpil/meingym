@@ -1,6 +1,6 @@
 "use server";
 
-import { TrainingFormFieldsType } from "@/app/trainings/create/types";
+import { TrainingFormFieldsType } from "@/app/trainings/types";
 import { prisma } from "@/tools/db";
 import { redirect } from "next/navigation";
 import { getPlannedToStr } from "@/tools/dates";

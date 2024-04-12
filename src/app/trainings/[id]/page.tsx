@@ -3,12 +3,15 @@ import { prisma } from "@/tools/db";
 import AddExerciseForm from "@/components/trainings/AddExerciseForm";
 import React from "react";
 import ExerciseItemControl from "@/components/trainings/ExerciseItemControl";
+import type { Training } from "@prisma/client";
+import moment from "moment";
+import { TrainingChangeDateForm } from "@/app/trainings/[id]/changeDateForm";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
-  const training = await prisma.training.findUniqueOrThrow({
+  const training = (await prisma.training.findUniqueOrThrow({
     where: { id },
-  });
+  })) as Training;
   const actions = await prisma.action.findMany({});
   const exercises = await prisma.trainingExercise.findMany({
     where: { trainingId: id },
@@ -24,7 +27,31 @@ export default async function TrainingPage({ params }: ItemPageParams) {
   });
   return (
     <>
-      <header className="mb-3">Тренировка {training.plannedToStr}</header>
+      <header className="mb-3">
+        <h3>Тренировка {moment(training.plannedTo).format("Y-M-D")}</h3>
+        {!training.startedAt && (
+          <div>
+            <TrainingChangeDateForm training={training} />
+          </div>
+        )}
+      </header>
+      {training.startedAt && (
+        <div className="alert alert-primary">
+          {training.startedAt && (
+            <div>Тренировка начата в {moment(training.startedAt).format()}</div>
+          )}
+          {training.completedAt && (
+            <div>
+              Тренировка завершена через{" "}
+              {moment(training.completedAt).diff(
+                moment(training.startedAt),
+                "minute",
+              )}{" "}
+              минуты
+            </div>
+          )}
+        </div>
+      )}
       {exercises.length ? (
         <ul className="list-group mb-3">
           {exercises.map((e) => (

@@ -1,13 +1,20 @@
 "use client";
 
+import type { Training } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { TrainingFormFieldsType } from "@/app/trainings/types";
-import { handleCreateTraining } from "@/app/trainings/create/actions";
 import { useState } from "react";
 import { TrainingPlannedDateForm } from "@/components/trainings/PlannedDateForm";
+import { handleChangeTrainingDate } from "@/app/trainings/[id]/actions";
 
-export default function TrainingForm() {
-  const form = useForm<TrainingFormFieldsType>();
+type Props = {
+  training: Training;
+};
+
+export function TrainingChangeDateForm({ training }: Props) {
+  const form = useForm<TrainingFormFieldsType>({
+    defaultValues: { plannedTo: training.plannedTo },
+  });
   const [error, setError] = useState<string | null>(null);
   const [handling, setHandling] = useState<boolean>(false);
 
@@ -15,7 +22,7 @@ export default function TrainingForm() {
     setHandling(true);
     setError(null);
     try {
-      await handleCreateTraining(data);
+      await handleChangeTrainingDate(training.id, data);
     } catch (e: any) {
       setError(e.message);
     }
@@ -28,6 +35,7 @@ export default function TrainingForm() {
       handling={handling}
       error={error}
       register={form.register}
+      btnTitle="Перенести"
     />
   );
 }
