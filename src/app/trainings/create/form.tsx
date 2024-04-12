@@ -9,6 +9,7 @@ export default function TrainingForm() {
   const form = useForm<TrainingFormFieldsType>();
   const [error, setError] = useState<string | null>(null);
   const [handling, setHandling] = useState<boolean>(false);
+
   const submit = form.handleSubmit(async (data) => {
     setHandling(true);
     setError(null);
@@ -19,6 +20,7 @@ export default function TrainingForm() {
     }
     setHandling(false);
   });
+
   return (
     <form onSubmit={submit}>
       <div className="mb-2">

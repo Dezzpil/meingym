@@ -226,7 +226,7 @@ model TrainingExerciseExecution {
 model Weights {
   code   String @id
   title  String
-  step   Float
+  value  Float
   userId String
   user   User   @relation(references: [id], fields: [userId])
 }
