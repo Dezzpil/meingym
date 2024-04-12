@@ -170,7 +170,6 @@ model Training {
 
   createdAt        DateTime           @default(now())
   plannedTo        DateTime
-  plannedToStr     String
   startedAt        DateTime?
   completedAt      DateTime?
   TrainingExercise TrainingExercise[]

@@ -16,33 +16,36 @@ export function TrainingExecutePanel({ training }: Props) {
   }, [training]);
 
   return (
-    <div
-      className={classNames("alert", {
-        "alert-light": !training.startedAt,
-        "alert-primary": training.startedAt,
-        "alert-success": training.completedAt,
-      })}
-      role="alert"
-    >
-      <div className="d-flex align-items-baseline justify-content-between">
-        {training.startedAt ? (
-          <span>Тренировка начата {moment(training.startedAt).fromNow()}!</span>
-        ) : (
-          <>
-            <span>Тренировка еще не начата!</span>
-            <button className="btn btn-primary" onClick={start}>
-              Начать
-            </button>
-          </>
+    <>
+      <h4>Тренировка {moment(training.plannedTo).format("Y-MM-D")}</h4>
+      <div
+        className={classNames("alert", {
+          "alert-light": !training.startedAt,
+          "alert-primary": training.startedAt,
+          "alert-success": training.completedAt,
+        })}
+        role="alert"
+      >
+        <div className="d-flex align-items-baseline justify-content-between">
+          {training.startedAt ? (
+            <span>Начата в {moment(training.startedAt).format("HH:m")}!</span>
+          ) : (
+            <>
+              <span>Тренировка еще не начата!</span>
+              <button className="btn btn-primary" onClick={start}>
+                Начать
+              </button>
+            </>
+          )}
+        </div>
+        {training.completedAt && (
+          <div className="d-flex align-items-baseline justify-content-between">
+            <span>
+              Тренировка завершена {moment(training.completedAt).fromNow()}!
+            </span>
+          </div>
         )}
       </div>
-      {training.completedAt && (
-        <div className="d-flex align-items-baseline justify-content-between">
-          <span>
-            Тренировка завершена {moment(training.completedAt).fromNow()}!
-          </span>
-        </div>
-      )}
-    </div>
+    </>
   );
 }

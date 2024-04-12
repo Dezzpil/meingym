@@ -1,9 +1,11 @@
 import { prisma } from "@/tools/db";
 import Link from "next/link";
+import moment from "moment";
 
 export default async function TrainingsPage() {
   const trainings = await prisma.training.findMany({
     include: { TrainingExercise: true },
+    orderBy: { plannedTo: "desc" },
   });
 
   return (
@@ -28,7 +30,9 @@ export default async function TrainingsPage() {
               <tr key={t.id}>
                 <td>{t.id}</td>
                 <td>
-                  <Link href={`/trainings/${t.id}`}>{t.plannedToStr}</Link>
+                  <Link href={`/trainings/${t.id}`}>
+                    {moment(t.plannedTo).format("Y-M-D")}
+                  </Link>
                 </td>
                 <td>{t.TrainingExercise.length}</td>
               </tr>

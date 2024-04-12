@@ -1,12 +1,22 @@
 import { prisma } from "@/tools/db";
-import { getPlannedToStr } from "@/tools/dates";
 import Link from "next/link";
+import moment from "moment";
 
 export default async function HomePage() {
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const endOfDay = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + 1,
+  );
   const trainings = await prisma.training.findMany({
     where: {
       completedAt: null,
-      plannedToStr: getPlannedToStr(new Date()),
+      plannedTo: {
+        gte: startOfDay,
+        lt: endOfDay,
+      },
     },
     orderBy: {
       plannedTo: "asc",
@@ -23,7 +33,9 @@ export default async function HomePage() {
     trainings.map((t) => (
       <div className="card" key={t.id}>
         <div className="card-body">
-          <h5 className="card-title">Тренировка на {t.plannedToStr}</h5>
+          <h5 className="card-title">
+            Тренировка на {moment(t.plannedTo).format("Y-M-D")}
+          </h5>
           <div className="card-text">
             Упражнения:{" "}
             {t.TrainingExercise.map((e) => e.Action.title).join(", ")}

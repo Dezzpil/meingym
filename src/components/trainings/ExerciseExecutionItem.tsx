@@ -34,7 +34,6 @@ export default function ExerciseExecutionItem({
         liftedCount,
       })
         .then((data) => {
-          console.log(data);
           setCompleted(!isCompleted);
         })
         .finally(() => {
@@ -45,7 +44,6 @@ export default function ExerciseExecutionItem({
         id: exec.id,
       })
         .then((data) => {
-          console.log(data);
           setCompleted(!isCompleted);
         })
         .finally(() => {
@@ -80,13 +78,12 @@ export default function ExerciseExecutionItem({
               exec.liftedWeight && exec.liftedWeight < exec.plannedWeigth,
             "text-muted": exec.isPassed,
           })}
-          disabled={isCompleted}
+          disabled={disabled || isCompleted}
           onInput={updateLiftedWeight}
           {...register(`[${exec.id}].liftedWeight`, {
             valueAsNumber: true,
             min: 0,
             value: exec.liftedWeight ? exec.liftedWeight : exec.plannedWeigth,
-            disabled,
           } as RegisterOptions)}
         />
         <span className="input-group-text">x</span>
@@ -100,13 +97,12 @@ export default function ExerciseExecutionItem({
               exec.liftedCount && exec.liftedCount < exec.plannedCount,
             "text-muted": exec.isPassed,
           })}
-          disabled={isCompleted}
+          disabled={disabled || isCompleted}
           onInput={updateLiftedCount}
           {...register(`[${exec.id}].liftedCount`, {
             valueAsNumber: false,
             min: 0,
             value: exec.liftedCount ? exec.liftedCount : exec.plannedCount,
-            disabled,
           } as RegisterOptions)}
         />
       </div>

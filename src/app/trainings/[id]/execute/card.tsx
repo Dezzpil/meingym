@@ -50,8 +50,9 @@ export function TrainingExecuteCard({ exec, disabled }: Props) {
               disabled={disabled}
               className="btn btn-warning"
               onClick={pass}
+              title="Пропустить"
             >
-              Пропустить...
+              <GrRun />
             </button>
           </div>
         )}
