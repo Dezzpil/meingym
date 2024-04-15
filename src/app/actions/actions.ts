@@ -18,7 +18,6 @@ import {
 } from "@/lib/approaches";
 
 export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
-  console.log(data);
   const title = data.title;
   await prisma.action.update({
     where: { id },
@@ -38,6 +37,14 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
         deleteMany: { actionId: id },
         createMany: {
           data: data.musclesSynergyIds.map((id) => {
+            return { muscleId: parseInt(id) };
+          }),
+        },
+      },
+      MusclesStabilizer: {
+        deleteMany: { actionId: id },
+        createMany: {
+          data: data.musclesStabilizerIds.map((id) => {
             return { muscleId: parseInt(id) };
           }),
         },
@@ -110,6 +117,13 @@ export async function handleCreate(data: ActionsFormFieldsType) {
           MusclesSynergy: {
             createMany: {
               data: data.musclesSynergyIds.map((id) => {
+                return { muscleId: parseInt(id) };
+              }),
+            },
+          },
+          MusclesStabilizer: {
+            createMany: {
+              data: data.musclesStabilizerIds.map((id) => {
                 return { muscleId: parseInt(id) };
               }),
             },

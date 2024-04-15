@@ -26,6 +26,7 @@ export default async function ActionPage({ params }: PageParams) {
       },
       MusclesSynergy: true,
       MusclesAgony: true,
+      MusclesStabilizer: true,
     },
   });
   const muscles = await prisma.muscle.findMany({ include: { Group: true } });

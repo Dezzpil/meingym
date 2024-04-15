@@ -80,8 +80,9 @@ model Muscle {
   groupId Int
   Group   MuscleGroup @relation(fields: [groupId], references: [id])
 
-  AgonyInActions   ActionsOnMusclesAgony[]
-  SynergyInActions ActionsOnMusclesSynergy[]
+  AgonyInActions             ActionsOnMusclesAgony[]
+  SynergyInActions           ActionsOnMusclesSynergy[]
+  ActionsOnMusclesStabilizer ActionsOnMusclesStabilizer[]
 }
 
 model ActionsOnMusclesAgony {
@@ -104,6 +105,16 @@ model ActionsOnMusclesSynergy {
   @@id([actionId, muscleId])
 }
 
+model ActionsOnMusclesStabilizer {
+  muscleId Int
+  Muscle   Muscle @relation(fields: [muscleId], references: [id])
+
+  actionId Int
+  Action   Action @relation(fields: [actionId], references: [id])
+
+  @@id([actionId, muscleId])
+}
+
 enum ActionRig {
   BLOCKS
   BARBELL
@@ -117,8 +128,9 @@ model Action {
   desc  String
   alias String?
 
-  MusclesAgony   ActionsOnMusclesAgony[]
-  MusclesSynergy ActionsOnMusclesSynergy[]
+  MusclesAgony      ActionsOnMusclesAgony[]
+  MusclesSynergy    ActionsOnMusclesSynergy[]
+  MusclesStabilizer ActionsOnMusclesStabilizer[]
 
   massId Int
   Mass   ActionMass @relation(fields: [massId], references: [id])

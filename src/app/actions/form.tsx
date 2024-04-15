@@ -5,6 +5,7 @@ import type {
   Muscle,
   ActionsOnMusclesAgony,
   ActionsOnMusclesSynergy,
+  ActionsOnMusclesStabilizer,
 } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { ActionsFormFieldsType } from "@/app/actions/types";
@@ -17,6 +18,7 @@ type Props = {
   action?: Action & {
     MusclesSynergy: ActionsOnMusclesAgony[];
     MusclesAgony: ActionsOnMusclesSynergy[];
+    MusclesStabilizer: ActionsOnMusclesStabilizer[];
   };
 };
 
@@ -97,13 +99,35 @@ export default function ActionsForm({ muscles, action }: Props) {
           </select>
         </div>
         <div className="mb-2">
+          <label className="form-label">Мышцы-стабилизаторы</label>
+          <select
+            multiple
+            className="form-control"
+            {...form.register("musclesStabilizerIds", { valueAsNumber: true })}
+          >
+            {muscles.map((m) => (
+              <option
+                key={m.id}
+                value={m.id}
+                selected={
+                  action &&
+                  action.MusclesStabilizer.reduce((prev, curr) => {
+                    return prev || curr.muscleId === m.id;
+                  }, false)
+                }
+              >
+                {m.Group.title}: {m.title}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-2">
           <label className="form-label">Описание</label>
           <textarea
             className="form-control"
             {...form.register("desc", { required: false })}
           />
         </div>
-
         <div className="mb-2">
           <label className="form-label">Сокращенное название</label>
           <input
@@ -149,7 +173,6 @@ export default function ActionsForm({ muscles, action }: Props) {
             </label>
           </div>
         </div>
-
         <div className="mb-2">
           <button className="btn btn-success" disabled={handling}>
             Сохранить

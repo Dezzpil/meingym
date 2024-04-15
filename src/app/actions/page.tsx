@@ -12,6 +12,7 @@ export default async function ActionsPage() {
       },
       MusclesAgony: { include: { Muscle: { include: { Group: true } } } },
       MusclesSynergy: { include: { Muscle: { include: { Group: true } } } },
+      MusclesStabilizer: { include: { Muscle: { include: { Group: true } } } },
     },
   });
 
