@@ -8,6 +8,7 @@ import type {
   Approach,
   ApproachesGroup,
 } from "@prisma/client";
+import { ActionControl } from "@/app/actions/[id]/control";
 
 type PageParams = {
   params: { id: string };
@@ -27,6 +28,7 @@ export default async function ActionPage({ params }: PageParams) {
       MusclesSynergy: true,
       MusclesAgony: true,
       MusclesStabilizer: true,
+      TrainingExercise: true,
     },
   });
   const muscles = await prisma.muscle.findMany({ include: { Group: true } });
@@ -40,7 +42,10 @@ export default async function ActionPage({ params }: PageParams) {
 
   return (
     <>
-      <header className="mb-3">Движение ID {id}</header>
+      <ActionControl
+        actionId={action.id}
+        trainingsCount={action.TrainingExercise.length}
+      />
       <ActionsForm action={action} muscles={muscles}></ActionsForm>
       <hr />
       <div className="d-flex row">

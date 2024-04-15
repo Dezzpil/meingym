@@ -80,9 +80,9 @@ model Muscle {
   groupId Int
   Group   MuscleGroup @relation(fields: [groupId], references: [id])
 
-  AgonyInActions             ActionsOnMusclesAgony[]
-  SynergyInActions           ActionsOnMusclesSynergy[]
-  ActionsOnMusclesStabilizer ActionsOnMusclesStabilizer[]
+  AgonyInActions      ActionsOnMusclesAgony[]
+  SynergyInActions    ActionsOnMusclesSynergy[]
+  StabilizerInActions ActionsOnMusclesStabilizer[]
 }
 
 model ActionsOnMusclesAgony {
@@ -90,7 +90,7 @@ model ActionsOnMusclesAgony {
   Muscle   Muscle @relation(fields: [muscleId], references: [id])
 
   actionId Int
-  Action   Action @relation(fields: [actionId], references: [id])
+  Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
 
   @@id([actionId, muscleId])
 }
@@ -100,7 +100,7 @@ model ActionsOnMusclesSynergy {
   Muscle   Muscle @relation(fields: [muscleId], references: [id])
 
   actionId Int
-  Action   Action @relation(fields: [actionId], references: [id])
+  Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
 
   @@id([actionId, muscleId])
 }
@@ -110,7 +110,7 @@ model ActionsOnMusclesStabilizer {
   Muscle   Muscle @relation(fields: [muscleId], references: [id])
 
   actionId Int
-  Action   Action @relation(fields: [actionId], references: [id])
+  Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
 
   @@id([actionId, muscleId])
 }
@@ -133,10 +133,10 @@ model Action {
   MusclesStabilizer ActionsOnMusclesStabilizer[]
 
   massId Int
-  Mass   ActionMass @relation(fields: [massId], references: [id])
+  Mass   ActionMass @relation(fields: [massId], references: [id], onDelete: Cascade)
 
   strengthId       Int
-  Strength         ActionStrength     @relation(fields: [strengthId], references: [id])
+  Strength         ActionStrength     @relation(fields: [strengthId], references: [id], onDelete: Cascade)
   TrainingExercise TrainingExercise[]
 
   rig ActionRig @default(OTHER)
@@ -146,7 +146,7 @@ model ActionMass {
   id Int @id @default(autoincrement())
 
   currentApproachGroupId Int
-  CurrentApproachGroup   ApproachesGroup @relation(fields: [currentApproachGroupId], references: [id])
+  CurrentApproachGroup   ApproachesGroup @relation(fields: [currentApproachGroupId], references: [id], onDelete: Cascade)
   Action                 Action[]
 }
 
@@ -154,7 +154,7 @@ model ActionStrength {
   id Int @id @default(autoincrement())
 
   currentApproachGroupId Int
-  CurrentApproachGroup   ApproachesGroup @relation(fields: [currentApproachGroupId], references: [id])
+  CurrentApproachGroup   ApproachesGroup @relation(fields: [currentApproachGroupId], references: [id], onDelete: Cascade)
   Action                 Action[]
 }
 
