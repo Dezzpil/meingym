@@ -104,6 +104,12 @@ model ActionsOnMusclesSynergy {
   @@id([actionId, muscleId])
 }
 
+enum ActionRig {
+  BLOCKS
+  BARBELL
+  OTHER
+}
+
 model Action {
   id Int @id @default(autoincrement())
 
@@ -121,7 +127,7 @@ model Action {
   Strength         ActionStrength     @relation(fields: [strengthId], references: [id])
   TrainingExercise TrainingExercise[]
 
-  withBlocks Boolean @default(false)
+  rig ActionRig @default(OTHER)
 }
 
 model ActionMass {

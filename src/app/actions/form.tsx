@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { ActionsFormFieldsType } from "@/app/actions/types";
 import { useState } from "react";
 import { handleCreate, handleUpdate } from "@/app/actions/actions";
+import { ActionRig } from "@prisma/client";
 
 type Props = {
   muscles: Array<Muscle & { Group: { title: string } }>;
@@ -114,10 +115,38 @@ export default function ActionsForm({ muscles, action }: Props) {
           <div className="form-check">
             <input
               className="form-check-input"
-              type="checkbox"
-              {...form.register("withBlocks")}
+              type="radio"
+              {...form.register("rig")}
+              value={ActionRig.BLOCKS}
+              id="withBlocks"
             />
-            <label className="form-check-label">Блочное?</label>
+            <label className="form-check-label" htmlFor="withBlocks">
+              Блочное
+            </label>
+          </div>
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="radio"
+              {...form.register("rig")}
+              value={ActionRig.BARBELL}
+              id="withBarbell"
+            />
+            <label className="form-check-label" htmlFor="withBarbell">
+              Со штангой
+            </label>
+          </div>
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="radio"
+              {...form.register("rig")}
+              value={ActionRig.OTHER}
+              id="other"
+            />
+            <label className="form-check-label" htmlFor="other">
+              Другое
+            </label>
           </div>
         </div>
 

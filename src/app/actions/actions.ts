@@ -4,7 +4,12 @@ import { ActionsFormFieldsType } from "@/app/actions/types";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/tools/db";
-import { ActionMass, ActionStrength, ApproachesGroup } from "@prisma/client";
+import {
+  ActionMass,
+  ActionRig,
+  ActionStrength,
+  ApproachesGroup,
+} from "@prisma/client";
 import { PrismaTransactionClient } from "@/tools/types";
 import {
   ApproachesMassDefault,
@@ -13,6 +18,7 @@ import {
 } from "@/lib/approaches";
 
 export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
+  console.log(data);
   const title = data.title;
   await prisma.action.update({
     where: { id },
@@ -36,7 +42,7 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
           }),
         },
       },
-      withBlocks: data.withBlocks,
+      rig: data.rig,
     },
   });
   revalidatePath(`/actions/${id}`);
@@ -67,14 +73,19 @@ async function createMass(tx: PrismaTransactionClient): Promise<ActionRelated> {
   return { group, purpose: strength };
 }
 
-function autoDefineRig(title: string): { withBlocks: boolean } {
+function autoDefineRig(title: string): ActionRig {
   const blocks = title.match(/тренаж|блок/iu);
-  return { withBlocks: blocks ? blocks.length > 0 : false };
+  if (blocks && blocks.length > 0) return ActionRig.BLOCKS;
+
+  const barbell = title.match(/штанг/iu);
+  if (barbell && barbell.length > 0) return ActionRig.BARBELL;
+
+  return ActionRig.OTHER;
 }
 
 export async function handleCreate(data: ActionsFormFieldsType) {
   const title = data.title;
-  const { withBlocks } = autoDefineRig(data.title);
+  const rig = autoDefineRig(data.title);
 
   const existed = await prisma.action.findFirst({ where: { title } });
   if (existed) {
@@ -103,7 +114,7 @@ export async function handleCreate(data: ActionsFormFieldsType) {
               }),
             },
           },
-          withBlocks,
+          rig,
         },
       });
     });
