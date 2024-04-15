@@ -53,5 +53,3 @@ export async function createApproachGroup(
     },
   });
 }
-
-export const MIN_BARBELL_WEIGHT = 1.25;

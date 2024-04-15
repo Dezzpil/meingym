@@ -4,11 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/tools/db";
 import { ExerciseAddFieldsType } from "@/app/trainings/exercises/types";
 import { ActionMass, ActionStrength } from "@prisma/client";
-import {
-  ApproachData,
-  createApproachGroup,
-  MIN_BARBELL_WEIGHT,
-} from "@/lib/approaches";
+import { ApproachData, createApproachGroup } from "@/lib/approaches";
 
 export async function handleAddExercise(
   trainingId: number,
@@ -21,10 +17,6 @@ export async function handleAddExercise(
       Strength: { include: { CurrentApproachGroup: true } },
     },
   });
-
-  // take current action approaches and increase weight with min barbell weight
-  // TODO think up about strategies of load progress, here the simplest one
-  // TODO define if action with barbell or dumbbell and use min weight for each corr.
 
   let approachGroupId: number;
   if (data.purpose === "MASS") {
@@ -42,7 +34,7 @@ export async function handleAddExercise(
   const approachUpgraded: ApproachData[] = [];
   for (const current of currentApproachGroup.Approaches) {
     approachUpgraded.push({
-      weight: current.weight + MIN_BARBELL_WEIGHT * 2,
+      weight: current.weight,
       count: current.count,
       priority: current.priority,
     });
