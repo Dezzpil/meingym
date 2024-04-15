@@ -80,3 +80,34 @@ async function checkAllExercisesCompletedAndCompleteTraining(id: number) {
     });
   }
 }
+
+export async function handleAddExecutionApproach(
+  trainingId: number,
+  exerciseId: number,
+): Promise<void> {
+  let plannedWeigth = 0;
+  let plannedCount = 0;
+  let priority = 1;
+  const lastExecution = await prisma.trainingExerciseExecution.findFirst({
+    where: { exerciseId },
+    orderBy: { priority: "desc" },
+  });
+  if (lastExecution) {
+    plannedWeigth = lastExecution.plannedWeigth;
+    plannedCount = lastExecution.plannedCount;
+    priority = lastExecution.priority + 1;
+  }
+  await prisma.trainingExerciseExecution.create({
+    data: {
+      exerciseId,
+      plannedWeigth,
+      plannedCount,
+      priority,
+      liftedCount: 0,
+      liftedWeight: 0,
+      approachId: null,
+    },
+  });
+
+  revalidatePath(`/trainings/${trainingId}/execute`);
+}

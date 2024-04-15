@@ -229,8 +229,8 @@ model TrainingExerciseExecution {
   exerciseId Int
   Exercise   TrainingExercise @relation(references: [id], fields: [exerciseId])
 
-  approachId Int
-  Approach   Approach @relation(references: [id], fields: [approachId])
+  approachId Int?
+  Approach   Approach? @relation(references: [id], fields: [approachId])
 
   plannedWeigth Float
   plannedCount  Int

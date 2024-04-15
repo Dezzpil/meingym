@@ -2,17 +2,19 @@
 
 import { useForm } from "react-hook-form";
 import ExerciseExecutionItem from "@/components/trainings/ExerciseExecutionItem";
-import React from "react";
+import React, { useCallback, useState } from "react";
 import type {
   TrainingExercise,
   TrainingExerciseExecution,
 } from "@prisma/client";
 import {
   countExerciseNonExecuted,
+  handleAddExecutionApproach,
   handleTrainingExerciseExecuted,
 } from "@/app/trainings/[id]/execute/actions";
 import moment from "moment";
 import { GrCheckmark } from "react-icons/gr";
+import { FaSpinner } from "react-icons/fa6";
 
 type Props = {
   exercise: TrainingExercise & {
@@ -36,6 +38,21 @@ export function TrainingExecuteForm({ exercise, disabled }: Props) {
         exercise.trainingId,
       );
   };
+  const [isAddingApproach, setAddingApproach] = useState<boolean>(false);
+  const [errorAddingApproach, setErrorAddingApproach] = useState<string | null>(
+    null,
+  );
+  const addApproach = useCallback(async () => {
+    setErrorAddingApproach(null);
+    setAddingApproach(true);
+    try {
+      await handleAddExecutionApproach(exercise.trainingId, exercise.id);
+    } catch (e: any) {
+      setErrorAddingApproach(e.message);
+    } finally {
+      setAddingApproach(false);
+    }
+  }, [exercise.id, exercise.trainingId]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -54,14 +71,24 @@ export function TrainingExecuteForm({ exercise, disabled }: Props) {
           Упражнение выполнено {moment(exercise.completedAt).fromNow()}
         </div>
       ) : (
-        <div className="d-flex justify-content-between gap-2">
-          <button type="button" disabled={disabled} className="btn btn-default">
-            Еще подход!
-          </button>
-          <button disabled={disabled} className="btn btn-light">
-            <GrCheckmark />
-          </button>
-        </div>
+        <>
+          <div className="d-flex justify-content-between gap-2">
+            <button
+              onClick={addApproach}
+              type="button"
+              disabled={isAddingApproach || disabled}
+              className="btn btn-default"
+            >
+              {isAddingApproach ? <FaSpinner /> : <span>Еще подход!</span>}
+            </button>
+            <button disabled={disabled} className="btn btn-light">
+              <GrCheckmark />
+            </button>
+          </div>
+          {errorAddingApproach && (
+            <div className="alert alert-danger">{errorAddingApproach}</div>
+          )}
+        </>
       )}
     </form>
   );
