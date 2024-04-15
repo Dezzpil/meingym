@@ -3,6 +3,8 @@
 import React, { ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import PackageJson from "../../package.json";
+
 type Props = {
   children: ReactNode;
 };
@@ -23,6 +25,14 @@ export function Layout({ children }: Props) {
 
           <a className="navbar-brand" href="/">
             💪 Ты в зале
+          </a>
+
+          <a
+            className="navbar-brand"
+            href="https://github.com/Dezzpil/meingym/blob/main/CHANGELOG.md"
+            target="_blank"
+          >
+            <span className="badge text-bg-primary">{PackageJson.version}</span>
           </a>
 
           <button
