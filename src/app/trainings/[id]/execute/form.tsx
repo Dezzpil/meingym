@@ -17,13 +17,14 @@ import { GrCheckmark } from "react-icons/gr";
 import { FaSpinner } from "react-icons/fa6";
 
 type Props = {
+  startedAt: Date | null;
   exercise: TrainingExercise & {
     TrainingExerciseExecution: TrainingExerciseExecution[];
   };
   disabled: boolean;
 };
 
-export function TrainingExecuteForm({ exercise, disabled }: Props) {
+export function TrainingExecuteForm({ startedAt, exercise, disabled }: Props) {
   const { register, handleSubmit } = useForm<any>();
   const onSubmit = async (data: any) => {
     let force = true;
@@ -67,9 +68,15 @@ export function TrainingExecuteForm({ exercise, disabled }: Props) {
         ))}
       </div>
       {exercise.completedAt ? (
-        <div className="alert alert-success mb-0">
-          Упражнение выполнено {moment(exercise.completedAt).fromNow()}
-        </div>
+        exercise.isPassed ? (
+          <div className="alert alert-warning mb-0">Упражнение пропущено</div>
+        ) : (
+          <div className="alert alert-success mb-0">
+            Упражнение выполнено в {moment(exercise.completedAt).format("H:mm")}{" "}
+            (+{moment(exercise.completedAt).diff(moment(startedAt), "second")}{" "}
+            сек.)
+          </div>
+        )
       ) : (
         <>
           <div className="d-flex justify-content-between gap-2">

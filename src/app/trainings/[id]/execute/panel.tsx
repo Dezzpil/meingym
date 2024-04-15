@@ -41,7 +41,12 @@ export function TrainingExecutePanel({ training }: Props) {
         {training.completedAt && (
           <div className="d-flex align-items-baseline justify-content-between">
             <span>
-              Тренировка завершена {moment(training.completedAt).fromNow()}!
+              Завершена в {moment(training.completedAt).format("H:mm")} (+
+              {moment(training.completedAt).diff(
+                moment(training.startedAt),
+                "minute",
+              )}{" "}
+              мин.)!
             </span>
           </div>
         )}

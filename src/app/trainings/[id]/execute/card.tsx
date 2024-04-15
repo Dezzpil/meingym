@@ -15,13 +15,14 @@ import { GrRun } from "react-icons/gr";
 import classNames from "classnames";
 import { FaSpinner } from "react-icons/fa6";
 type Props = {
+  startedAt: Date | null;
   exec: TrainingExercise & {
     Action: Action;
     TrainingExerciseExecution: TrainingExerciseExecution[];
   };
   disabled: boolean;
 };
-export function TrainingExecuteCard({ exec, disabled }: Props) {
+export function TrainingExecuteCard({ startedAt, exec, disabled }: Props) {
   const start = useCallback(async () => {
     await handleTrainingExerciseStart(exec.id, exec.trainingId);
   }, [exec]);
@@ -60,6 +61,7 @@ export function TrainingExecuteCard({ exec, disabled }: Props) {
       </div>
       <div className="card-body">
         <TrainingExecuteForm
+          startedAt={startedAt}
           exercise={exec}
           disabled={!exec.startedAt || !!exec.completedAt || disabled}
         />

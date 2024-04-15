@@ -77,6 +77,7 @@ export default async function TrainingExecutePage({ params }: ItemPageParams) {
       <TrainingExecutePanel training={training} />
       {training.TrainingExercise.map((e: TrainingExerciseType) => (
         <TrainingExecuteCard
+          startedAt={training.startedAt}
           exec={e}
           key={e.id}
           disabled={!training.startedAt || !!training.completedAt}
