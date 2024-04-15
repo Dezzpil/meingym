@@ -102,6 +102,7 @@ export default function ActionsForm({ muscles, action }: Props) {
             {...form.register("desc", { required: false })}
           />
         </div>
+
         <div className="mb-2">
           <label className="form-label">Сокращенное название</label>
           <input
@@ -109,6 +110,17 @@ export default function ActionsForm({ muscles, action }: Props) {
             {...form.register("alias", { required: false })}
           />
         </div>
+        <div className="d-flex gap-5 mb-2">
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              {...form.register("withBlocks")}
+            />
+            <label className="form-check-label">Блочное?</label>
+          </div>
+        </div>
+
         <div className="mb-2">
           <button className="btn btn-success" disabled={handling}>
             Сохранить

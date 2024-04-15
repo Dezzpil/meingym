@@ -120,6 +120,8 @@ model Action {
   strengthId       Int
   Strength         ActionStrength     @relation(fields: [strengthId], references: [id])
   TrainingExercise TrainingExercise[]
+
+  withBlocks Boolean @default(false)
 }
 
 model ActionMass {
