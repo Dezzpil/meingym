@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/Dezzpil/meingym/compare/v0.1.1...v0.1.2) (2024-04-15)
+
+
+### Features
+
+* возможность добавить подход во время выполнения тренировки ([7b193d7](https://github.com/Dezzpil/meingym/commits/7b193d7388c07786a45b297b0e216c8085079b65)), closes [t#33](https://github.com/Dezzpil/t/issues/33)
+* отображение пропущенных упражнение + тайминги выполнения ([ce901f9](https://github.com/Dezzpil/meingym/commits/ce901f946170b3413991940ad3568d988717bcaa))
+* убрать прибавление весов при сборе тренировки ([24cd88f](https://github.com/Dezzpil/meingym/commits/24cd88fe73094fc88a87bf87ee81e9cb3a26eda1))
+* удаление неиспользуемых движений ([f028311](https://github.com/Dezzpil/meingym/commits/f0283114ce03da1d31f098f155ec19faf493743b))
+
+
+### Bug Fixes
+
+* возможность указать дробный вес ([4914a58](https://github.com/Dezzpil/meingym/commits/4914a58b27a9a4e1f78afb13b6a761f6b66543ec)), closes [t#40](https://github.com/Dezzpil/t/issues/40)
+
 ### [0.1.1](https://github.com/Dezzpil/meingym/compare/v0.1.0...v0.1.1) (2024-04-15)
 
 
