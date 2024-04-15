@@ -70,7 +70,7 @@ export default function ExerciseExecutionItem({
         </span>
         <input
           type="number"
-          step="0.1"
+          step={0.5}
           className={classNames("form-control", {
             "text-success":
               exec.liftedWeight && exec.liftedWeight > exec.plannedWeigth,

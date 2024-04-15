@@ -41,6 +41,7 @@ export function ApproachesManagementElement({
           <input
             type="number"
             min={0}
+            step={0.5}
             className="form-control"
             defaultValue={elem.weight}
             id={`weight${elem.priority}`}
