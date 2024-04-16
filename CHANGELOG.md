@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.2.0](https://github.com/Dezzpil/meingym/compare/v0.1.2...v0.2.0) (2024-04-16)
+
+
+### ⚠ BREAKING CHANGES
+
+* test
+
+### Features
+
+* данные о тренировке и сокрытие редактирования упражнения для начатой тренировки ([a68d926](https://github.com/Dezzpil/meingym/commits/a68d92636926b6e5bab1ca8cbc1bbbac7ec052e3))
+* отображение групп мышц тренировки в списке ([409dd69](https://github.com/Dezzpil/meingym/commits/409dd698498c5ffea23d2af8e262a49d39af989f))
+
 ### [0.1.2](https://github.com/Dezzpil/meingym/compare/v0.1.1...v0.1.2) (2024-04-15)
 
 
