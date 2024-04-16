@@ -1,12 +1,51 @@
 import { prisma } from "@/tools/db";
 import Link from "next/link";
-import moment from "moment";
+import { TrainingListItem } from "@/app/trainings/listItem";
+
+type TrainingId = number;
+export type MuscleGroupTitleToExercisesCnt = Record<string, number>;
 
 export default async function TrainingsPage() {
   const trainings = await prisma.training.findMany({
-    include: { TrainingExercise: true },
+    include: {
+      TrainingExercise: {
+        include: {
+          Action: {
+            include: {
+              MusclesAgony: {
+                include: {
+                  Muscle: {
+                    include: {
+                      Group: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     orderBy: { plannedTo: "desc" },
   });
+
+  const groupsToTrainingsMap = new Map<
+    TrainingId,
+    MuscleGroupTitleToExercisesCnt
+  >();
+  for (const t of trainings) {
+    const counter: MuscleGroupTitleToExercisesCnt = {};
+    for (const e of t.TrainingExercise) {
+      for (const m of e.Action.MusclesAgony) {
+        const group = m.Muscle.Group.title;
+        if (!(group in counter)) {
+          counter[group] = 0;
+        }
+        counter[group] += 1;
+      }
+      groupsToTrainingsMap.set(t.id, counter);
+    }
+  }
 
   return (
     <>
@@ -30,32 +69,15 @@ export default async function TrainingsPage() {
           </thead>
           <tbody>
             {trainings.map((t) => (
-              <tr key={t.id}>
-                <td>{t.id}</td>
-                <td>
-                  <Link href={`/trainings/${t.id}`}>
-                    {moment(t.plannedTo).format("Y-M-D")}
-                  </Link>
-                </td>
-                <td>{t.TrainingExercise.length}</td>
-                <td></td>
-                <td></td>
-                <td>
-                  {t.startedAt && (
-                    <>
-                      <span>{moment(t.startedAt).format("Y-M-D H:mm")}</span>
-                      <span>&nbsp;&mdash;&nbsp;</span>
-                    </>
-                  )}
-                  {t.completedAt ? (
-                    <span className="text-success">
-                      +{moment(t.completedAt).diff(t.startedAt, "minute")} мин.
-                    </span>
-                  ) : (
-                    <span className="text-muted">...</span>
-                  )}
-                </td>
-              </tr>
+              <TrainingListItem
+                training={t}
+                key={t.id}
+                muscleGroupsCounts={
+                  groupsToTrainingsMap.get(
+                    t.id,
+                  ) as MuscleGroupTitleToExercisesCnt
+                }
+              />
             ))}
           </tbody>
         </table>
