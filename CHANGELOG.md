@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.1](https://github.com/Dezzpil/meingym/compare/v0.2.0...v0.2.1) (2024-04-16)
+
+
+### Features
+
+* группы по убыванию + сила/масса в списке ([a474e71](https://github.com/Dezzpil/meingym/commits/a474e719ab8e0470e85028477025d511eaea12dd)), closes [t#21](https://github.com/Dezzpil/t/issues/21)
+
 ## [0.2.0](https://github.com/Dezzpil/meingym/compare/v0.1.2...v0.2.0) (2024-04-16)
 
 
