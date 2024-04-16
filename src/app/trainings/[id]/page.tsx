@@ -22,6 +22,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
           Approaches: { orderBy: { priority: "asc" } },
         },
       },
+      TrainingExerciseExecution: true,
     },
     orderBy: { priority: "asc" },
   });
@@ -56,14 +57,19 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         <ul className="list-group mb-3">
           {exercises.map((e) => (
             <li className="list-group-item mb-3" key={e.id}>
-              <ExerciseItemControl e={e} />
+              <ExerciseItemControl
+                exercise={e}
+                canControl={!training.startedAt}
+              />
             </li>
           ))}
         </ul>
       ) : (
         <p>Упражнения еще не добавлены...</p>
       )}
-      <AddExerciseForm training={training} actions={actions} />
+      {!training.startedAt && (
+        <AddExerciseForm training={training} actions={actions} />
+      )}
     </>
   );
 }

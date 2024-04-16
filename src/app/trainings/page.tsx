@@ -23,6 +23,9 @@ export default async function TrainingsPage() {
               <th>ID</th>
               <th>Запланирована</th>
               <th>Упражнений</th>
+              <th>Группы</th>
+              <th>Сила / масса</th>
+              <th>Выполнение</th>
             </tr>
           </thead>
           <tbody>
@@ -35,6 +38,23 @@ export default async function TrainingsPage() {
                   </Link>
                 </td>
                 <td>{t.TrainingExercise.length}</td>
+                <td></td>
+                <td></td>
+                <td>
+                  {t.startedAt && (
+                    <>
+                      <span>{moment(t.startedAt).format("Y-M-D H:mm")}</span>
+                      <span>&nbsp;&mdash;&nbsp;</span>
+                    </>
+                  )}
+                  {t.completedAt ? (
+                    <span className="text-success">
+                      +{moment(t.completedAt).diff(t.startedAt, "minute")} мин.
+                    </span>
+                  ) : (
+                    <span className="text-muted">...</span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
