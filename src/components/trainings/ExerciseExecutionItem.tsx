@@ -22,13 +22,13 @@ export default function ExerciseExecutionItem({
   const [isCompleted, setCompleted] = useState<boolean>(!!exec.executedAt);
   const [waitForCompleted, setWaitForCompleted] = useState<boolean>(false);
 
-  const [liftedWeight, setLiftedWeight] = useState(0);
-  const [liftedCount, setLiftedCount] = useState(0);
+  const [liftedWeight, setLiftedWeight] = useState(exec.plannedWeigth);
+  const [liftedCount, setLiftedCount] = useState(exec.plannedCount);
 
   const complete = useCallback(() => {
     setWaitForCompleted(true);
     if (!isCompleted) {
-      postApi(`/api/trainings/exercise/complete?id=${exec.id}`, {
+      postApi(`/api/trainings/exercise/execution/complete?id=${exec.id}`, {
         id: exec.id,
         liftedWeight,
         liftedCount,
@@ -40,7 +40,7 @@ export default function ExerciseExecutionItem({
           setWaitForCompleted(false);
         });
     } else {
-      postApi(`/api/trainings/exercise/uncomplete?id=${exec.id}`, {
+      postApi(`/api/trainings/exercise/execution/uncomplete?id=${exec.id}`, {
         id: exec.id,
       })
         .then((data) => {
