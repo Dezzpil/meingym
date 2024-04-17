@@ -221,6 +221,9 @@ model TrainingExercise {
   Action   Action @relation(fields: [actionId], references: [id])
 
   isPassed Boolean @default(false)
+
+  liftedSum  Int   @default(0)
+  liftedMean Float @default(0.0)
 }
 
 model TrainingExerciseExecution {

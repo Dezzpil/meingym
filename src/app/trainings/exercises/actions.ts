@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/tools/db";
 import { ExerciseAddFieldsType } from "@/app/trainings/exercises/types";
 import { ActionMass, ActionStrength } from "@prisma/client";
-import { ApproachData, createApproachGroup } from "@/lib/approaches";
+import { ApproachData, createApproachGroup } from "@/core/approaches";
 
 export async function handleAddExercise(
   trainingId: number,

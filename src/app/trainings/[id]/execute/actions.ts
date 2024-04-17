@@ -2,6 +2,8 @@
 
 import { prisma } from "@/tools/db";
 import { revalidatePath } from "next/cache";
+import { SetData } from "@/core/types";
+import { calculateStats } from "@/core/stats";
 
 export async function handleTrainingStart(id: number) {
   await prisma.training.update({
@@ -53,17 +55,29 @@ export async function handleTrainingExerciseExecuted(
   trainingId: number,
 ) {
   await prisma.$transaction(async (tx) => {
-    await tx.trainingExercise.update({
-      where: { id },
-      data: { completedAt: new Date() },
-    });
     await tx.trainingExerciseExecution.updateMany({
       where: { exerciseId: id, executedAt: null },
       data: { isPassed: true },
     });
+
+    const executions = await tx.trainingExerciseExecution.findMany({
+      where: { isPassed: false },
+    });
+
+    const sets: SetData[] = executions.map((e) => {
+      return { weight: e.liftedWeight, count: e.liftedCount };
+    });
+    const { sum: liftedSum, mean: liftedMean } = calculateStats(sets);
+
+    await tx.trainingExercise.update({
+      where: { id },
+      data: { completedAt: new Date(), liftedSum, liftedMean },
+    });
   });
 
   await checkAllExercisesCompletedAndCompleteTraining(trainingId);
+
+  // пересоздадим подходы, из которых будет собираться следующая тренировка?
 
   revalidatePath(`/trainings/${id}/execute`);
 }

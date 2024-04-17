@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "TrainingExercise" ADD COLUMN     "liftedMean" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+ADD COLUMN     "liftedSum" INTEGER NOT NULL DEFAULT 0;

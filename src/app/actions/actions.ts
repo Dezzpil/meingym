@@ -15,7 +15,7 @@ import {
   ApproachesMassDefault,
   ApproachesStrengthDefault,
   createApproachGroup,
-} from "@/lib/approaches";
+} from "@/core/approaches";
 
 export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
   const title = data.title;
