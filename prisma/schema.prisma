@@ -20,9 +20,13 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  Weights   Weights[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Weights         Weights[]
+  ActionMass      ActionMass[]
+  ActionStrength  ActionStrength[]
+  ApproachesGroup ApproachesGroup[]
 }
 
 model Account {
@@ -132,14 +136,13 @@ model Action {
   MusclesSynergy    ActionsOnMusclesSynergy[]
   MusclesStabilizer ActionsOnMusclesStabilizer[]
 
-  massId Int
-  Mass   ActionMass @relation(fields: [massId], references: [id], onDelete: Cascade)
-
-  strengthId       Int
-  Strength         ActionStrength     @relation(fields: [strengthId], references: [id], onDelete: Cascade)
   TrainingExercise TrainingExercise[]
 
   rig ActionRig @default(OTHER)
+
+  ActionMass      ActionMass[]
+  ActionStrength  ActionStrength[]
+  ApproachesGroup ApproachesGroup[]
 }
 
 model ActionMass {
@@ -147,7 +150,12 @@ model ActionMass {
 
   currentApproachGroupId Int
   CurrentApproachGroup   ApproachesGroup @relation(fields: [currentApproachGroupId], references: [id], onDelete: Cascade)
-  Action                 Action[]
+
+  actionId Int
+  Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+
+  userId String
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ActionStrength {
@@ -155,7 +163,12 @@ model ActionStrength {
 
   currentApproachGroupId Int
   CurrentApproachGroup   ApproachesGroup @relation(fields: [currentApproachGroupId], references: [id], onDelete: Cascade)
-  Action                 Action[]
+
+  actionId Int
+  Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+
+  userId String
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ApproachesGroup {
@@ -171,6 +184,12 @@ model ApproachesGroup {
 
   Approaches       Approach[]
   TrainingExercise TrainingExercise[]
+
+  actionId Int
+  Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+
+  userId String
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Approach {
@@ -181,7 +200,7 @@ model Approach {
   count    Int
 
   groupId                   Int
-  Group                     ApproachesGroup             @relation(fields: [groupId], references: [id])
+  Group                     ApproachesGroup             @relation(fields: [groupId], references: [id], onDelete: Cascade)
   TrainingExerciseExecution TrainingExerciseExecution[]
 }
 
@@ -204,12 +223,12 @@ model TrainingExercise {
   id Int @id @default(autoincrement())
 
   trainingId Int
-  Training   Training @relation(references: [id], fields: [trainingId])
+  Training   Training @relation(references: [id], fields: [trainingId], onDelete: Cascade)
 
   priority Int @default(0)
 
   approachGroupId Int
-  ApproachGroup   ApproachesGroup @relation(references: [id], fields: [approachGroupId])
+  ApproachGroup   ApproachesGroup @relation(references: [id], fields: [approachGroupId], onDelete: Cascade)
 
   startedAt                 DateTime?
   completedAt               DateTime?
@@ -218,7 +237,7 @@ model TrainingExercise {
   purpose Purpose
 
   actionId Int
-  Action   Action @relation(fields: [actionId], references: [id])
+  Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
 
   isPassed Boolean @default(false)
 
@@ -230,10 +249,10 @@ model TrainingExerciseExecution {
   id Int @id @default(autoincrement())
 
   exerciseId Int
-  Exercise   TrainingExercise @relation(references: [id], fields: [exerciseId])
+  Exercise   TrainingExercise @relation(references: [id], fields: [exerciseId], onDelete: Cascade)
 
   approachId Int?
-  Approach   Approach? @relation(references: [id], fields: [approachId])
+  Approach   Approach? @relation(references: [id], fields: [approachId], onDelete: Cascade)
 
   plannedWeigth Float
   plannedCount  Int
@@ -250,5 +269,5 @@ model Weights {
   title  String
   value  Float
   userId String
-  user   User   @relation(references: [id], fields: [userId])
+  user   User   @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
