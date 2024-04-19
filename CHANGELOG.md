@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/Dezzpil/meingym/compare/v0.2.1...v0.3.0) (2024-04-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* переделал схему для связи прогрессии и пользователя
+* связь пользователей с их настройками занятий и подходами, wip
+* рефакторинг кор-логики
+
+### Features
+
+* движение с гантелей ([feba802](https://github.com/Dezzpil/meingym/commits/feba802754a54036976a8797ac46508292ef30a0))
+* настройки походов обновляются при завершении тренировки ([7513037](https://github.com/Dezzpil/meingym/commits/751303798ce38138d139b1de86ebb422db48296d))
+* подготовка к миграции новой схемы ([f751edd](https://github.com/Dezzpil/meingym/commits/f751edd2a345cb8fabab7ffcc05b49b209d2dd31))
+* реорганизация схемы хранения данных ([4e391c5](https://github.com/Dezzpil/meingym/commits/4e391c555229ee3d246fafee0b4c74d452638908))
+* сохраняется статистика по выполнению ([41e9947](https://github.com/Dezzpil/meingym/commits/41e994714b69bcbf100ce385920ea116461fd6fa))
+
+
+### Bug Fixes
+
+* неправильно сохраняются данные о выполнении ([5a675df](https://github.com/Dezzpil/meingym/commits/5a675dfd4841cf5bd9a0176d570ff73cf842b1aa)), closes [t#44](https://github.com/Dezzpil/t/issues/44)
+
 ### [0.2.1](https://github.com/Dezzpil/meingym/compare/v0.2.0...v0.2.1) (2024-04-16)
 
 
