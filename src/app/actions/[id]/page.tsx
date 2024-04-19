@@ -9,6 +9,7 @@ import type {
   ApproachesGroup,
 } from "@prisma/client";
 import { ActionControl } from "@/app/actions/[id]/control";
+import { getCurrentUserId } from "@/tools/auth";
 
 type PageParams = {
   params: { id: string };
@@ -16,13 +17,20 @@ type PageParams = {
 
 export default async function ActionPage({ params }: PageParams) {
   const id = parseInt(params.id);
+  const userId = await getCurrentUserId();
   const action = await prisma.action.findUniqueOrThrow({
     where: { id },
     include: {
-      Mass: {
-        include: { CurrentApproachGroup: { include: { Approaches: true } } },
+      ActionMass: {
+        where: { userId },
+        take: 1,
+        include: {
+          CurrentApproachGroup: { include: { Approaches: true } },
+        },
       },
-      Strength: {
+      ActionStrength: {
+        where: { userId },
+        take: 1,
         include: { CurrentApproachGroup: { include: { Approaches: true } } },
       },
       MusclesSynergy: true,
@@ -33,10 +41,10 @@ export default async function ActionPage({ params }: PageParams) {
   });
   const muscles = await prisma.muscle.findMany({ include: { Group: true } });
 
-  const strength = action.Strength as ActionStrength & {
+  const strength = action.ActionStrength[0] as ActionStrength & {
     CurrentApproachGroup: ApproachesGroup & { Approaches: Approach[] };
   };
-  const mass = action.Mass as ActionMass & {
+  const mass = action.ActionMass[0] as ActionMass & {
     CurrentApproachGroup: ApproachesGroup & { Approaches: Approach[] };
   };
 
@@ -55,6 +63,7 @@ export default async function ActionPage({ params }: PageParams) {
             <ApproachesManagement
               create={{ purpose: "STRENGTH", actionPurposeId: strength.id }}
               approaches={strength.CurrentApproachGroup.Approaches}
+              actionId={action.id}
             />
           </div>
         )}
@@ -64,6 +73,7 @@ export default async function ActionPage({ params }: PageParams) {
             <ApproachesManagement
               create={{ purpose: "MASS", actionPurposeId: mass.id }}
               approaches={mass.CurrentApproachGroup.Approaches}
+              actionId={action.id}
             />
           </div>
         )}

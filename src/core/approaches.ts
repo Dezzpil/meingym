@@ -1,5 +1,5 @@
 import { PrismaTransactionClient } from "@/tools/types";
-import type { ApproachesGroup } from "@prisma/client";
+import type { ApproachesGroup, Purpose } from "@prisma/client";
 import { SetData } from "@/core/types";
 import { calculateStats } from "@/core/stats";
 
@@ -23,6 +23,8 @@ export const ApproachesMassDefault: ApproachData[] = [
 export async function createApproachGroup(
   tx: PrismaTransactionClient,
   approaches: ApproachData[],
+  actionId: number,
+  userId: string,
 ): Promise<ApproachesGroup> {
   const given = approaches.length ? approaches : ApproachesStrengthDefault;
   const { count, sum, mean } = calculateStats(given);
@@ -36,6 +38,34 @@ export async function createApproachGroup(
           data: given,
         },
       },
+      actionId,
+      userId,
     },
   });
+}
+
+export async function linkNewApproachGroupToActionByPurpose(
+  tx: PrismaTransactionClient,
+  purpose: Purpose,
+  purposeId: number,
+  newGroup: ApproachesGroup,
+) {
+  switch (purpose) {
+    case "MASS": {
+      await tx.actionMass.update({
+        where: { id: purposeId },
+        data: { currentApproachGroupId: newGroup.id },
+      });
+      console.log(`actionMass updated with approachGroup ${newGroup.id}`);
+      break;
+    }
+    case "STRENGTH": {
+      await tx.actionStrength.update({
+        where: { id: purposeId },
+        data: { currentApproachGroupId: newGroup.id },
+      });
+      console.log(`actionStrength updated with approachGroup ${newGroup.id}`);
+      break;
+    }
+  }
 }

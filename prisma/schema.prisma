@@ -27,6 +27,7 @@ model User {
   ActionMass      ActionMass[]
   ActionStrength  ActionStrength[]
   ApproachesGroup ApproachesGroup[]
+  Training        Training[]
 }
 
 model Account {
@@ -204,6 +205,11 @@ model Approach {
   TrainingExerciseExecution TrainingExerciseExecution[]
 }
 
+enum Purpose {
+  MASS
+  STRENGTH
+}
+
 model Training {
   id Int @id @default(autoincrement())
 
@@ -212,11 +218,9 @@ model Training {
   startedAt        DateTime?
   completedAt      DateTime?
   TrainingExercise TrainingExercise[]
-}
 
-enum Purpose {
-  MASS
-  STRENGTH
+  userId String
+  User   User   @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
 
 model TrainingExercise {
@@ -234,7 +238,8 @@ model TrainingExercise {
   completedAt               DateTime?
   TrainingExerciseExecution TrainingExerciseExecution[]
 
-  purpose Purpose
+  purpose   Purpose
+  purposeId Int // ActionMass.id | ActionStrength.id
 
   actionId Int
   Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)

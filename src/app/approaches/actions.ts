@@ -4,18 +4,12 @@ import { ApproachLiftData } from "@/app/approaches/types";
 import { prisma } from "@/tools/db";
 import type { Purpose } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-
-function calculateStats(data: Array<ApproachLiftData>) {
-  const count = data.length;
-  let sum = 0,
-    mean = 0;
-  for (const a of data) {
-    sum += a.weight * a.count;
-    mean += a.weight / a.count;
-  }
-  mean = mean / count;
-  return { count, sum, mean };
-}
+import { getCurrentUserId } from "@/tools/auth";
+import {
+  createApproachGroup,
+  linkNewApproachGroupToActionByPurpose,
+} from "@/core/approaches";
+import { calculateStats } from "@/core/stats";
 
 export async function handleUpdateApproachGroup(
   id: number,
@@ -23,7 +17,6 @@ export async function handleUpdateApproachGroup(
   trainingId?: number,
 ) {
   const stats = calculateStats(data);
-
   await prisma.$transaction(async (tx) => {
     const approachesData = data.map((d) => Object.assign(d, { groupId: id }));
     await tx.approach.deleteMany({ where: { groupId: id } });
@@ -42,36 +35,17 @@ export async function handleCreateNewApproachesGroup(
   purpose: Purpose,
   purposeId: number,
   data: Array<ApproachLiftData>,
+  actionId: number,
 ) {
-  const stats = calculateStats(data);
+  const userId = await getCurrentUserId();
+
   await prisma.$transaction(async (tx) => {
-    const newGroup = await tx.approachesGroup.create({
-      data: {
-        count: stats.count,
-        sum: stats.sum,
-        mean: stats.mean,
-        Approaches: {
-          createMany: {
-            data,
-          },
-        },
-      },
-    });
-    switch (purpose) {
-      case "MASS": {
-        await tx.actionMass.update({
-          where: { id: purposeId },
-          data: { currentApproachGroupId: newGroup.id },
-        });
-        break;
-      }
-      case "STRENGTH": {
-        await tx.actionStrength.update({
-          where: { id: purposeId },
-          data: { currentApproachGroupId: newGroup.id },
-        });
-        break;
-      }
-    }
+    const newGroup = await createApproachGroup(tx, data, actionId, userId);
+    await linkNewApproachGroupToActionByPurpose(
+      tx,
+      purpose,
+      purposeId,
+      newGroup,
+    );
   });
 }

@@ -102,8 +102,8 @@ export default function ExerciseItemControl({ exercise, canControl }: Props) {
                   ))}
                 </div>
                 <div className="d-flex gap-3 mb-2 text-muted small">
-                  <span>Σ кг: 0</span>
-                  <span>÷ кг: 0</span>
+                  <span>Σ кг: {exercise.liftedSum}</span>
+                  <span>÷ кг: {exercise.liftedMean}</span>
                 </div>
               </div>
             </>
@@ -118,6 +118,7 @@ export default function ExerciseItemControl({ exercise, canControl }: Props) {
             trainingId: exercise.trainingId,
           }}
           approaches={exercise.ApproachGroup.Approaches}
+          actionId={exercise.actionId}
         />
       </div>
     </div>

@@ -39,7 +39,9 @@ export default async function TrainingPage({ params }: ItemPageParams) {
       {training.startedAt && (
         <div className="alert alert-primary">
           {training.startedAt && (
-            <div>Тренировка начата в {moment(training.startedAt).format()}</div>
+            <div>
+              Тренировка начата в {moment(training.startedAt).format("H:mm")}
+            </div>
           )}
           {training.completedAt && (
             <div>
@@ -69,6 +71,11 @@ export default async function TrainingPage({ params }: ItemPageParams) {
       )}
       {!training.startedAt && (
         <AddExerciseForm training={training} actions={actions} />
+      )}
+      {training.completedAt && (
+        <div>
+          <TrainingChangeDateForm training={training} />
+        </div>
       )}
     </>
   );

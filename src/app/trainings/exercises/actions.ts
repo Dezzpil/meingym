@@ -4,53 +4,47 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/tools/db";
 import { ExerciseAddFieldsType } from "@/app/trainings/exercises/types";
 import { ActionMass, ActionStrength } from "@prisma/client";
-import { ApproachData, createApproachGroup } from "@/core/approaches";
+import { getCurrentUserId } from "@/tools/auth";
 
 export async function handleAddExercise(
   trainingId: number,
   data: ExerciseAddFieldsType,
 ) {
+  const userId = await getCurrentUserId();
   const action = await prisma.action.findUniqueOrThrow({
     where: { id: data.actionId },
     include: {
-      Mass: { include: { CurrentApproachGroup: true } },
-      Strength: { include: { CurrentApproachGroup: true } },
+      ActionMass: {
+        where: { userId },
+        take: 1,
+        include: { CurrentApproachGroup: true },
+      },
+      ActionStrength: {
+        where: { userId },
+        take: 1,
+        include: { CurrentApproachGroup: true },
+      },
     },
   });
 
-  let approachGroupId: number;
+  let purpose: ActionMass | ActionStrength;
   if (data.purpose === "MASS") {
-    approachGroupId = (action.Mass as ActionMass).currentApproachGroupId;
+    purpose = action.ActionMass[0] as ActionMass;
   } else {
-    approachGroupId = (action.Strength as ActionStrength)
-      .currentApproachGroupId;
-  }
-
-  const currentApproachGroup = await prisma.approachesGroup.findUniqueOrThrow({
-    where: { id: approachGroupId },
-    include: { Approaches: true },
-  });
-
-  const approachUpgraded: ApproachData[] = [];
-  for (const current of currentApproachGroup.Approaches) {
-    approachUpgraded.push({
-      weight: current.weight,
-      count: current.count,
-      priority: current.priority,
-    });
+    purpose = action.ActionStrength[0] as ActionStrength;
   }
 
   prisma.$transaction(async (tx) => {
-    const approachGroup = await createApproachGroup(tx, approachUpgraded);
     const exercisesCount = await tx.trainingExercise.count({
       where: { trainingId },
     });
     await tx.trainingExercise.create({
       data: {
         trainingId,
+        purposeId: purpose.id,
         purpose: data.purpose,
         priority: exercisesCount + 1,
-        approachGroupId: approachGroup.id,
+        approachGroupId: purpose.currentApproachGroupId,
         actionId: data.actionId,
       },
     });

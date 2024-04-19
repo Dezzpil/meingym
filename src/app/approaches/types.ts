@@ -3,5 +3,3 @@ export type ApproachLiftData = {
   count: number;
   priority: number;
 };
-
-export type ApproachGroupPurpose = "mass" | "strength";

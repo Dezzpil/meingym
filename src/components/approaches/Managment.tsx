@@ -21,9 +21,15 @@ type Props = {
     trainingId: number;
   };
   approaches: Approach[];
+  actionId: number;
 };
 
-export function ApproachesManagement({ create, update, approaches }: Props) {
+export function ApproachesManagement({
+  create,
+  update,
+  approaches,
+  actionId,
+}: Props) {
   const [preprocessed, setPreprocessed] = useState<boolean>(false);
   const [data, setData] = useState<ApproachLiftData[]>([]);
   const [sum, setSum] = useState<number>(0);
@@ -97,6 +103,7 @@ export function ApproachesManagement({ create, update, approaches }: Props) {
             create.purpose,
             create.actionPurposeId,
             data,
+            actionId,
           );
         }
         if (update) {

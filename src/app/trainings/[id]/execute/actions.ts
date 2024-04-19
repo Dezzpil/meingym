@@ -4,6 +4,13 @@ import { prisma } from "@/tools/db";
 import { revalidatePath } from "next/cache";
 import { SetData } from "@/core/types";
 import { calculateStats } from "@/core/stats";
+import {
+  createApproachGroup,
+  linkNewApproachGroupToActionByPurpose,
+} from "@/core/approaches";
+import { PrismaTransactionClient } from "@/tools/types";
+import { TrainingExercise, TrainingExerciseExecution } from "@prisma/client";
+import { ApproachLiftData } from "@/app/approaches/types";
 
 export async function handleTrainingStart(id: number) {
   await prisma.training.update({
@@ -31,12 +38,16 @@ export async function handleTrainingExercisePass(
   await prisma.$transaction(async (tx) => {
     await tx.trainingExercise.update({
       where: { id },
-      // @ts-ignore
       data: { startedAt: new Date(), completedAt: new Date(), isPassed: true },
     });
   });
 
-  await checkAllExercisesCompletedAndCompleteTraining(trainingId);
+  await prisma.$transaction(async (tx) => {
+    if (await checkAllExercisesCompletedAndCompleteTraining(trainingId, tx)) {
+      console.log(`training ${trainingId} completed`);
+      await createNewApproachGroupsAndLinkThem(trainingId, tx);
+    }
+  });
 
   revalidatePath(`/trainings/${trainingId}/execute`);
 }
@@ -50,13 +61,13 @@ export async function countExerciseNonExecuted(
 }
 
 export async function handleTrainingExerciseExecuted(
-  id: number,
+  exerciseId: number,
   data: Record<string, { liftedCount: number; liftedWeight: number }>,
   trainingId: number,
 ) {
   await prisma.$transaction(async (tx) => {
     await tx.trainingExerciseExecution.updateMany({
-      where: { exerciseId: id, executedAt: null },
+      where: { exerciseId, executedAt: null },
       data: { isPassed: true },
     });
 
@@ -70,29 +81,78 @@ export async function handleTrainingExerciseExecuted(
     const { sum: liftedSum, mean: liftedMean } = calculateStats(sets);
 
     await tx.trainingExercise.update({
-      where: { id },
+      where: { id: exerciseId },
       data: { completedAt: new Date(), liftedSum, liftedMean },
     });
+
+    console.log(`update lifted stats for exercise ${exerciseId}`);
   });
 
-  await checkAllExercisesCompletedAndCompleteTraining(trainingId);
+  await prisma.$transaction(async (tx) => {
+    if (await checkAllExercisesCompletedAndCompleteTraining(trainingId, tx)) {
+      console.log(`training ${trainingId} completed`);
+      await createNewApproachGroupsAndLinkThem(trainingId, tx);
+    }
+  });
 
-  // пересоздадим подходы, из которых будет собираться следующая тренировка?
-
-  revalidatePath(`/trainings/${id}/execute`);
+  revalidatePath(`/trainings/${exerciseId}/execute`);
 }
 
-async function checkAllExercisesCompletedAndCompleteTraining(id: number) {
+async function createNewApproachGroupsAndLinkThem(
+  trainingId: number,
+  tx: PrismaTransactionClient,
+) {
+  const training = await tx.training.findUniqueOrThrow({
+    where: { id: trainingId },
+    include: {
+      TrainingExercise: { include: { TrainingExerciseExecution: true } },
+    },
+  });
+  // пересоздадим подходы, из которых будет собираться следующая тренировка?
+  for (const e of training.TrainingExercise) {
+    const exercise = e as TrainingExercise & {
+      TrainingExerciseExecution: TrainingExerciseExecution[];
+    };
+    const setsData: ApproachLiftData[] = exercise.TrainingExerciseExecution.map(
+      (e) => {
+        return {
+          priority: e.priority,
+          count: e.liftedCount,
+          weight: e.liftedWeight,
+        };
+      },
+    );
+    const approachGroupFromExecution = await createApproachGroup(
+      tx,
+      setsData,
+      exercise.actionId,
+      training.userId,
+    );
+    await linkNewApproachGroupToActionByPurpose(
+      tx,
+      exercise.purpose,
+      exercise.purposeId,
+      approachGroupFromExecution,
+    );
+  }
+}
+
+async function checkAllExercisesCompletedAndCompleteTraining(
+  id: number,
+  tx: PrismaTransactionClient,
+): Promise<boolean> {
   const exercises = await prisma.trainingExercise.findMany({
     where: { trainingId: id },
   });
   const notCompleted = exercises.filter((e) => !e.completedAt);
   if (notCompleted.length === 0) {
-    await prisma.training.update({
+    await tx.training.update({
       where: { id },
       data: { completedAt: new Date() },
     });
+    return true;
   }
+  return false;
 }
 
 export async function handleAddExecutionApproach(

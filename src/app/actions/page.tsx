@@ -1,13 +1,21 @@
 import Link from "next/link";
 import { prisma } from "@/tools/db";
+import { getCurrentUserId } from "@/tools/auth";
 
 export default async function ActionsPage() {
+  const userId = await getCurrentUserId();
   const actions = await prisma.action.findMany({
     include: {
-      Mass: {
-        include: { CurrentApproachGroup: { include: { Approaches: true } } },
+      ActionMass: {
+        where: { userId },
+        take: 1,
+        include: {
+          CurrentApproachGroup: { include: { Approaches: true } },
+        },
       },
-      Strength: {
+      ActionStrength: {
+        where: { userId },
+        take: 1,
         include: { CurrentApproachGroup: { include: { Approaches: true } } },
       },
       MusclesAgony: { include: { Muscle: { include: { Group: true } } } },
@@ -66,43 +74,43 @@ export default async function ActionsPage() {
                   </div>
                 </td>
                 <td>
-                  {a.Strength.CurrentApproachGroup ? (
-                    a.Strength.CurrentApproachGroup.count
+                  {a.ActionStrength[0].CurrentApproachGroup ? (
+                    a.ActionStrength[0].CurrentApproachGroup.count
                   ) : (
                     <span>&mdash;</span>
                   )}
                 </td>
                 <td>
-                  {a.Strength.CurrentApproachGroup ? (
-                    a.Strength.CurrentApproachGroup.sum
+                  {a.ActionStrength[0].CurrentApproachGroup ? (
+                    a.ActionStrength[0].CurrentApproachGroup.sum
                   ) : (
                     <span>&mdash;</span>
                   )}
                 </td>
                 <td>
-                  {a.Strength.CurrentApproachGroup ? (
-                    a.Strength.CurrentApproachGroup.mean.toPrecision(3)
+                  {a.ActionStrength[0].CurrentApproachGroup ? (
+                    a.ActionStrength[0].CurrentApproachGroup.mean.toPrecision(3)
                   ) : (
                     <span>&mdash;</span>
                   )}
                 </td>
                 <td>
-                  {a.Mass.CurrentApproachGroup ? (
-                    a.Mass.CurrentApproachGroup.count
+                  {a.ActionMass[0].CurrentApproachGroup ? (
+                    a.ActionMass[0].CurrentApproachGroup.count
                   ) : (
                     <span>&mdash;</span>
                   )}
                 </td>
                 <td>
-                  {a.Mass.CurrentApproachGroup ? (
-                    a.Mass.CurrentApproachGroup.sum
+                  {a.ActionMass[0].CurrentApproachGroup ? (
+                    a.ActionMass[0].CurrentApproachGroup.sum
                   ) : (
                     <span>&mdash;</span>
                   )}
                 </td>
                 <td>
-                  {a.Mass.CurrentApproachGroup ? (
-                    a.Mass.CurrentApproachGroup.mean.toPrecision(3)
+                  {a.ActionMass[0].CurrentApproachGroup ? (
+                    a.ActionMass[0].CurrentApproachGroup.mean.toPrecision(3)
                   ) : (
                     <span>&mdash;</span>
                   )}

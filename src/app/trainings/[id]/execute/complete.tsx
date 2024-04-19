@@ -10,8 +10,12 @@ export function TrainingExecuteComplete({ training }: Props) {
   return (
     training.completedAt && (
       <div className="alert alert-success">
-        <span></span>
-        Тренировка была завершена {moment(training.completedAt).fromNow()}
+        Завершена в {moment(training.completedAt).format("H:mm")} (+
+        {moment(training.completedAt).diff(
+          moment(training.startedAt),
+          "minute",
+        )}{" "}
+        мин.)!
       </div>
     )
   );

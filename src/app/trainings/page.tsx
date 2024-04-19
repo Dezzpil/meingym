@@ -2,13 +2,16 @@ import { prisma } from "@/tools/db";
 import Link from "next/link";
 import { TrainingListItem } from "@/app/trainings/listItem";
 import { Purpose } from "@prisma/client";
+import { getCurrentUserId } from "@/tools/auth";
 
 type TrainingId = number;
 export type MuscleGroupTitleToExercisesCnt = Record<string, number>;
 export type ActionPurposeCnt = Record<"MASS" | "STRENGTH", number>;
 
 export default async function TrainingsPage() {
+  const userId = await getCurrentUserId();
   const trainings = await prisma.training.findMany({
+    where: { userId },
     include: {
       TrainingExercise: {
         include: {
