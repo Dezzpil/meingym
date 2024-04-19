@@ -165,6 +165,18 @@ export default function ActionsForm({ muscles, action }: Props) {
               className="form-check-input"
               type="radio"
               {...form.register("rig")}
+              value={ActionRig.DUMBBELL}
+              id="withDumbbell"
+            />
+            <label className="form-check-label" htmlFor="withDumbbell">
+              С гантелей
+            </label>
+          </div>
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="radio"
+              {...form.register("rig")}
               value={ActionRig.OTHER}
               id="other"
             />

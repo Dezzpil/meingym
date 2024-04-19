@@ -111,6 +111,9 @@ function autoDefineRig(title: string): ActionRig {
   const barbell = title.match(/штанг/iu);
   if (barbell && barbell.length > 0) return ActionRig.BARBELL;
 
+  const dumbbell = title.match(/гантел/iu);
+  if (dumbbell && dumbbell.length > 0) return ActionRig.DUMBBELL;
+
   return ActionRig.OTHER;
 }
 

@@ -123,6 +123,7 @@ model ActionsOnMusclesStabilizer {
 enum ActionRig {
   BLOCKS
   BARBELL
+  DUMBBELL
   OTHER
 }
 
