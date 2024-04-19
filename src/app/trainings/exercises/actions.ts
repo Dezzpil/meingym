@@ -3,53 +3,17 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/tools/db";
 import { ExerciseAddFieldsType } from "@/app/trainings/exercises/types";
-import { ActionMass, ActionStrength } from "@prisma/client";
 import { getCurrentUserId } from "@/tools/auth";
+import { createExercise } from "@/core/exercises";
 
 export async function handleAddExercise(
   trainingId: number,
   data: ExerciseAddFieldsType,
 ) {
   const userId = await getCurrentUserId();
-  const action = await prisma.action.findUniqueOrThrow({
-    where: { id: data.actionId },
-    include: {
-      ActionMass: {
-        where: { userId },
-        take: 1,
-        include: { CurrentApproachGroup: true },
-      },
-      ActionStrength: {
-        where: { userId },
-        take: 1,
-        include: { CurrentApproachGroup: true },
-      },
-    },
+  await prisma.$transaction(async (tx) => {
+    await createExercise(trainingId, data.actionId, data.purpose, userId, tx);
   });
-
-  let purpose: ActionMass | ActionStrength;
-  if (data.purpose === "MASS") {
-    purpose = action.ActionMass[0] as ActionMass;
-  } else {
-    purpose = action.ActionStrength[0] as ActionStrength;
-  }
-
-  prisma.$transaction(async (tx) => {
-    const exercisesCount = await tx.trainingExercise.count({
-      where: { trainingId },
-    });
-    await tx.trainingExercise.create({
-      data: {
-        trainingId,
-        purposeId: purpose.id,
-        purpose: data.purpose,
-        priority: exercisesCount + 1,
-        approachGroupId: purpose.currentApproachGroupId,
-        actionId: data.actionId,
-      },
-    });
-  });
-
   revalidatePath(`/trainings/${trainingId}`);
 }
 

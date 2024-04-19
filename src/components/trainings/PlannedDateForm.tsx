@@ -14,7 +14,7 @@ export function TrainingPlannedDateForm({
   btnTitle,
 }: Props) {
   return (
-    <form className="row g-2 mb-3" onSubmit={submit}>
+    <form className="row g-2" onSubmit={submit}>
       <div className="col-auto">
         <label className="visually-hidden">Дата занятия</label>
         <input
@@ -24,7 +24,7 @@ export function TrainingPlannedDateForm({
         />
       </div>
       <div className="col-auto">
-        <button className="btn btn-success" disabled={handling}>
+        <button className="btn btn-primary" disabled={handling}>
           {btnTitle ? btnTitle : "Назначить"}
         </button>
       </div>

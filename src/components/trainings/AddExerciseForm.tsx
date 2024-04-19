@@ -25,9 +25,8 @@ export default function AddExerciseForm({ training, actions }: Props) {
 
   return (
     <>
-      <form className="mb-3 row" onSubmit={submit}>
-        <div className="col-auto">
-          <label className="visually-hidden">Упражнение</label>
+      <form className="mb-3 d-flex gap-2" onSubmit={submit}>
+        <div className="">
           <select
             className="form-control"
             {...form.register("actionId", { valueAsNumber: true })}
@@ -39,14 +38,13 @@ export default function AddExerciseForm({ training, actions }: Props) {
             ))}
           </select>
         </div>
-        <div className="col-auto">
-          <label className="visually-hidden">Цель</label>
+        <div className="">
           <select className="form-control" {...form.register("purpose")}>
             <option value={Purpose.STRENGTH}>На силу</option>
             <option value={Purpose.MASS}>На массу</option>
           </select>
         </div>
-        <div className="col-auto">
+        <div className="">
           <button className="btn btn-primary">
             <BiPlus />
           </button>

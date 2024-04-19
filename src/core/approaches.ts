@@ -26,6 +26,7 @@ export async function createApproachGroup(
   actionId: number,
   userId: string,
 ): Promise<ApproachesGroup> {
+  console.log(approaches);
   const given = approaches.length ? approaches : ApproachesStrengthDefault;
   const { count, sum, mean } = calculateStats(given);
   return tx.approachesGroup.create({

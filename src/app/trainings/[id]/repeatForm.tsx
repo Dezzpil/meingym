@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { TrainingRepeatFormFieldsType } from "@/app/trainings/types";
 import { useState } from "react";
 import { TrainingPlannedDateForm } from "@/components/trainings/PlannedDateForm";
-import { handleChangeTrainingDate } from "@/app/trainings/[id]/actions";
+import { handleRepeatTraining } from "@/app/trainings/[id]/actions";
 
 type Props = {
   training: Training;
@@ -23,7 +23,7 @@ export function TrainingRepeatForm({ training }: Props) {
     setHandling(true);
     setError(null);
     try {
-      await handleChangeTrainingDate(training.id, data);
+      await handleRepeatTraining(training.id, data);
     } catch (e: any) {
       setError(e.message);
     }
@@ -36,7 +36,7 @@ export function TrainingRepeatForm({ training }: Props) {
       handling={handling}
       error={error}
       register={form.register}
-      btnTitle="Перенести"
+      btnTitle="Запланировать повторение"
     />
   );
 }

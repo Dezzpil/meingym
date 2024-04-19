@@ -5,8 +5,10 @@ export function calculateStats(setsData: Array<SetData>): SetsStats {
   let sum = 0,
     mean = 0;
   for (const a of setsData) {
-    sum += a.weight * a.count;
-    mean += a.weight / a.count;
+    if (a.weight * a.count > 0) {
+      sum += a.weight * a.count;
+      mean += a.weight / a.count;
+    }
   }
   mean = mean / count;
   return { count, sum, mean };

@@ -113,15 +113,17 @@ async function createNewApproachGroupsAndLinkThem(
     const exercise = e as TrainingExercise & {
       TrainingExerciseExecution: TrainingExerciseExecution[];
     };
-    const setsData: ApproachLiftData[] = exercise.TrainingExerciseExecution.map(
-      (e) => {
+    // игнорируем пропущенные подходы или подходы с 0 нагрузкой
+    const setsData: ApproachLiftData[] =
+      exercise.TrainingExerciseExecution.filter(
+        (e) => !e.isPassed && e.liftedCount * e.liftedWeight > 0,
+      ).map((e) => {
         return {
           priority: e.priority,
           count: e.liftedCount,
           weight: e.liftedWeight,
         };
-      },
-    );
+      });
     const approachGroupFromExecution = await createApproachGroup(
       tx,
       setsData,

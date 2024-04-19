@@ -6,6 +6,7 @@ import ExerciseItemControl from "@/components/trainings/ExerciseItemControl";
 import type { Training } from "@prisma/client";
 import moment from "moment";
 import { TrainingChangeDateForm } from "@/app/trainings/[id]/changeDateForm";
+import { TrainingRepeatForm } from "@/app/trainings/[id]/repeatForm";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
@@ -29,7 +30,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
   return (
     <>
       <header className="mb-3">
-        <h3>Тренировка {moment(training.plannedTo).format("Y-M-D")}</h3>
+        <h3>Тренировка {moment(training.plannedTo).format("Y-MM-DD")}</h3>
         {!training.startedAt && (
           <div>
             <TrainingChangeDateForm training={training} />
@@ -72,11 +73,18 @@ export default async function TrainingPage({ params }: ItemPageParams) {
       {!training.startedAt && (
         <AddExerciseForm training={training} actions={actions} />
       )}
-      {training.completedAt && (
-        <div>
-          <TrainingChangeDateForm training={training} />
-        </div>
-      )}
+      <div className="d-flex gap-3">
+        {(moment(training.plannedTo).isSame(moment(), "day") ||
+          training.startedAt) && (
+          <a
+            href={`/trainings/${training.id}/execute`}
+            className="btn btn-light"
+          >
+            Выполнение
+          </a>
+        )}
+        {training.completedAt && <TrainingRepeatForm training={training} />}
+      </div>
     </>
   );
 }
