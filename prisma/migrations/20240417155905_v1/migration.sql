@@ -11,6 +11,18 @@
   - Made the column `userId` on table `ApproachesGroup` required. This step will fail if there are existing NULL values in that column.
 
 */
+
+/*
+ Удаляем все, так как структура БД сильно меняется и нет возможности сохранить данные
+ */
+DELETE FROM "TrainingExerciseExecution" WHERE 1=1;
+DELETE FROM "TrainingExercise"  WHERE 1=1;
+DELETE FROM "Training"  WHERE 1=1;
+DELETE FROM "Approach" WHERE 1=1;
+DELETE FROM "ApproachesGroup" WHERE 1=1;
+DELETE FROM "ActionStrength" WHERE 1=1;
+DELETE FROM "ActionMass" WHERE 1=1;
+
 -- DropForeignKey
 ALTER TABLE "Action" DROP CONSTRAINT "Action_massId_fkey";
 

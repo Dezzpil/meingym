@@ -1,4 +1,3 @@
-// @ts-ignore
 import ActionsForm from "@/app/actions/form";
 import { ApproachesManagement } from "@/components/approaches/Managment";
 import { prisma } from "@/tools/db";
@@ -10,6 +9,8 @@ import type {
 } from "@prisma/client";
 import { ActionControl } from "@/app/actions/[id]/control";
 import { getCurrentUserId } from "@/tools/auth";
+import { ActionCreateStrength } from "@/app/actions/[id]/createStrength";
+import { ActionCreateMass } from "@/app/actions/[id]/createMass";
 
 type PageParams = {
   params: { id: string };
@@ -41,12 +42,18 @@ export default async function ActionPage({ params }: PageParams) {
   });
   const muscles = await prisma.muscle.findMany({ include: { Group: true } });
 
-  const strength = action.ActionStrength[0] as ActionStrength & {
-    CurrentApproachGroup: ApproachesGroup & { Approaches: Approach[] };
-  };
-  const mass = action.ActionMass[0] as ActionMass & {
-    CurrentApproachGroup: ApproachesGroup & { Approaches: Approach[] };
-  };
+  let strength;
+  if (action.ActionStrength.length) {
+    strength = action.ActionStrength[0] as ActionStrength & {
+      CurrentApproachGroup: ApproachesGroup & { Approaches: Approach[] };
+    };
+  }
+  let mass;
+  if (action.ActionMass.length) {
+    mass = action.ActionMass[0] as ActionMass & {
+      CurrentApproachGroup: ApproachesGroup & { Approaches: Approach[] };
+    };
+  }
 
   return (
     <>
@@ -57,26 +64,30 @@ export default async function ActionPage({ params }: PageParams) {
       <ActionsForm action={action} muscles={muscles}></ActionsForm>
       <hr />
       <div className="d-flex row">
-        {strength && (
-          <div className="col-md-6 mb-3">
-            <header className="mb-3">На силу</header>
+        <div className="col-md-6 mb-3">
+          <header className="mb-3">На силу</header>
+          {strength ? (
             <ApproachesManagement
               create={{ purpose: "STRENGTH", actionPurposeId: strength.id }}
               approaches={strength.CurrentApproachGroup.Approaches}
               actionId={action.id}
             />
-          </div>
-        )}
-        {mass && (
-          <div className="col-md-6 mb-3">
-            <header className="mb-3">На массу</header>
+          ) : (
+            <ActionCreateStrength action={action} />
+          )}
+        </div>
+        <div className="col-md-6 mb-3">
+          <header className="mb-3">На массу</header>
+          {mass ? (
             <ApproachesManagement
               create={{ purpose: "MASS", actionPurposeId: mass.id }}
               approaches={mass.CurrentApproachGroup.Approaches}
               actionId={action.id}
             />
-          </div>
-        )}
+          ) : (
+            <ActionCreateMass action={action} />
+          )}
+        </div>
       </div>
     </>
   );

@@ -74,42 +74,48 @@ export default async function ActionsPage() {
                   </div>
                 </td>
                 <td>
-                  {a.ActionStrength[0].CurrentApproachGroup ? (
+                  {a.ActionStrength.length &&
+                  a.ActionStrength[0].CurrentApproachGroup ? (
                     a.ActionStrength[0].CurrentApproachGroup.count
                   ) : (
                     <span>&mdash;</span>
                   )}
                 </td>
                 <td>
-                  {a.ActionStrength[0].CurrentApproachGroup ? (
+                  {a.ActionStrength.length &&
+                  a.ActionStrength[0].CurrentApproachGroup ? (
                     a.ActionStrength[0].CurrentApproachGroup.sum
                   ) : (
                     <span>&mdash;</span>
                   )}
                 </td>
                 <td>
-                  {a.ActionStrength[0].CurrentApproachGroup ? (
+                  {a.ActionStrength.length &&
+                  a.ActionStrength[0].CurrentApproachGroup ? (
                     a.ActionStrength[0].CurrentApproachGroup.mean.toPrecision(3)
                   ) : (
                     <span>&mdash;</span>
                   )}
                 </td>
                 <td>
-                  {a.ActionMass[0].CurrentApproachGroup ? (
+                  {a.ActionMass.length &&
+                  a.ActionMass[0].CurrentApproachGroup ? (
                     a.ActionMass[0].CurrentApproachGroup.count
                   ) : (
                     <span>&mdash;</span>
                   )}
                 </td>
                 <td>
-                  {a.ActionMass[0].CurrentApproachGroup ? (
+                  {a.ActionMass.length &&
+                  a.ActionMass[0].CurrentApproachGroup ? (
                     a.ActionMass[0].CurrentApproachGroup.sum
                   ) : (
                     <span>&mdash;</span>
                   )}
                 </td>
                 <td>
-                  {a.ActionMass[0].CurrentApproachGroup ? (
+                  {a.ActionMass.length &&
+                  a.ActionMass[0].CurrentApproachGroup ? (
                     a.ActionMass[0].CurrentApproachGroup.mean.toPrecision(3)
                   ) : (
                     <span>&mdash;</span>
