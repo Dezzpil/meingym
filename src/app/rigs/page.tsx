@@ -2,8 +2,8 @@ import { prisma } from "@/tools/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/tools/auth";
 import { redirect } from "next/navigation";
-import { WeightsForm } from "@/app/weights/form";
-import { WeightsFieldsType } from "@/app/weights/types";
+import { WeightsForm } from "@/app/rigs/form";
+import { WeightsFieldsType } from "@/app/rigs/types";
 export default async function WeightsPage() {
   const session = await getServerSession(authOptions);
   if (!session) redirect(`/404`);

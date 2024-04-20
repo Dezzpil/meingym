@@ -23,11 +23,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Weights         Weights[]
   ActionMass      ActionMass[]
   ActionStrength  ActionStrength[]
   ApproachesGroup ApproachesGroup[]
   Training        Training[]
+  Rig             Rig[]
 }
 
 model Account {
@@ -118,13 +118,6 @@ model ActionsOnMusclesStabilizer {
   Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
 
   @@id([actionId, muscleId])
-}
-
-enum ActionRig {
-  BLOCKS
-  BARBELL
-  DUMBBELL
-  OTHER
 }
 
 model Action {
@@ -270,10 +263,24 @@ model TrainingExerciseExecution {
   priority   Int       @default(0)
 }
 
-model Weights {
+enum ActionRig {
+  BLOCKS
+  BARBELL
+  DUMBBELL
+  OTHER
+}
+
+model Rig {
   code   String @id
   title  String
   value  Float
   userId String
   user   User   @relation(references: [id], fields: [userId], onDelete: Cascade)
+}
+
+model Weight {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  createdAt DateTime @default(now())
+  value     Float
 }

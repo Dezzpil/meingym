@@ -1,35 +1,26 @@
 "use server";
 
-import { WeightsFields, WeightsFieldsType } from "@/app/weights/types";
-import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/tools/auth";
+import { z } from "zod";
+import { getCurrentUserId } from "@/tools/auth";
 import { prisma } from "@/tools/db";
+import { getCurrentDayBorders } from "@/tools/dates";
+import { redirect } from "next/navigation";
 
-export async function handleWeightsUpdate(data: WeightsFieldsType) {
-  const session = await getServerSession(authOptions);
-  if (!session) throw new Error(`no session found, refresh the page`);
+const WeightField = z.object({
+  value: z.number(),
+});
 
-  // @ts-ignore
-  const userId = session?.user.id;
+export type WeightType = z.infer<typeof WeightField>;
 
-  await prisma.$transaction(async (tx) => {
-    for (const entry of Object.entries(data)) {
-      await tx.weights.upsert({
-        where: { code: entry[0] },
-        update: {
-          value: entry[1],
-        },
-        create: {
-          code: entry[0],
-          value: entry[1],
-          userId,
-          // @ts-ignore
-          title: WeightsFields.shape[entry[0]].description,
-        },
-      });
-    }
-  });
+export async function handleWeightSave(data: WeightType) {
+  const userId = await getCurrentUserId();
+  await prisma.weight.create({ data: { value: data.value, userId } });
+  redirect(`/`);
+}
 
-  revalidatePath(`/weights`);
+export async function handleWeightDelete() {
+  const userId = await getCurrentUserId();
+  const { gte, lt } = getCurrentDayBorders();
+  await prisma.weight.deleteMany({ where: { userId, createdAt: { gte, lt } } });
+  redirect(`/`);
 }
