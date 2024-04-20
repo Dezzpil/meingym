@@ -12,12 +12,12 @@ export function ActionCreateMass({ action }: Props) {
     setError(null);
     setHandling(true);
     try {
-      await handleCreateMassInitial(action.id);
+      await handleCreateMassInitial(action.id, action.rig);
     } catch (e: any) {
       setError(e.message);
     }
     setHandling(false);
-  }, [action.id]);
+  }, [action.id, action.rig]);
   return (
     <>
       <button

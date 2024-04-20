@@ -36,6 +36,7 @@ export function TrainingExerciseExecuteForm({ exercise, disabled }: Props) {
         exercise.id,
         data,
         exercise.trainingId,
+        exercise.actionId,
       );
   };
   const [isAddingApproach, setAddingApproach] = useState<boolean>(false);

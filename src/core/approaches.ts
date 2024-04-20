@@ -1,7 +1,10 @@
 import { PrismaTransactionClient } from "@/tools/types";
 import type { ApproachesGroup, Purpose } from "@prisma/client";
 import { SetData } from "@/core/types";
-import { calculateStats } from "@/core/stats";
+import {
+  calculateStats,
+  findInfoForCalculationStatsForAction,
+} from "@/core/stats";
 
 export type ApproachData = SetData & { priority: number };
 
@@ -15,9 +18,18 @@ export const ApproachesStrengthDefault: ApproachData[] = [
 ];
 
 export const ApproachesMassDefault: ApproachData[] = [
-  { weight: 30, count: 15, priority: 0 },
-  { weight: 30, count: 15, priority: 1 },
-  { weight: 30, count: 15, priority: 2 },
+  { weight: 30, count: 14, priority: 0 },
+  { weight: 35, count: 12, priority: 1 },
+  { weight: 35, count: 10, priority: 2 },
+  { weight: 30, count: 10, priority: 2 },
+];
+
+// Значения по умолчанию для движений с собственным весом
+export const ApproachesMassBodyDefault: ApproachData[] = [
+  { weight: 0, count: 15, priority: 0 },
+  { weight: 0, count: 15, priority: 1 },
+  { weight: 0, count: 15, priority: 2 },
+  { weight: 0, count: 15, priority: 2 },
 ];
 
 export async function createApproachGroup(
@@ -26,9 +38,13 @@ export async function createApproachGroup(
   actionId: number,
   userId: string,
 ): Promise<ApproachesGroup> {
-  console.log(approaches);
+  const info = await findInfoForCalculationStatsForAction(actionId, userId, tx);
   const given = approaches.length ? approaches : ApproachesStrengthDefault;
-  const { count, sum, mean } = calculateStats(given);
+  const { count, sum, mean } = calculateStats(
+    given,
+    info.actionrig,
+    info.userweight,
+  );
   return tx.approachesGroup.create({
     data: {
       count,

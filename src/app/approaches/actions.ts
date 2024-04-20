@@ -9,20 +9,24 @@ import {
   createApproachGroup,
   linkNewApproachGroupToActionByPurpose,
 } from "@/core/approaches";
-import { calculateStats } from "@/core/stats";
+import {
+  calculateStats,
+  findInfoForCalculateStatsForApproach,
+} from "@/core/stats";
 
 export async function handleUpdateApproachGroup(
-  id: number,
+  groupId: number,
   data: Array<ApproachLiftData>,
   trainingId?: number,
 ) {
-  const stats = calculateStats(data);
+  const info = await findInfoForCalculateStatsForApproach(groupId);
+  const stats = calculateStats(data, info.actionrig, info.userweight);
   await prisma.$transaction(async (tx) => {
-    const approachesData = data.map((d) => Object.assign(d, { groupId: id }));
-    await tx.approach.deleteMany({ where: { groupId: id } });
+    const approachesData = data.map((d) => Object.assign(d, { groupId }));
+    await tx.approach.deleteMany({ where: { groupId } });
     await tx.approach.createMany({ data: approachesData });
     await tx.approachesGroup.update({
-      where: { id },
+      where: { id: groupId },
       data: stats,
     });
   });

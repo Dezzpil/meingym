@@ -5,10 +5,12 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getCurrentUserId } from "@/tools/auth";
 import {
+  ApproachesMassBodyDefault,
   ApproachesMassDefault,
   ApproachesStrengthDefault,
   createApproachGroup,
 } from "@/core/approaches";
+import { ActionRig } from "@prisma/client";
 
 export async function handleRemoveAction(actionId: number) {
   await prisma.action.delete({ where: { id: actionId } });
@@ -36,15 +38,17 @@ export async function handleCreateStrengthInitial(actionId: number) {
   revalidatePath(`/actions/${actionId}`);
 }
 
-export async function handleCreateMassInitial(actionId: number) {
+export async function handleCreateMassInitial(
+  actionId: number,
+  actionRig: ActionRig,
+) {
   const userId = await getCurrentUserId();
   await prisma.$transaction(async (tx) => {
-    const newGroup = await createApproachGroup(
-      tx,
-      ApproachesMassDefault,
-      actionId,
-      userId,
-    );
+    const defaults =
+      actionRig === ActionRig.OTHER
+        ? ApproachesMassBodyDefault
+        : ApproachesMassDefault;
+    const newGroup = await createApproachGroup(tx, defaults, actionId, userId);
     await tx.actionMass.deleteMany({ where: { userId, actionId } });
     await tx.actionMass.create({
       data: {

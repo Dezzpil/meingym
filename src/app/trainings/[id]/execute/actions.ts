@@ -3,7 +3,10 @@
 import { prisma } from "@/tools/db";
 import { revalidatePath } from "next/cache";
 import { SetData } from "@/core/types";
-import { calculateStats } from "@/core/stats";
+import {
+  calculateStats,
+  findInfoForCalculationStatsForAction,
+} from "@/core/stats";
 import {
   createApproachGroup,
   linkNewApproachGroupToActionByPurpose,
@@ -11,6 +14,7 @@ import {
 import { PrismaTransactionClient } from "@/tools/types";
 import { TrainingExercise, TrainingExerciseExecution } from "@prisma/client";
 import { ApproachLiftData } from "@/app/approaches/types";
+import { getCurrentUserId } from "@/tools/auth";
 
 export async function handleTrainingStart(id: number) {
   await prisma.training.update({
@@ -64,7 +68,9 @@ export async function handleTrainingExerciseExecuted(
   exerciseId: number,
   data: Record<string, { liftedCount: number; liftedWeight: number }>,
   trainingId: number,
+  actionId: number,
 ) {
+  const userId = await getCurrentUserId();
   await prisma.$transaction(async (tx) => {
     await tx.trainingExerciseExecution.updateMany({
       where: { exerciseId, executedAt: null },
@@ -78,7 +84,16 @@ export async function handleTrainingExerciseExecuted(
     const sets: SetData[] = executions.map((e) => {
       return { weight: e.liftedWeight, count: e.liftedCount };
     });
-    const { sum: liftedSum, mean: liftedMean } = calculateStats(sets);
+    const info = await findInfoForCalculationStatsForAction(
+      actionId,
+      userId,
+      tx,
+    );
+    const { sum: liftedSum, mean: liftedMean } = calculateStats(
+      sets,
+      info.actionrig,
+      info.userweight,
+    );
 
     await tx.trainingExercise.update({
       where: { id: exerciseId },

@@ -181,7 +181,7 @@ export default function ActionsForm({ muscles, action }: Props) {
               id="other"
             />
             <label className="form-check-label" htmlFor="other">
-              Другое
+              С собственным весом
             </label>
           </div>
         </div>
