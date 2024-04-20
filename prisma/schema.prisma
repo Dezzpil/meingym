@@ -138,6 +138,8 @@ model Action {
   ActionMass      ActionMass[]
   ActionStrength  ActionStrength[]
   ApproachesGroup ApproachesGroup[]
+
+  strengthAllowed Boolean @default(false)
 }
 
 model ActionMass {

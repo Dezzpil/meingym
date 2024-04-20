@@ -25,17 +25,21 @@ export async function createExercise(
     },
   });
 
+  if (!action.strengthAllowed && purpose === "STRENGTH") {
+    throw new Error(`Нельзя выбрать силовое выполнение для этого движения`);
+  }
+
   let purposeAction: ActionMass | ActionStrength;
   if (purpose === "MASS") {
     if (action.ActionMass.length === 0)
       throw new Error(
-        `невозможно создать упражнение на массу, так как не указаны подходы выполнения`,
+        `Невозможно создать упражнение на массу, так как не указаны подходы выполнения`,
       );
     purposeAction = action.ActionMass[0] as ActionMass;
   } else {
     if (action.ActionStrength.length === 0)
       throw new Error(
-        `невозможно создать упражнение на силу, так как не указаны подходы выполнения`,
+        `Невозможно создать упражнение на силу, так как не указаны подходы выполнения`,
       );
     purposeAction = action.ActionStrength[0] as ActionStrength;
   }

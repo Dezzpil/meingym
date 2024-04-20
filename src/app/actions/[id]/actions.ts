@@ -19,6 +19,13 @@ export async function handleRemoveAction(actionId: number) {
 
 export async function handleCreateStrengthInitial(actionId: number) {
   const userId = await getCurrentUserId();
+  const action = await prisma.action.findUniqueOrThrow({
+    where: { id: actionId },
+  });
+  if (!action.strengthAllowed)
+    throw new Error(
+      `Нельзя создать базовые силовые значения для движения, которое не подходит для силовых тренировок`,
+    );
   await prisma.$transaction(async (tx) => {
     const newGroup = await createApproachGroup(
       tx,

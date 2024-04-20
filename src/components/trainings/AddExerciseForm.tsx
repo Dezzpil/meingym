@@ -6,7 +6,7 @@ import { handleAddExercise } from "@/app/trainings/exercises/actions";
 import { useForm } from "react-hook-form";
 import { ExerciseAddFieldsType } from "@/app/trainings/exercises/types";
 import { BiPlus } from "react-icons/bi";
-import React from "react";
+import React, { useState } from "react";
 
 type Props = {
   training: Training;
@@ -14,19 +14,21 @@ type Props = {
 };
 
 export default function AddExerciseForm({ training, actions }: Props) {
+  const [error, setError] = useState<string | null>(null);
   const form = useForm<ExerciseAddFieldsType>({});
   const submit = form.handleSubmit(async (data) => {
+    setError(null);
     try {
       await handleAddExercise(training.id, data);
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      setError(e.message);
     }
   });
 
   return (
     <>
       <form className="mb-3 d-flex gap-2" onSubmit={submit}>
-        <div className="">
+        <div>
           <select
             className="form-control"
             {...form.register("actionId", { valueAsNumber: true })}
@@ -50,6 +52,7 @@ export default function AddExerciseForm({ training, actions }: Props) {
           </button>
         </div>
       </form>
+      {error && <div className="alert alert-danger">{error}</div>}
     </>
   );
 }

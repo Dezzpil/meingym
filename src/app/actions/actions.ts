@@ -14,6 +14,7 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
       title,
       desc: data.desc,
       alias: data.alias,
+      strengthAllowed: data.strengthAllowed,
       MusclesAgony: {
         deleteMany: { actionId: id },
         createMany: {
