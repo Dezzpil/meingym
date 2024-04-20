@@ -9,7 +9,9 @@
     "lint": "next lint",
     "prisma:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "prepare": "husky install",
-    "release": "standard-version"
+    "release:minor": "standard-version -r minor",
+    "release:major": "standard-version -r major"
+
   },
   "dependencies": {
     "@commitlint/cli": "^19.2.2",

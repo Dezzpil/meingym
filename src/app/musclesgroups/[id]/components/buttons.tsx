@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { handleDelete } from "@/app/musclesgroups/[id]/actions";
+import { handleMuscleGroupDelete } from "@/app/musclesgroups/[id]/actions";
 
 type Props = {
   id: number;
@@ -14,7 +14,7 @@ export default function MusclesGroupsButtons({ id }: Props) {
     setError(null);
     setHandling(true);
     try {
-      await handleDelete(id);
+      await handleMuscleGroupDelete(id);
     } catch (e: any) {
       setError(e.message);
     }
@@ -23,7 +23,7 @@ export default function MusclesGroupsButtons({ id }: Props) {
   return (
     <div className="mb-3">
       <button className="btn btn-danger" onClick={onDelete} disabled={handling}>
-        Удалить
+        Удалить группу
       </button>
       {error && <div className="alert alert-danger">{error}</div>}
     </div>

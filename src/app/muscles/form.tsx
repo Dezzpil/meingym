@@ -46,14 +46,14 @@ export default function MusclesForm({ groups, muscle }: Props) {
   return (
     <>
       <form onSubmit={onSubmit}>
-        <div className="mb-2">
+        <div className="mb-3">
           <label className="form-label">Название</label>
           <input
             className="form-control"
             {...form.register("title", { required: true })}
           />
         </div>
-        <div className="mb-2">
+        <div className="mb-3">
           <label className="form-label">Группа мышц</label>
           <select
             {...form.register("groupId", { valueAsNumber: true })}

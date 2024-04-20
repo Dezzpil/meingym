@@ -73,8 +73,18 @@ model VerificationToken {
 model MuscleGroup {
   id Int @id @default(autoincrement())
 
-  title  String
-  Muscle Muscle[]
+  title           String
+  Muscle          Muscle[]
+  MuscleGroupDesc MuscleGroupDesc[]
+}
+
+model MuscleGroupDesc {
+  id        Int         @id @default(autoincrement())
+  groupId   Int
+  Group     MuscleGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  text      String
+  link      String
+  createdAt DateTime    @default(now())
 }
 
 model Muscle {
