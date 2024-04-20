@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.1](https://github.com/Dezzpil/meingym/compare/v0.3.0...v0.3.1) (2024-04-20)
+
+
+### Features
+
+* возможность повторить выполненную тренировку ([a8cdb5f](https://github.com/Dezzpil/meingym/commits/a8cdb5ffc8d65015be9412f8f42119ad3fdc4930))
+* можно указать свой вес на сегодня ([18ffeaa](https://github.com/Dezzpil/meingym/commits/18ffeaa8d9565a26a35a38f30fa35184222df820))
+* упражнения с собственным весом ([bdf8d9b](https://github.com/Dezzpil/meingym/commits/bdf8d9b67348c302869f10e27f023dca66979739))
+
+
+### Bug Fixes
+
+* добавить свойство движения "Подходит для силовых" ([69da6b3](https://github.com/Dezzpil/meingym/commits/69da6b320efeeae8c586816bf7035099f3cb1029))
+* исправить подсчет среднего веса для упражнения ([24bdf23](https://github.com/Dezzpil/meingym/commits/24bdf237fcf6c43743d1a944863bf6002ac791ec))
+
 ## [0.3.0](https://github.com/Dezzpil/meingym/compare/v0.2.1...v0.3.0) (2024-04-19)
 
 
