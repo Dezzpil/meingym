@@ -98,6 +98,17 @@ model Muscle {
   AgonyInActions      ActionsOnMusclesAgony[]
   SynergyInActions    ActionsOnMusclesSynergy[]
   StabilizerInActions ActionsOnMusclesStabilizer[]
+
+  MuscleDesc MuscleDesc[]
+}
+
+model MuscleDesc {
+  id        Int      @id @default(autoincrement())
+  muscleId  Int
+  Muscle    Muscle   @relation(fields: [muscleId], references: [id], onDelete: Cascade)
+  text      String
+  link      String
+  createdAt DateTime @default(now())
 }
 
 model ActionsOnMusclesAgony {

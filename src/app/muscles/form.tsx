@@ -15,7 +15,6 @@ export default function MusclesForm({ groups, muscle }: Props) {
   const [error, setError] = useState<null | string>(null);
   const [handling, setHandling] = useState<boolean>(false);
   const form = useForm<MusclesFormFieldsType>({
-    disabled: !!muscle,
     defaultValues: muscle,
   });
   const onSubmit = form.handleSubmit(async (data) => {
@@ -45,7 +44,7 @@ export default function MusclesForm({ groups, muscle }: Props) {
 
   return (
     <>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} className="mb-3">
         <div className="mb-3">
           <label className="form-label">Название</label>
           <input
@@ -66,20 +65,25 @@ export default function MusclesForm({ groups, muscle }: Props) {
             ))}
           </select>
         </div>
-        <div className="mb-2">
+        <div className="mb-2 d-flex justify-content-between">
           {!muscle ? (
             <button className="btn btn-success" disabled={handling}>
               Добавить
             </button>
           ) : (
-            <button
-              type="button"
-              onClick={onDelete}
-              className="btn btn-danger"
-              disabled={handling}
-            >
-              Удалить
-            </button>
+            <>
+              <button disabled={handling} className="btn btn-primary">
+                Обновить
+              </button>
+              <button
+                type="button"
+                onClick={onDelete}
+                className="btn btn-danger"
+                disabled={handling}
+              >
+                Удалить
+              </button>
+            </>
           )}
         </div>
         {error && <div className="alert alert-danger">{error}</div>}

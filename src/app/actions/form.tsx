@@ -146,55 +146,20 @@ export default function ActionsForm({ muscles, action }: Props) {
             {...form.register("alias", { required: false })}
           />
         </div>
-        <div className="d-flex gap-5 mb-2">
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              {...form.register("rig")}
-              value={ActionRig.BLOCKS}
-              id="withBlocks"
-            />
-            <label className="form-check-label" htmlFor="withBlocks">
-              Блочное
-            </label>
-          </div>
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              {...form.register("rig")}
-              value={ActionRig.BARBELL}
-              id="withBarbell"
-            />
-            <label className="form-check-label" htmlFor="withBarbell">
-              Со штангой
-            </label>
-          </div>
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              {...form.register("rig")}
-              value={ActionRig.DUMBBELL}
-              id="withDumbbell"
-            />
-            <label className="form-check-label" htmlFor="withDumbbell">
-              С гантелей
-            </label>
-          </div>
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              {...form.register("rig")}
-              value={ActionRig.OTHER}
-              id="other"
-            />
-            <label className="form-check-label" htmlFor="other">
-              С собственным весом
-            </label>
-          </div>
+        <div className="mb-2">
+          <label className="form-label">Отягощение</label>
+          <select className="form-control" {...form.register("rig")}>
+            {[
+              { value: ActionRig.BLOCKS, label: "Блочное" },
+              { value: ActionRig.BARBELL, label: "Со штангой" },
+              { value: ActionRig.DUMBBELL, label: "С гантелей" },
+              { value: ActionRig.OTHER, label: "С собственным весом" },
+            ].map((opt) => (
+              <option value={opt.value} key={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="mb-2">
           <button className="btn btn-success" disabled={handling}>

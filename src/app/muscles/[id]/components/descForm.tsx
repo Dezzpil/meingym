@@ -1,21 +1,21 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import {
-  handleMuscleGroupAddDesc,
-  handleMuscleGroupDelete,
-  handleMuscleGroupUpdateDesc,
-  MuscleGroupDescType,
-} from "@/app/musclesgroups/[id]/actions";
-import type { MuscleGroup, MuscleGroupDesc } from "@prisma/client";
+import type { Muscle, MuscleDesc } from "@prisma/client";
 import { useCallback, useState } from "react";
+import {
+  handleMuscleAddDesc,
+  handleMuscleDeleteDesc,
+  handleMuscleUpdateDesc,
+  MuscleDescType,
+} from "@/app/muscles/actions";
 
 type Props = {
-  group: MuscleGroup;
-  desc?: MuscleGroupDesc;
+  muscle: Muscle;
+  desc?: MuscleDesc;
 };
-export function MuscleGroupsDescForm({ group, desc }: Props) {
-  const form = useForm<MuscleGroupDescType>({
+export function MuscleDescForm({ muscle, desc }: Props) {
+  const form = useForm<MuscleDescType>({
     defaultValues: desc ? desc : {},
   });
   const [error, setError] = useState<string | null>(null);
@@ -23,16 +23,16 @@ export function MuscleGroupsDescForm({ group, desc }: Props) {
   const del = useCallback(async () => {
     if (desc) {
       setHandling(true);
-      await handleMuscleGroupDelete(desc.id);
+      await handleMuscleDeleteDesc(muscle.id, desc.id);
     }
-  }, [desc]);
+  }, [desc, muscle.id]);
   const submit = form.handleSubmit(async (data) => {
     setError(null);
     try {
       if (desc) {
-        await handleMuscleGroupUpdateDesc(group.id, desc.id, data);
+        await handleMuscleUpdateDesc(muscle.id, desc.id, data);
       } else {
-        await handleMuscleGroupAddDesc(group.id, data);
+        await handleMuscleAddDesc(muscle.id, data);
       }
     } catch (e: any) {
       setError(e.message);
@@ -44,7 +44,7 @@ export function MuscleGroupsDescForm({ group, desc }: Props) {
       <textarea
         rows={3}
         className="form-control mb-2"
-        placeholder="Описание мышечной группы"
+        placeholder="Описание мышцы"
         {...form.register("text", { required: true, minLength: 1 })}
       ></textarea>
       <input
@@ -53,6 +53,7 @@ export function MuscleGroupsDescForm({ group, desc }: Props) {
         placeholder="https://"
         {...form.register("link", { required: false })}
       />
+
       <div className="hstack gap-2">
         <button disabled={handling} className="btn btn-primary">
           {desc ? "Обновить" : "Добавить"}

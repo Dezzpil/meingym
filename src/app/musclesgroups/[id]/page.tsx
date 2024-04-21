@@ -40,14 +40,9 @@ export default async function MusclesGroupsIdPage({ params }: Props) {
         <p className="mb-3 text-muted">Мышцы еще не добавлены...</p>
       )}
       {group.MuscleGroupDesc.map((desc) => (
-        <MuscleGroupsDescForm
-          group={group}
-          desc={desc}
-          canControl={true}
-          key={desc.id}
-        />
+        <MuscleGroupsDescForm group={group} desc={desc} key={desc.id} />
       ))}
-      <MuscleGroupsDescForm group={group} canControl={true} />
+      <MuscleGroupsDescForm group={group} />
       <MusclesGroupsButtons id={group.id} />
     </>
   );
