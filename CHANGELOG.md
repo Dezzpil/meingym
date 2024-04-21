@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/Dezzpil/meingym/compare/v0.3.1...v0.4.0) (2024-04-21)
+
+
+### Features
+
+* добавить описание для групп мышц со ссылками ([6f4816a](https://github.com/Dezzpil/meingym/commits/6f4816a698b5d7eaf82c0bff87cd8baf93bee0ae))
+* добавить описание для мышц ([0d7e4ea](https://github.com/Dezzpil/meingym/commits/0d7e4ea7b80ea4a82c514f15fb9592e649842d7f))
+
 ### [0.3.1](https://github.com/Dezzpil/meingym/compare/v0.3.0...v0.3.1) (2024-04-20)
 
 
