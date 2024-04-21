@@ -1,16 +1,10 @@
 import { prisma } from "@/tools/db";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/tools/auth";
-import { redirect } from "next/navigation";
+import { getCurrentUserId } from "@/tools/auth";
 import { WeightsForm } from "@/app/rigs/form";
 import { WeightsFieldsType } from "@/app/rigs/types";
 export default async function WeightsPage() {
-  const session = await getServerSession(authOptions);
-  if (!session) redirect(`/404`);
-
-  // @ts-ignore
-  const userId = session?.user.id;
-  const weights = await prisma.weights.findMany({ where: { userId } });
+  const userId = await getCurrentUserId();
+  const weights = await prisma.rig.findMany({ where: { userId } });
 
   const values: WeightsFieldsType = {
     block: 5,
