@@ -1,20 +1,22 @@
 "use client";
 
 import { GiWeight } from "react-icons/gi";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import type { TrainingExerciseExecution } from "@prisma/client";
 import { GrCheckmark } from "react-icons/gr";
 import classNames from "classnames";
 import type { RegisterOptions } from "react-hook-form";
 import { FaSpinner } from "react-icons/fa6";
 import { postApi } from "@/tools/fetch";
+import Modal from "react-bootstrap/Modal";
+import { RatingOptions } from "@/app/trainings/[id]/execute/types";
 
 type Props = {
   exec: TrainingExerciseExecution;
   register: CallableFunction;
   disabled: boolean;
 };
-export default function ExerciseExecutionItem({
+export default function TrainingExecuteItem({
   exec,
   register,
   disabled,
@@ -25,20 +27,29 @@ export default function ExerciseExecutionItem({
   const [liftedWeight, setLiftedWeight] = useState(exec.plannedWeigth);
   const [liftedCount, setLiftedCount] = useState(exec.plannedCount);
 
-  const complete = useCallback(() => {
-    setWaitForCompleted(true);
-    if (!isCompleted) {
-      postApi(`/api/trainings/exercise/execution/complete?id=${exec.id}`, {
-        id: exec.id,
-        liftedWeight,
-        liftedCount,
+  const ratingSelectRef = useRef<HTMLSelectElement | null>(null);
+  const [modalShowed, setModalShowed] = useState(false);
+  const closeModal = useCallback(() => {
+    postApi(`/api/trainings/exercise/execution/complete?id=${exec.id}`, {
+      id: exec.id,
+      liftedWeight,
+      liftedCount,
+      rating: ratingSelectRef.current?.value,
+    })
+      .then((data) => {
+        setCompleted(!isCompleted);
       })
-        .then((data) => {
-          setCompleted(!isCompleted);
-        })
-        .finally(() => {
-          setWaitForCompleted(false);
-        });
+      .finally(() => {
+        setWaitForCompleted(false);
+        setModalShowed(false);
+      });
+  }, [exec.id, isCompleted, liftedCount, liftedWeight]);
+
+  const onComplete = useCallback(() => {
+    setWaitForCompleted(true);
+
+    if (!isCompleted) {
+      setModalShowed(true);
     } else {
       postApi(`/api/trainings/exercise/execution/uncomplete?id=${exec.id}`, {
         id: exec.id,
@@ -50,7 +61,7 @@ export default function ExerciseExecutionItem({
           setWaitForCompleted(false);
         });
     }
-  }, [exec.id, isCompleted, liftedCount, liftedWeight]);
+  }, [exec.id, isCompleted]);
 
   const updateLiftedCount = useCallback((e: any) => {
     e.preventDefault();
@@ -113,10 +124,31 @@ export default function ExerciseExecutionItem({
           "btn-light": !isCompleted,
           "btn-success": isCompleted,
         })}
-        onClick={complete}
+        onClick={onComplete}
       >
         {waitForCompleted ? <FaSpinner /> : <GrCheckmark />}
       </button>
+      <Modal show={modalShowed} onHide={closeModal}>
+        <Modal.Header>
+          <Modal.Title>Оценка выполнения подхода</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div>
+            <select className="form-control" ref={ratingSelectRef}>
+              {Object.entries(RatingOptions).map((entry) => (
+                <option key={entry[0]} value={entry[0]}>
+                  {entry[1]}
+                </option>
+              ))}
+            </select>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <div className="btn btn-success" onClick={closeModal}>
+            Выполнено
+          </div>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

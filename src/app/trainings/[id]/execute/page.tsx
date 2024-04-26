@@ -9,9 +9,9 @@ import type {
   Training,
 } from "@prisma/client";
 import React from "react";
-import { TrainingExerciseCard } from "@/app/trainings/[id]/execute/card";
-import { TrainingExecuteTopPanel } from "@/app/trainings/[id]/execute/topPanel";
-import { TrainingExecuteCompletePanel } from "@/app/trainings/[id]/execute/completedPanel";
+import { TrainingExecuteTopPanel } from "@/app/trainings/[id]/execute/components/TrainingExecuteTopPanel";
+import { TrainingExecuteCard } from "@/app/trainings/[id]/execute/components/TrainingExecuteCard";
+import { TrainingExecuteCompletePanel } from "@/app/trainings/[id]/execute/components/TrainingExecuteCompletePanel";
 
 type TrainingExerciseType = TrainingExercise & {
   Action: Action;
@@ -76,7 +76,7 @@ export default async function TrainingExecutePage({ params }: ItemPageParams) {
     <div>
       <TrainingExecuteTopPanel training={training} />
       {training.TrainingExercise.map((e: TrainingExerciseType) => (
-        <TrainingExerciseCard
+        <TrainingExecuteCard
           exercise={e}
           key={e.id}
           disabled={!training.startedAt || !!training.completedAt}

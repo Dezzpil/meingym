@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import ExerciseExecutionItem from "@/components/trainings/ExerciseExecutionItem";
+import TrainingExecuteItem from "@/app/trainings/[id]/execute/components/TrainingExecuteItem";
 import React, { useCallback, useState } from "react";
 import type {
   TrainingExercise,
@@ -23,7 +23,7 @@ type Props = {
   disabled: boolean;
 };
 
-export function TrainingExerciseExecuteForm({ exercise, disabled }: Props) {
+export function TrainingExecuteForm({ exercise, disabled }: Props) {
   const { register, handleSubmit } = useForm<any>();
   const onSubmit = async (data: any) => {
     let force = true;
@@ -39,6 +39,7 @@ export function TrainingExerciseExecuteForm({ exercise, disabled }: Props) {
         exercise.actionId,
       );
   };
+
   const [isAddingApproach, setAddingApproach] = useState<boolean>(false);
   const [errorAddingApproach, setErrorAddingApproach] = useState<string | null>(
     null,
@@ -59,7 +60,7 @@ export function TrainingExerciseExecuteForm({ exercise, disabled }: Props) {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="row mb-2">
         {exercise.TrainingExerciseExecution.map((exec) => (
-          <ExerciseExecutionItem
+          <TrainingExecuteItem
             key={exec.id}
             exec={exec}
             register={register}

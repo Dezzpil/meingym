@@ -284,6 +284,16 @@ model TrainingExerciseExecution {
   executedAt DateTime?
   isPassed   Boolean   @default(false)
   priority   Int       @default(0)
+
+  rating ExecutionRating @default(OK)
+}
+
+enum ExecutionRating {
+  EASY // изян, разминка
+  OK // хорошо, ровно
+  TENSION_OK // напряжение, техника сохранена
+  TENSION_FLAW // техника испортилась на последних повторах
+  HARD // сразу тяжело, потеря техники
 }
 
 enum ActionRig {

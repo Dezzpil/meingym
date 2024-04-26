@@ -10,10 +10,10 @@ import type {
   Action,
   TrainingExerciseExecution,
 } from "@prisma/client";
-import { TrainingExerciseExecuteForm } from "@/app/trainings/[id]/execute/form";
 import { GrRun } from "react-icons/gr";
 import classNames from "classnames";
 import { FaSpinner } from "react-icons/fa6";
+import { TrainingExecuteForm } from "@/app/trainings/[id]/execute/components/TrainingExecuteForm";
 type Props = {
   exercise: TrainingExercise & {
     Action: Action;
@@ -21,7 +21,7 @@ type Props = {
   };
   disabled: boolean;
 };
-export function TrainingExerciseCard({ exercise, disabled }: Props) {
+export function TrainingExecuteCard({ exercise, disabled }: Props) {
   const start = useCallback(async () => {
     await handleTrainingExerciseStart(exercise.id, exercise.trainingId);
   }, [exercise]);
@@ -63,7 +63,7 @@ export function TrainingExerciseCard({ exercise, disabled }: Props) {
         {exercise.isPassed && <GrRun title="Упражнение было пропущено" />}
       </div>
       <div className="card-body">
-        <TrainingExerciseExecuteForm
+        <TrainingExecuteForm
           exercise={exercise}
           disabled={!exercise.startedAt || !!exercise.completedAt || disabled}
         />
