@@ -1,8 +1,8 @@
 import { prisma } from "@/tools/db";
 import Link from "next/link";
-import { TrainingListItem } from "@/app/trainings/listItem";
 import { Purpose } from "@prisma/client";
 import { getCurrentUserId } from "@/tools/auth";
+import { TrainingListItem } from "@/app/trainings/components/TrainingListItem";
 
 type TrainingId = number;
 export type MuscleGroupTitleToExercisesCnt = Record<string, number>;

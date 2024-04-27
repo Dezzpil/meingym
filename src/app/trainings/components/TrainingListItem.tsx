@@ -73,7 +73,7 @@ export function TrainingListItem({
       </td>
       <td>{training.TrainingExercise.length}</td>
       <td className="d-flex gap-2">
-        {muscleGroups ? (
+        {muscleGroups && muscleGroups.length ? (
           muscleGroups.map((entry) => (
             <span key={entry[0]}>
               {entry[0]}: {entry[1]}
