@@ -9,8 +9,10 @@
     "lint": "next lint",
     "prisma:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "prepare": "husky install",
+    "release": "standard-version",
     "release:minor": "standard-version -r minor",
-    "release:major": "standard-version -r major"
+    "release:major": "standard-version -r major",
+    "test": "node --loader tsx --test src/tests/**/*.test.ts"
   },
   "dependencies": {
     "@commitlint/cli": "^19.2.2",
@@ -30,9 +32,11 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/chai": "^4.3.14",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "chai": "^5.1.0",
     "dotenv": "^16.3.1",
     "dotenv-cli": "^7.3.0",
     "eslint": "^8",
@@ -41,7 +45,8 @@
     "prettier": "^3.1.1",
     "prisma": "^5.7.1",
     "standard-version": "^9.5.0",
-    "typescript": "^5",
+    "tsx": "^4.7.3",
+    "typescript": "^5.4.5",
     "vercel": "^33.6.3"
   }
 }
