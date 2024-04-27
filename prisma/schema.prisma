@@ -285,15 +285,38 @@ model TrainingExerciseExecution {
   isPassed   Boolean   @default(false)
   priority   Int       @default(0)
 
-  rating ExecutionRating @default(OK)
+  rating   ExecutionRating   @default(OK)
+  cheating ExecutionCheating @default(NO)
+  refusing ExecutionRefusing @default(NO)
+  burning  ExecutionBurning  @default(NO)
 }
 
+// см. RatingOptions
 enum ExecutionRating {
-  EASY // изян, разминка
-  OK // хорошо, ровно
-  TENSION_OK // напряжение, техника сохранена
-  TENSION_FLAW // техника испортилась на последних повторах
-  HARD // сразу тяжело, потеря техники
+  EASY
+  OK
+  TENSION_OK
+  TENSION_FLAW
+  HARD
+}
+
+// см. CheatingOptions
+enum ExecutionCheating {
+  NO
+  PART
+  FULL
+}
+
+// см. RefusingOptions
+enum ExecutionRefusing {
+  NO
+  YES
+}
+
+// см. BurningOptions
+enum ExecutionBurning {
+  NO
+  YES
 }
 
 enum ActionRig {

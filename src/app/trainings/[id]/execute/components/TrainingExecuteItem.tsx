@@ -9,7 +9,12 @@ import type { RegisterOptions } from "react-hook-form";
 import { FaSpinner } from "react-icons/fa6";
 import { postApi } from "@/tools/fetch";
 import Modal from "react-bootstrap/Modal";
-import { RatingOptions } from "@/app/trainings/[id]/execute/types";
+import {
+  BurningOptions,
+  CheatingOptions,
+  RatingOptions,
+  RefusingOptions,
+} from "@/app/trainings/[id]/execute/types";
 
 type Props = {
   exec: TrainingExerciseExecution;
@@ -28,6 +33,10 @@ export default function TrainingExecuteItem({
   const [liftedCount, setLiftedCount] = useState(exec.plannedCount);
 
   const ratingSelectRef = useRef<HTMLSelectElement | null>(null);
+  const cheatingSelectRef = useRef<HTMLSelectElement | null>(null);
+  const refusingSelectRef = useRef<HTMLSelectElement | null>(null);
+  const burningSelectRef = useRef<HTMLSelectElement | null>(null);
+
   const [modalShowed, setModalShowed] = useState(false);
   const closeModal = useCallback(() => {
     postApi(`/api/trainings/exercise/execution/complete?id=${exec.id}`, {
@@ -35,6 +44,9 @@ export default function TrainingExecuteItem({
       liftedWeight,
       liftedCount,
       rating: ratingSelectRef.current?.value,
+      cheating: cheatingSelectRef.current?.value,
+      refusing: refusingSelectRef.current?.value,
+      burning: burningSelectRef.current?.value,
     })
       .then((data) => {
         setCompleted(!isCompleted);
@@ -134,8 +146,29 @@ export default function TrainingExecuteItem({
         </Modal.Header>
         <Modal.Body>
           <div>
-            <select className="form-control" ref={ratingSelectRef}>
+            <select className="form-control mb-2" ref={ratingSelectRef}>
               {Object.entries(RatingOptions).map((entry) => (
+                <option key={entry[0]} value={entry[0]}>
+                  {entry[1]}
+                </option>
+              ))}
+            </select>
+            <select className="form-control mb-2" ref={cheatingSelectRef}>
+              {Object.entries(CheatingOptions).map((entry) => (
+                <option key={entry[0]} value={entry[0]}>
+                  {entry[1]}
+                </option>
+              ))}
+            </select>
+            <select className="form-control mb-2" ref={refusingSelectRef}>
+              {Object.entries(RefusingOptions).map((entry) => (
+                <option key={entry[0]} value={entry[0]}>
+                  {entry[1]}
+                </option>
+              ))}
+            </select>
+            <select className="form-control" ref={burningSelectRef}>
+              {Object.entries(BurningOptions).map((entry) => (
                 <option key={entry[0]} value={entry[0]}>
                   {entry[1]}
                 </option>
