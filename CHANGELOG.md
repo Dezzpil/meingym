@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.8.0](https://github.com/Dezzpil/meingym/compare/v0.7.0...v0.8.0) (2024-04-27)
+
+
+### Features
+
+* указать дополнительные данные о выполнении подхода ([638611d](https://github.com/Dezzpil/meingym/commits/638611d486017b97c9ec287b73db158d9f4c1f32))
+
+
+### Bug Fixes
+
+* исправить отображения тренировки без мышц  в списке ([a297cb2](https://github.com/Dezzpil/meingym/commits/a297cb2b95853a14ec342eeae01320fdf23452f1))
+* исправить потерю дробной части веса упражнения ([ee9f4f1](https://github.com/Dezzpil/meingym/commits/ee9f4f18ad69de962d60c1269ec39f2da9282d44))
+
 ## [0.7.0](https://github.com/Dezzpil/meingym/compare/v0.6.0...v0.7.0) (2024-04-26)
 
 
