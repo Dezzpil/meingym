@@ -2,7 +2,7 @@
 import type { Training } from "@prisma/client";
 import React from "react";
 import moment from "moment";
-import { TrainingRepeatForm } from "@/app/trainings/[id]/repeatForm";
+import { TrainingRepeatForm } from "@/app/trainings/[id]/execute/components/TrainingRepeatForm";
 
 type Props = {
   training: Training;

@@ -26,7 +26,10 @@ type Props = {
   canControl: boolean;
 };
 
-export default function ExerciseItemControl({ exercise, canControl }: Props) {
+export default function TrainingExerciseItemControl({
+  exercise,
+  canControl,
+}: Props) {
   const [hidden, setHidden] = useState<boolean>(true);
   const show = useCallback(() => {
     setHidden(false);

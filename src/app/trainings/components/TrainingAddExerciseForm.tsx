@@ -13,7 +13,7 @@ type Props = {
   actions: Action[];
 };
 
-export default function AddExerciseForm({ training, actions }: Props) {
+export default function TrainingAddExerciseForm({ training, actions }: Props) {
   const [error, setError] = useState<string | null>(null);
   const form = useForm<ExerciseAddFieldsType>({});
   const submit = form.handleSubmit(async (data) => {

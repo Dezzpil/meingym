@@ -1,12 +1,12 @@
 import { ItemPageParams } from "@/tools/types";
 import { prisma } from "@/tools/db";
-import AddExerciseForm from "@/components/trainings/AddExerciseForm";
+import TrainingAddExerciseForm from "@/app/trainings/components/TrainingAddExerciseForm";
 import React from "react";
-import ExerciseItemControl from "@/components/trainings/ExerciseItemControl";
+import TrainingExerciseItemControl from "@/app/trainings/components/TrainingExerciseItemControl";
 import type { Training } from "@prisma/client";
 import moment from "moment";
-import { TrainingChangeDateForm } from "@/app/trainings/[id]/changeDateForm";
-import { TrainingRepeatForm } from "@/app/trainings/[id]/repeatForm";
+import { TrainingChangeDateForm } from "@/app/trainings/[id]/execute/components/TrainingChangeDateForm";
+import { TrainingRepeatForm } from "@/app/trainings/[id]/execute/components/TrainingRepeatForm";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
@@ -60,7 +60,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         <ul className="list-group mb-3">
           {exercises.map((e) => (
             <li className="list-group-item mb-3" key={e.id}>
-              <ExerciseItemControl
+              <TrainingExerciseItemControl
                 exercise={e}
                 canControl={!training.startedAt}
               />
@@ -71,7 +71,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         <p>Упражнения еще не добавлены...</p>
       )}
       {!training.startedAt && (
-        <AddExerciseForm training={training} actions={actions} />
+        <TrainingAddExerciseForm training={training} actions={actions} />
       )}
       <div className="d-flex gap-3">
         {(moment(training.plannedTo).isSame(moment(), "day") ||

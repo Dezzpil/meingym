@@ -18,7 +18,7 @@ export function ApproachesManagementElement({
   const onChangeWeight = useCallback(
     (e: ChangeEvent) => {
       const value = (e.nativeEvent.target as HTMLInputElement).value;
-      elem.weight = parseInt(value) || 0;
+      elem.weight = parseFloat(value) || 0;
       onChange();
     },
     [elem, onChange],
