@@ -1,12 +1,13 @@
 import { PrismaTransactionClient } from "@/tools/types";
 import type { ApproachesGroup, Purpose } from "@prisma/client";
-import { SetData } from "@/core/types";
+import { SetData, SetDataExecuted } from "@/core/types";
 import {
   calculateStats,
   findInfoForCalculationStatsForAction,
 } from "@/core/stats";
 
 export type ApproachData = SetData & { priority: number };
+export type ApproachExecutedData = SetDataExecuted & { priority: number };
 
 export const ApproachesStrengthDefault: ApproachData[] = [
   { weight: 40, count: 12, priority: 0 },

@@ -1,11 +1,11 @@
 "use server";
 
-import { ApproachLiftData } from "@/app/approaches/types";
 import { prisma } from "@/tools/db";
 import type { Purpose } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { getCurrentUserId } from "@/tools/auth";
 import {
+  ApproachData,
   createApproachGroup,
   linkNewApproachGroupToActionByPurpose,
 } from "@/core/approaches";
@@ -16,7 +16,7 @@ import {
 
 export async function handleUpdateApproachGroup(
   groupId: number,
-  data: Array<ApproachLiftData>,
+  data: Array<ApproachData>,
   trainingId?: number,
 ) {
   const info = await findInfoForCalculateStatsForApproach(groupId);
@@ -38,7 +38,7 @@ export async function handleUpdateApproachGroup(
 export async function handleCreateNewApproachesGroup(
   purpose: Purpose,
   purposeId: number,
-  data: Array<ApproachLiftData>,
+  data: Array<ApproachData>,
   actionId: number,
 ) {
   const userId = await getCurrentUserId();

@@ -8,13 +8,19 @@ import {
   findInfoForCalculationStatsForAction,
 } from "@/core/stats";
 import {
+  ApproachData,
+  ApproachExecutedData,
   createApproachGroup,
   linkNewApproachGroupToActionByPurpose,
 } from "@/core/approaches";
 import { PrismaTransactionClient } from "@/tools/types";
-import { TrainingExercise, TrainingExerciseExecution } from "@prisma/client";
-import { ApproachLiftData } from "@/app/approaches/types";
+import {
+  Purpose,
+  TrainingExercise,
+  TrainingExerciseExecution,
+} from "@prisma/client";
 import { getCurrentUserId } from "@/tools/auth";
+import { ProgressionStrategySimple } from "@/core/progression/strategy/simple";
 
 export async function handleTrainingStart(id: number) {
   await prisma.training.update({
@@ -117,10 +123,15 @@ async function createNewApproachGroupsAndLinkThem(
   trainingId: number,
   tx: PrismaTransactionClient,
 ) {
+  const userId = await getCurrentUserId();
   const training = await tx.training.findUniqueOrThrow({
     where: { id: trainingId },
     include: {
-      TrainingExercise: { include: { TrainingExerciseExecution: true } },
+      TrainingExercise: {
+        include: {
+          TrainingExerciseExecution: { orderBy: { priority: "asc" } },
+        },
+      },
     },
   });
   // пересоздадим подходы, из которых будет собираться следующая тренировка?
@@ -129,19 +140,40 @@ async function createNewApproachGroupsAndLinkThem(
       TrainingExerciseExecution: TrainingExerciseExecution[];
     };
     // игнорируем пропущенные подходы или подходы с 0 нагрузкой
-    const setsData: ApproachLiftData[] =
+    const setsData: ApproachExecutedData[] =
       exercise.TrainingExerciseExecution.filter(
-        (e) => !e.isPassed && e.liftedCount * e.liftedWeight > 0,
+        (e) => !e.isPassed && e.liftedCount > 0,
       ).map((e) => {
         return {
           priority: e.priority,
           count: e.liftedCount,
           weight: e.liftedWeight,
+          refusing: e.refusing,
+          rating: e.rating,
+          cheating: e.cheating,
+          burning: e.burning,
         };
       });
+
+    // прогрессия рассчитывается при выполнении упражнения
+    const rigs = await tx.rig.findMany({ where: { userId } });
+    const action = await tx.action.findUniqueOrThrow({
+      where: { id: exercise.actionId },
+    });
+
+    let upgradedSetsData: ApproachData[] = [];
+    const strategy = new ProgressionStrategySimple(rigs, action);
+    if (exercise.purpose === Purpose.MASS) {
+      upgradedSetsData = strategy.mass([], setsData) as ApproachData[];
+    } else {
+      upgradedSetsData = strategy.strength([], setsData) as ApproachData[];
+    }
+    upgradedSetsData.forEach((set, i) => (set.priority = i));
+    console.log(upgradedSetsData);
+
     const approachGroupFromExecution = await createApproachGroup(
       tx,
-      setsData,
+      upgradedSetsData,
       exercise.actionId,
       training.userId,
     );

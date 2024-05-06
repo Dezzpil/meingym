@@ -2,7 +2,6 @@
 
 import { FormEvent, useCallback, useMemo, useState } from "react";
 import Loader from "@/components/Loader";
-import { ApproachLiftData } from "@/app/approaches/types";
 import { ApproachesManagementElement } from "@/components/approaches/ManagmentElement";
 import { TbSum } from "react-icons/tb";
 import {
@@ -10,6 +9,7 @@ import {
   handleUpdateApproachGroup,
 } from "@/app/approaches/actions";
 import type { Approach, Purpose } from "@prisma/client";
+import { ApproachData } from "@/core/approaches";
 
 type Props = {
   create?: {
@@ -31,11 +31,11 @@ export function ApproachesManagement({
   actionId,
 }: Props) {
   const [preprocessed, setPreprocessed] = useState<boolean>(false);
-  const [data, setData] = useState<ApproachLiftData[]>([]);
+  const [data, setData] = useState<ApproachData[]>([]);
   const [sum, setSum] = useState<number>(0);
 
   useMemo(() => {
-    const data: ApproachLiftData[] = [];
+    const data: ApproachData[] = [];
     approaches.map((a) => {
       data.push({
         count: a.count,
@@ -78,7 +78,7 @@ export function ApproachesManagement({
       const button = e.target as HTMLButtonElement;
       const key = button.getAttribute("data-key");
       setData((data) => {
-        const newData: ApproachLiftData[] = [];
+        const newData: ApproachData[] = [];
         for (const item of data) {
           if (item.priority === parseInt(key + "")) continue;
           newData.push(item);

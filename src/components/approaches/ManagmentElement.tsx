@@ -1,12 +1,12 @@
 "use client";
 
-import { ApproachLiftData } from "@/app/approaches/types";
 import React, { ChangeEvent, useCallback } from "react";
 import { GiWeight } from "react-icons/gi";
 import { TiDeleteOutline } from "react-icons/ti";
+import { ApproachData } from "@/core/approaches";
 
 type Props = {
-  elem: ApproachLiftData;
+  elem: ApproachData;
   onChange: CallableFunction;
   onRemove: CallableFunction;
 };

@@ -9,16 +9,22 @@ import { ActionRig } from "@prisma/client";
  * На силовые:
  *   Цель - плавное повышения взятия веса на раз, с небольшим повышением mean.
  *   Последний подход всегда на 1 раз.
+ *
+ * На массу:
+ *   Увеличиваем вес на минимальный шаг с сохранением кол-ва повторений елочкой.
+ *   Последний подход всегда на меньший вес, но на 12.
  */
 
 export type ProgressionStrategySimpleOpts = {
   StrengthWorkingSetsCount: number;
   StrengthPrepareSetsCount: number;
+  MassSetsCount: number;
 };
 
 const Defaults = {
   StrengthWorkingSetsCount: 4,
   StrengthPrepareSetsCount: 2,
+  MassSetsCount: 4,
 };
 
 export class ProgressionStrategySimple {
@@ -114,5 +120,41 @@ export class ProgressionStrategySimple {
     return preparing.concat(working);
   }
 
-  mass() {}
+  mass(planned: SetData[], executed: SetDataExecuted[]): SetData[] {
+    assert.isAbove(executed.length, 0);
+
+    let sets: SetData[] = [];
+    for (let i = 0; i < this.opts.MassSetsCount; i++) {
+      if (executed[i]) {
+        const set = JSON.parse(JSON.stringify(executed[i])) as SetData;
+        sets.push(set);
+      } else {
+        sets.unshift(JSON.parse(JSON.stringify(executed[0])));
+      }
+    }
+
+    let weightDelta = 2.5;
+
+    const upgrades = [
+      { above: 14, to: 12 },
+      { above: 12, to: 10 },
+      { above: 10, to: 8 },
+      { above: 14, to: 12 },
+    ];
+
+    for (let i = 0; i < sets.length; i++) {
+      if (sets[i].count >= upgrades[i].above) {
+        sets[i] = {
+          weight: sets[i].weight + weightDelta,
+          count: upgrades[i].to,
+        };
+      } else {
+        sets[i].count += 1;
+      }
+    }
+
+    sets[3].weight = sets[0].weight;
+
+    return sets;
+  }
 }

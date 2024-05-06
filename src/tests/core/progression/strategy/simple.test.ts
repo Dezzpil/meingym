@@ -1,5 +1,5 @@
 import { ActionRig } from ".prisma/client";
-import { SetData } from "@/core/types";
+import { SetData, SetDataExecuted } from "@/core/types";
 import { calculateStats } from "@/core/stats";
 import { assert } from "chai";
 import { test } from "node:test";
@@ -121,5 +121,38 @@ test("_upgradeStrengthPrepareSets", { only: false }, async (context) => {
     const prepareSets = strategy._upgradeStrengthPrepareSets(workingSets, 5);
     assert.equal(str(prepareSets[0]), "50x12");
     assert.equal(str(prepareSets[1]), "60x8");
+  });
+});
+
+test("mass", { only: true }, async (context) => {
+  await context.test("should normalize sets count", function () {
+    const sets: SetDataExecuted[] = [
+      {
+        weight: 30,
+        count: 12,
+        burning: "",
+        cheating: "",
+        rating: "",
+        refusing: "",
+      },
+    ];
+    const upgraded = strategy.mass(sets, sets);
+    assert.lengthOf(upgraded, strategy.opts.MassSetsCount);
+  });
+  await context.test("should upgrade load in sets", function () {
+    const sets: SetDataExecuted[] = [
+      {
+        weight: 30,
+        count: 12,
+        burning: "",
+        cheating: "",
+        rating: "",
+        refusing: "",
+      },
+    ];
+    const upgraded = strategy.mass(sets, sets);
+    assert.isAbove(upgraded[0].count, sets[0].count);
+    assert.isAbove(upgraded[1].weight, sets[0].weight);
+    console.log(upgraded);
   });
 });
