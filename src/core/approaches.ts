@@ -9,19 +9,19 @@ import {
 export type ApproachData = SetData & { priority: number };
 
 export const ApproachesStrengthDefault: ApproachData[] = [
-  { weight: 40, count: 10, priority: 0 },
-  { weight: 50, count: 8, priority: 1 },
-  { weight: 60, count: 6, priority: 2 },
-  { weight: 70, count: 3, priority: 3 },
-  { weight: 80, count: 1, priority: 4 },
-  { weight: 90, count: 1, priority: 5 },
+  { weight: 40, count: 12, priority: 0 },
+  { weight: 50, count: 6, priority: 1 },
+  { weight: 60, count: 3, priority: 2 },
+  { weight: 70, count: 2, priority: 3 },
+  { weight: 75, count: 1, priority: 4 },
+  { weight: 80, count: 1, priority: 5 },
 ];
 
 export const ApproachesMassDefault: ApproachData[] = [
   { weight: 30, count: 14, priority: 0 },
   { weight: 35, count: 12, priority: 1 },
   { weight: 35, count: 10, priority: 2 },
-  { weight: 30, count: 10, priority: 2 },
+  { weight: 35, count: 8, priority: 3 },
 ];
 
 // Значения по умолчанию для движений с собственным весом
