@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.1](https://github.com/Dezzpil/meingym/compare/v0.8.0...v0.8.1) (2024-05-06)
+
+
+### Features
+
+* реализовал алгоритм простейшей прогрессии на массу и добавил расчет прогрессии ([fb24f1f](https://github.com/Dezzpil/meingym/commits/fb24f1ff85db1e74b31f2b6b9ab2de84561f2758))
+* реализовал алгоритм простейшей прогрессии на силу ([1f2b7fe](https://github.com/Dezzpil/meingym/commits/1f2b7fe4c86f68a19d60762957082dc0425a0cae))
+
+
+### Bug Fixes
+
+* исправления в расчете прогрессии ([ef26ccc](https://github.com/Dezzpil/meingym/commits/ef26ccca58de3055201bbe5960c532f2cc4abb58))
+
 ## [0.8.0](https://github.com/Dezzpil/meingym/compare/v0.7.0...v0.8.0) (2024-04-27)
 
 
