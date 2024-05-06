@@ -1,7 +1,6 @@
 import { SetData, SetDataExecuted } from "@/core/types";
 import type { Action, Rig } from "@prisma/client";
 import { assert } from "chai";
-import { ActionRig } from "@prisma/client";
 
 /**
  * Простейшая стратегия.
@@ -29,28 +28,28 @@ const Defaults = {
 
 export class ProgressionStrategySimple {
   public readonly opts: ProgressionStrategySimpleOpts;
-  private readonly _rig: Rig;
+  private _weightMassDelta: number;
+  private _weightStrDelta: number;
   constructor(
     rigs: Rig[],
     private _action: Pick<Action, "rig" | "strengthAllowed">,
     opts?: ProgressionStrategySimpleOpts,
   ) {
     this.opts = opts ? Object.assign(Defaults, opts) : Defaults;
-    this._rig = rigs.filter((rig) => _action.rig === rig.code)[0];
-    assert.isNotEmpty(this._rig);
+    this._weightMassDelta = 2.5;
+    this._weightStrDelta = 5;
   }
 
   _upgradeStrengthWorkingSets(
     executedSets: SetData[],
     weightDelta: number,
   ): SetData[] {
-    assert.isAbove(executedSets.length, this.opts.StrengthWorkingSetsCount - 1);
-
     // will copy objects by value
     const setsCopy: SetData[] = [];
 
     for (const set of executedSets.slice(-this.opts.StrengthWorkingSetsCount)) {
-      if (set.count !== 0) setsCopy.push(JSON.parse(JSON.stringify(set)));
+      if (set.count !== 0)
+        setsCopy.push({ count: set.count, weight: set.weight });
     }
     if (setsCopy.length !== this.opts.StrengthWorkingSetsCount) {
       // какие-то подходы не удалось выполнить, надо перестроить нагрузку
@@ -113,10 +112,16 @@ export class ProgressionStrategySimple {
    * @param executed
    */
   strength(planned: SetData[], executed: SetDataExecuted[]): SetData[] {
-    let weightDelta = 5;
-    if (this._rig.code === ActionRig.BARBELL) weightDelta = this._rig.value * 2;
-    let working = this._upgradeStrengthWorkingSets(executed, weightDelta);
-    let preparing = this._upgradeStrengthPrepareSets(working, weightDelta);
+    assert.isAbove(executed.length, 0);
+
+    let working = this._upgradeStrengthWorkingSets(
+      executed,
+      this._weightStrDelta,
+    );
+    let preparing = this._upgradeStrengthPrepareSets(
+      working,
+      this._weightStrDelta,
+    );
     return preparing.concat(working);
   }
 
@@ -126,14 +131,18 @@ export class ProgressionStrategySimple {
     let sets: SetData[] = [];
     for (let i = 0; i < this.opts.MassSetsCount; i++) {
       if (executed[i]) {
-        const set = JSON.parse(JSON.stringify(executed[i])) as SetData;
+        const set = {
+          count: executed[i].count,
+          weight: executed[i].weight,
+        } as SetData;
         sets.push(set);
       } else {
-        sets.unshift(JSON.parse(JSON.stringify(executed[0])));
+        sets.unshift({
+          count: executed[0].count,
+          weight: executed[0].weight,
+        } as SetData);
       }
     }
-
-    let weightDelta = 2.5;
 
     const upgrades = [
       { above: 14, to: 12 },
@@ -145,7 +154,7 @@ export class ProgressionStrategySimple {
     for (let i = 0; i < sets.length; i++) {
       if (sets[i].count >= upgrades[i].above) {
         sets[i] = {
-          weight: sets[i].weight + weightDelta,
+          weight: sets[i].weight + this._weightMassDelta,
           count: upgrades[i].to,
         };
       } else {

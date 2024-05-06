@@ -140,7 +140,7 @@ async function createNewApproachGroupsAndLinkThem(
       TrainingExerciseExecution: TrainingExerciseExecution[];
     };
     // игнорируем пропущенные подходы или подходы с 0 нагрузкой
-    const setsData: ApproachExecutedData[] =
+    const executedSetsData: ApproachExecutedData[] =
       exercise.TrainingExerciseExecution.filter(
         (e) => !e.isPassed && e.liftedCount > 0,
       ).map((e) => {
@@ -161,28 +161,37 @@ async function createNewApproachGroupsAndLinkThem(
       where: { id: exercise.actionId },
     });
 
-    let upgradedSetsData: ApproachData[] = [];
-    const strategy = new ProgressionStrategySimple(rigs, action);
-    if (exercise.purpose === Purpose.MASS) {
-      upgradedSetsData = strategy.mass([], setsData) as ApproachData[];
-    } else {
-      upgradedSetsData = strategy.strength([], setsData) as ApproachData[];
-    }
-    upgradedSetsData.forEach((set, i) => (set.priority = i));
-    console.log(upgradedSetsData);
+    if (executedSetsData.length) {
+      // Если хотя бы один подход был выполнен, то рассчитываем прогрессию
+      // и обновляем нагрузку на будущее. Иначе просто оставляем ту нагрузку, что была
+      let upgradedSetsData: ApproachData[] = [];
+      const strategy = new ProgressionStrategySimple(rigs, action);
+      if (exercise.purpose === Purpose.MASS) {
+        upgradedSetsData = strategy.mass(
+          [],
+          executedSetsData,
+        ) as ApproachData[];
+      } else {
+        upgradedSetsData = strategy.strength(
+          [],
+          executedSetsData,
+        ) as ApproachData[];
+      }
+      upgradedSetsData.forEach((set, i) => (set.priority = i));
 
-    const approachGroupFromExecution = await createApproachGroup(
-      tx,
-      upgradedSetsData,
-      exercise.actionId,
-      training.userId,
-    );
-    await linkNewApproachGroupToActionByPurpose(
-      tx,
-      exercise.purpose,
-      exercise.purposeId,
-      approachGroupFromExecution,
-    );
+      const approachGroupFromExecution = await createApproachGroup(
+        tx,
+        upgradedSetsData,
+        exercise.actionId,
+        training.userId,
+      );
+      await linkNewApproachGroupToActionByPurpose(
+        tx,
+        exercise.purpose,
+        exercise.purposeId,
+        approachGroupFromExecution,
+      );
+    }
   }
 }
 
