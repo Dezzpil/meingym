@@ -181,32 +181,32 @@ export async function handleProcessCompletedTraining(
   }
   if (training.processedAt) return;
 
-  await prisma.$transaction(async (tx) => {
-    // пересоздадим подходы, из которых будет собираться следующая тренировка?
-    for (const e of training.TrainingExercise) {
-      const exercise = e as TrainingExercise & {
-        TrainingExerciseExecution: TrainingExerciseExecution[];
-      };
-      // игнорируем пропущенные подходы или подходы с 0 нагрузкой
-      const executedSetsData: ApproachExecutedData[] =
-        exercise.TrainingExerciseExecution.filter(
-          (e) => !e.isPassed && e.liftedCount > 0,
-        ).map((e) => {
-          return {
-            priority: e.priority,
-            count: e.liftedCount,
-            weight: e.liftedWeight,
-            refusing: e.refusing,
-            rating: e.rating,
-            cheating: e.cheating,
-            burning: e.burning,
-          };
-        });
+  // пересоздадим подходы, из которых будет собираться следующая тренировка?
+  for (const e of training.TrainingExercise) {
+    const exercise = e as TrainingExercise & {
+      TrainingExerciseExecution: TrainingExerciseExecution[];
+    };
+    // игнорируем пропущенные подходы или подходы с 0 нагрузкой
+    const executedSetsData: ApproachExecutedData[] =
+      exercise.TrainingExerciseExecution.filter(
+        (e) => !e.isPassed && e.liftedCount > 0,
+      ).map((e) => {
+        return {
+          priority: e.priority,
+          count: e.liftedCount,
+          weight: e.liftedWeight,
+          refusing: e.refusing,
+          rating: e.rating,
+          cheating: e.cheating,
+          burning: e.burning,
+        };
+      });
 
-      if (executedSetsData.length) {
+    if (executedSetsData.length) {
+      await prisma.$transaction(async (tx) => {
         // Если хотя бы один подход был выполнен, то рассчитываем прогрессию
         // и обновляем нагрузку на будущее. Иначе просто оставляем ту нагрузку, что была
-        let upgradedSetsData: ApproachData[] = [];
+        let upgradedSetsData: ApproachData[];
 
         const rigs = await tx.rig.findMany({ where: { userId } });
         const action = await tx.action.findUniqueOrThrow({
@@ -238,13 +238,13 @@ export async function handleProcessCompletedTraining(
           exercise.purposeId,
           approachGroupFromExecution,
         );
-      }
+      });
     }
+  }
 
-    await tx.training.update({
-      where: { id: trainingId },
-      data: { processedAt: new Date() },
-    });
+  await prisma.training.update({
+    where: { id: trainingId },
+    data: { processedAt: new Date() },
   });
 
   revalidatePath(`/trainings/${trainingId}/execute`);
