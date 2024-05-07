@@ -15,6 +15,7 @@ import {
 } from "@/core/approaches";
 import { PrismaTransactionClient } from "@/tools/types";
 import {
+  Action,
   Purpose,
   TrainingExercise,
   TrainingExerciseExecution,
@@ -166,12 +167,14 @@ export async function handleProcessCompletedTraining(
   trainingId: number,
 ): Promise<void> {
   const userId = await getCurrentUserId();
+  const rigs = await prisma.rig.findMany({ where: { userId } });
   const training = await prisma.training.findUniqueOrThrow({
     where: { id: trainingId },
     include: {
       TrainingExercise: {
         include: {
           TrainingExerciseExecution: { orderBy: { priority: "asc" } },
+          Action: true,
         },
       },
     },
@@ -184,6 +187,7 @@ export async function handleProcessCompletedTraining(
   // пересоздадим подходы, из которых будет собираться следующая тренировка?
   for (const e of training.TrainingExercise) {
     const exercise = e as TrainingExercise & {
+      Action: Action;
       TrainingExerciseExecution: TrainingExerciseExecution[];
     };
     // игнорируем пропущенные подходы или подходы с 0 нагрузкой
@@ -203,29 +207,23 @@ export async function handleProcessCompletedTraining(
       });
 
     if (executedSetsData.length) {
+      // Если хотя бы один подход был выполнен, то рассчитываем прогрессию
+      // и обновляем нагрузку на будущее. Иначе просто оставляем ту нагрузку, что была
+      let upgradedSetsData: ApproachData[];
+      const strategy = new ProgressionStrategySimple(rigs, exercise.Action);
+      if (exercise.purpose === Purpose.MASS) {
+        upgradedSetsData = strategy.mass(
+          [],
+          executedSetsData,
+        ) as ApproachData[];
+      } else {
+        upgradedSetsData = strategy.strength(
+          [],
+          executedSetsData,
+        ) as ApproachData[];
+      }
+      upgradedSetsData.forEach((set, i) => (set.priority = i));
       await prisma.$transaction(async (tx) => {
-        // Если хотя бы один подход был выполнен, то рассчитываем прогрессию
-        // и обновляем нагрузку на будущее. Иначе просто оставляем ту нагрузку, что была
-        let upgradedSetsData: ApproachData[];
-
-        const rigs = await tx.rig.findMany({ where: { userId } });
-        const action = await tx.action.findUniqueOrThrow({
-          where: { id: exercise.actionId },
-        });
-        const strategy = new ProgressionStrategySimple(rigs, action);
-        if (exercise.purpose === Purpose.MASS) {
-          upgradedSetsData = strategy.mass(
-            [],
-            executedSetsData,
-          ) as ApproachData[];
-        } else {
-          upgradedSetsData = strategy.strength(
-            [],
-            executedSetsData,
-          ) as ApproachData[];
-        }
-        upgradedSetsData.forEach((set, i) => (set.priority = i));
-
         const approachGroupFromExecution = await createApproachGroup(
           tx,
           upgradedSetsData,
