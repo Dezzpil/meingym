@@ -7,6 +7,7 @@ import type { Training } from "@prisma/client";
 import moment from "moment";
 import { TrainingChangeDateForm } from "@/app/trainings/[id]/execute/components/TrainingChangeDateForm";
 import { TrainingRepeatForm } from "@/app/trainings/[id]/execute/components/TrainingRepeatForm";
+import { TrainingProcessPanel } from "@/app/trainings/[id]/execute/components/TrainingProcessPanel";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
@@ -83,7 +84,10 @@ export default async function TrainingPage({ params }: ItemPageParams) {
             Выполнение
           </a>
         )}
-        {training.completedAt && <TrainingRepeatForm training={training} />}
+        {training.completedAt && !training.processedAt && (
+          <TrainingProcessPanel training={training} />
+        )}
+        {training.processedAt && <TrainingRepeatForm training={training} />}
       </div>
     </>
   );
