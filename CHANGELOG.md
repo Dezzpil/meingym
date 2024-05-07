@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.3](https://github.com/Dezzpil/meingym/compare/v0.8.2...v0.8.3) (2024-05-07)
+
+
+### Bug Fixes
+
+* фикс обработки результатов ([18d3611](https://github.com/Dezzpil/meingym/commits/18d36113279c7033134f2a62e1cec626160348b8))
+
 ### [0.8.2](https://github.com/Dezzpil/meingym/compare/v0.8.1...v0.8.2) (2024-05-07)
 
 
