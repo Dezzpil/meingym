@@ -73,15 +73,16 @@ export async function handleTrainingExerciseExecuted(
   trainingId: number,
   actionId: number,
 ) {
-  const userId = await getCurrentUserId();
-  await prisma.$transaction(async (tx) => {
-    await tx.trainingExerciseExecution.updateMany({
-      where: { exerciseId, executedAt: null },
-      data: { isPassed: true },
-    });
+  await prisma.trainingExerciseExecution.updateMany({
+    where: { exerciseId, executedAt: null },
+    data: { isPassed: true },
+  });
 
+  const userId = await getCurrentUserId();
+
+  await prisma.$transaction(async (tx) => {
     const executions = await tx.trainingExerciseExecution.findMany({
-      where: { isPassed: false },
+      where: { exerciseId, isPassed: false },
     });
 
     const sets: SetData[] = executions.map((e) => {
