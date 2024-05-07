@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.2](https://github.com/Dezzpil/meingym/compare/v0.8.1...v0.8.2) (2024-05-07)
+
+
+### Features
+
+* обработка результатов и ручное завершение ([bc1f7f1](https://github.com/Dezzpil/meingym/commits/bc1f7f1ece887661033e22dcd738fe9151d6cb48))
+
+
+### Bug Fixes
+
+* исправил ошибку расчета статистик исполнения ([1c0172e](https://github.com/Dezzpil/meingym/commits/1c0172e6937d74d62ee530b8242a698e715b5af8))
+
 ### [0.8.1](https://github.com/Dezzpil/meingym/compare/v0.8.0...v0.8.1) (2024-05-06)
 
 
