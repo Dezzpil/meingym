@@ -59,7 +59,7 @@ export function Layout({ children }: Props) {
                 </Link>
               </li>
               <li>
-                <Link href={"/weights"} className="nav-link">
+                <Link href={"/rigs"} className="nav-link">
                   Оборудование
                 </Link>
               </li>
