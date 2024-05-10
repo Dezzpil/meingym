@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.4](https://github.com/Dezzpil/meingym/compare/v0.8.3...v0.8.4) (2024-05-10)
+
+
+### Features
+
+* заменить селект на даталист ([d0a97d0](https://github.com/Dezzpil/meingym/commits/d0a97d0c7b1870b9ae8f4c58bc22c2926fa6aeac))
+* исключить добавленные движения из списка для тренировки ([0f4e2e5](https://github.com/Dezzpil/meingym/commits/0f4e2e514fd5feac30de18523fd05b0fd1510178))
+* оптимизация обработки результатов ([98cbbbb](https://github.com/Dezzpil/meingym/commits/98cbbbba021137d7522d4c3dbab1be061f21dcad))
+
+
+### Bug Fixes
+
+* исправить ссылку на оборудование ([0e99d10](https://github.com/Dezzpil/meingym/commits/0e99d10137cda760b1bc070680fc8675015921dc))
+
 ### [0.8.3](https://github.com/Dezzpil/meingym/compare/v0.8.2...v0.8.3) (2024-05-07)
 
 
