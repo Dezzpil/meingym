@@ -16,6 +16,7 @@ export default function MusclesGroupsButtons({ id }: Props) {
     try {
       await handleMuscleGroupDelete(id);
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     }
     setHandling(false);

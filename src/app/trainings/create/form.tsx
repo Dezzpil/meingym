@@ -17,6 +17,7 @@ export default function TrainingForm() {
     try {
       await handleCreateTraining(data);
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     }
     setHandling(false);

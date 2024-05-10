@@ -25,6 +25,7 @@ export function TrainingRepeatForm({ training }: Props) {
     try {
       await handleRepeatTraining(training.id, data);
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     }
     setHandling(false);

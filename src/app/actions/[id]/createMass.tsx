@@ -14,6 +14,7 @@ export function ActionCreateMass({ action }: Props) {
     try {
       await handleCreateMassInitial(action.id, action.rig);
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     }
     setHandling(false);

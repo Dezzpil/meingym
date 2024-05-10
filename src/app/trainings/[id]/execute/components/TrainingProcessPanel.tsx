@@ -16,6 +16,7 @@ export function TrainingProcessPanel({ training }: Props) {
     try {
       await handleProcessCompletedTraining(training.id);
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     } finally {
       setHandling(false);

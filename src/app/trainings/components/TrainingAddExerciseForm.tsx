@@ -21,6 +21,7 @@ export default function TrainingAddExerciseForm({ training, actions }: Props) {
     try {
       await handleAddExercise(training.id, data);
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     }
   });

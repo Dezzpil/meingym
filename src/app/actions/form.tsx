@@ -38,6 +38,7 @@ export default function ActionsForm({ muscles, action }: Props) {
         await handleCreate(data);
       }
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     }
     setHandling(false);

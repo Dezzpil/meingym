@@ -35,6 +35,7 @@ export function MuscleGroupsDescForm({ group, desc }: Props) {
         await handleMuscleGroupAddDesc(group.id, data);
       }
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     }
     setHandling(false);

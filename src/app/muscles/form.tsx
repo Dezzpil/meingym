@@ -23,6 +23,7 @@ export default function MusclesForm({ groups, muscle }: Props) {
     try {
       await handleCreate(data);
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     }
     setHandling(false);
@@ -35,6 +36,7 @@ export default function MusclesForm({ groups, muscle }: Props) {
         try {
           await handleDelete(muscle.id);
         } catch (e: any) {
+          console.error(e);
           setError(e.message);
         }
         setHandling(false);

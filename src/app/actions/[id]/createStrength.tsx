@@ -14,6 +14,7 @@ export function ActionCreateStrength({ action }: Props) {
     try {
       await handleCreateStrengthInitial(action.id);
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     }
     setHandling(false);

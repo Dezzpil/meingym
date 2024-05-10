@@ -35,6 +35,7 @@ export function MuscleDescForm({ muscle, desc }: Props) {
         await handleMuscleAddDesc(muscle.id, data);
       }
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     }
     setHandling(false);

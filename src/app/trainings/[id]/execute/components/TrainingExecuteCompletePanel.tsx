@@ -18,6 +18,7 @@ export function TrainingExecuteCompletePanel({ training }: Props) {
     try {
       await handleCompleteTrainingManually(training.id);
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     } finally {
       setHandling(false);

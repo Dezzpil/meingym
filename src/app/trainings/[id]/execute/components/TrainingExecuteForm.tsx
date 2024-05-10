@@ -50,6 +50,7 @@ export function TrainingExecuteForm({ exercise, disabled }: Props) {
     try {
       await handleAddExecutionApproach(exercise.trainingId, exercise.id);
     } catch (e: any) {
+      console.error(e);
       setErrorAddingApproach(e.message);
     } finally {
       setAddingApproach(false);

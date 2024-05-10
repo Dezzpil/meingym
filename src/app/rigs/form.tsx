@@ -22,6 +22,7 @@ export const WeightsForm: React.FC<Props> = ({ values }) => {
     try {
       await handleWeightsUpdate(data);
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     }
     setHandling(false);

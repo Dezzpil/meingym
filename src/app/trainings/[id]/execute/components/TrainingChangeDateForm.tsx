@@ -24,6 +24,7 @@ export function TrainingChangeDateForm({ training }: Props) {
     try {
       await handleChangeTrainingDate(training.id, data);
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     }
     setHandling(false);

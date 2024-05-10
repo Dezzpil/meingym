@@ -15,6 +15,7 @@ export default function MusclesGroupsCreateForm() {
     try {
       await handleSubmitAction(data);
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     }
     setSubmitting(false);

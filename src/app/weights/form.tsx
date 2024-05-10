@@ -17,6 +17,7 @@ export function WeightsForm({ value }: Props) {
     try {
       await handleWeightSave(data);
     } catch (e: any) {
+      console.error(e);
       setError(e.message);
     }
     setHandling(false);
