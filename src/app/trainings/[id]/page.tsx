@@ -72,7 +72,11 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         <p>Упражнения еще не добавлены...</p>
       )}
       {!training.startedAt && (
-        <TrainingAddExerciseForm training={training} actions={actions} />
+        <TrainingAddExerciseForm
+          training={training}
+          actions={actions}
+          exercises={exercises}
+        />
       )}
       <div className="d-flex gap-3">
         {(moment(training.plannedTo).isSame(moment(), "day") ||
