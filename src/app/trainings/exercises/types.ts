@@ -3,6 +3,7 @@ import { Purpose } from "@prisma/client";
 
 export const ExerciseAddFields = z.object({
   actionId: z.number(),
+  actionTitle: z.string().optional(),
   purpose: z.nativeEnum(Purpose),
 });
 

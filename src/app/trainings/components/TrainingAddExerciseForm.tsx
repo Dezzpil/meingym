@@ -22,12 +22,19 @@ export default function TrainingAddExerciseForm({
   const exercisesMap = useMemo(() => {
     return Object.fromEntries(exercises.map((e) => [e.actionId, true]));
   }, [exercises]);
+  const actionsTitlesMap = useMemo(() => {
+    return Object.fromEntries(
+      actions.map((a) => [a.alias ? a.alias : a.title, a.id]),
+    );
+  }, [actions]);
   const [error, setError] = useState<string | null>(null);
   const form = useForm<ExerciseAddFieldsType>({});
   const submit = form.handleSubmit(async (data) => {
+    data.actionId = actionsTitlesMap[data.actionTitle as string];
     setError(null);
     try {
       await handleAddExercise(training.id, data);
+      form.reset();
     } catch (e: any) {
       console.error(e);
       setError(e.message);
@@ -38,18 +45,21 @@ export default function TrainingAddExerciseForm({
     <>
       <form className="mb-3 d-flex gap-2" onSubmit={submit}>
         <div>
-          <select
+          <input
+            type="search"
+            list="actionsTitles"
             className="form-control"
-            {...form.register("actionId", { valueAsNumber: true })}
-          >
+            {...form.register("actionTitle")}
+          />
+          <datalist id="actionsTitles">
             {actions
               .filter((a) => !(a.id in exercisesMap))
               .map((a) => (
-                <option value={a.id} key={a.id}>
+                <option value={a.alias ? a.alias : a.title} key={a.id}>
                   {a.alias ? a.alias : a.title}
                 </option>
               ))}
-          </select>
+          </datalist>
         </div>
         <div className="">
           <select className="form-control" {...form.register("purpose")}>
