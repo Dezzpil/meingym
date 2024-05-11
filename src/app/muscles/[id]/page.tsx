@@ -17,9 +17,7 @@ export default async function MusclePage({ params }: ItemPageParams) {
 
   return (
     <>
-      <header className="mb-3">
-        {muscle.title} <b>мышца</b>
-      </header>
+      <h2 className="mb-3">{muscle.title} мышца</h2>
       <MuscleInActions muscle={muscle} />
       <MuscleForm groups={groups} muscle={muscle} />
       {muscle.MuscleDesc.map((desc) => (

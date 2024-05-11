@@ -6,33 +6,22 @@ export default async function MusclesGroupsPage() {
 
   return (
     <>
-      <header className="mb-3">Список мышечных групп</header>
       <div className="mb-3">
         <Link className="btn btn-primary" href={`/musclesgroups/create`}>
-          Добавить
+          Добавить группу мышц
         </Link>
       </div>
       {data.length ? (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Название</th>
-              <th>Мышцы</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((d) => (
-              <tr key={d.id}>
-                <td>{d.id}</td>
-                <td>
-                  <Link href={`/musclesgroups/${d.id}`}>{d.title}</Link>
-                </td>
-                <td>{d.Muscle.length}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <ul className="list-group">
+          {data.map((d) => (
+            <li className="list-group-item hstack gap-3" key={d.id}>
+              <span>
+                <Link href={`/musclesgroups/${d.id}`}>{d.title}</Link>
+              </span>
+              <span>включает {d.Muscle.length} мышц</span>
+            </li>
+          ))}
+        </ul>
       ) : (
         <p className="text-muted">Список пуст</p>
       )}

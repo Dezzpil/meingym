@@ -57,6 +57,7 @@ export default async function ActionPage({ params }: PageParams) {
 
   return (
     <>
+      <h2 className="mb-3">{action.alias ? action.alias : action.title}</h2>
       <ActionControl
         actionId={action.id}
         trainingsCount={action.TrainingExercise.length}

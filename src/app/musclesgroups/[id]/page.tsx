@@ -2,6 +2,7 @@ import MusclesGroupsButtons from "@/app/musclesgroups/[id]/components/buttons";
 import { prisma } from "@/tools/db";
 import { MuscleGroupsDescForm } from "@/app/musclesgroups/[id]/components/descForm";
 import Link from "next/link";
+import classNames from "classnames";
 
 type Props = {
   params: { id: string };
@@ -23,20 +24,39 @@ export default async function MusclesGroupsIdPage({ params }: Props) {
   });
   return (
     <>
-      <header className="mb-3">
-        Мышечная группа <b>{group.title}</b>
-      </header>
+      <h2 className="mb-3">Мышечная группа: {group.title}</h2>
       {group.Muscle.length ? (
         <ul className="list-group mb-3">
           {group.Muscle.map((m) => (
-            <li className="list-group-item hstack gap-5" key={m.id}>
+            <li
+              className="list-group-item hstack justify-content-between"
+              key={m.id}
+            >
               <Link href={`/muscles/${m.id}`}>{m.title}</Link>
-              <span className="badge text-bg-primary">
-                {m.AgonyInActions.length}
-              </span>
-              <span className="badge text-bg-primary">
-                {m.SynergyInActions.length}
-              </span>
+              <div className="hstack gap-2">
+                <span
+                  title="Агонист"
+                  className={classNames(
+                    "badge",
+                    m.AgonyInActions.length
+                      ? "text-bg-primary"
+                      : "text-bg-secondary",
+                  )}
+                >
+                  {m.AgonyInActions.length}
+                </span>
+                <span
+                  title="Синергист"
+                  className={classNames(
+                    "badge",
+                    m.SynergyInActions.length
+                      ? "text-bg-primary"
+                      : "text-bg-secondary",
+                  )}
+                >
+                  {m.SynergyInActions.length}
+                </span>
+              </div>
             </li>
           ))}
         </ul>
