@@ -2,16 +2,29 @@ import { prisma } from "@/tools/db";
 import Link from "next/link";
 import { Purpose } from "@prisma/client";
 import { getCurrentUserId } from "@/tools/auth";
-import { TrainingListItem } from "@/app/trainings/components/TrainingListItem";
+import { TrainingListCard } from "@/app/trainings/components/TrainingListCard";
+import { PageParams } from "@/tools/types";
 
 type TrainingId = number;
 export type MuscleGroupTitleToExercisesCnt = Record<string, number>;
 export type ActionPurposeCnt = Record<"MASS" | "STRENGTH", number>;
 
-export default async function TrainingsPage() {
+export default async function TrainingsPage({ searchParams }: PageParams) {
   const userId = await getCurrentUserId();
+  const groupId = searchParams.group ? parseInt(searchParams.group) : null;
+  const groups = await prisma.muscleGroup.findMany({});
   const trainings = await prisma.training.findMany({
-    where: { userId },
+    where: {
+      TrainingExercise:
+        groupId !== null
+          ? {
+              some: {
+                Action: { MusclesAgony: { some: { Muscle: { groupId } } } },
+              },
+            }
+          : {},
+      userId,
+    },
     include: {
       TrainingExercise: {
         include: {
@@ -60,39 +73,46 @@ export default async function TrainingsPage() {
 
   return (
     <>
-      <header className="mb-3">Список тренировок</header>
       <div className="mb-3">
-        <Link href={`/trainings/create`} className="btn btn-primary">
-          Добавить
-        </Link>
+        <form
+          method="GET"
+          className="row row-cols-lg-auto g-3 align-items-center"
+        >
+          <div className="col-12">
+            <select name="group" className="form-select">
+              <option value="">&mdash;</option>
+              {groups.map((g) => (
+                <option
+                  value={g.id}
+                  key={g.id}
+                  selected={groupId ? g.id === groupId : false}
+                >
+                  {g.title}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-12 hstack gap-3">
+            <button type="submit" className="btn btn-primary">
+              Найти
+            </button>
+            <Link href={`/trainings/create`} className="btn btn-primary">
+              Добавить тренировку
+            </Link>
+          </div>
+        </form>
       </div>
       {trainings.length ? (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Запланирована</th>
-              <th>Упражнений</th>
-              <th>Мышцы-агонисты</th>
-              <th>Сила / масса</th>
-              <th>Выполнение</th>
-            </tr>
-          </thead>
-          <tbody>
-            {trainings.map((t) => (
-              <TrainingListItem
-                training={t}
-                key={t.id}
-                muscleGroupsCounts={
-                  groupsToTrainingsMap.get(
-                    t.id,
-                  ) as MuscleGroupTitleToExercisesCnt
-                }
-                purposeCounts={purposeToTrainingMap.get(t.id)}
-              />
-            ))}
-          </tbody>
-        </table>
+        trainings.map((t) => (
+          <TrainingListCard
+            training={t}
+            key={t.id}
+            muscleGroupsCounts={
+              groupsToTrainingsMap.get(t.id) as MuscleGroupTitleToExercisesCnt
+            }
+            purposeCounts={purposeToTrainingMap.get(t.id)}
+          />
+        ))
       ) : (
         <p>Список пуст</p>
       )}

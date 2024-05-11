@@ -40,7 +40,7 @@ type Props = {
   purposeCounts?: ActionPurposeCnt;
 };
 
-export function TrainingListItem({
+export function TrainingListRow({
   training,
   muscleGroupsCounts,
   purposeCounts,

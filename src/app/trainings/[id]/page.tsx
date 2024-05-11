@@ -81,8 +81,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         />
       )}
       <div className="d-flex gap-3">
-        {(moment(training.plannedTo).isSame(moment(), "day") ||
-          training.startedAt) && (
+        {training.startedAt && !training.completedAt && (
           <a
             href={`/trainings/${training.id}/execute`}
             className="btn btn-light"

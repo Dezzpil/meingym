@@ -57,61 +57,55 @@ export default function TrainingExerciseItemControl({
         <div>
           <small className="small text-muted">{exercise.purpose}</small>
         </div>
-        <div className="d-flex gap-3">
-          <div>
+        <div className="d-flex gap-2">
+          {exercise.ApproachGroup.Approaches.map((a) => (
+            <span key={a.id}>
+              {a.weight}x{a.count}
+            </span>
+          ))}
+        </div>
+        <div className="d-flex gap-3 mb-2 text-muted small">
+          <span>Σ кг: {exercise.ApproachGroup.sum}</span>
+          <span>÷ кг: {exercise.ApproachGroup.mean.toFixed(2)}</span>
+        </div>
+        {canControl && (
+          <div className="d-flex gap-2">
+            {hidden ? (
+              <button className="btn btn-sm btn-secondary" onClick={show}>
+                Редактировать
+              </button>
+            ) : (
+              <button className="btn btn-sm btn-dark" onClick={hide}>
+                Скрыть редактирование
+              </button>
+            )}
+            <button className="btn btn-sm btn-default" onClick={up}>
+              <FaArrowUp />
+            </button>
+            <button className="btn btn-sm btn-default" onClick={down}>
+              <FaArrowDown />
+            </button>
+            <button className="btn btn-sm btn-danger" onClick={remove}>
+              <FaX />
+            </button>
+          </div>
+        )}
+        {exercise.completedAt && (
+          <>
+            <div>Исполнение</div>
             <div className="d-flex gap-2">
-              {exercise.ApproachGroup.Approaches.map((a) => (
-                <span key={a.id}>
-                  {a.weight}x{a.count}
+              {exercise.TrainingExerciseExecution.map((execution) => (
+                <span key={execution.id}>
+                  {execution.liftedWeight}x{execution.liftedCount}
                 </span>
               ))}
             </div>
             <div className="d-flex gap-3 mb-2 text-muted small">
-              <span>Σ кг: {exercise.ApproachGroup.sum}</span>
-              <span>÷ кг: {exercise.ApproachGroup.mean.toFixed(2)}</span>
+              <span>Σ кг: {exercise.liftedSum}</span>
+              <span>÷ кг: {exercise.liftedMean}</span>
             </div>
-            {canControl && (
-              <div className="d-flex gap-2">
-                {hidden ? (
-                  <button className="btn btn-sm btn-secondary" onClick={show}>
-                    Редактировать
-                  </button>
-                ) : (
-                  <button className="btn btn-sm btn-dark" onClick={hide}>
-                    Скрыть редактирование
-                  </button>
-                )}
-                <button className="btn btn-sm btn-default" onClick={up}>
-                  <FaArrowUp />
-                </button>
-                <button className="btn btn-sm btn-default" onClick={down}>
-                  <FaArrowDown />
-                </button>
-                <button className="btn btn-sm btn-danger" onClick={remove}>
-                  <FaX />
-                </button>
-              </div>
-            )}
-          </div>
-          {exercise.completedAt && (
-            <>
-              <div>...</div>
-              <div>
-                <div className="d-flex gap-2">
-                  {exercise.TrainingExerciseExecution.map((execution) => (
-                    <span key={execution.id}>
-                      {execution.liftedWeight}x{execution.liftedCount}
-                    </span>
-                  ))}
-                </div>
-                <div className="d-flex gap-3 mb-2 text-muted small">
-                  <span>Σ кг: {exercise.liftedSum}</span>
-                  <span>÷ кг: {exercise.liftedMean}</span>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
+          </>
+        )}
       </div>
 
       <div className="col-md-9 col-sm-12" hidden={hidden}>
