@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.5](https://github.com/Dezzpil/meingym/compare/v0.8.4...v0.8.5) (2024-05-11)
+
+
+### Features
+
+* добавить инфу о мышцах группе ([51e510e](https://github.com/Dezzpil/meingym/commits/51e510e2cb61ed17c179605344c6cfad3937a6e7))
+* добавить инфу о синергистах ([dbdf3d1](https://github.com/Dezzpil/meingym/commits/dbdf3d11c35893ea7975fd630fed40c983581014))
+* доработать добавление упражнений ([f348467](https://github.com/Dezzpil/meingym/commits/f348467f14d79fc96e4f2dcb511b1efa557573bc))
+* доработать форму создания движения ([11c6a7b](https://github.com/Dezzpil/meingym/commits/11c6a7b91aced6bc717131743dae473f8b6c464b))
+* унифицировать формат даты и времени ([8bf0ec5](https://github.com/Dezzpil/meingym/commits/8bf0ec55edd008967cc6d448c8607c02506976b5))
+
+
+### Bug Fixes
+
+* исправить пересчет суммы подходов ([ada1a18](https://github.com/Dezzpil/meingym/commits/ada1a183a048d8153aaf2782a05d91f9e34603f2))
+
 ### [0.8.4](https://github.com/Dezzpil/meingym/compare/v0.8.3...v0.8.4) (2024-05-10)
 
 
