@@ -6,7 +6,7 @@ import { handleAddExercise } from "@/app/trainings/exercises/actions";
 import { useForm } from "react-hook-form";
 import { ExerciseAddFieldsType } from "@/app/trainings/exercises/types";
 import { BiPlus } from "react-icons/bi";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
 type Props = {
   training: Training;
@@ -42,11 +42,14 @@ export default function TrainingAddExerciseForm({
       form.reset();
     }
   });
+
   const [action, setAction] = useState<Action | null>(null);
   const chooseAction = useCallback(
     (e: any) => {
+      console.log(e.target.value);
       const elem = e.target;
       if (elem.value in actionsTitlesMap) {
+        console.log(actionsTitlesMap[elem.value]);
         setAction(actionsTitlesMap[elem.value]);
       }
     },
@@ -58,22 +61,20 @@ export default function TrainingAddExerciseForm({
       <form className="mb-3 d-flex gap-2" onSubmit={submit}>
         {filteredActions.length && (
           <div>
-            <input
-              type="text"
-              list="actions"
+            <select
               className="form-control"
-              {...form.register("actionTitle", { onChange: chooseAction })}
-            />
-            <datalist id="actions">
+              {...form.register("actionTitle")}
+              onChange={chooseAction}
+            >
               {filteredActions.map((a) => (
                 <option value={a.alias ? a.alias : a.title} key={a.id}>
                   {a.alias ? a.alias : a.title}
                 </option>
               ))}
-            </datalist>
+            </select>
           </div>
         )}
-        <div className="">
+        <div>
           <select className="form-control" {...form.register("purpose")}>
             <option value={Purpose.MASS}>На массу</option>
             {action && action.strengthAllowed && (
