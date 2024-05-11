@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/tools/db";
 
 export default async function MusclesGroupsPage() {
-  const data = await prisma.muscleGroup.findMany({});
+  const data = await prisma.muscleGroup.findMany({ include: { Muscle: true } });
 
   return (
     <>
@@ -18,6 +18,7 @@ export default async function MusclesGroupsPage() {
             <tr>
               <th>ID</th>
               <th>Название</th>
+              <th>Мышцы</th>
             </tr>
           </thead>
           <tbody>
@@ -27,6 +28,7 @@ export default async function MusclesGroupsPage() {
                 <td>
                   <Link href={`/musclesgroups/${d.id}`}>{d.title}</Link>
                 </td>
+                <td>{d.Muscle.length}</td>
               </tr>
             ))}
           </tbody>

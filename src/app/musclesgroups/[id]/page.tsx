@@ -16,6 +16,7 @@ export default async function MusclesGroupsIdPage({ params }: Props) {
       Muscle: {
         include: {
           AgonyInActions: true,
+          SynergyInActions: true,
         },
       },
     },
@@ -30,8 +31,11 @@ export default async function MusclesGroupsIdPage({ params }: Props) {
           {group.Muscle.map((m) => (
             <li className="list-group-item hstack gap-5" key={m.id}>
               <Link href={`/muscles/${m.id}`}>{m.title}</Link>
-              <span className="badge text-bg-primary rounded-pill">
+              <span className="badge text-bg-primary">
                 {m.AgonyInActions.length}
+              </span>
+              <span className="badge text-bg-primary">
+                {m.SynergyInActions.length}
               </span>
             </li>
           ))}
