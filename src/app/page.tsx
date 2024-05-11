@@ -4,7 +4,7 @@ import moment from "moment";
 import { WeightsForm } from "@/app/weights/form";
 import { getCurrentUserId } from "@/tools/auth";
 import { WeightPanel } from "@/app/weights/panel";
-import { getCurrentDayBorders } from "@/tools/dates";
+import { DateFormat, getCurrentDayBorders } from "@/tools/dates";
 
 export default async function HomePage() {
   const userId = await getCurrentUserId();
@@ -42,7 +42,7 @@ export default async function HomePage() {
           <div className="card" key={t.id}>
             <div className="card-body">
               <h5 className="card-title">
-                Тренировка на {moment(t.plannedTo).format("Y-M-D")}
+                Тренировка на {moment(t.plannedTo).format(DateFormat)}
               </h5>
               <div className="card-text">
                 Упражнения:{" "}

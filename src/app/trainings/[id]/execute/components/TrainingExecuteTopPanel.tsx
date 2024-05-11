@@ -5,6 +5,7 @@ import { handleTrainingStart } from "@/app/trainings/[id]/execute/actions";
 import classNames from "classnames";
 import moment from "moment/moment";
 import type { Training } from "@prisma/client";
+import { DateFormat } from "@/tools/dates";
 
 type Props = {
   training: Training;
@@ -17,7 +18,7 @@ export function TrainingExecuteTopPanel({ training }: Props) {
 
   return (
     <>
-      <h4>Тренировка {moment(training.plannedTo).format("Y-MM-D")}</h4>
+      <h4>Тренировка {moment(training.plannedTo).format(DateFormat)}</h4>
       <div
         className={classNames("alert", {
           "alert-light": !training.startedAt,

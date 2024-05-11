@@ -8,6 +8,7 @@ import {
   MuscleGroupTitleToExercisesCnt,
 } from "@/app/trainings/page";
 import { useMemo } from "react";
+import { DateFormat, TimeFormat } from "@/tools/dates";
 
 function printPurposes(purposes?: string[]) {
   return purposes ? (
@@ -68,7 +69,7 @@ export function TrainingListItem({
       <td>{training.id}</td>
       <td>
         <Link href={`/trainings/${training.id}`}>
-          {moment(training.plannedTo).format("Y-M-D")}
+          {moment(training.plannedTo).format(DateFormat)}
         </Link>
       </td>
       <td>{training.TrainingExercise.length}</td>
@@ -87,7 +88,11 @@ export function TrainingListItem({
       <td>
         {training.startedAt && (
           <>
-            <span>{moment(training.startedAt).format("Y-M-D H:mm")}</span>
+            <span>
+              {moment(training.startedAt).format(
+                [DateFormat, TimeFormat].join(" "),
+              )}
+            </span>
             <span>&nbsp;&mdash;&nbsp;</span>
           </>
         )}
