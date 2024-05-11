@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.9.0](https://github.com/Dezzpil/meingym/compare/v0.8.5...v0.9.0) (2024-05-11)
+
+
+### Features
+
+* доработать страницу движений ([a02e8cf](https://github.com/Dezzpil/meingym/commits/a02e8cf640346a64d2b567952d896a2c84e491a4))
+* улучшить отображение страниц ([11c10b4](https://github.com/Dezzpil/meingym/commits/11c10b4f7eae034f573fabc3bcff8b56583359e7))
+* улучшить отображение тренировок ([1b11416](https://github.com/Dezzpil/meingym/commits/1b114165a6026716607613624bcbe82b361d3599))
+
 ### [0.8.5](https://github.com/Dezzpil/meingym/compare/v0.8.4...v0.8.5) (2024-05-11)
 
 
