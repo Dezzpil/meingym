@@ -5,15 +5,25 @@ import { prisma } from "@/tools/db";
 import { ExerciseAddFieldsType } from "@/app/trainings/exercises/types";
 import { getCurrentUserId } from "@/tools/auth";
 import { createExercise } from "@/core/exercises";
+import { ServerActionResult } from "@/tools/types";
 
 export async function handleAddExercise(
   trainingId: number,
   data: ExerciseAddFieldsType,
-) {
-  const userId = await getCurrentUserId();
-  await prisma.$transaction(async (tx) => {
-    await createExercise(trainingId, data.actionId, data.purpose, userId, tx);
-  });
+): Promise<ServerActionResult | void> {
+  try {
+    const userId = await getCurrentUserId();
+    const existed = await prisma.trainingExercise.findFirst({
+      where: { trainingId, actionId: data.actionId },
+    });
+    if (existed)
+      return { ok: false, error: "Движение уже присутствует в тренировке" };
+    await prisma.$transaction(async (tx) => {
+      await createExercise(trainingId, data.actionId, data.purpose, userId, tx);
+    });
+  } catch (e: any) {
+    return { ok: false, error: e.message };
+  }
   revalidatePath(`/trainings/${trainingId}`);
 }
 

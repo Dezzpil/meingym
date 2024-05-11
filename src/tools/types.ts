@@ -9,3 +9,8 @@ export type PrismaTransactionClient = Omit<
 export type ItemPageParams = {
   params: { id: string };
 };
+
+export type ServerActionResult = {
+  ok: boolean;
+  error: null | string;
+};

@@ -6,7 +6,7 @@ import { handleAddExercise } from "@/app/trainings/exercises/actions";
 import { useForm } from "react-hook-form";
 import { ExerciseAddFieldsType } from "@/app/trainings/exercises/types";
 import { BiPlus } from "react-icons/bi";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 type Props = {
   training: Training;
@@ -24,47 +24,61 @@ export default function TrainingAddExerciseForm({
   }, [exercises]);
   const actionsTitlesMap = useMemo(() => {
     return Object.fromEntries(
-      actions.map((a) => [a.alias ? a.alias : a.title, a.id]),
+      actions.map((a) => [a.alias ? a.alias : a.title, a]),
     );
   }, [actions]);
+  const filteredActions = useMemo(() => {
+    return actions.filter((a) => !(a.id in exercisesMap));
+  }, [actions, exercisesMap]);
   const [error, setError] = useState<string | null>(null);
   const form = useForm<ExerciseAddFieldsType>({});
   const submit = form.handleSubmit(async (data) => {
-    data.actionId = actionsTitlesMap[data.actionTitle as string];
+    data.actionId = actionsTitlesMap[data.actionTitle as string].id;
     setError(null);
-    try {
-      await handleAddExercise(training.id, data);
+    const result = await handleAddExercise(training.id, data);
+    if (result && !result.ok) {
+      setError(result.error);
+    } else {
       form.reset();
-    } catch (e: any) {
-      console.error(e);
-      setError(e.message);
     }
   });
+  const [action, setAction] = useState<Action | null>(null);
+  const chooseAction = useCallback(
+    (e: any) => {
+      const elem = e.target;
+      if (elem.value in actionsTitlesMap) {
+        setAction(actionsTitlesMap[elem.value]);
+      }
+    },
+    [actionsTitlesMap],
+  );
 
   return actions.length > exercises.length ? (
     <>
       <form className="mb-3 d-flex gap-2" onSubmit={submit}>
-        <div>
-          <input
-            type="search"
-            list="actionsTitles"
-            className="form-control"
-            {...form.register("actionTitle")}
-          />
-          <datalist id="actionsTitles">
-            {actions
-              .filter((a) => !(a.id in exercisesMap))
-              .map((a) => (
+        {filteredActions.length && (
+          <div>
+            <input
+              type="text"
+              list="actions"
+              className="form-control"
+              {...form.register("actionTitle", { onChange: chooseAction })}
+            />
+            <datalist id="actions">
+              {filteredActions.map((a) => (
                 <option value={a.alias ? a.alias : a.title} key={a.id}>
                   {a.alias ? a.alias : a.title}
                 </option>
               ))}
-          </datalist>
-        </div>
+            </datalist>
+          </div>
+        )}
         <div className="">
           <select className="form-control" {...form.register("purpose")}>
-            <option value={Purpose.STRENGTH}>На силу</option>
             <option value={Purpose.MASS}>На массу</option>
+            {action && action.strengthAllowed && (
+              <option value={Purpose.STRENGTH}>На силу</option>
+            )}
           </select>
         </div>
         <div className="">
