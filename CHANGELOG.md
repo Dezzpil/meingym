@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.1](https://github.com/Dezzpil/meingym/compare/v0.9.0...v0.9.1) (2024-05-11)
+
+
+### Bug Fixes
+
+* вернуть select для выбора ([58f379b](https://github.com/Dezzpil/meingym/commits/58f379b5523e8224d619d6bef9ac831bcb452b9e))
+
 ## [0.9.0](https://github.com/Dezzpil/meingym/compare/v0.8.5...v0.9.0) (2024-05-11)
 
 
