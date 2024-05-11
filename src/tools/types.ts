@@ -10,6 +10,10 @@ export type ItemPageParams = {
   params: { id: string };
 };
 
+export type PageParams = {
+  searchParams: Record<string, string>;
+};
+
 export type ServerActionResult = {
   ok: boolean;
   error: null | string;

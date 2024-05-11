@@ -1,10 +1,16 @@
 import Link from "next/link";
 import { prisma } from "@/tools/db";
 import { getCurrentUserId } from "@/tools/auth";
+import { PageParams } from "@/tools/types";
 
-export default async function ActionsPage() {
+export default async function ActionsPage({ searchParams }: PageParams) {
   const userId = await getCurrentUserId();
+  const groupId = searchParams.group ? parseInt(searchParams.group) : null;
+  const groups = await prisma.muscleGroup.findMany({});
   const actions = await prisma.action.findMany({
+    where: {
+      MusclesAgony: groupId !== null ? { some: { Muscle: { groupId } } } : {},
+    },
     include: {
       ActionMass: {
         where: { userId },
@@ -26,105 +32,114 @@ export default async function ActionsPage() {
 
   return (
     <>
-      <header className="mb-3">Список движений</header>
       <div className="mb-3">
-        <Link className="btn btn-primary" href={`/actions/create`}>
-          Добавить
-        </Link>
+        <form
+          method="GET"
+          className="row row-cols-lg-auto g-3 align-items-center"
+        >
+          <div className="col-12">
+            <select name="group" className="form-select">
+              <option value="">&mdash;</option>
+              {groups.map((g) => (
+                <option
+                  value={g.id}
+                  key={g.id}
+                  selected={groupId ? g.id === groupId : false}
+                >
+                  {g.title}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-12 hstack gap-3">
+            <button type="submit" className="btn btn-primary">
+              Найти
+            </button>
+            <Link className="btn btn-light" href={`/actions/create`}>
+              Добавить движение
+            </Link>
+          </div>
+        </form>
       </div>
       {actions.length ? (
-        <table className="table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Название</th>
-              <th>Мышцы-агонисты</th>
-              <th>Мышцы-синергисты</th>
-              <th>Подходов</th>
-              <th>Σ кг</th>
-              <th>÷ кг</th>
-              <th>Подходов</th>
-              <th>Σ кг</th>
-              <th>÷ кг</th>
-            </tr>
-          </thead>
-          <tbody>
-            {actions.map((a) => (
-              <tr key={a.id}>
-                <td>{a.id}</td>
-                <td>
-                  <Link href={`/actions/${a.id}`}>{a.title}</Link>
-                </td>
-                <td>
-                  <div className="d-flex gap-3">
-                    {a.MusclesAgony.map((l) => (
-                      <span key={l.muscleId}>
+        <>
+          {actions.map((a) => (
+            <div className="card mb-3" key={a.id}>
+              <div className="card-header">
+                <Link href={`/actions/${a.id}`}>
+                  {a.alias ? a.alias : a.title}
+                </Link>
+              </div>
+              <div className="card-body">
+                <ul className="list-inline mb-2">
+                  <li className="list-inline-item">
+                    <b>Мышцы-агонисты:</b>
+                  </li>
+                  {a.MusclesAgony.length ? (
+                    a.MusclesAgony.map((l) => (
+                      <li className="list-inline-item" key={l.muscleId}>
                         {l.Muscle.Group.title}: {l.Muscle.title}
-                      </span>
-                    ))}
-                  </div>
-                </td>
-                <td>
-                  <div className="d-flex gap-3">
-                    {a.MusclesSynergy.map((l) => (
-                      <span key={l.muscleId}>
+                      </li>
+                    ))
+                  ) : (
+                    <span className="text-muted">Не указаны</span>
+                  )}
+                </ul>
+                <ul className="list-inline mb-2">
+                  <li className="list-inline-item">
+                    <b>Мышцы-синергисты:</b>
+                  </li>
+                  {a.MusclesSynergy.length ? (
+                    a.MusclesSynergy.map((l) => (
+                      <li className="list-inline-item" key={l.muscleId}>
                         {l.Muscle.Group.title}: {l.Muscle.title}
+                      </li>
+                    ))
+                  ) : (
+                    <span className="text-muted">Не указаны</span>
+                  )}
+                </ul>
+
+                <div className="mb-2">
+                  <b>На массу: </b>
+                  {a.ActionMass.length &&
+                  a.ActionMass[0].CurrentApproachGroup ? (
+                    <span className="d-inline-flex gap-2 text-muted">
+                      <span>
+                        {a.ActionMass[0].CurrentApproachGroup.count} сетов
                       </span>
-                    ))}
-                  </div>
-                </td>
-                <td>
+                      <span>{a.ActionMass[0].CurrentApproachGroup.sum} кг</span>
+                      <span>
+                        {a.ActionMass[0].CurrentApproachGroup.mean} кг
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="text-muted">&nbsp;&mdash;</span>
+                  )}
+                </div>
+                <div className="mb-2">
+                  <b>На силу: </b>
                   {a.ActionStrength.length &&
                   a.ActionStrength[0].CurrentApproachGroup ? (
-                    a.ActionStrength[0].CurrentApproachGroup.count
+                    <span className="d-inline-flex gap-2 text-muted">
+                      <span>
+                        {a.ActionStrength[0].CurrentApproachGroup.count} сетов
+                      </span>
+                      <span>
+                        {a.ActionStrength[0].CurrentApproachGroup.sum} кг
+                      </span>
+                      <span>
+                        {a.ActionStrength[0].CurrentApproachGroup.mean} кг
+                      </span>
+                    </span>
                   ) : (
-                    <span>&mdash;</span>
+                    <span className="text-muted">&nbsp;&mdash;</span>
                   )}
-                </td>
-                <td>
-                  {a.ActionStrength.length &&
-                  a.ActionStrength[0].CurrentApproachGroup ? (
-                    a.ActionStrength[0].CurrentApproachGroup.sum
-                  ) : (
-                    <span>&mdash;</span>
-                  )}
-                </td>
-                <td>
-                  {a.ActionStrength.length &&
-                  a.ActionStrength[0].CurrentApproachGroup ? (
-                    a.ActionStrength[0].CurrentApproachGroup.mean.toPrecision(3)
-                  ) : (
-                    <span>&mdash;</span>
-                  )}
-                </td>
-                <td>
-                  {a.ActionMass.length &&
-                  a.ActionMass[0].CurrentApproachGroup ? (
-                    a.ActionMass[0].CurrentApproachGroup.count
-                  ) : (
-                    <span>&mdash;</span>
-                  )}
-                </td>
-                <td>
-                  {a.ActionMass.length &&
-                  a.ActionMass[0].CurrentApproachGroup ? (
-                    a.ActionMass[0].CurrentApproachGroup.sum
-                  ) : (
-                    <span>&mdash;</span>
-                  )}
-                </td>
-                <td>
-                  {a.ActionMass.length &&
-                  a.ActionMass[0].CurrentApproachGroup ? (
-                    a.ActionMass[0].CurrentApproachGroup.mean.toPrecision(3)
-                  ) : (
-                    <span>&mdash;</span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
+              </div>
+            </div>
+          ))}
+        </>
       ) : (
         <p className="text-muted">Список пуст</p>
       )}
