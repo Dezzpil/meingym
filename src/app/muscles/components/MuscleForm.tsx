@@ -11,7 +11,7 @@ type Props = {
   muscle?: Muscle;
 };
 
-export default function MusclesForm({ groups, muscle }: Props) {
+export default function MuscleForm({ groups, muscle }: Props) {
   const [error, setError] = useState<null | string>(null);
   const [handling, setHandling] = useState<boolean>(false);
   const form = useForm<MusclesFormFieldsType>({

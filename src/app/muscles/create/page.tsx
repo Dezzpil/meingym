@@ -1,4 +1,4 @@
-import MusclesForm from "@/app/muscles/form";
+import MuscleForm from "@/app/muscles/components/MuscleForm";
 import { prisma } from "@/tools/db";
 
 export default async function MusclesCreatePage() {
@@ -7,7 +7,7 @@ export default async function MusclesCreatePage() {
   return (
     <>
       <header className="mb-3">Добавление описания мышц</header>
-      <MusclesForm groups={groups} />
+      <MuscleForm groups={groups} />
     </>
   );
 }
