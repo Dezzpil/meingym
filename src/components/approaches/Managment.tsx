@@ -30,11 +30,7 @@ export function ApproachesManagement({
   approaches,
   actionId,
 }: Props) {
-  const [preprocessed, setPreprocessed] = useState<boolean>(false);
-  const [data, setData] = useState<ApproachData[]>([]);
-  const [sum, setSum] = useState<number>(0);
-
-  useMemo(() => {
+  const currentData = useMemo(() => {
     const data: ApproachData[] = [];
     approaches.map((a) => {
       data.push({
@@ -43,9 +39,18 @@ export function ApproachesManagement({
         priority: a.priority,
       });
     });
-    setData(data);
-    setPreprocessed(true);
+    return data;
   }, [approaches]);
+  const currentSum = useMemo(() => {
+    let curSum = 0;
+    currentData.forEach((d) => {
+      curSum += d.count * d.weight;
+    });
+    return curSum;
+  }, [currentData]);
+
+  const [data, setData] = useState<ApproachData[]>(currentData);
+  const [sum, setSum] = useState<number>(currentSum);
 
   const recalculate = useCallback(() => {
     let curSum = 0;
@@ -62,32 +67,32 @@ export function ApproachesManagement({
       newOne = {
         count: Math.max(last.count - 4, 1),
         weight: last.weight + 5,
-        priority: last.priority ? last.priority + 1 : 0,
+        priority: last.priority + 1,
       };
     }
-    setData((data) => {
-      const newData = [...data];
-      newData.push(newOne);
-      return newData;
-    });
-    recalculate();
-  }, [data, recalculate]);
+    data.push(newOne);
+    setData(data);
+    setSum((sum) => sum + newOne.weight * newOne.count);
+  }, [data]);
 
   const remove = useCallback(
-    (e: MouseEvent) => {
-      const button = e.target as HTMLButtonElement;
-      const key = button.getAttribute("data-key");
-      setData((data) => {
-        const newData: ApproachData[] = [];
-        for (const item of data) {
-          if (item.priority === parseInt(key + "")) continue;
-          newData.push(item);
+    (priority: number) => {
+      let removedItem: ApproachData | null = null;
+      const newData: ApproachData[] = [];
+      for (const item of data) {
+        if (item.priority === priority) {
+          removedItem = item;
+          continue;
         }
-        return newData;
-      });
-      recalculate();
+        newData.push(item);
+      }
+      setData(newData);
+      if (removedItem) {
+        // @ts-ignore
+        setSum((sum) => sum - removedItem?.count * removedItem?.weight);
+      }
     },
-    [recalculate],
+    [data],
   );
 
   const [error, setError] = useState<null | string>(null);
@@ -121,7 +126,7 @@ export function ApproachesManagement({
     [create, data, update],
   );
 
-  return !preprocessed ? (
+  return !data ? (
     <Loader />
   ) : (
     <>
@@ -145,11 +150,7 @@ export function ApproachesManagement({
             <button className="btn btn-success" disabled={handling}>
               Сохранить
             </button>
-            <button
-              type="button"
-              className="btn btn-light"
-              onClick={() => add()}
-            >
+            <button type="button" className="btn btn-light" onClick={add}>
               Добавить подход
             </button>
           </div>

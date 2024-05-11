@@ -31,6 +31,10 @@ export function ApproachesManagementElement({
     },
     [elem, onChange],
   );
+  const remove = useCallback(() => {
+    console.log("removing", elem);
+    onRemove(elem.priority);
+  }, [elem.priority, onRemove]);
   return (
     <>
       <div className="d-flex gap-2">
@@ -61,7 +65,7 @@ export function ApproachesManagementElement({
           className="btn btn-dark"
           type="button"
           data-key={elem.priority}
-          onClick={(e) => onRemove(e)}
+          onClick={remove}
         >
           <TiDeleteOutline />
         </button>
