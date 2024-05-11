@@ -45,22 +45,22 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
   revalidatePath(`/actions/${id}`);
 }
 
-function autoDefineRig(title: string): ActionRig {
+function autoDefineRig(title: string, def: ActionRig): ActionRig {
   const blocks = title.match(/тренаж|блок/iu);
   if (blocks && blocks.length > 0) return ActionRig.BLOCKS;
 
-  const barbell = title.match(/штанг/iu);
+  const barbell = title.match(/штанг|жим/iu);
   if (barbell && barbell.length > 0) return ActionRig.BARBELL;
 
   const dumbbell = title.match(/гантел/iu);
   if (dumbbell && dumbbell.length > 0) return ActionRig.DUMBBELL;
 
-  return ActionRig.OTHER;
+  return def;
 }
 
 export async function handleCreate(data: ActionsFormFieldsType) {
   const title = data.title;
-  const rig = autoDefineRig(data.title);
+  const rig = autoDefineRig(data.title, data.rig);
 
   const existed = await prisma.action.findFirst({ where: { title } });
   if (existed) {
@@ -70,7 +70,9 @@ export async function handleCreate(data: ActionsFormFieldsType) {
       const action = await tx.action.create({
         data: {
           title,
+          rig,
           desc: data.desc,
+          strengthAllowed: data.strengthAllowed,
           MusclesAgony: {
             createMany: {
               data: data.musclesAgonyIds.map((id) => {
@@ -92,7 +94,6 @@ export async function handleCreate(data: ActionsFormFieldsType) {
               }),
             },
           },
-          rig,
         },
       });
       return action;

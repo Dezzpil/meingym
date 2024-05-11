@@ -65,18 +65,6 @@ export default async function ActionPage({ params }: PageParams) {
       <hr />
       <div className="d-flex row">
         <div className="col-md-6 mb-3">
-          <header className="mb-3">На силу</header>
-          {strength ? (
-            <ApproachesManagement
-              create={{ purpose: "STRENGTH", actionPurposeId: strength.id }}
-              approaches={strength.CurrentApproachGroup.Approaches}
-              actionId={action.id}
-            />
-          ) : (
-            <ActionCreateStrength action={action} />
-          )}
-        </div>
-        <div className="col-md-6 mb-3">
           <header className="mb-3">На массу</header>
           {mass ? (
             <ApproachesManagement
@@ -88,6 +76,20 @@ export default async function ActionPage({ params }: PageParams) {
             <ActionCreateMass action={action} />
           )}
         </div>
+        {action.strengthAllowed && (
+          <div className="col-md-6 mb-3">
+            <header className="mb-3">На силу</header>
+            {strength ? (
+              <ApproachesManagement
+                create={{ purpose: "STRENGTH", actionPurposeId: strength.id }}
+                approaches={strength.CurrentApproachGroup.Approaches}
+                actionId={action.id}
+              />
+            ) : (
+              <ActionCreateStrength action={action} />
+            )}
+          </div>
+        )}
       </div>
     </>
   );
