@@ -5,12 +5,22 @@ import { PageParams } from "@/tools/types";
 
 export default async function ActionsPage({ searchParams }: PageParams) {
   const userId = await getCurrentUserId();
+
   const groupId = searchParams.group ? parseInt(searchParams.group) : null;
+  const where: Record<string, any> = {
+    MusclesAgony: groupId !== null ? { some: { Muscle: { groupId } } } : {},
+  };
+  const strengthAllowed =
+    searchParams.strengthAllowed && searchParams.strengthAllowed === "on"
+      ? true
+      : null;
+  if (strengthAllowed !== null) {
+    where["strengthAllowed"] = strengthAllowed;
+  }
+
   const groups = await prisma.muscleGroup.findMany({});
   const actions = await prisma.action.findMany({
-    where: {
-      MusclesAgony: groupId !== null ? { some: { Muscle: { groupId } } } : {},
-    },
+    where,
     include: {
       ActionMass: {
         where: { userId },
@@ -38,18 +48,34 @@ export default async function ActionsPage({ searchParams }: PageParams) {
           className="row row-cols-lg-auto g-3 align-items-center"
         >
           <div className="col-12">
-            <select name="group" className="form-select">
+            <select
+              name="group"
+              className="form-select"
+              defaultValue={groupId ? groupId : undefined}
+            >
               <option value="">&mdash;</option>
               {groups.map((g) => (
-                <option
-                  value={g.id}
-                  key={g.id}
-                  selected={groupId ? g.id === groupId : false}
-                >
+                <option value={g.id} key={g.id}>
                   {g.title}
                 </option>
               ))}
             </select>
+          </div>
+          <div className="col-auto">
+            <div className="form-check form-check-inline">
+              <input
+                type="checkbox"
+                name="strengthAllowed"
+                id="strengthAllowed"
+                className="form-check-input"
+                defaultChecked={
+                  strengthAllowed !== null ? strengthAllowed : false
+                }
+              ></input>
+              <label className="form-check-label" htmlFor="strengthAllowed">
+                Подходит для силовых?
+              </label>
+            </div>
           </div>
           <div className="col-12 hstack gap-3">
             <button type="submit" className="btn btn-primary">
