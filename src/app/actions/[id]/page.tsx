@@ -40,7 +40,10 @@ export default async function ActionPage({ params }: PageParams) {
       TrainingExercise: true,
     },
   });
-  const muscles = await prisma.muscle.findMany({ include: { Group: true } });
+  const muscles = await prisma.muscle.findMany({
+    include: { Group: true },
+    orderBy: { groupId: "asc" },
+  });
 
   let strength;
   if (action.ActionStrength.length) {
