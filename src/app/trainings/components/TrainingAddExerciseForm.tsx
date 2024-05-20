@@ -6,7 +6,7 @@ import { handleAddExercise } from "@/app/trainings/exercises/actions";
 import { useForm } from "react-hook-form";
 import { ExerciseAddFieldsType } from "@/app/trainings/exercises/types";
 import { BiPlus } from "react-icons/bi";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 
 type Props = {
   training: Training;
@@ -46,10 +46,8 @@ export default function TrainingAddExerciseForm({
   const [action, setAction] = useState<Action | null>(null);
   const chooseAction = useCallback(
     (e: any) => {
-      console.log(e.target.value);
       const elem = e.target;
       if (elem.value in actionsTitlesMap) {
-        console.log(actionsTitlesMap[elem.value]);
         setAction(actionsTitlesMap[elem.value]);
       }
     },
