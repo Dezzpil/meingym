@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.2](https://github.com/Dezzpil/meingym/compare/v0.9.1...v0.9.2) (2024-05-20)
+
+
+### Features
+
+* добавить "Подходит для силовых" ([4fe3121](https://github.com/Dezzpil/meingym/commits/4fe31219af9f21a5e037bba9d9d475f1590a785c))
+* добавить учет многоповторности движений ([464f967](https://github.com/Dezzpil/meingym/commits/464f967ac76a379cfbccf7471c1d7c08c792a078))
+* упорядочить список мышц по группам ([524c496](https://github.com/Dezzpil/meingym/commits/524c496fe97a96716229b794f7468de3e8ef9d3b))
+
 ### [0.9.1](https://github.com/Dezzpil/meingym/compare/v0.9.0...v0.9.1) (2024-05-11)
 
 
