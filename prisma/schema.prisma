@@ -161,6 +161,7 @@ model Action {
   ApproachesGroup ApproachesGroup[]
 
   strengthAllowed Boolean @default(false)
+  bigCount        Boolean @default(false)
 }
 
 model ActionMass {

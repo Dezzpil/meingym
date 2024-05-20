@@ -10,6 +10,7 @@ export const ActionsFormFields = z.object({
   desc: z.string().min(2),
   rig: z.nativeEnum(ActionRig),
   strengthAllowed: z.boolean().default(false),
+  bigCount: z.boolean().default(false),
 });
 
 export type ActionsFormFieldsType = z.infer<typeof ActionsFormFields>;

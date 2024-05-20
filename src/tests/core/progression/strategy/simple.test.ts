@@ -11,6 +11,7 @@ const rigsStub = [{ userId: "", value: 5, code: "BARBELL", title: "" }];
 const strategy = new ProgressionStrategySimple(rigsStub, {
   rig: "BARBELL",
   strengthAllowed: true,
+  bigCount: false,
 });
 
 test("_upgradeStrengthWorkingSets", async (context) => {

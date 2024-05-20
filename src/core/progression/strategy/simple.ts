@@ -32,7 +32,7 @@ export class ProgressionStrategySimple {
   private _weightStrDelta: number;
   constructor(
     rigs: Rig[],
-    private _action: Pick<Action, "rig" | "strengthAllowed">,
+    private _action: Pick<Action, "rig" | "strengthAllowed" | "bigCount">,
     opts?: ProgressionStrategySimpleOpts,
   ) {
     this.opts = opts ? Object.assign(Defaults, opts) : Defaults;
@@ -144,12 +144,20 @@ export class ProgressionStrategySimple {
       }
     }
 
-    const upgrades = [
+    let upgrades = [
       { above: 14, to: 12 },
       { above: 12, to: 10 },
       { above: 10, to: 8 },
       { above: 14, to: 12 },
     ];
+    if (this._action.bigCount) {
+      upgrades = [
+        { above: 25, to: 25 },
+        { above: 25, to: 20 },
+        { above: 25, to: 20 },
+        { above: 20, to: 15 },
+      ];
+    }
 
     for (let i = 0; i < sets.length; i++) {
       if (sets[i].count >= upgrades[i].above) {

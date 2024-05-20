@@ -15,6 +15,7 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
       desc: data.desc,
       alias: data.alias,
       strengthAllowed: data.strengthAllowed,
+      bigCount: data.bigCount,
       MusclesAgony: {
         deleteMany: { actionId: id },
         createMany: {
@@ -73,6 +74,7 @@ export async function handleCreate(data: ActionsFormFieldsType) {
           rig,
           desc: data.desc,
           strengthAllowed: data.strengthAllowed,
+          bigCount: data.bigCount,
           MusclesAgony: {
             createMany: {
               data: data.musclesAgonyIds.map((id) => {

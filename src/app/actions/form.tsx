@@ -53,16 +53,33 @@ export default function ActionsForm({ muscles, action }: Props) {
             {...form.register("title", { required: true })}
           />
         </div>
-        <div className="mb-2 form-check">
-          <input
-            type="checkbox"
-            id="strengthAllowed"
-            className="form-check-input"
-            {...form.register("strengthAllowed", {})}
-          />
-          <label htmlFor="strengthAllowed" className="form-check-label">
-            Подходит для силовых тренировок?
-          </label>
+        <div className="row row-cols-lg-auto g-3 align-items-center mb-2">
+          <div className="col-12">
+            <div className="form-check">
+              <input
+                type="checkbox"
+                id="strengthAllowed"
+                className="form-check-input"
+                {...form.register("strengthAllowed", {})}
+              />
+              <label htmlFor="strengthAllowed" className="form-check-label">
+                Подходит для силовых тренировок?
+              </label>
+            </div>
+          </div>
+          <div className="col-12">
+            <div className="form-check col-auto">
+              <input
+                type="checkbox"
+                id="bigCount"
+                className="form-check-input"
+                {...form.register("bigCount", {})}
+              />
+              <label htmlFor="bigCount" className="form-check-label">
+                Многоповторное?
+              </label>
+            </div>
+          </div>
         </div>
         <div className="mb-2">
           <label className="form-label">Мышцы-агонисты</label>

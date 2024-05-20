@@ -12,13 +12,13 @@ export function ActionCreateMass({ action }: Props) {
     setError(null);
     setHandling(true);
     try {
-      await handleCreateMassInitial(action.id, action.rig);
+      await handleCreateMassInitial(action.id, action.rig, action.bigCount);
     } catch (e: any) {
       console.error(e);
       setError(e.message);
     }
     setHandling(false);
-  }, [action.id, action.rig]);
+  }, [action.bigCount, action.id, action.rig]);
   return (
     <>
       <button

@@ -25,6 +25,13 @@ export const ApproachesMassDefault: ApproachData[] = [
   { weight: 35, count: 8, priority: 3 },
 ];
 
+export const ApproachesMassBigCountDefault: ApproachData[] = [
+  { weight: 30, count: 25, priority: 0 },
+  { weight: 35, count: 20, priority: 1 },
+  { weight: 35, count: 20, priority: 2 },
+  { weight: 35, count: 15, priority: 3 },
+];
+
 // Значения по умолчанию для движений с собственным весом
 export const ApproachesMassBodyDefault: ApproachData[] = [
   { weight: 0, count: 15, priority: 0 },
