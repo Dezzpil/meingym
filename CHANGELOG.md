@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.3](https://github.com/Dezzpil/meingym/compare/v0.9.2...v0.9.3) (2024-05-26)
+
+
+### Features
+
+* добавить настройку читинга для движений ([fa6fe52](https://github.com/Dezzpil/meingym/commits/fa6fe52347937f0105f98afe98e034717811b988))
+* заменить ссылки на форму добавления тренировки ([b6b2102](https://github.com/Dezzpil/meingym/commits/b6b21021e9d338f820a1500d2c03795d5b89e7d0))
+* скрыть жжение в форме завершения подхода ([04e127b](https://github.com/Dezzpil/meingym/commits/04e127be07cdb2df26f6c96aa74b86257574e415))
+
 ### [0.9.2](https://github.com/Dezzpil/meingym/compare/v0.9.1...v0.9.2) (2024-05-20)
 
 
