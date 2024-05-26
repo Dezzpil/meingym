@@ -16,6 +16,7 @@ import {
   RefusingOptions,
 } from "@/app/trainings/[id]/execute/types";
 import { ExecutionBurning } from ".prisma/client";
+import { ExecutionCheating } from "@prisma/client";
 
 type Props = {
   exec: TrainingExerciseExecution;
@@ -47,7 +48,9 @@ export default function TrainingExecuteItem({
       liftedWeight,
       liftedCount,
       rating: ratingSelectRef.current?.value,
-      cheating: cheatingSelectRef.current?.value,
+      cheating: action.allowCheating
+        ? cheatingSelectRef.current?.value
+        : ExecutionCheating.NO,
       refusing: refusingSelectRef.current?.value,
       burning: action.bigCount
         ? burningSelectRef.current?.value
@@ -158,13 +161,15 @@ export default function TrainingExecuteItem({
                 </option>
               ))}
             </select>
-            <select className="form-control mb-2" ref={cheatingSelectRef}>
-              {Object.entries(CheatingOptions).map((entry) => (
-                <option key={entry[0]} value={entry[0]}>
-                  {entry[1]}
-                </option>
-              ))}
-            </select>
+            {action.allowCheating && (
+              <select className="form-control mb-2" ref={cheatingSelectRef}>
+                {Object.entries(CheatingOptions).map((entry) => (
+                  <option key={entry[0]} value={entry[0]}>
+                    {entry[1]}
+                  </option>
+                ))}
+              </select>
+            )}
             <select className="form-control mb-2" ref={refusingSelectRef}>
               {Object.entries(RefusingOptions).map((entry) => (
                 <option key={entry[0]} value={entry[0]}>

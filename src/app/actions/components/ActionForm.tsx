@@ -22,7 +22,7 @@ type Props = {
   };
 };
 
-export default function ActionsForm({ muscles, action }: Props) {
+export default function ActionForm({ muscles, action }: Props) {
   const [error, setError] = useState<null | string>(null);
   const [handling, setHandling] = useState<boolean>(false);
   const form = useForm<ActionsFormFieldsType>({
@@ -77,6 +77,19 @@ export default function ActionsForm({ muscles, action }: Props) {
               />
               <label htmlFor="bigCount" className="form-check-label">
                 Многоповторное?
+              </label>
+            </div>
+          </div>
+          <div className="col-12">
+            <div className="form-check col-auto">
+              <input
+                type="checkbox"
+                id="allowCheating"
+                className="form-check-input"
+                {...form.register("allowCheating", {})}
+              />
+              <label htmlFor="allowCheating" className="form-check-label">
+                Позволяет читинг?
               </label>
             </div>
           </div>

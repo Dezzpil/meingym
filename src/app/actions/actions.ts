@@ -16,6 +16,7 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
       alias: data.alias,
       strengthAllowed: data.strengthAllowed,
       bigCount: data.bigCount,
+      allowCheating: data.allowCheating,
       MusclesAgony: {
         deleteMany: { actionId: id },
         createMany: {
@@ -75,6 +76,7 @@ export async function handleCreate(data: ActionsFormFieldsType) {
           desc: data.desc,
           strengthAllowed: data.strengthAllowed,
           bigCount: data.bigCount,
+          allowCheating: data.allowCheating,
           MusclesAgony: {
             createMany: {
               data: data.musclesAgonyIds.map((id) => {

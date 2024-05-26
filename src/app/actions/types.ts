@@ -11,6 +11,7 @@ export const ActionsFormFields = z.object({
   rig: z.nativeEnum(ActionRig),
   strengthAllowed: z.boolean().default(false),
   bigCount: z.boolean().default(false),
+  allowCheating: z.boolean().default(false),
 });
 
 export type ActionsFormFieldsType = z.infer<typeof ActionsFormFields>;

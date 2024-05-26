@@ -1,4 +1,3 @@
-import ActionsForm from "@/app/actions/form";
 import { ApproachesManagement } from "@/components/approaches/Managment";
 import { prisma } from "@/tools/db";
 import type {
@@ -11,6 +10,7 @@ import { ActionControl } from "@/app/actions/[id]/control";
 import { getCurrentUserId } from "@/tools/auth";
 import { ActionCreateStrength } from "@/app/actions/[id]/createStrength";
 import { ActionCreateMass } from "@/app/actions/[id]/createMass";
+import ActionForm from "@/app/actions/components/ActionForm";
 
 type PageParams = {
   params: { id: string };
@@ -65,7 +65,7 @@ export default async function ActionPage({ params }: PageParams) {
         actionId={action.id}
         trainingsCount={action.TrainingExercise.length}
       />
-      <ActionsForm action={action} muscles={muscles}></ActionsForm>
+      <ActionForm action={action} muscles={muscles} />
       <hr />
       <div className="d-flex row">
         <div className="col-md-6 mb-3">
