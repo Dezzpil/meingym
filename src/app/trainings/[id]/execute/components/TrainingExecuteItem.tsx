@@ -2,7 +2,7 @@
 
 import { GiWeight } from "react-icons/gi";
 import React, { useCallback, useRef, useState } from "react";
-import type { TrainingExerciseExecution } from "@prisma/client";
+import type { Action, TrainingExerciseExecution } from "@prisma/client";
 import { GrCheckmark } from "react-icons/gr";
 import classNames from "classnames";
 import type { RegisterOptions } from "react-hook-form";
@@ -15,13 +15,16 @@ import {
   RatingOptions,
   RefusingOptions,
 } from "@/app/trainings/[id]/execute/types";
+import { ExecutionBurning } from ".prisma/client";
 
 type Props = {
   exec: TrainingExerciseExecution;
+  action: Action;
   register: CallableFunction;
   disabled: boolean;
 };
 export default function TrainingExecuteItem({
+  action,
   exec,
   register,
   disabled,
@@ -46,7 +49,9 @@ export default function TrainingExecuteItem({
       rating: ratingSelectRef.current?.value,
       cheating: cheatingSelectRef.current?.value,
       refusing: refusingSelectRef.current?.value,
-      burning: burningSelectRef.current?.value,
+      burning: action.bigCount
+        ? burningSelectRef.current?.value
+        : ExecutionBurning.NO,
     })
       .then((data) => {
         setCompleted(!isCompleted);
@@ -55,7 +60,7 @@ export default function TrainingExecuteItem({
         setWaitForCompleted(false);
         setModalShowed(false);
       });
-  }, [exec.id, isCompleted, liftedCount, liftedWeight]);
+  }, [action.bigCount, exec.id, isCompleted, liftedCount, liftedWeight]);
 
   const onComplete = useCallback(() => {
     setWaitForCompleted(true);
@@ -167,13 +172,15 @@ export default function TrainingExecuteItem({
                 </option>
               ))}
             </select>
-            <select className="form-control" ref={burningSelectRef}>
-              {Object.entries(BurningOptions).map((entry) => (
-                <option key={entry[0]} value={entry[0]}>
-                  {entry[1]}
-                </option>
-              ))}
-            </select>
+            {action.bigCount && (
+              <select className="form-control" ref={burningSelectRef}>
+                {Object.entries(BurningOptions).map((entry) => (
+                  <option key={entry[0]} value={entry[0]}>
+                    {entry[1]}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
         </Modal.Body>
         <Modal.Footer>

@@ -32,7 +32,6 @@ export function ApproachesManagementElement({
     [elem, onChange],
   );
   const remove = useCallback(() => {
-    console.log("removing", elem);
     onRemove(elem.priority);
   }, [elem.priority, onRemove]);
   return (

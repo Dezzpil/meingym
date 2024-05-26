@@ -6,6 +6,7 @@ import React, { useCallback, useState } from "react";
 import type {
   TrainingExercise,
   TrainingExerciseExecution,
+  Action,
 } from "@prisma/client";
 import {
   countExerciseNonExecuted,
@@ -18,6 +19,7 @@ import { FaSpinner } from "react-icons/fa6";
 
 type Props = {
   exercise: TrainingExercise & {
+    Action: Action;
     TrainingExerciseExecution: TrainingExerciseExecution[];
   };
   disabled: boolean;
@@ -63,6 +65,7 @@ export function TrainingExecuteForm({ exercise, disabled }: Props) {
         {exercise.TrainingExerciseExecution.map((exec) => (
           <TrainingExecuteItem
             key={exec.id}
+            action={exercise.Action}
             exec={exec}
             register={register}
             disabled={disabled}
