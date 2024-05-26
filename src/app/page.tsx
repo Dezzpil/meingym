@@ -5,6 +5,7 @@ import { WeightsForm } from "@/app/weights/form";
 import { getCurrentUserId } from "@/tools/auth";
 import { WeightPanel } from "@/app/weights/panel";
 import { DateFormat, getCurrentDayBorders } from "@/tools/dates";
+import TrainingCreateForm from "@/app/trainings/components/TrainingCreateForm";
 
 export default async function HomePage() {
   const userId = await getCurrentUserId();
@@ -57,7 +58,7 @@ export default async function HomePage() {
         ))
       ) : (
         <div>
-          <Link href={`/trainings/create`}>Добавить тренировку</Link>
+          <TrainingCreateForm btnTitle="Назначить тренировку" />
         </div>
       )}
     </div>

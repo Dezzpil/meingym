@@ -4,9 +4,13 @@ import { useForm } from "react-hook-form";
 import { TrainingFormFieldsType } from "@/app/trainings/types";
 import { handleCreateTraining } from "@/app/trainings/create/actions";
 import { useState } from "react";
-import { TrainingPlannedDateForm } from "@/components/trainings/PlannedDateForm";
+import { TrainingPlannedDateForm } from "@/app/trainings/components/TrainingPlannedDateForm";
 
-export default function TrainingForm() {
+type Props = {
+  btnTitle?: string;
+};
+
+export default function TrainingCreateForm({ btnTitle }: Props) {
   const form = useForm<TrainingFormFieldsType>();
   const [error, setError] = useState<string | null>(null);
   const [handling, setHandling] = useState<boolean>(false);
@@ -29,6 +33,7 @@ export default function TrainingForm() {
       handling={handling}
       error={error}
       register={form.register}
+      btnTitle={btnTitle}
     />
   );
 }

@@ -4,8 +4,8 @@ import type { Training } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { TrainingFormFieldsType } from "@/app/trainings/types";
 import { useState } from "react";
-import { TrainingPlannedDateForm } from "@/components/trainings/PlannedDateForm";
 import { handleChangeTrainingDate } from "@/app/trainings/[id]/actions";
+import { TrainingPlannedDateForm } from "@/app/trainings/components/TrainingPlannedDateForm";
 
 type Props = {
   training: Training;

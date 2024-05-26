@@ -1,9 +1,9 @@
 import { prisma } from "@/tools/db";
-import Link from "next/link";
 import { Purpose } from "@prisma/client";
 import { getCurrentUserId } from "@/tools/auth";
 import { TrainingListCard } from "@/app/trainings/components/TrainingListCard";
 import { PageParams } from "@/tools/types";
+import TrainingCreateForm from "@/app/trainings/components/TrainingCreateForm";
 
 type TrainingId = number;
 export type MuscleGroupTitleToExercisesCnt = Record<string, number>;
@@ -73,7 +73,7 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
 
   return (
     <>
-      <div className="mb-3">
+      <div className="mb-3 hstack gap-5">
         <form
           method="GET"
           className="row row-cols-lg-auto g-3 align-items-center"
@@ -96,11 +96,9 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
             <button type="submit" className="btn btn-primary">
               Найти
             </button>
-            <Link href={`/trainings/create`} className="btn btn-primary">
-              Добавить тренировку
-            </Link>
           </div>
         </form>
+        <TrainingCreateForm />
       </div>
       {trainings.length ? (
         trainings.map((t) => (
