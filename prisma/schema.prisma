@@ -163,6 +163,9 @@ model Action {
   strengthAllowed Boolean @default(false)
   bigCount        Boolean @default(false)
   allowCheating   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 }
 
 model ActionMass {

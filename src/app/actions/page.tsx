@@ -2,6 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/tools/db";
 import { getCurrentUserId } from "@/tools/auth";
 import { PageParams } from "@/tools/types";
+import { DateFormat } from "@/tools/dates";
+import moment from "moment";
 
 export default async function ActionsPage({ searchParams }: PageParams) {
   const userId = await getCurrentUserId();
@@ -21,6 +23,7 @@ export default async function ActionsPage({ searchParams }: PageParams) {
   const groups = await prisma.muscleGroup.findMany({});
   const actions = await prisma.action.findMany({
     where,
+    orderBy: { updatedAt: "desc" },
     include: {
       ActionMass: {
         where: { userId },
@@ -91,10 +94,15 @@ export default async function ActionsPage({ searchParams }: PageParams) {
         <>
           {actions.map((a) => (
             <div className="card mb-3" key={a.id}>
-              <div className="card-header">
+              <div className="card-header hstack justify-content-between">
                 <Link href={`/actions/${a.id}`}>
                   {a.alias ? a.alias : a.title}
                 </Link>
+                <div className="hstack gap-3">
+                  <span className="text-muted">
+                    {moment(a.updatedAt).format(DateFormat)}
+                  </span>
+                </div>
               </div>
               <div className="card-body">
                 <ul className="list-inline mb-2">

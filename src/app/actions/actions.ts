@@ -42,6 +42,7 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
         },
       },
       rig: data.rig,
+      updatedAt: new Date(),
     },
   });
   revalidatePath(`/actions/${id}`);
