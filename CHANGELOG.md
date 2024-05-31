@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.10.0](https://github.com/Dezzpil/meingym/compare/v0.9.3...v0.10.0) (2024-05-31)
+
+
+### Features
+
+* добавить кнопку для старта тренировки ([bf7e35a](https://github.com/Dezzpil/meingym/commits/bf7e35a89f12f5a40426579abf14be4e0d8caefc))
+* добавить сортировку движений ([dc8404a](https://github.com/Dezzpil/meingym/commits/dc8404a250e91358e2fdf85be81f79c0eb6d3fd3))
+
+
+### Bug Fixes
+
+* исправить управление данными мышцы ([7c73cb2](https://github.com/Dezzpil/meingym/commits/7c73cb22e51f45332f2b6d80253539f17218d8b4))
+
 ### [0.9.3](https://github.com/Dezzpil/meingym/compare/v0.9.2...v0.9.3) (2024-05-26)
 
 
