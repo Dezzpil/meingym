@@ -1,8 +1,8 @@
-import MusclesGroupsButtons from "@/app/musclesgroups/[id]/components/buttons";
 import { prisma } from "@/tools/db";
-import { MuscleGroupsDescForm } from "@/app/musclesgroups/[id]/components/descForm";
 import Link from "next/link";
 import classNames from "classnames";
+import { MuscleGroupsDescForm } from "@/app/musclesgroups/[id]/components/MuscleGroupsDescForm";
+import MusclesGroupsButtons from "@/app/musclesgroups/[id]/components/MusclesGroupsButtons";
 
 type Props = {
   params: { id: string };

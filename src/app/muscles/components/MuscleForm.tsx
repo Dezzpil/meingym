@@ -4,11 +4,15 @@ import { useForm } from "react-hook-form";
 import { MusclesFormFieldsType } from "@/app/muscles/create/types";
 import type { Muscle, MuscleGroup } from "@prisma/client";
 import { useCallback, useState } from "react";
-import { handleCreate, handleDelete } from "@/app/muscles/actions";
+import {
+  handleMuscleCreate,
+  handleDelete,
+  handleMuscleUpdate,
+} from "@/app/muscles/actions";
 
 type Props = {
   groups: MuscleGroup[];
-  muscle?: Muscle;
+  muscle?: Muscle & { AgonyInActions: any[]; SynergyInActions: any[] };
 };
 
 export default function MuscleForm({ groups, muscle }: Props) {
@@ -21,9 +25,14 @@ export default function MuscleForm({ groups, muscle }: Props) {
     setError(null);
     setHandling(true);
     try {
-      await handleCreate(data);
+      let result;
+      if (muscle) {
+        result = await handleMuscleUpdate(muscle.id, data);
+      } else {
+        result = await handleMuscleCreate(data);
+      }
+      if (result.error) setError(result.error);
     } catch (e: any) {
-      console.error(e);
       setError(e.message);
     }
     setHandling(false);
@@ -77,14 +86,18 @@ export default function MuscleForm({ groups, muscle }: Props) {
               <button disabled={handling} className="btn btn-primary">
                 Обновить
               </button>
-              <button
-                type="button"
-                onClick={onDelete}
-                className="btn btn-danger"
-                disabled={handling}
-              >
-                Удалить
-              </button>
+              {muscle &&
+                muscle.AgonyInActions.length === 0 &&
+                muscle.SynergyInActions.length === 0 && (
+                  <button
+                    type="button"
+                    onClick={onDelete}
+                    className="btn btn-danger"
+                    disabled={handling}
+                  >
+                    Удалить
+                  </button>
+                )}
             </>
           )}
         </div>

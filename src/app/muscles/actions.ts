@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/tools/db";
 import { z } from "zod";
+import { ServerActionResult } from "@/tools/types";
 
 const MuscleDescFields = z.object({
   text: z.string(),
@@ -47,8 +48,13 @@ export async function handleMuscleDeleteDesc(muscleId: number, id: number) {
   revalidatePath(`/muscles/${muscleId}`);
 }
 
-export async function handleCreate(data: MusclesFormFieldsType) {
+export async function handleMuscleCreate(
+  data: MusclesFormFieldsType,
+): Promise<ServerActionResult | never> {
   const title = data.title as string;
+  const existed = await prisma.muscle.findFirst({ where: { title } });
+  if (existed) return { ok: false, error: `${title} уже существует` };
+
   const groupId = data.groupId;
   const muscle = await prisma.muscle.create({
     data: {
@@ -58,6 +64,30 @@ export async function handleCreate(data: MusclesFormFieldsType) {
   });
 
   redirect(`/muscles/${muscle.id}`);
+}
+
+export async function handleMuscleUpdate(
+  id: number,
+  data: MusclesFormFieldsType,
+): Promise<ServerActionResult> {
+  const title = data.title as string;
+
+  const existed = await prisma.muscle.findFirst({
+    where: { title, id: { not: id } },
+  });
+  if (existed) return { ok: false, error: `${title} уже существует` };
+
+  const groupId = data.groupId;
+  const muscle = await prisma.muscle.update({
+    where: { id },
+    data: {
+      title,
+      groupId,
+    },
+  });
+
+  revalidatePath(`/muscles/${muscle.id}`);
+  return { ok: true, error: null };
 }
 
 export async function handleDelete(id: number) {

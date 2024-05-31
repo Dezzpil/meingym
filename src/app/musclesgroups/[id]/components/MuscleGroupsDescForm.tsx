@@ -55,7 +55,7 @@ export function MuscleGroupsDescForm({ group, desc }: Props) {
         {...form.register("link", { required: false })}
       />
       <div className="hstack gap-2">
-        <button disabled={handling} className="btn btn-primary">
+        <button disabled={handling} className="btn btn-secondary">
           {desc ? "Обновить" : "Добавить"}
         </button>
         {desc && (

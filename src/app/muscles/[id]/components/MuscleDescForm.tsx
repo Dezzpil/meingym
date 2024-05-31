@@ -56,7 +56,7 @@ export function MuscleDescForm({ muscle, desc }: Props) {
       />
 
       <div className="hstack gap-2">
-        <button disabled={handling} className="btn btn-primary">
+        <button disabled={handling} className="btn btn-secondary">
           {desc ? "Обновить" : "Добавить"}
         </button>
         {desc && (
