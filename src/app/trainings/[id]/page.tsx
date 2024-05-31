@@ -9,6 +9,7 @@ import { TrainingChangeDateForm } from "@/app/trainings/[id]/execute/components/
 import { TrainingRepeatForm } from "@/app/trainings/[id]/execute/components/TrainingRepeatForm";
 import { TrainingProcessPanel } from "@/app/trainings/[id]/execute/components/TrainingProcessPanel";
 import { DateFormat, TimeFormat } from "@/tools/dates";
+import Link from "next/link";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
@@ -80,7 +81,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
           exercises={exercises}
         />
       )}
-      <div className="d-flex gap-3">
+      <div className="d-flex gap-3 mb-3">
         {training.startedAt && !training.completedAt && (
           <a
             href={`/trainings/${training.id}/execute`}
@@ -94,6 +95,11 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         )}
         {training.processedAt && <TrainingRepeatForm training={training} />}
       </div>
+      {moment(training.plannedTo).isSame(moment(), "day") && (
+        <div className=" mb-3">
+          <Link href={`/trainings/${training.id}/execute`}>Погнали</Link>
+        </div>
+      )}
     </>
   );
 }
