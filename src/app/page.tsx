@@ -1,9 +1,7 @@
 import { prisma } from "@/tools/db";
 import Link from "next/link";
 import moment from "moment";
-import { WeightsForm } from "@/app/weights/form";
 import { getCurrentUserId } from "@/tools/auth";
-import { WeightPanel } from "@/app/weights/panel";
 import { DateFormat, getCurrentDayBorders } from "@/tools/dates";
 import TrainingCreateForm from "@/app/trainings/components/TrainingCreateForm";
 
@@ -27,17 +25,8 @@ export default async function HomePage() {
     },
   });
 
-  const weight = await prisma.weight.findFirst({
-    where: {
-      userId,
-      createdAt: { gte, lt },
-    },
-  });
-
   return (
     <div>
-      {weight ? <WeightPanel weight={weight} /> : <WeightsForm />}
-      <hr />
       {trainings.length ? (
         trainings.map((t) => (
           <div className="card" key={t.id}>

@@ -16,9 +16,7 @@ export function Layout({ children }: Props) {
       <nav className="navbar navbar-expand-lg bg-body-tertiary mb-3">
         <div className="container-fluid gap-2">
           {session.status === "authenticated" ? (
-            <Link href={"/api/auth/signout"}>
-              👤 {session.data?.user?.name}
-            </Link>
+            <Link href={"/profile"}>👤 {session.data?.user?.name}</Link>
           ) : (
             ""
           )}
