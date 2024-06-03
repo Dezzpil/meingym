@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.10.1](https://github.com/Dezzpil/meingym/compare/v0.10.0...v0.10.1) (2024-06-03)
+
+
+### Features
+
+* добавить новую цель и возможность ее указать ([78fe557](https://github.com/Dezzpil/meingym/commits/78fe5573e1b43c6a359385efc75835adc78b0598))
+* добавить страницу профиля ([e5cdf65](https://github.com/Dezzpil/meingym/commits/e5cdf65d49604cab570b0722c233d05b54266be6))
+* доработать простейшую стратегию ([3b7b583](https://github.com/Dezzpil/meingym/commits/3b7b583427d298c583bba24e9890c39d8b6044dc))
+
 ## [0.10.0](https://github.com/Dezzpil/meingym/compare/v0.9.3...v0.10.0) (2024-05-31)
 
 
