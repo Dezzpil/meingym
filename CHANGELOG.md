@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0](https://github.com/Dezzpil/meingym/compare/v0.10.1...v0.11.0) (2024-06-03)
+
 ### [0.10.1](https://github.com/Dezzpil/meingym/compare/v0.10.0...v0.10.1) (2024-06-03)
 
 
