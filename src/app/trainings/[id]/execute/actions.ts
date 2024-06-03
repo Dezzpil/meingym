@@ -16,10 +16,12 @@ import {
 import { PrismaTransactionClient } from "@/tools/types";
 import {
   Action,
+  ApproachesGroup,
   Purpose,
   TrainingExercise,
   TrainingExerciseExecution,
   TrainingProgression,
+  Approach,
 } from "@prisma/client";
 import { getCurrentUserId } from "@/tools/auth";
 import { ProgressionStrategySimple } from "@/core/progression/strategy/simple";
@@ -177,7 +179,6 @@ export async function handleProcessCompletedTraining(
     });
   }
 
-  const rigs = await prisma.rig.findMany({ where: { userId } });
   const training = await prisma.training.findUniqueOrThrow({
     where: { id: trainingId },
     include: {
@@ -185,6 +186,9 @@ export async function handleProcessCompletedTraining(
         include: {
           TrainingExerciseExecution: { orderBy: { priority: "asc" } },
           Action: true,
+          ApproachGroup: {
+            include: { Approaches: { orderBy: { priority: "asc" } } },
+          },
         },
       },
     },
@@ -200,7 +204,17 @@ export async function handleProcessCompletedTraining(
       const exercise = e as TrainingExercise & {
         Action: Action;
         TrainingExerciseExecution: TrainingExerciseExecution[];
+        ApproachGroup: ApproachesGroup & { Approaches: Approach[] };
       };
+      const plannedSetsData: ApproachData[] = [];
+      for (const approach of exercise.ApproachGroup.Approaches) {
+        plannedSetsData.push({
+          count: approach.count,
+          weight: approach.weight,
+          priority: approach.priority,
+        });
+      }
+
       // игнорируем пропущенные подходы или подходы с 0 нагрузкой
       const executedSetsData: ApproachExecutedData[] =
         exercise.TrainingExerciseExecution.filter(
@@ -218,21 +232,29 @@ export async function handleProcessCompletedTraining(
         });
 
       if (executedSetsData.length) {
-        let upgradedSetsData: ApproachData[];
+        let upgradedSetsData: ApproachData[] = [];
 
         // Если хотя бы один подход был выполнен, то рассчитываем прогрессию
         // и обновляем нагрузку на будущее. Иначе просто оставляем ту нагрузку, что была
         // TODO пока одна стратегия
-        let strategy = new ProgressionStrategySimple(rigs, exercise.Action);
+        let strategy = new ProgressionStrategySimple(exercise.Action);
 
+        // TODO рефакторинг
         if (exercise.purpose === Purpose.MASS) {
           upgradedSetsData = strategy.mass(
-            [],
+            plannedSetsData,
             executedSetsData,
           ) as ApproachData[];
-        } else {
+        }
+        if (exercise.purpose === Purpose.STRENGTH) {
           upgradedSetsData = strategy.strength(
-            [],
+            plannedSetsData,
+            executedSetsData,
+          ) as ApproachData[];
+        }
+        if (exercise.purpose === Purpose.LOSS) {
+          upgradedSetsData = strategy.loss(
+            plannedSetsData,
             executedSetsData,
           ) as ApproachData[];
         }

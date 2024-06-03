@@ -7,12 +7,20 @@ import { ProgressionStrategySimple } from "@/core/progression/strategy/simple";
 
 const str = (set: SetData): string => `${set.weight}x${set.count}`;
 
-const rigsStub = [{ userId: "", value: 5, code: "BARBELL", title: "" }];
-const strategy = new ProgressionStrategySimple(rigsStub, {
-  rig: "BARBELL",
-  strengthAllowed: true,
-  bigCount: false,
-});
+const strategy = new ProgressionStrategySimple(
+  {
+    rig: "BARBELL",
+    strengthAllowed: true,
+    bigCount: false,
+  },
+  {
+    StrengthWorkingSetsCount: 4,
+    StrengthPrepareSetsCount: 2,
+    MassSetsCount: 4,
+    MassAddDropSet: false,
+    MassBigCountCoef: 1.8,
+  },
+);
 
 test("_upgradeStrengthWorkingSets", async (context) => {
   await context.test("should pick only limited sets count", function () {
@@ -24,7 +32,7 @@ test("_upgradeStrengthWorkingSets", async (context) => {
       { weight: 95, count: 1 },
     ];
     const sets1 = strategy._upgradeStrengthWorkingSets(sets, 5);
-    assert.lengthOf(sets1, strategy.opts.StrengthWorkingSetsCount);
+    assert.lengthOf(sets1, strategy._opts.StrengthWorkingSetsCount);
     assert.equal(str(sets1[0]), "80x2");
     assert.equal(str(sets1[1]), "85x1");
   });
@@ -110,7 +118,7 @@ test("_upgradeStrengthWorkingSets", async (context) => {
   });
 });
 
-test("_upgradeStrengthPrepareSets", { only: false }, async (context) => {
+test("_upgradeStrengthPrepareSets", async (context) => {
   await context.test("should create prepare sets 1", function () {
     const workingSets: SetData[] = [{ weight: 70, count: 3 }];
     const prepareSets = strategy._upgradeStrengthPrepareSets(workingSets, 5);
@@ -125,7 +133,7 @@ test("_upgradeStrengthPrepareSets", { only: false }, async (context) => {
   });
 });
 
-test("mass", { only: true }, async (context) => {
+test("mass", async (context) => {
   await context.test("should normalize sets count", function () {
     const sets: SetDataExecuted[] = [
       {
@@ -138,13 +146,13 @@ test("mass", { only: true }, async (context) => {
       },
     ];
     const upgraded = strategy.mass(sets, sets);
-    assert.lengthOf(upgraded, strategy.opts.MassSetsCount);
+    assert.lengthOf(upgraded, strategy._opts.MassSetsCount);
   });
   await context.test("should upgrade load in sets", function () {
     const sets: SetDataExecuted[] = [
       {
         weight: 30,
-        count: 12,
+        count: 14,
         burning: "",
         cheating: "",
         rating: "",
@@ -154,6 +162,34 @@ test("mass", { only: true }, async (context) => {
     const upgraded = strategy.mass(sets, sets);
     assert.isAbove(upgraded[0].count, sets[0].count);
     assert.isAbove(upgraded[1].weight, sets[0].weight);
-    console.log(upgraded);
+  });
+});
+
+test("loss", async (context) => {
+  await context.test("should increase counts for all sets", function () {
+    const sets: SetData[] = [
+      { weight: 10, count: 8 },
+      { weight: 10, count: 8 },
+      { weight: 10, count: 8 },
+      { weight: 10, count: 8 },
+    ];
+    const upgraded = strategy.loss(sets, sets as unknown as SetDataExecuted[]);
+    assert.equal(upgraded[0].count, 12);
+    assert.equal(upgraded[0].weight, 10);
+
+    const upgraded2 = strategy.loss(
+      sets,
+      upgraded as unknown as SetDataExecuted[],
+    );
+    assert.equal(upgraded2[0].count, 16);
+    assert.equal(upgraded2[0].weight, 10);
+
+    const upgraded3 = strategy.loss(
+      sets,
+      upgraded2 as unknown as SetDataExecuted[],
+    );
+    assert.equal(upgraded3[0].count, 8);
+    assert.equal(upgraded3[0].weight, 10);
+    assert.notEqual(upgraded2.length, upgraded3.length);
   });
 });
