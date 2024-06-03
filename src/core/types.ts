@@ -1,4 +1,9 @@
-export type SetsStats = { count: number; sum: number; mean: number };
+export type SetsStats = {
+  count: number; // sets count
+  sum: number; // weight sum by all sets
+  mean: number; // weight mean by all sets
+  countTotal: number; // counts in all sets
+};
 
 export type SetData = { weight: number; count: number };
 

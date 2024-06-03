@@ -66,7 +66,14 @@ export default function TrainingExerciseItemControl({
         </div>
         <div className="d-flex gap-3 mb-2 text-muted small">
           <span>Σ кг: {exercise.ApproachGroup.sum}</span>
-          <span>÷ кг: {exercise.ApproachGroup.mean.toFixed(2)}</span>
+          <span>÷ кг: {exercise.ApproachGroup.mean.toFixed(1)}</span>
+          <span>Σ раз: {exercise.ApproachGroup.countTotal}</span>
+          <span>
+            ÷ раз:{" "}
+            {(
+              exercise.ApproachGroup.countTotal / exercise.ApproachGroup.count
+            ).toFixed(1)}
+          </span>
         </div>
         {canControl && (
           <div className="d-flex gap-2">
@@ -102,7 +109,15 @@ export default function TrainingExerciseItemControl({
             </div>
             <div className="d-flex gap-3 mb-2 text-muted small">
               <span>Σ кг: {exercise.liftedSum}</span>
-              <span>÷ кг: {exercise.liftedMean}</span>
+              <span>÷ кг: {exercise.liftedMean.toFixed(1)}</span>
+              <span>Σ раз: {exercise.liftedCountTotal}</span>
+              <span>
+                ÷ раз:{" "}
+                {(
+                  exercise.liftedCountTotal /
+                  exercise.TrainingExerciseExecution.length
+                ).toFixed(1)}
+              </span>
             </div>
           </>
         )}

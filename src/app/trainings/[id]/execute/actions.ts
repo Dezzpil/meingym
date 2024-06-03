@@ -23,7 +23,7 @@ import {
   TrainingProgression,
   Approach,
 } from "@prisma/client";
-import { getCurrentUserId } from "@/tools/auth";
+import { findUserInfo, getCurrentUserId } from "@/tools/auth";
 import { ProgressionStrategySimple } from "@/core/progression/strategy/simple";
 
 export async function handleTrainingStart(id: number) {
@@ -97,15 +97,20 @@ export async function handleTrainingExerciseExecuted(
       userId,
       tx,
     );
-    const { sum: liftedSum, mean: liftedMean } = calculateStats(
-      sets,
-      info.actionrig,
-      info.userweight,
-    );
+    const {
+      sum: liftedSum,
+      mean: liftedMean,
+      countTotal: liftedCountTotal,
+    } = calculateStats(sets, info.actionrig, info.userweight);
 
     await tx.trainingExercise.update({
       where: { id: exerciseId },
-      data: { completedAt: new Date(), liftedSum, liftedMean },
+      data: {
+        completedAt: new Date(),
+        liftedSum,
+        liftedMean,
+        liftedCountTotal,
+      },
     });
   });
 
@@ -170,14 +175,7 @@ export async function handleProcessCompletedTraining(
   trainingId: number,
 ): Promise<void> {
   const userId = await getCurrentUserId();
-
-  let userInfo = await prisma.userInfo.findFirst({ where: { userId } });
-  if (!userInfo) {
-    // TODO костыль, выпилить
-    userInfo = await prisma.userInfo.create({
-      data: { userId },
-    });
-  }
+  const userInfo = await findUserInfo(userId);
 
   const training = await prisma.training.findUniqueOrThrow({
     where: { id: trainingId },
@@ -200,8 +198,8 @@ export async function handleProcessCompletedTraining(
 
   if (userInfo.trainingProgression !== TrainingProgression.NONE) {
     // пересоздадим подходы, из которых будет собираться следующая тренировка?
-    for (const e of training.TrainingExercise) {
-      const exercise = e as TrainingExercise & {
+    for (const _exercise of training.TrainingExercise) {
+      const exercise = _exercise as TrainingExercise & {
         Action: Action;
         TrainingExerciseExecution: TrainingExerciseExecution[];
         ApproachGroup: ApproachesGroup & { Approaches: Approach[] };
@@ -259,19 +257,18 @@ export async function handleProcessCompletedTraining(
           ) as ApproachData[];
         }
         upgradedSetsData.forEach((set, i) => (set.priority = i));
-
         await prisma.$transaction(async (tx) => {
-          const approachGroupFromExecution = await createApproachGroup(
+          const newApproachGroupFromExecution = await createApproachGroup(
             tx,
             upgradedSetsData,
             exercise.actionId,
-            training.userId,
+            userId,
           );
           await linkNewApproachGroupToActionByPurpose(
             tx,
             exercise.purpose,
             exercise.purposeId,
-            approachGroupFromExecution,
+            newApproachGroupFromExecution,
           );
         });
       }

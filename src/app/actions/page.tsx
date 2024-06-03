@@ -4,6 +4,24 @@ import { getCurrentUserId } from "@/tools/auth";
 import { PageParams } from "@/tools/types";
 import { DateFormat } from "@/tools/dates";
 import moment from "moment";
+import type { ApproachesGroup } from "@prisma/client";
+
+type HasCurrentApproachGroup = { CurrentApproachGroup: ApproachesGroup };
+
+function printStats(actionsPurpose: HasCurrentApproachGroup[]) {
+  return actionsPurpose.length && actionsPurpose[0].CurrentApproachGroup ? (
+    <span className="d-inline-flex gap-2 text-muted">
+      <span>{actionsPurpose[0].CurrentApproachGroup.count} сетов</span>
+      <span>
+        {actionsPurpose[0].CurrentApproachGroup.countTotal} повторений
+      </span>
+      <span>{actionsPurpose[0].CurrentApproachGroup.sum} кг</span>
+      <span>{actionsPurpose[0].CurrentApproachGroup.mean.toFixed(1)} кг</span>
+    </span>
+  ) : (
+    <span className="text-muted">&nbsp;&mdash;</span>
+  );
+}
 
 export default async function ActionsPage({ searchParams }: PageParams) {
   const userId = await getCurrentUserId();
@@ -33,6 +51,11 @@ export default async function ActionsPage({ searchParams }: PageParams) {
         },
       },
       ActionStrength: {
+        where: { userId },
+        take: 1,
+        include: { CurrentApproachGroup: { include: { Approaches: true } } },
+      },
+      ActionLoss: {
         where: { userId },
         take: 1,
         include: { CurrentApproachGroup: { include: { Approaches: true } } },
@@ -136,39 +159,15 @@ export default async function ActionsPage({ searchParams }: PageParams) {
 
                 <div className="mb-2">
                   <b>На массу: </b>
-                  {a.ActionMass.length &&
-                  a.ActionMass[0].CurrentApproachGroup ? (
-                    <span className="d-inline-flex gap-2 text-muted">
-                      <span>
-                        {a.ActionMass[0].CurrentApproachGroup.count} сетов
-                      </span>
-                      <span>{a.ActionMass[0].CurrentApproachGroup.sum} кг</span>
-                      <span>
-                        {a.ActionMass[0].CurrentApproachGroup.mean} кг
-                      </span>
-                    </span>
-                  ) : (
-                    <span className="text-muted">&nbsp;&mdash;</span>
-                  )}
+                  {printStats(a.ActionMass)}
                 </div>
                 <div className="mb-2">
                   <b>На силу: </b>
-                  {a.ActionStrength.length &&
-                  a.ActionStrength[0].CurrentApproachGroup ? (
-                    <span className="d-inline-flex gap-2 text-muted">
-                      <span>
-                        {a.ActionStrength[0].CurrentApproachGroup.count} сетов
-                      </span>
-                      <span>
-                        {a.ActionStrength[0].CurrentApproachGroup.sum} кг
-                      </span>
-                      <span>
-                        {a.ActionStrength[0].CurrentApproachGroup.mean} кг
-                      </span>
-                    </span>
-                  ) : (
-                    <span className="text-muted">&nbsp;&mdash;</span>
-                  )}
+                  {printStats(a.ActionStrength)}
+                </div>
+                <div className="mb-2">
+                  <b>На снижение веса: </b>
+                  {printStats(a.ActionLoss)}
                 </div>
               </div>
             </div>

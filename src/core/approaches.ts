@@ -3,9 +3,8 @@ import type {
   ActionMass,
   ActionStrength,
   ApproachesGroup,
-  Purpose,
 } from "@prisma/client";
-import { SetData, SetDataExecuted } from "@/core/types";
+import { CurrentPurpose, SetData, SetDataExecuted } from "@/core/types";
 import {
   calculateStats,
   findInfoForCalculationStatsForAction,
@@ -47,7 +46,7 @@ export async function createApproachGroup(
 ): Promise<ApproachesGroup> {
   const info = await findInfoForCalculationStatsForAction(actionId, userId, tx);
   const given = approaches.length ? approaches : ApproachesStrengthDefault;
-  const { count, sum, mean } = calculateStats(
+  const { count, sum, mean, countTotal } = calculateStats(
     given,
     info.actionrig,
     info.userweight,
@@ -57,6 +56,7 @@ export async function createApproachGroup(
       count,
       sum,
       mean,
+      countTotal,
       Approaches: {
         createMany: {
           data: given,
@@ -70,33 +70,33 @@ export async function createApproachGroup(
 
 export async function linkNewApproachGroupToActionByPurpose(
   tx: PrismaTransactionClient,
-  purpose: Purpose,
-  purposeId: number,
+  purpose: CurrentPurpose,
+  actionByPurposeId: number,
   newGroup: ApproachesGroup,
 ) {
   switch (purpose) {
     case "MASS": {
       await tx.actionMass.update({
-        where: { id: purposeId },
+        where: { id: actionByPurposeId },
         data: { currentApproachGroupId: newGroup.id },
       });
-      console.log(`actionMass updated with approachGroup ${newGroup.id}`);
+      console.log(`ActionMass updated with approachGroup ${newGroup.id}`);
       break;
     }
     case "STRENGTH": {
       await tx.actionStrength.update({
-        where: { id: purposeId },
+        where: { id: actionByPurposeId },
         data: { currentApproachGroupId: newGroup.id },
       });
-      console.log(`actionStrength updated with approachGroup ${newGroup.id}`);
+      console.log(`ActionStrength updated with approachGroup ${newGroup.id}`);
       break;
     }
     case "LOSS": {
       await tx.actionLoss.update({
-        where: { id: purposeId },
+        where: { id: actionByPurposeId },
         data: { currentApproachGroupId: newGroup.id },
       });
-      console.log(`actionStrength updated with approachGroup ${newGroup.id}`);
+      console.log(`ActionLoss updated with approachGroup ${newGroup.id}`);
       break;
     }
   }
@@ -178,8 +178,8 @@ export async function createLossInitial(
     defaults.push(copy);
   }
   const newGroup = await createApproachGroup(tx, defaults, actionId, userId);
-  await tx.actionMass.deleteMany({ where: { userId, actionId } });
-  return tx.actionMass.create({
+  await tx.actionLoss.deleteMany({ where: { userId, actionId } });
+  return tx.actionLoss.create({
     data: {
       actionId,
       userId,

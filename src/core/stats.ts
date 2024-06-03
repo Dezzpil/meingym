@@ -55,15 +55,17 @@ export function calculateStats(
 ): SetsStats {
   const count = setsData.length;
   let sum = 0,
-    mean = 0;
+    mean = 0,
+    countTotal = 0;
   for (const set of setsData) {
     const weight =
       actionRig === ActionRig.OTHER ? userWeight + set.weight : set.weight;
     if (weight * set.count > 0) {
+      countTotal += set.count;
       sum += weight * set.count;
       mean += weight;
     }
   }
   mean = mean / count;
-  return { count, sum, mean };
+  return { count, sum, mean, countTotal };
 }

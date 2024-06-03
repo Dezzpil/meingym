@@ -237,9 +237,12 @@ model ApproachesGroup {
   id Int @id @default(autoincrement())
 
   createdAt DateTime @default(now())
-  count     Int      @default(0)
-  sum       Int      @default(0)
-  mean      Float    @default(0.0)
+
+  // см. SetsStats
+  count      Int   @default(0)
+  sum        Int   @default(0)
+  mean       Float @default(0.0)
+  countTotal Int   @default(0)
 
   ActionMass     ActionMass[]
   ActionStrength ActionStrength[]
@@ -310,8 +313,9 @@ model TrainingExercise {
 
   isPassed Boolean @default(false)
 
-  liftedSum  Int   @default(0)
-  liftedMean Float @default(0.0)
+  liftedSum        Int   @default(0)
+  liftedMean       Float @default(0.0)
+  liftedCountTotal Int   @default(0)
 }
 
 model TrainingExerciseExecution {
