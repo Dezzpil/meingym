@@ -10,12 +10,15 @@ import { TrainingRepeatForm } from "@/app/trainings/[id]/execute/components/Trai
 import { TrainingProcessPanel } from "@/app/trainings/[id]/execute/components/TrainingProcessPanel";
 import { DateFormat, TimeFormat } from "@/tools/dates";
 import Link from "next/link";
+import { findUserInfo, getCurrentUserId } from "@/tools/auth";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
   const training = (await prisma.training.findUniqueOrThrow({
     where: { id },
   })) as Training;
+  const userId = await getCurrentUserId();
+  const userInfo = await findUserInfo(userId);
   const actions = await prisma.action.findMany({});
   const exercises = await prisma.trainingExercise.findMany({
     where: { trainingId: id },
@@ -79,6 +82,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
           training={training}
           actions={actions}
           exercises={exercises}
+          defaultPurpose={userInfo.purpose}
         />
       )}
       <div className="d-flex gap-3 mb-3">

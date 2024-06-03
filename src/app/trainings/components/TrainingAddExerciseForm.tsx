@@ -7,17 +7,20 @@ import { useForm } from "react-hook-form";
 import { ExerciseAddFieldsType } from "@/app/trainings/exercises/types";
 import { BiPlus } from "react-icons/bi";
 import React, { useCallback, useMemo, useState } from "react";
+import { CurrentPurpose } from "@/core/types";
 
 type Props = {
   training: Training;
   actions: Action[];
   exercises: TrainingExercise[];
+  defaultPurpose: CurrentPurpose;
 };
 
 export default function TrainingAddExerciseForm({
   training,
   actions,
   exercises,
+  defaultPurpose,
 }: Props) {
   const exercisesMap = useMemo(() => {
     return Object.fromEntries(exercises.map((e) => [e.actionId, true]));
@@ -31,7 +34,11 @@ export default function TrainingAddExerciseForm({
     return actions.filter((a) => !(a.id in exercisesMap));
   }, [actions, exercisesMap]);
   const [error, setError] = useState<string | null>(null);
-  const form = useForm<ExerciseAddFieldsType>({});
+  const form = useForm<ExerciseAddFieldsType>({
+    defaultValues: {
+      purpose: defaultPurpose,
+    },
+  });
   const submit = form.handleSubmit(async (data) => {
     data.actionId = actionsTitlesMap[data.actionTitle as string].id;
     setError(null);

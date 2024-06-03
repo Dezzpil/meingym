@@ -9,6 +9,7 @@ import { prisma } from "@/tools/db";
 import GitHubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { redirect } from "next/navigation";
+import { UserInfo } from "@prisma/client";
 
 // You'll need to import and pass this
 // to `NextAuth` in `app/api/auth/[...nextauth]/route.ts`
@@ -50,9 +51,18 @@ export function auth(
   return getServerSession(...args, authOptions);
 }
 
-export async function getCurrentUserId(): Promise<string> {
+export async function getCurrentUserId(): Promise<string | never> {
   const session = await getServerSession(authOptions);
   if (!session) redirect(`/404`);
   // @ts-ignore
   return session?.user.id;
+}
+
+export async function findUserInfo(userId: string): Promise<UserInfo> {
+  const info = await prisma.userInfo.findFirst({ where: { userId } });
+  if (!info)
+    return prisma.userInfo.create({
+      data: { userId },
+    });
+  return info;
 }
