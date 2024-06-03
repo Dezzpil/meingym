@@ -28,6 +28,31 @@ model User {
   ApproachesGroup ApproachesGroup[]
   Training        Training[]
   Rig             Rig[]
+  UserInfo        UserInfo[]
+  ActionLoss      ActionLoss[]
+}
+
+enum TrainingProgression {
+  NONE
+  SIMPLE
+}
+
+enum Sex {
+  MALE
+  FEMALE
+}
+
+model UserInfo {
+  id     Int    @id @default(autoincrement())
+  userId String
+
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  sex                       Sex                 @default(MALE)
+  height                    Int                 @default(175)
+  purpose                   Purpose             @default(STRENGTH)
+  trainingProgression       TrainingProgression @default(NONE)
+  trainingProgressionParams Json                @default("{}")
 }
 
 model Account {
@@ -164,8 +189,9 @@ model Action {
   bigCount        Boolean @default(false)
   allowCheating   Boolean @default(false)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @default(now())
+  ActionLoss ActionLoss[]
 }
 
 model ActionMass {
@@ -182,6 +208,19 @@ model ActionMass {
 }
 
 model ActionStrength {
+  id Int @id @default(autoincrement())
+
+  currentApproachGroupId Int
+  CurrentApproachGroup   ApproachesGroup @relation(fields: [currentApproachGroupId], references: [id], onDelete: Cascade)
+
+  actionId Int
+  Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+
+  userId String
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ActionLoss {
   id Int @id @default(autoincrement())
 
   currentApproachGroupId Int
@@ -211,8 +250,9 @@ model ApproachesGroup {
   actionId Int
   Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
 
-  userId String
-  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  User       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ActionLoss ActionLoss[]
 }
 
 model Approach {
@@ -230,6 +270,7 @@ model Approach {
 enum Purpose {
   MASS
   STRENGTH
+  LOSS
 }
 
 model Training {

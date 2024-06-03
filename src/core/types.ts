@@ -8,3 +8,5 @@ export type SetDataExecuted = SetData & {
   refusing: string;
   burning: string;
 };
+
+export type CurrentPurpose = "MASS" | "STRENGTH" | "LOSS";

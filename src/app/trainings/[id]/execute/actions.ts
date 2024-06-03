@@ -19,6 +19,7 @@ import {
   Purpose,
   TrainingExercise,
   TrainingExerciseExecution,
+  TrainingProgression,
 } from "@prisma/client";
 import { getCurrentUserId } from "@/tools/auth";
 import { ProgressionStrategySimple } from "@/core/progression/strategy/simple";
@@ -167,6 +168,15 @@ export async function handleProcessCompletedTraining(
   trainingId: number,
 ): Promise<void> {
   const userId = await getCurrentUserId();
+
+  let userInfo = await prisma.userInfo.findFirst({ where: { userId } });
+  if (!userInfo) {
+    // TODO костыль, выпилить
+    userInfo = await prisma.userInfo.create({
+      data: { userId },
+    });
+  }
+
   const rigs = await prisma.rig.findMany({ where: { userId } });
   const training = await prisma.training.findUniqueOrThrow({
     where: { id: trainingId },
@@ -184,59 +194,65 @@ export async function handleProcessCompletedTraining(
   }
   if (training.processedAt) return;
 
-  // пересоздадим подходы, из которых будет собираться следующая тренировка?
-  for (const e of training.TrainingExercise) {
-    const exercise = e as TrainingExercise & {
-      Action: Action;
-      TrainingExerciseExecution: TrainingExerciseExecution[];
-    };
-    // игнорируем пропущенные подходы или подходы с 0 нагрузкой
-    const executedSetsData: ApproachExecutedData[] =
-      exercise.TrainingExerciseExecution.filter(
-        (e) => !e.isPassed && e.liftedCount > 0,
-      ).map((e) => {
-        return {
-          priority: e.priority,
-          count: e.liftedCount,
-          weight: e.liftedWeight,
-          refusing: e.refusing,
-          rating: e.rating,
-          cheating: e.cheating,
-          burning: e.burning,
-        };
-      });
+  if (userInfo.trainingProgression !== TrainingProgression.NONE) {
+    // пересоздадим подходы, из которых будет собираться следующая тренировка?
+    for (const e of training.TrainingExercise) {
+      const exercise = e as TrainingExercise & {
+        Action: Action;
+        TrainingExerciseExecution: TrainingExerciseExecution[];
+      };
+      // игнорируем пропущенные подходы или подходы с 0 нагрузкой
+      const executedSetsData: ApproachExecutedData[] =
+        exercise.TrainingExerciseExecution.filter(
+          (e) => !e.isPassed && e.liftedCount > 0,
+        ).map((e) => {
+          return {
+            priority: e.priority,
+            count: e.liftedCount,
+            weight: e.liftedWeight,
+            refusing: e.refusing,
+            rating: e.rating,
+            cheating: e.cheating,
+            burning: e.burning,
+          };
+        });
 
-    if (executedSetsData.length) {
-      // Если хотя бы один подход был выполнен, то рассчитываем прогрессию
-      // и обновляем нагрузку на будущее. Иначе просто оставляем ту нагрузку, что была
-      let upgradedSetsData: ApproachData[];
-      const strategy = new ProgressionStrategySimple(rigs, exercise.Action);
-      if (exercise.purpose === Purpose.MASS) {
-        upgradedSetsData = strategy.mass(
-          [],
-          executedSetsData,
-        ) as ApproachData[];
-      } else {
-        upgradedSetsData = strategy.strength(
-          [],
-          executedSetsData,
-        ) as ApproachData[];
+      if (executedSetsData.length) {
+        let upgradedSetsData: ApproachData[];
+
+        // Если хотя бы один подход был выполнен, то рассчитываем прогрессию
+        // и обновляем нагрузку на будущее. Иначе просто оставляем ту нагрузку, что была
+        // TODO пока одна стратегия
+        let strategy = new ProgressionStrategySimple(rigs, exercise.Action);
+
+        if (exercise.purpose === Purpose.MASS) {
+          upgradedSetsData = strategy.mass(
+            [],
+            executedSetsData,
+          ) as ApproachData[];
+        } else {
+          upgradedSetsData = strategy.strength(
+            [],
+            executedSetsData,
+          ) as ApproachData[];
+        }
+        upgradedSetsData.forEach((set, i) => (set.priority = i));
+
+        await prisma.$transaction(async (tx) => {
+          const approachGroupFromExecution = await createApproachGroup(
+            tx,
+            upgradedSetsData,
+            exercise.actionId,
+            training.userId,
+          );
+          await linkNewApproachGroupToActionByPurpose(
+            tx,
+            exercise.purpose,
+            exercise.purposeId,
+            approachGroupFromExecution,
+          );
+        });
       }
-      upgradedSetsData.forEach((set, i) => (set.priority = i));
-      await prisma.$transaction(async (tx) => {
-        const approachGroupFromExecution = await createApproachGroup(
-          tx,
-          upgradedSetsData,
-          exercise.actionId,
-          training.userId,
-        );
-        await linkNewApproachGroupToActionByPurpose(
-          tx,
-          exercise.purpose,
-          exercise.purposeId,
-          approachGroupFromExecution,
-        );
-      });
     }
   }
 

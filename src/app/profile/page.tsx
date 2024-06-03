@@ -7,6 +7,8 @@ import Link from "next/link";
 import React from "react";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { ProfileForm } from "@/app/profile/components/ProfileForm";
+import type { UserInfo } from "@prisma/client";
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -16,6 +18,10 @@ export default async function ProfilePage() {
   const user = session?.user;
   // @ts-ignore
   const userId = user.id;
+
+  const userInfo = (await prisma.userInfo.findFirst({
+    where: { userId },
+  })) as UserInfo;
 
   const { gte, lt } = getCurrentDayBorders();
   const weight = await prisma.weight.findFirst({
@@ -28,6 +34,7 @@ export default async function ProfilePage() {
   return (
     <>
       <h1>Профиль </h1>
+      <ProfileForm userInfo={userInfo} />
       {weight ? <WeightPanel weight={weight} /> : <WeightsForm />}
       <hr />
       <h3>Достижения</h3>

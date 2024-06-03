@@ -27,6 +27,17 @@ export const authOptions = {
       return Promise.resolve(session);
     },
   },
+  events: {
+    createUser: async ({ user }) => {
+      console.log("New user created:", user.email);
+      // Implement your custom logic here
+      // For example, sending a welcome email or integrating with third-party services
+      await prisma.userInfo.create({
+        data: { userId: user.id },
+      });
+    },
+    // You can define handlers for other events as well
+  },
 } satisfies AuthOptions;
 
 // Use it in server contexts
@@ -39,7 +50,7 @@ export function auth(
   return getServerSession(...args, authOptions);
 }
 
-export async function getCurrentUserId() {
+export async function getCurrentUserId(): Promise<string> {
   const session = await getServerSession(authOptions);
   if (!session) redirect(`/404`);
   // @ts-ignore

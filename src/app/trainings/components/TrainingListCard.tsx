@@ -11,27 +11,20 @@ import { useMemo } from "react";
 import { DateFormat, TimeFormat } from "@/tools/dates";
 
 function printPurposes(purposes?: string[]) {
-  return purposes ? (
-    <span>
-      {purposes[0] > purposes[1] && (
-        <>
-          <b>{purposes[0]}</b> / {purposes[1]} %
-        </>
-      )}
-      {purposes[0] < purposes[1] && (
-        <>
-          {purposes[0]} / <b>{purposes[1]}</b> %
-        </>
-      )}
-      {purposes[0] == purposes[1] && (
-        <>
-          {purposes[0]} / {purposes[1]} %
-        </>
-      )}
-    </span>
-  ) : (
-    <span>&mdash;</span>
-  );
+  if (purposes) {
+    let maxIndex = 0;
+    for (let i = 0; i < purposes.length; i++) {
+      maxIndex = purposes[i] > purposes[maxIndex] ? i : maxIndex;
+    }
+    return purposes.map((p) =>
+      p === purposes[maxIndex] ? (
+        <b key={p}>{p}%</b>
+      ) : (
+        <span key={p}>{p}%</span>
+      ),
+    );
+  }
+  return <span>&mdash;</span>;
 }
 
 type Props = {
@@ -59,7 +52,8 @@ export function TrainingListCard({
       const len = training.TrainingExercise.length;
       const str = ((purposeCounts.STRENGTH / len) * 100).toFixed(1);
       const mass = ((purposeCounts.MASS / len) * 100).toFixed(1);
-      result.push(str, mass);
+      const loss = ((purposeCounts.LOSS / len) * 100).toFixed(1);
+      result.push(str, mass, loss);
       return result;
     }
   }, [purposeCounts, training.TrainingExercise.length]);
@@ -92,10 +86,13 @@ export function TrainingListCard({
               <li className="list-inline-item">Не заданы</li>
             )}
           </ul>
-          <div className="mb-2">
-            <b>Цель: </b>
-            <span>{printPurposes(purposes)}</span>
-          </div>
+          <abbr
+            className="d-inline-flex gap-2 mb-2"
+            title="На силу / на массу / на снижение веса"
+          >
+            <b>Цели: </b>
+            {printPurposes(purposes)}
+          </abbr>
           <div className="mb-2 hstack gap-2">
             {training.startedAt && (
               <>

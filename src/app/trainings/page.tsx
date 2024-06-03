@@ -7,7 +7,7 @@ import TrainingCreateForm from "@/app/trainings/components/TrainingCreateForm";
 
 type TrainingId = number;
 export type MuscleGroupTitleToExercisesCnt = Record<string, number>;
-export type ActionPurposeCnt = Record<"MASS" | "STRENGTH", number>;
+export type ActionPurposeCnt = Record<"MASS" | "STRENGTH" | "LOSS", number>;
 
 export default async function TrainingsPage({ searchParams }: PageParams) {
   const userId = await getCurrentUserId();
@@ -54,11 +54,19 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
   const purposeToTrainingMap = new Map<TrainingId, ActionPurposeCnt>();
   for (const t of trainings) {
     const groupCounter: MuscleGroupTitleToExercisesCnt = {};
-    const purposeCounter = { MASS: 0, STRENGTH: 0 };
+    const purposeCounter = { MASS: 0, STRENGTH: 0, LOSS: 0 };
     for (const e of t.TrainingExercise) {
-      e.purpose === Purpose.MASS
-        ? (purposeCounter.MASS += 1)
-        : (purposeCounter.STRENGTH += 1);
+      switch (e.purpose) {
+        case Purpose.MASS:
+          purposeCounter.MASS += 1;
+          break;
+        case Purpose.STRENGTH:
+          purposeCounter.STRENGTH += 1;
+          break;
+        case Purpose.LOSS:
+          purposeCounter.LOSS += 1;
+          break;
+      }
       for (const m of e.Action.MusclesAgony) {
         const group = m.Muscle.Group.title;
         if (!(group in groupCounter)) {

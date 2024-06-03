@@ -74,10 +74,11 @@ export default function TrainingAddExerciseForm({
         )}
         <div>
           <select className="form-control" {...form.register("purpose")}>
-            <option value={Purpose.MASS}>На массу</option>
             {action && action.strengthAllowed && (
               <option value={Purpose.STRENGTH}>На силу</option>
             )}
+            <option value={Purpose.MASS}>На массу</option>
+            <option value={Purpose.LOSS}>На снижение веса</option>
           </select>
         </div>
         <div className="">

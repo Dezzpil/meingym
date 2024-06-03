@@ -1,43 +1,42 @@
 import { PrismaTransactionClient } from "@/tools/types";
-import type { ApproachesGroup, Purpose } from "@prisma/client";
+import type {
+  ActionMass,
+  ActionStrength,
+  ApproachesGroup,
+  Purpose,
+} from "@prisma/client";
 import { SetData, SetDataExecuted } from "@/core/types";
 import {
   calculateStats,
   findInfoForCalculationStatsForAction,
 } from "@/core/stats";
+import { ActionRig } from "@prisma/client";
 
 export type ApproachData = SetData & { priority: number };
 export type ApproachExecutedData = SetDataExecuted & { priority: number };
 
 export const ApproachesStrengthDefault: ApproachData[] = [
-  { weight: 40, count: 12, priority: 0 },
-  { weight: 50, count: 6, priority: 1 },
-  { weight: 60, count: 3, priority: 2 },
-  { weight: 70, count: 2, priority: 3 },
-  { weight: 75, count: 1, priority: 4 },
+  { weight: 40, count: 10, priority: 0 },
+  { weight: 50, count: 8, priority: 1 },
+  { weight: 60, count: 6, priority: 2 },
+  { weight: 70, count: 4, priority: 3 },
+  { weight: 75, count: 2, priority: 4 },
   { weight: 80, count: 1, priority: 5 },
 ];
 
 export const ApproachesMassDefault: ApproachData[] = [
-  { weight: 30, count: 14, priority: 0 },
-  { weight: 35, count: 12, priority: 1 },
-  { weight: 35, count: 10, priority: 2 },
-  { weight: 35, count: 8, priority: 3 },
+  { weight: 35, count: 14, priority: 0 },
+  { weight: 37.5, count: 12, priority: 1 },
+  { weight: 40, count: 10, priority: 2 },
+  { weight: 42.5, count: 8, priority: 3 },
 ];
 
-export const ApproachesMassBigCountDefault: ApproachData[] = [
-  { weight: 30, count: 25, priority: 0 },
-  { weight: 35, count: 20, priority: 1 },
-  { weight: 35, count: 20, priority: 2 },
-  { weight: 35, count: 15, priority: 3 },
-];
-
-// Значения по умолчанию для движений с собственным весом
-export const ApproachesMassBodyDefault: ApproachData[] = [
-  { weight: 0, count: 15, priority: 0 },
-  { weight: 0, count: 15, priority: 1 },
-  { weight: 0, count: 15, priority: 2 },
-  { weight: 0, count: 15, priority: 2 },
+export const ApproachesLossDefault: ApproachData[] = [
+  { weight: 10, count: 8, priority: 0 },
+  { weight: 10, count: 8, priority: 1 },
+  { weight: 10, count: 8, priority: 2 },
+  { weight: 10, count: 8, priority: 3 },
+  { weight: 10, count: 8, priority: 4 },
 ];
 
 export async function createApproachGroup(
@@ -92,5 +91,99 @@ export async function linkNewApproachGroupToActionByPurpose(
       console.log(`actionStrength updated with approachGroup ${newGroup.id}`);
       break;
     }
+    case "LOSS": {
+      await tx.actionLoss.update({
+        where: { id: purposeId },
+        data: { currentApproachGroupId: newGroup.id },
+      });
+      console.log(`actionStrength updated with approachGroup ${newGroup.id}`);
+      break;
+    }
   }
+}
+
+export async function createMassInitial(
+  userId: string,
+  actionId: number,
+  actionRig: ActionRig,
+  actionBigCount: boolean,
+  tx: PrismaTransactionClient,
+): Promise<ActionMass> {
+  let i = 0;
+  const defaults = [];
+  for (const item of ApproachesMassDefault) {
+    const copy: ApproachData = {
+      count: item.count,
+      weight: item.weight,
+      priority: i++,
+    };
+    if (actionRig === ActionRig.OTHER) copy.weight = 0;
+    if (actionBigCount) copy.count *= 2;
+    defaults.push(copy);
+  }
+  const newGroup = await createApproachGroup(tx, defaults, actionId, userId);
+  await tx.actionMass.deleteMany({ where: { userId, actionId } });
+  return tx.actionMass.create({
+    data: {
+      actionId,
+      userId,
+      currentApproachGroupId: newGroup.id,
+    },
+  });
+}
+
+export async function createStrengthInitial(
+  userId: string,
+  actionId: number,
+  actionStrAllowed: boolean,
+  tx: PrismaTransactionClient,
+): Promise<ActionStrength> {
+  if (!actionStrAllowed)
+    throw new Error(
+      `Нельзя создать базовые силовые значения для движения, которое не подходит для силовых тренировок`,
+    );
+  const newGroup = await createApproachGroup(
+    tx,
+    ApproachesStrengthDefault,
+    actionId,
+    userId,
+  );
+  await tx.actionStrength.deleteMany({ where: { userId, actionId } });
+  return tx.actionStrength.create({
+    data: {
+      actionId,
+      userId,
+      currentApproachGroupId: newGroup.id,
+    },
+  });
+}
+
+export async function createLossInitial(
+  userId: string,
+  actionId: number,
+  actionRig: ActionRig,
+  actionBigCount: boolean,
+  tx: PrismaTransactionClient,
+): Promise<ActionMass> {
+  let i = 0;
+  const defaults = [];
+  for (const item of ApproachesLossDefault) {
+    const copy: ApproachData = {
+      count: item.count,
+      weight: item.weight,
+      priority: i++,
+    };
+    if (actionRig === ActionRig.OTHER) copy.weight = 0;
+    if (actionBigCount) copy.count *= 2;
+    defaults.push(copy);
+  }
+  const newGroup = await createApproachGroup(tx, defaults, actionId, userId);
+  await tx.actionMass.deleteMany({ where: { userId, actionId } });
+  return tx.actionMass.create({
+    data: {
+      actionId,
+      userId,
+      currentApproachGroupId: newGroup.id,
+    },
+  });
 }
