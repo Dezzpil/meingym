@@ -1,16 +1,24 @@
 import { z } from "zod";
 
-export const TrainingFormFields = z.object({
+export const TrainingDateFormField = z.object({
   plannedTo: z.date(),
 });
 
-export type TrainingFormFieldsType = z.infer<typeof TrainingFormFields>;
+export type TrainingDateFormFieldType = z.infer<typeof TrainingDateFormField>;
 
-export const TrainingRepeatFormFields = z.object({
+export const TrainingRepeatDateFormFields = z.object({
   plannedTo: z.date(),
   fromId: z.number(),
 });
 
-export type TrainingRepeatFormFieldsType = z.infer<
-  typeof TrainingRepeatFormFields
+export type TrainingRepeatDateFormFieldsType = z.infer<
+  typeof TrainingRepeatDateFormFields
 >;
+
+export const TrainingFormFields = z.object({
+  commonComment: z.string().nullish(),
+  isCircuit: z.boolean(),
+  plannedTo: z.date(),
+});
+
+export type TrainingFormFieldsType = z.infer<typeof TrainingFormFields>;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { TrainingFormFieldsType } from "@/app/trainings/types";
+import { TrainingDateFormFieldType } from "@/app/trainings/types";
 import { handleCreateTraining } from "@/app/trainings/create/actions";
 import { useState } from "react";
 import { TrainingPlannedDateForm } from "@/app/trainings/components/TrainingPlannedDateForm";
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export default function TrainingCreateForm({ btnTitle }: Props) {
-  const form = useForm<TrainingFormFieldsType>();
+  const form = useForm<TrainingDateFormFieldType>();
   const [error, setError] = useState<string | null>(null);
   const [handling, setHandling] = useState<boolean>(false);
 

@@ -2,7 +2,7 @@
 
 import type { Training } from "@prisma/client";
 import { useForm } from "react-hook-form";
-import { TrainingRepeatFormFieldsType } from "@/app/trainings/types";
+import { TrainingRepeatDateFormFieldsType } from "@/app/trainings/types";
 import { useState } from "react";
 import { handleRepeatTraining } from "@/app/trainings/[id]/actions";
 import { TrainingPlannedDateForm } from "@/app/trainings/components/TrainingPlannedDateForm";
@@ -12,7 +12,7 @@ type Props = {
 };
 
 export function TrainingRepeatForm({ training }: Props) {
-  const form = useForm<TrainingRepeatFormFieldsType>({
+  const form = useForm<TrainingRepeatDateFormFieldsType>({
     defaultValues: { fromId: training.id },
   });
 

@@ -9,6 +9,7 @@ import {
 } from "@/app/trainings/page";
 import { useMemo } from "react";
 import { DateFormat, TimeFormat } from "@/tools/dates";
+import { LuCircleDashed } from "react-icons/lu";
 
 function printPurposes(purposes?: string[]) {
   if (purposes) {
@@ -61,13 +62,17 @@ export function TrainingListCard({
   return (
     <>
       <div className="card mb-2">
-        <div className="card-header">
-          Тренировка{" "}
+        <div className="card-header hstack gap-2">
+          <span>Тренировка</span>
           <Link href={`/trainings/${training.id}`}>
             {moment(training.plannedTo).format(DateFormat)}
           </Link>
+          {training.isCircuit && <LuCircleDashed title="Круговая" />}
         </div>
         <div className="card-body">
+          {training.commonComment && training.commonComment.length && (
+            <div className="mb-2 text-muted">{training.commonComment}</div>
+          )}
           <div className="mb-2">
             <b>Количество упражнений: </b>
             <span>{training.TrainingExercise.length}</span>

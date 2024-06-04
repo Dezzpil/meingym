@@ -11,10 +11,15 @@ export type ActionPurposeCnt = Record<"MASS" | "STRENGTH" | "LOSS", number>;
 
 export default async function TrainingsPage({ searchParams }: PageParams) {
   const userId = await getCurrentUserId();
+  const q =
+    searchParams.q && searchParams.q.trim().length
+      ? searchParams.q.trim()
+      : null;
   const groupId = searchParams.group ? parseInt(searchParams.group) : null;
   const groups = await prisma.muscleGroup.findMany({});
   const trainings = await prisma.training.findMany({
     where: {
+      commonComment: q ? { contains: q } : {},
       TrainingExercise:
         groupId !== null
           ? {
@@ -99,6 +104,14 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
                 </option>
               ))}
             </select>
+          </div>
+          <div className="col-12">
+            <input
+              type="text"
+              className="form-control"
+              name="q"
+              defaultValue={q ? q : ""}
+            />
           </div>
           <div className="col-12 hstack gap-3">
             <button type="submit" className="btn btn-primary">

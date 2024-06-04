@@ -5,13 +5,13 @@ import React from "react";
 import TrainingExerciseItemControl from "@/app/trainings/components/TrainingExerciseItemControl";
 import type { Training } from "@prisma/client";
 import moment from "moment";
-import { TrainingChangeDateForm } from "@/app/trainings/[id]/execute/components/TrainingChangeDateForm";
 import { TrainingRepeatForm } from "@/app/trainings/[id]/execute/components/TrainingRepeatForm";
 import { TrainingProcessPanel } from "@/app/trainings/[id]/execute/components/TrainingProcessPanel";
 import { DateFormat, TimeFormat } from "@/tools/dates";
 import Link from "next/link";
 import { findUserInfo, getCurrentUserId } from "@/tools/auth";
 import classNames from "classnames";
+import { TrainingForm } from "@/app/trainings/components/TrainingForm";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
@@ -39,9 +39,11 @@ export default async function TrainingPage({ params }: ItemPageParams) {
       <header className="mb-3">
         <h3>Тренировка {moment(training.plannedTo).format(DateFormat)}</h3>
         {!training.startedAt && (
-          <div>
-            <TrainingChangeDateForm training={training} />
-          </div>
+          <>
+            <div>
+              <TrainingForm training={training} />
+            </div>
+          </>
         )}
       </header>
       {training.startedAt && (

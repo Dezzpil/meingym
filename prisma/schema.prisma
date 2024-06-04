@@ -288,6 +288,10 @@ model Training {
 
   userId String
   User   User   @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+  isCircuit       Boolean @default(false)
+  commonComment   String?
+  completeComment String?
 }
 
 model TrainingExercise {

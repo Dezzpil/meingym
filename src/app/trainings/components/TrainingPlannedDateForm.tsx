@@ -1,4 +1,5 @@
 "use client";
+
 type Props = {
   submit: any;
   handling: boolean;
@@ -6,6 +7,7 @@ type Props = {
   register: CallableFunction;
   btnTitle?: string;
 };
+
 export function TrainingPlannedDateForm({
   submit,
   handling,
