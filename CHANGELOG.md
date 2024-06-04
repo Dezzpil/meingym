@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.12.0](https://github.com/Dezzpil/meingym/compare/v0.11.0...v0.12.0) (2024-06-04)
+
+
+### Features
+
+* добавить еще статистики движения ([46b395c](https://github.com/Dezzpil/meingym/commits/46b395c0eaf82fe40423e74480d87cdf52c0a465))
+* добавить календарь тренировок ([c1be5eb](https://github.com/Dezzpil/meingym/commits/c1be5ebdbd1674fc1d4ee92875ae730458761c68))
+* доработать настройку тренировок ([d373bf0](https://github.com/Dezzpil/meingym/commits/d373bf002d6bb9bfb1290df7936623bacc54a25e))
+* доработать форму и параметры по умолчанию ([c9fcbb3](https://github.com/Dezzpil/meingym/commits/c9fcbb31a95476586ef0be393292eebb86e11a0b))
+* перенести подходы в отд. вкладку ([922d373](https://github.com/Dezzpil/meingym/commits/922d37372e0e62e0fdeab09421cd0dd7406de85f))
+* подсветить разницу в результатах ([b73ed62](https://github.com/Dezzpil/meingym/commits/b73ed629c2417d190fd408be67d6dc284fa64447))
+* предлагать цель упражнения по умолчанию ([625ef42](https://github.com/Dezzpil/meingym/commits/625ef42249f15f9aeabb0bddc815ce170cf84e39))
+
 ## [0.11.0](https://github.com/Dezzpil/meingym/compare/v0.10.1...v0.11.0) (2024-06-03)
 
 ### [0.10.1](https://github.com/Dezzpil/meingym/compare/v0.10.0...v0.10.1) (2024-06-03)
