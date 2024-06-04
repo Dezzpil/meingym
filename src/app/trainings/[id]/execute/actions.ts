@@ -26,11 +26,19 @@ import {
 import { findUserInfo, getCurrentUserId } from "@/tools/auth";
 import { ProgressionStrategySimple } from "@/core/progression/strategy/simple";
 
-export async function handleTrainingStart(id: number) {
+export async function handleTrainingStart(id: number, isCircuit: boolean) {
   await prisma.training.update({
     where: { id },
     data: { startedAt: new Date() },
   });
+  if (isCircuit) {
+    await prisma.trainingExercise.updateMany({
+      where: { trainingId: id },
+      data: {
+        startedAt: new Date(),
+      },
+    });
+  }
   revalidatePath(`/trainings/${id}/execute`);
 }
 

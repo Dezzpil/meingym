@@ -12,6 +12,7 @@ import Link from "next/link";
 import { findUserInfo, getCurrentUserId } from "@/tools/auth";
 import classNames from "classnames";
 import { TrainingForm } from "@/app/trainings/components/TrainingForm";
+import { NameOfTheDay } from "@/components/NameOfTheDay";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
@@ -37,7 +38,12 @@ export default async function TrainingPage({ params }: ItemPageParams) {
   return (
     <>
       <header className="mb-3">
-        <h3>Тренировка {moment(training.plannedTo).format(DateFormat)}</h3>
+        <h3 className="hstack gap-2">
+          <span>
+            Тренировка {moment(training.plannedTo).format(DateFormat)}
+          </span>
+          <NameOfTheDay date={training.plannedTo} />
+        </h3>
         {!training.startedAt && (
           <>
             <div>

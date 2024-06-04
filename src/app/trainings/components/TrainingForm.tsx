@@ -33,7 +33,7 @@ export function TrainingForm({ training }: Props) {
   return (
     <form onSubmit={submit}>
       <div className="mb-2">
-        <label className="form-label">Дата занятия</label>
+        <label className="form-label visually-hidden">Дата занятия</label>
         <input
           type="date"
           className="form-control"

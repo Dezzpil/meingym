@@ -10,6 +10,7 @@ import {
 import { useMemo } from "react";
 import { DateFormat, TimeFormat } from "@/tools/dates";
 import { LuCircleDashed } from "react-icons/lu";
+import { NameOfTheDay } from "@/components/NameOfTheDay";
 
 function printPurposes(purposes?: string[]) {
   if (purposes) {
@@ -67,6 +68,7 @@ export function TrainingListCard({
           <Link href={`/trainings/${training.id}`}>
             {moment(training.plannedTo).format(DateFormat)}
           </Link>
+          <NameOfTheDay date={training.plannedTo} />
           {training.isCircuit && <LuCircleDashed title="Круговая" />}
         </div>
         <div className="card-body">

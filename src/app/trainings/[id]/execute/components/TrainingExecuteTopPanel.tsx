@@ -13,7 +13,7 @@ type Props = {
 
 export function TrainingExecuteTopPanel({ training }: Props) {
   const start = useCallback(async () => {
-    await handleTrainingStart(training.id);
+    await handleTrainingStart(training.id, training.isCircuit);
   }, [training]);
 
   return (
