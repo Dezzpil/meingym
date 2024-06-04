@@ -19,3 +19,15 @@
 .capitalize-first-letter::first-letter {
     text-transform: uppercase; /* Only uppercase the first letter */
 }
+
+.rdp {
+    margin: 0 !important;
+}
+.rdp-months {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+}
+.rdp-month {
+    margin: 0 !important;
+}

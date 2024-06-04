@@ -3,7 +3,7 @@ import { Purpose } from "@prisma/client";
 import { getCurrentUserId } from "@/tools/auth";
 import { TrainingListCard } from "@/app/trainings/components/TrainingListCard";
 import { PageParams } from "@/tools/types";
-import TrainingCreateForm from "@/app/trainings/components/TrainingCreateForm";
+import { TrainingsPicker } from "@/components/TrainingsPicker";
 
 type TrainingId = number;
 export type MuscleGroupTitleToExercisesCnt = Record<string, number>;
@@ -92,14 +92,14 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
           className="row row-cols-lg-auto g-3 align-items-center"
         >
           <div className="col-12">
-            <select name="group" className="form-select">
+            <select
+              name="group"
+              className="form-select"
+              defaultValue={groupId ? groupId : undefined}
+            >
               <option value="">&mdash;</option>
               {groups.map((g) => (
-                <option
-                  value={g.id}
-                  key={g.id}
-                  selected={groupId ? g.id === groupId : false}
-                >
+                <option value={g.id} key={g.id}>
                   {g.title}
                 </option>
               ))}
@@ -119,7 +119,9 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
             </button>
           </div>
         </form>
-        <TrainingCreateForm />
+      </div>
+      <div className="mb-3">
+        <TrainingsPicker trainings={trainings} />
       </div>
       {trainings.length ? (
         trainings.map((t) => (

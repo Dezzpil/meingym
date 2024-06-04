@@ -18,11 +18,11 @@ function printPurposes(purposes?: string[]) {
     for (let i = 0; i < purposes.length; i++) {
       maxIndex = purposes[i] > purposes[maxIndex] ? i : maxIndex;
     }
-    return purposes.map((p) =>
+    return purposes.map((p, index) =>
       p === purposes[maxIndex] ? (
-        <b key={p}>{p}%</b>
+        <b key={index}>{p}%</b>
       ) : (
-        <span key={p}>{p}%</span>
+        <span key={index}>{p}%</span>
       ),
     );
   }
