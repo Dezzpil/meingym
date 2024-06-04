@@ -63,7 +63,14 @@ export default function TrainingExecuteItem({
         setWaitForCompleted(false);
         setModalShowed(false);
       });
-  }, [action.bigCount, exec.id, isCompleted, liftedCount, liftedWeight]);
+  }, [
+    action.allowCheating,
+    action.bigCount,
+    exec.id,
+    isCompleted,
+    liftedCount,
+    liftedWeight,
+  ]);
 
   const onComplete = useCallback(() => {
     setWaitForCompleted(true);

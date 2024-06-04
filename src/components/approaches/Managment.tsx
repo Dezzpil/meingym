@@ -147,7 +147,7 @@ export function ApproachesManagement({
             <div className="d-inline-flex align-items-center">
               <TbSum />: {sum}
             </div>
-            <button className="btn btn-success" disabled={handling}>
+            <button className="btn btn-primary" disabled={handling}>
               Сохранить
             </button>
             <button type="button" className="btn btn-light" onClick={add}>
