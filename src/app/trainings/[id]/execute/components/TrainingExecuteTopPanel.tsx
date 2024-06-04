@@ -18,7 +18,9 @@ export function TrainingExecuteTopPanel({ training }: Props) {
 
   return (
     <>
-      <h4>Тренировка {moment(training.plannedTo).format(DateFormat)}</h4>
+      <h4>
+        Выполнение тренировки {moment(training.plannedTo).format(DateFormat)}
+      </h4>
       <div
         className={classNames("alert", {
           "alert-light": !training.startedAt,
@@ -29,7 +31,9 @@ export function TrainingExecuteTopPanel({ training }: Props) {
       >
         <div className="d-flex align-items-baseline justify-content-between">
           {training.startedAt ? (
-            <span>Начата в {moment(training.startedAt).format("HH:mm")}!</span>
+            <span>
+              Тренировка начата в {moment(training.startedAt).format("HH:mm")}!
+            </span>
           ) : (
             <>
               <span>Тренировка еще не начата!</span>
@@ -41,7 +45,8 @@ export function TrainingExecuteTopPanel({ training }: Props) {
         </div>
         {training.completedAt && (
           <div className="d-flex align-items-baseline justify-content-between">
-            Завершена в {moment(training.completedAt).format("H:mm")} (+
+            Тренировка завершена в {moment(training.completedAt).format("H:mm")}{" "}
+            (+
             {moment(training.completedAt).diff(
               moment(training.startedAt),
               "minute",

@@ -5,6 +5,7 @@ import moment from "moment";
 import { TrainingRepeatForm } from "@/app/trainings/[id]/execute/components/TrainingRepeatForm";
 import { TrainingProcessPanel } from "@/app/trainings/[id]/execute/components/TrainingProcessPanel";
 import { handleCompleteTrainingManually } from "@/app/trainings/[id]/execute/actions";
+import Link from "next/link";
 
 type Props = {
   training: Training;
@@ -28,14 +29,18 @@ export function TrainingExecuteCompletePanel({ training }: Props) {
     <div className="alert alert-light d-flex gap-5 justify-content-between align-items-baseline">
       {training.completedAt ? (
         <>
-          <span>
-            Завершена в {moment(training.completedAt).format("H:mm")} (+
-            {moment(training.completedAt).diff(
-              moment(training.startedAt),
-              "minute",
-            )}{" "}
-            мин.)!
-          </span>
+          <div className="hstack gap-2">
+            <span>
+              Завершена в {moment(training.completedAt).format("H:mm")} (+
+              {moment(training.completedAt).diff(
+                moment(training.startedAt),
+                "minute",
+              )}{" "}
+              мин.)!
+            </span>
+            <Link href={`/trainings/${training.id}`}>Подробнее...</Link>
+          </div>
+
           {training.processedAt ? (
             <TrainingRepeatForm training={training} />
           ) : (

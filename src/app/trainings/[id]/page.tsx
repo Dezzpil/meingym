@@ -11,6 +11,7 @@ import { TrainingProcessPanel } from "@/app/trainings/[id]/execute/components/Tr
 import { DateFormat, TimeFormat } from "@/tools/dates";
 import Link from "next/link";
 import { findUserInfo, getCurrentUserId } from "@/tools/auth";
+import classNames from "classnames";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
@@ -44,7 +45,13 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         )}
       </header>
       {training.startedAt && (
-        <div className="alert alert-primary">
+        <div
+          className={classNames("alert", {
+            "alert-light": !training.startedAt,
+            "alert-primary": training.startedAt,
+            "alert-success": training.completedAt,
+          })}
+        >
           {training.startedAt && (
             <div>
               Тренировка начата в{" "}
@@ -86,24 +93,21 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         />
       )}
       <div className="d-flex gap-3 mb-3">
-        {training.startedAt && !training.completedAt && (
-          <a
-            href={`/trainings/${training.id}/execute`}
-            className="btn btn-light"
-          >
-            Выполнение
-          </a>
+        {moment(training.plannedTo).isSame(moment(), "day") && (
+          <div className="mb-3">
+            <Link
+              className="btn btn-outline-secondary"
+              href={`/trainings/${training.id}/execute`}
+            >
+              Перейти к выполнению
+            </Link>
+          </div>
         )}
         {training.completedAt && !training.processedAt && (
           <TrainingProcessPanel training={training} />
         )}
         {training.processedAt && <TrainingRepeatForm training={training} />}
       </div>
-      {moment(training.plannedTo).isSame(moment(), "day") && (
-        <div className=" mb-3">
-          <Link href={`/trainings/${training.id}/execute`}>Погнали</Link>
-        </div>
-      )}
     </>
   );
 }

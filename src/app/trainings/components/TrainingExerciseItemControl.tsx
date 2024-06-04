@@ -16,6 +16,9 @@ import {
   handleDeleteExercise,
 } from "@/app/trainings/exercises/actions";
 import { FaArrowDown, FaArrowUp } from "react-icons/fa";
+import { NumberDiffViz } from "@/components/NumberDiffViz";
+import moment from "moment/moment";
+import { PurposeText } from "@/components/PurposeText";
 
 type Props = {
   exercise: TrainingExercise & {
@@ -49,13 +52,13 @@ export default function TrainingExerciseItemControl({
   return (
     <div className="row">
       <div className="mb-3 col-md-3 col-sm-12">
-        <Link href={`/actions/${exercise.Action.id}`}>
-          {exercise.Action.alias
-            ? exercise.Action.alias
-            : exercise.Action.title}
-        </Link>
-        <div>
-          <small className="small text-muted">{exercise.purpose}</small>
+        <div className="hstack gap-2 mb-2">
+          <Link href={`/actions/${exercise.Action.id}`}>
+            {exercise.Action.alias
+              ? exercise.Action.alias
+              : exercise.Action.title}
+          </Link>
+          <PurposeText purpose={exercise.purpose} />
         </div>
         <div className="d-flex gap-2">
           {exercise.ApproachGroup.Approaches.map((a) => (
@@ -99,25 +102,71 @@ export default function TrainingExerciseItemControl({
         )}
         {exercise.completedAt && (
           <>
-            <div>Исполнение</div>
+            <div className="hstack gap-2 mb-2">
+              <span>Исполнение</span>
+              <span className="text-muted">
+                (+
+                {moment(exercise.completedAt).diff(
+                  moment(exercise.startedAt),
+                  "minute",
+                )}{" "}
+                мин.)
+              </span>
+            </div>
             <div className="d-flex gap-2">
               {exercise.TrainingExerciseExecution.map((execution) => (
                 <span key={execution.id}>
-                  {execution.liftedWeight}x{execution.liftedCount}
+                  <NumberDiffViz
+                    prev={execution.plannedWeigth}
+                    current={execution.liftedWeight}
+                    tooltip={false}
+                  />
+                  x
+                  <NumberDiffViz
+                    prev={execution.plannedCount}
+                    current={execution.liftedCount}
+                    toFixed={false}
+                    tooltip={false}
+                  />
                 </span>
               ))}
             </div>
             <div className="d-flex gap-3 mb-2 text-muted small">
-              <span>Σ кг: {exercise.liftedSum}</span>
-              <span>÷ кг: {exercise.liftedMean.toFixed(1)}</span>
-              <span>Σ раз: {exercise.liftedCountTotal}</span>
-              <span>
-                ÷ раз:{" "}
-                {(
-                  exercise.liftedCountTotal /
-                  exercise.TrainingExerciseExecution.length
-                ).toFixed(1)}
-              </span>
+              <div className="hstack gap-1">
+                <span>Σ кг:</span>
+                <NumberDiffViz
+                  prev={exercise.ApproachGroup.sum}
+                  current={exercise.liftedSum}
+                />
+              </div>
+              <div className="hstack gap-1">
+                <span>÷ кг:</span>
+                <NumberDiffViz
+                  prev={exercise.ApproachGroup.mean}
+                  current={exercise.liftedMean}
+                />
+              </div>
+              <div className="hstack gap-1">
+                <span>Σ раз:</span>
+                <NumberDiffViz
+                  prev={exercise.ApproachGroup.countTotal}
+                  current={exercise.liftedCountTotal}
+                  toFixed={false}
+                />
+              </div>
+              <div className="hstack gap-1">
+                <span>÷ раз:</span>
+                <NumberDiffViz
+                  prev={
+                    exercise.ApproachGroup.countTotal /
+                    exercise.ApproachGroup.count
+                  }
+                  current={
+                    exercise.liftedCountTotal /
+                    exercise.TrainingExerciseExecution.length
+                  }
+                />
+              </div>
             </div>
           </>
         )}

@@ -11,3 +11,11 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.capitalize-first-letter {
+    text-transform: lowercase; /* Convert the whole text to lowercase */
+}
+
+.capitalize-first-letter::first-letter {
+    text-transform: uppercase; /* Only uppercase the first letter */
+}
