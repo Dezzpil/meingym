@@ -21,6 +21,7 @@ export const CheatingOptions = {
 
 export const RefusingOptions = {
   [ExecutionRefusing.NO]: "Без отказа",
+  [ExecutionRefusing.SOON]: "Близость отказа",
   [ExecutionRefusing.YES]: "Отказ",
 };
 

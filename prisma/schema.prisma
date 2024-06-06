@@ -377,6 +377,7 @@ enum ExecutionCheating {
 // см. RefusingOptions
 enum ExecutionRefusing {
   NO
+  SOON
   YES
 }
 
