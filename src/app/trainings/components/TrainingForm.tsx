@@ -58,6 +58,7 @@ export function TrainingForm({ training }: Props) {
       <div className="form-check mb-2">
         <input
           type="checkbox"
+          id="isCircuit"
           className="form-check-input"
           {...form.register("isCircuit")}
         />

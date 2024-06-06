@@ -7,19 +7,28 @@ import type {
   ExecutionRefusing,
 } from "@prisma/client";
 
-type Data = {
+export type TrainingsExerciseCompleteDTO = {
   id: number;
   liftedWeight: number;
   liftedCount: number;
-  rating: ExecutionRating;
-  cheating: ExecutionCheating;
-  refusing: ExecutionRefusing;
-  burning: ExecutionBurning;
+  rating?: ExecutionRating;
+  cheating?: ExecutionCheating;
+  refusing?: ExecutionRefusing;
+  burning?: ExecutionBurning;
+  comment?: string;
 };
 
 export async function POST(request: NextRequest) {
-  const { id, liftedCount, liftedWeight, rating, cheating, refusing, burning } =
-    (await request.json()) as Data;
+  const {
+    id,
+    liftedCount,
+    liftedWeight,
+    rating,
+    cheating,
+    refusing,
+    burning,
+    comment,
+  } = (await request.json()) as TrainingsExerciseCompleteDTO;
   const exec = await prisma.trainingExerciseExecution.update({
     where: { id },
     data: {
@@ -30,6 +39,7 @@ export async function POST(request: NextRequest) {
       refusing,
       burning,
       executedAt: new Date(),
+      comment,
     },
   });
   return NextResponse.json(exec, { status: 200 });

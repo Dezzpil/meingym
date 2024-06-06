@@ -19,6 +19,11 @@ import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { NumberDiffViz } from "@/components/NumberDiffViz";
 import moment from "moment/moment";
 import { PurposeText } from "@/components/PurposeText";
+import {
+  SetsStatsForApproachGroup,
+  SetsStatsForExercise,
+} from "@/components/SetsStats";
+import { TrainingRatingEmoji } from "@/app/trainings/components/TrainingRatingEmoji";
 
 type Props = {
   exercise: TrainingExercise & {
@@ -63,21 +68,20 @@ export default function TrainingExerciseItemControl({
         <div className="d-flex gap-2">
           {exercise.ApproachGroup.Approaches.map((a) => (
             <span key={a.id}>
-              {a.weight}x{a.count}
+              <NumberDiffViz current={a.weight} tooltip={false} />
+              x
+              <NumberDiffViz
+                current={a.count}
+                toFixed={false}
+                tooltip={false}
+              />
             </span>
           ))}
         </div>
-        <div className="d-flex gap-3 mb-2 text-muted small">
-          <span>Σ кг: {exercise.ApproachGroup.sum}</span>
-          <span>÷ кг: {exercise.ApproachGroup.mean.toFixed(1)}</span>
-          <span>Σ раз: {exercise.ApproachGroup.countTotal}</span>
-          <span>
-            ÷ раз:{" "}
-            {(
-              exercise.ApproachGroup.countTotal / exercise.ApproachGroup.count
-            ).toFixed(1)}
-          </span>
-        </div>
+        <SetsStatsForApproachGroup
+          group={exercise.ApproachGroup}
+          className="mb-2"
+        />
         {canControl && (
           <div className="d-flex gap-2">
             {hidden ? (
@@ -112,6 +116,7 @@ export default function TrainingExerciseItemControl({
                 )}{" "}
                 мин.)
               </span>
+              <TrainingRatingEmoji rating={exercise.rating} />
             </div>
             <div className="d-flex gap-2">
               {exercise.TrainingExerciseExecution.map((execution) => (
@@ -131,43 +136,12 @@ export default function TrainingExerciseItemControl({
                 </span>
               ))}
             </div>
-            <div className="d-flex gap-3 mb-2 text-muted small">
-              <div className="hstack gap-1">
-                <span>Σ кг:</span>
-                <NumberDiffViz
-                  prev={exercise.ApproachGroup.sum}
-                  current={exercise.liftedSum}
-                />
+            <SetsStatsForExercise exercise={exercise} className="mb-2" />
+            {exercise.comment && (
+              <div className="text-muted small">
+                <span>{exercise.comment}</span>
               </div>
-              <div className="hstack gap-1">
-                <span>÷ кг:</span>
-                <NumberDiffViz
-                  prev={exercise.ApproachGroup.mean}
-                  current={exercise.liftedMean}
-                />
-              </div>
-              <div className="hstack gap-1">
-                <span>Σ раз:</span>
-                <NumberDiffViz
-                  prev={exercise.ApproachGroup.countTotal}
-                  current={exercise.liftedCountTotal}
-                  toFixed={false}
-                />
-              </div>
-              <div className="hstack gap-1">
-                <span>÷ раз:</span>
-                <NumberDiffViz
-                  prev={
-                    exercise.ApproachGroup.countTotal /
-                    exercise.ApproachGroup.count
-                  }
-                  current={
-                    exercise.liftedCountTotal /
-                    exercise.TrainingExerciseExecution.length
-                  }
-                />
-              </div>
-            </div>
+            )}
           </>
         )}
       </div>

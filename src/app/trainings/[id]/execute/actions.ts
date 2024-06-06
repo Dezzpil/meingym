@@ -13,16 +13,16 @@ import {
   createApproachGroup,
   linkNewApproachGroupToActionByPurpose,
 } from "@/core/approaches";
-import { PrismaTransactionClient } from "@/tools/types";
+import { PrismaTransactionClient, ServerActionResult } from "@/tools/types";
 import {
   Action,
   ApproachesGroup,
   Purpose,
-  TrainingExercise,
   TrainingExerciseExecution,
   TrainingProgression,
   Approach,
 } from "@prisma/client";
+import type { TrainingExercise, TrainingRating } from "@prisma/client";
 import { findUserInfo, getCurrentUserId } from "@/tools/auth";
 import { ProgressionStrategySimple } from "@/core/progression/strategy/simple";
 
@@ -80,53 +80,66 @@ export async function countExerciseNonExecuted(
 }
 
 export async function handleTrainingExerciseExecuted(
-  exerciseId: number,
-  data: Record<string, { liftedCount: number; liftedWeight: number }>,
-  trainingId: number,
-  actionId: number,
-) {
-  await prisma.trainingExerciseExecution.updateMany({
-    where: { exerciseId, executedAt: null },
-    data: { isPassed: true },
-  });
-
-  const userId = await getCurrentUserId();
-
-  await prisma.$transaction(async (tx) => {
-    const executions = await tx.trainingExerciseExecution.findMany({
-      where: { exerciseId, isPassed: false },
-    });
-
-    const sets: SetData[] = executions.map((e) => {
-      return { weight: e.liftedWeight, count: e.liftedCount };
-    });
-    const info = await findInfoForCalculationStatsForAction(
-      actionId,
-      userId,
-      tx,
-    );
-    const {
-      sum: liftedSum,
-      mean: liftedMean,
-      countTotal: liftedCountTotal,
-    } = calculateStats(sets, info.actionrig, info.userweight);
-
-    await tx.trainingExercise.update({
-      where: { id: exerciseId },
-      data: {
-        completedAt: new Date(),
-        liftedSum,
-        liftedMean,
-        liftedCountTotal,
+  exercise: Pick<TrainingExercise, "id" | "trainingId" | "actionId">,
+  rating?: TrainingRating | null,
+  comment?: string | null,
+): Promise<ServerActionResult> {
+  console.log(rating, comment);
+  try {
+    await prisma.trainingExerciseExecution.updateMany({
+      where: {
+        exerciseId: exercise.id,
+        executedAt: null,
       },
+      data: { isPassed: true },
     });
-  });
 
-  await prisma.$transaction(async (tx) => {
-    await checkAllExercisesCompletedAndCompleteTraining(trainingId, tx);
-  });
+    const userId = await getCurrentUserId();
+    await prisma.$transaction(async (tx) => {
+      const executions = await tx.trainingExerciseExecution.findMany({
+        where: { exerciseId: exercise.id, isPassed: false },
+      });
 
-  revalidatePath(`/trainings/${exerciseId}/execute`);
+      const sets: SetData[] = executions.map((e) => {
+        return { weight: e.liftedWeight, count: e.liftedCount };
+      });
+      const info = await findInfoForCalculationStatsForAction(
+        exercise.actionId,
+        userId,
+        tx,
+      );
+      const {
+        sum: liftedSum,
+        mean: liftedMean,
+        countTotal: liftedCountTotal,
+      } = calculateStats(sets, info.actionrig, info.userweight);
+
+      await tx.trainingExercise.update({
+        where: { id: exercise.id },
+        data: Object.assign(
+          {
+            completedAt: new Date(),
+            liftedSum,
+            liftedMean,
+            liftedCountTotal,
+          },
+          rating ? { rating } : {},
+          comment ? { comment } : {},
+        ),
+      });
+    });
+    await prisma.$transaction(async (tx) => {
+      await checkAllExercisesCompletedAndCompleteTraining(
+        exercise.trainingId,
+        tx,
+      );
+    });
+  } catch (e: any) {
+    return { ok: false, error: e.message };
+  }
+
+  revalidatePath(`/trainings/${exercise.trainingId}/execute`);
+  return { ok: true, error: null };
 }
 
 async function checkAllExercisesCompletedAndCompleteTraining(

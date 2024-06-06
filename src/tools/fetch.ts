@@ -1,6 +1,6 @@
-export async function postApi(
+export async function postApi<T>(
   url: string,
-  data: Record<any, any>,
+  data: T,
 ): Promise<Record<any, any> | null> {
   try {
     const response = await fetch(url, {

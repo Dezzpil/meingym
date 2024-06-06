@@ -9,14 +9,17 @@ import type {
   TrainingExercise,
   Action,
   TrainingExerciseExecution,
+  ApproachesGroup,
 } from "@prisma/client";
 import { GrRun } from "react-icons/gr";
-import classNames from "classnames";
 import { FaSpinner } from "react-icons/fa6";
 import { TrainingExecuteForm } from "@/app/trainings/[id]/execute/components/TrainingExecuteForm";
+import { PurposeText } from "@/components/PurposeText";
+
 type Props = {
   exercise: TrainingExercise & {
     Action: Action;
+    ApproachGroup: ApproachesGroup;
     TrainingExerciseExecution: TrainingExerciseExecution[];
   };
   disabled: boolean;
@@ -31,15 +34,14 @@ export function TrainingExecuteCard({ exercise, disabled }: Props) {
   }, [exercise]);
 
   return (
-    <div className={classNames("card mb-3")} key={exercise.id}>
-      <div
-        className={classNames("card-header d-flex align-items-center gap-3")}
-      >
+    <div className="card mb-3" key={exercise.id}>
+      <div className="card-header d-flex align-items-center gap-2">
         <span>
           {exercise.Action.alias
             ? exercise.Action.alias
             : exercise.Action.title}
         </span>
+        <PurposeText purpose={exercise.purpose} />
         {exercise.startedAt && !exercise.completedAt && <FaSpinner />}
         {!exercise.startedAt && (
           <div className="d-flex gap-3">

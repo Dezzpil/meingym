@@ -1,18 +1,20 @@
 import classNames from "classnames";
 
 type Props = {
-  prev: number;
   current: number;
+  prev?: number;
   toFixed?: boolean;
   tooltip?: boolean;
 };
 export function NumberDiffViz({
-  prev,
   current,
+  prev,
   toFixed = true,
   tooltip = true,
 }: Props) {
-  return prev === current ? (
+  return !prev ? (
+    <span>{toFixed ? current.toFixed(1) : current}</span>
+  ) : prev === current ? (
     <span>{toFixed ? current.toFixed(1) : current}</span>
   ) : tooltip ? (
     <abbr

@@ -5,7 +5,6 @@ import React, { useCallback, useRef, useState } from "react";
 import type { Action, TrainingExerciseExecution } from "@prisma/client";
 import { GrCheckmark } from "react-icons/gr";
 import classNames from "classnames";
-import type { RegisterOptions } from "react-hook-form";
 import { FaSpinner } from "react-icons/fa6";
 import { postApi } from "@/tools/fetch";
 import Modal from "react-bootstrap/Modal";
@@ -16,18 +15,22 @@ import {
   RefusingOptions,
 } from "@/app/trainings/[id]/execute/types";
 import { ExecutionBurning } from ".prisma/client";
-import { ExecutionCheating } from "@prisma/client";
+import {
+  ExecutionCheating,
+  ExecutionRating,
+  ExecutionRefusing,
+} from "@prisma/client";
+import { TrainingsExerciseCompleteDTO } from "@/app/api/trainings/exercise/execution/complete/route";
 
 type Props = {
   exec: TrainingExerciseExecution;
   action: Action;
-  register: CallableFunction;
   disabled: boolean;
 };
-export default function TrainingExecuteItem({
+
+export default function TrainingExecuteFormItem({
   action,
   exec,
-  register,
   disabled,
 }: Props) {
   const [isCompleted, setCompleted] = useState<boolean>(!!exec.executedAt);
@@ -40,22 +43,28 @@ export default function TrainingExecuteItem({
   const cheatingSelectRef = useRef<HTMLSelectElement | null>(null);
   const refusingSelectRef = useRef<HTMLSelectElement | null>(null);
   const burningSelectRef = useRef<HTMLSelectElement | null>(null);
+  const commentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const [modalShowed, setModalShowed] = useState(false);
+
   const closeModal = useCallback(() => {
-    postApi(`/api/trainings/exercise/execution/complete?id=${exec.id}`, {
-      id: exec.id,
-      liftedWeight,
-      liftedCount,
-      rating: ratingSelectRef.current?.value,
-      cheating: action.allowCheating
-        ? cheatingSelectRef.current?.value
-        : ExecutionCheating.NO,
-      refusing: refusingSelectRef.current?.value,
-      burning: action.bigCount
-        ? burningSelectRef.current?.value
-        : ExecutionBurning.NO,
-    })
+    postApi<TrainingsExerciseCompleteDTO>(
+      `/api/trainings/exercise/execution/complete?id=${exec.id}`,
+      {
+        id: exec.id,
+        liftedWeight,
+        liftedCount,
+        rating: ratingSelectRef.current?.value as ExecutionRating,
+        cheating: action.allowCheating
+          ? (cheatingSelectRef.current?.value as ExecutionCheating)
+          : ExecutionCheating.NO,
+        refusing: refusingSelectRef.current?.value as ExecutionRefusing,
+        burning: action.bigCount
+          ? (burningSelectRef.current?.value as ExecutionBurning)
+          : ExecutionBurning.NO,
+        comment: commentTextareaRef.current?.value,
+      },
+    )
       .then((data) => {
         setCompleted(!isCompleted);
       })
@@ -118,11 +127,10 @@ export default function TrainingExecuteItem({
           })}
           disabled={disabled || isCompleted}
           onInput={updateLiftedWeight}
-          {...register(`[${exec.id}].liftedWeight`, {
-            valueAsNumber: true,
-            min: 0,
-            value: exec.liftedWeight ? exec.liftedWeight : exec.plannedWeigth,
-          } as RegisterOptions)}
+          defaultValue={
+            exec.liftedWeight ? exec.liftedWeight : exec.plannedWeigth
+          }
+          min={0}
         />
         <span className="input-group-text">x</span>
         <input
@@ -137,11 +145,8 @@ export default function TrainingExecuteItem({
           })}
           disabled={disabled || isCompleted}
           onInput={updateLiftedCount}
-          {...register(`[${exec.id}].liftedCount`, {
-            valueAsNumber: false,
-            min: 0,
-            value: exec.liftedCount ? exec.liftedCount : exec.plannedCount,
-          } as RegisterOptions)}
+          min={0}
+          defaultValue={exec.liftedCount ? exec.liftedCount : exec.plannedCount}
         />
       </div>
       <button
@@ -185,7 +190,7 @@ export default function TrainingExecuteItem({
               ))}
             </select>
             {action.bigCount && (
-              <select className="form-control" ref={burningSelectRef}>
+              <select className="form-control mb-2" ref={burningSelectRef}>
                 {Object.entries(BurningOptions).map((entry) => (
                   <option key={entry[0]} value={entry[0]}>
                     {entry[1]}
@@ -193,6 +198,12 @@ export default function TrainingExecuteItem({
                 ))}
               </select>
             )}
+            <textarea
+              rows={2}
+              className="form-control"
+              ref={commentTextareaRef}
+              placeholder="Комментарий ..."
+            ></textarea>
           </div>
         </Modal.Body>
         <Modal.Footer>

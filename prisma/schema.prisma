@@ -310,7 +310,7 @@ model TrainingExercise {
   TrainingExerciseExecution TrainingExerciseExecution[]
 
   purpose   Purpose
-  purposeId Int // ActionMass.id | ActionStrength.id
+  purposeId Int // ActionMass.id | ActionStrength.id | ActionLoss.id
 
   actionId Int
   Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
@@ -320,6 +320,16 @@ model TrainingExercise {
   liftedSum        Int   @default(0)
   liftedMean       Float @default(0.0)
   liftedCountTotal Int   @default(0)
+
+  rating  TrainingRating @default(OK)
+  comment String?
+}
+
+enum TrainingRating {
+  EASY
+  OK
+  HARD
+  IMPOSSIBLE
 }
 
 model TrainingExerciseExecution {
@@ -344,6 +354,8 @@ model TrainingExerciseExecution {
   cheating ExecutionCheating @default(NO)
   refusing ExecutionRefusing @default(NO)
   burning  ExecutionBurning  @default(NO)
+
+  comment String?
 }
 
 // см. RatingOptions
