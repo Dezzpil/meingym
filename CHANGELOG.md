@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.13.0](https://github.com/Dezzpil/meingym/compare/v0.12.0...v0.13.0) (2024-06-06)
+
+
+### Features
+
+* добавить опцию "Близость отказа" ([0d84f8c](https://github.com/Dezzpil/meingym/commits/0d84f8c6def1690b45ae65e565d29f137906889d))
+* добавить оценки упражнения ([9b0203e](https://github.com/Dezzpil/meingym/commits/9b0203e94686fd679db7d6503b9ba59b8af28b0d))
+* разделить оценку сложности и техники ([a8401de](https://github.com/Dezzpil/meingym/commits/a8401dee5864b6e607f00f06a0beeb34bdda584a))
+
 ## [0.12.0](https://github.com/Dezzpil/meingym/compare/v0.11.0...v0.12.0) (2024-06-04)
 
 
