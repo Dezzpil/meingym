@@ -2,7 +2,11 @@
 
 import { GiWeight } from "react-icons/gi";
 import React, { useCallback, useRef, useState } from "react";
-import type { Action, TrainingExerciseExecution } from "@prisma/client";
+import type {
+  Action,
+  ExecutionTechnique,
+  TrainingExerciseExecution,
+} from "@prisma/client";
 import { GrCheckmark } from "react-icons/gr";
 import classNames from "classnames";
 import { FaSpinner } from "react-icons/fa6";
@@ -13,6 +17,7 @@ import {
   CheatingOptions,
   RatingOptions,
   RefusingOptions,
+  TechniqueOptions,
 } from "@/app/trainings/[id]/execute/types";
 import { ExecutionBurning } from ".prisma/client";
 import {
@@ -40,6 +45,8 @@ export default function TrainingExecuteFormItem({
   const [liftedCount, setLiftedCount] = useState(exec.plannedCount);
 
   const ratingSelectRef = useRef<HTMLSelectElement | null>(null);
+  const techSelectRef = useRef<HTMLSelectElement | null>(null);
+  const techUpCheckboxRef = useRef<HTMLInputElement | null>(null);
   const cheatingSelectRef = useRef<HTMLSelectElement | null>(null);
   const refusingSelectRef = useRef<HTMLSelectElement | null>(null);
   const burningSelectRef = useRef<HTMLSelectElement | null>(null);
@@ -55,6 +62,8 @@ export default function TrainingExecuteFormItem({
         liftedWeight,
         liftedCount,
         rating: ratingSelectRef.current?.value as ExecutionRating,
+        technique: techSelectRef.current?.value as ExecutionTechnique,
+        techniqueUpgrade: !!techUpCheckboxRef.current?.value,
         cheating: action.allowCheating
           ? (cheatingSelectRef.current?.value as ExecutionCheating)
           : ExecutionCheating.NO,
@@ -173,6 +182,24 @@ export default function TrainingExecuteFormItem({
                 </option>
               ))}
             </select>
+            <select className="form-control mb-2" ref={techSelectRef}>
+              {Object.entries(TechniqueOptions).map((entry) => (
+                <option key={entry[0]} value={entry[0]}>
+                  {entry[1]}
+                </option>
+              ))}
+            </select>
+            <div className="form-check mb-2">
+              <input
+                type="checkbox"
+                id="techniqueUpgrade"
+                className="form-check-input"
+                ref={techUpCheckboxRef}
+              />
+              <label htmlFor="techniqueUpgrade" className="form-check-label">
+                Улучшение техники?
+              </label>
+            </div>
             {action.allowCheating && (
               <select className="form-control mb-2" ref={cheatingSelectRef}>
                 {Object.entries(CheatingOptions).map((entry) => (

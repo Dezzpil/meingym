@@ -3,14 +3,19 @@ import {
   ExecutionCheating,
   ExecutionRefusing,
   ExecutionBurning,
+  ExecutionTechnique,
 } from "@prisma/client";
 
 export const RatingOptions = {
   [ExecutionRating.EASY]: "Легко / Не почувствовал нагрузки",
   [ExecutionRating.OK]: "ОК / ровно / качественно",
-  [ExecutionRating.TENSION_OK]: "Напряжение, техника сохранена",
-  [ExecutionRating.TENSION_FLAW]: "Напряжение, техника нарушилась",
-  [ExecutionRating.HARD]: "Сразу тяжело",
+  [ExecutionRating.TENSION]: "Напряжение / тяжело, но получается",
+  [ExecutionRating.HARD]: "Сразу тяжело / еле получилось",
+};
+
+export const TechniqueOptions = {
+  [ExecutionTechnique.OK]: "Техника ОК",
+  [ExecutionTechnique.FLAW]: "Техника нарушилась",
 };
 
 export const CheatingOptions = {

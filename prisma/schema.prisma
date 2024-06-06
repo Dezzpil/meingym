@@ -350,21 +350,30 @@ model TrainingExerciseExecution {
   isPassed   Boolean   @default(false)
   priority   Int       @default(0)
 
-  rating   ExecutionRating   @default(OK)
-  cheating ExecutionCheating @default(NO)
-  refusing ExecutionRefusing @default(NO)
-  burning  ExecutionBurning  @default(NO)
+  rating    ExecutionRating    @default(OK)
+  technique ExecutionTechnique @default(OK)
+  cheating  ExecutionCheating  @default(NO)
+  refusing  ExecutionRefusing  @default(NO)
+  burning   ExecutionBurning   @default(NO)
 
   comment String?
+
+  techniqueUpgrade Boolean @default(false)
 }
 
 // см. RatingOptions
 enum ExecutionRating {
   EASY
   OK
-  TENSION_OK
-  TENSION_FLAW
+  TENSION_OK // deprecated
+  TENSION_FLAW // deprecated
+  TENSION
   HARD
+}
+
+enum ExecutionTechnique {
+  OK
+  FLAW
 }
 
 // см. CheatingOptions
