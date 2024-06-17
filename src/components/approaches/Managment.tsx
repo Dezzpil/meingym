@@ -3,13 +3,13 @@
 import { FormEvent, useCallback, useMemo, useState } from "react";
 import Loader from "@/components/Loader";
 import { ApproachesManagementElement } from "@/components/approaches/ManagmentElement";
-import { TbSum } from "react-icons/tb";
 import {
   handleCreateNewApproachesGroup,
   handleUpdateApproachGroup,
 } from "@/app/approaches/actions";
-import type { Approach, Purpose } from "@prisma/client";
+import type { Approach, ApproachesGroup, Purpose } from "@prisma/client";
 import { ApproachData } from "@/core/approaches";
+import { SetsStatsForApproachGroup } from "@/components/SetsStats";
 
 type Props = {
   create?: {
@@ -20,19 +20,19 @@ type Props = {
     groupId: number;
     trainingId: number;
   };
-  approaches: Approach[];
   actionId: number;
+  approachGroup: ApproachesGroup & { Approaches: Approach[] };
 };
 
 export function ApproachesManagement({
   create,
   update,
-  approaches,
   actionId,
+  approachGroup,
 }: Props) {
   const currentData = useMemo(() => {
     const data: ApproachData[] = [];
-    approaches.map((a) => {
+    approachGroup.Approaches.map((a) => {
       data.push({
         count: a.count,
         weight: a.weight,
@@ -40,25 +40,9 @@ export function ApproachesManagement({
       });
     });
     return data;
-  }, [approaches]);
-  const currentSum = useMemo(() => {
-    let curSum = 0;
-    currentData.forEach((d) => {
-      curSum += d.count * d.weight;
-    });
-    return curSum;
-  }, [currentData]);
+  }, [approachGroup.Approaches]);
 
   const [data, setData] = useState<ApproachData[]>(currentData);
-  const [sum, setSum] = useState<number>(currentSum);
-
-  const recalculate = useCallback(() => {
-    let curSum = 0;
-    data.forEach((d) => {
-      curSum += d.count * d.weight;
-    });
-    setSum(curSum);
-  }, [data]);
 
   const add = useCallback(() => {
     const last = data.length > 0 ? data[data.length - 1] : null;
@@ -71,8 +55,11 @@ export function ApproachesManagement({
       };
     }
     data.push(newOne);
-    setData(data);
-    setSum((sum) => sum + newOne.weight * newOne.count);
+    const newData = [];
+    for (const item of data) {
+      newData.push(item);
+    }
+    setData(newData);
   }, [data]);
 
   const remove = useCallback(
@@ -87,10 +74,6 @@ export function ApproachesManagement({
         newData.push(item);
       }
       setData(newData);
-      if (removedItem) {
-        // @ts-ignore
-        setSum((sum) => sum - removedItem?.count * removedItem?.weight);
-      }
     },
     [data],
   );
@@ -137,22 +120,25 @@ export function ApproachesManagement({
               <div key={d.priority} className="col-12 mb-3">
                 <ApproachesManagementElement
                   elem={d}
-                  onChange={recalculate}
+                  onChange={() => {}}
                   onRemove={remove}
                 />
               </div>
             ))}
           </div>
-          <div className="mb-2 d-flex gap-3 align-items-center">
-            <div className="d-inline-flex align-items-center">
-              <TbSum />: {sum}
+          <div className="row mb-2">
+            <SetsStatsForApproachGroup
+              group={approachGroup}
+              className="col-lg-6 col-md-12"
+            />
+            <div className="col-lg-6 col-md-12 d-flex gap-3 justify-content-end">
+              <button className="btn btn-primary" disabled={handling}>
+                Сохранить
+              </button>
+              <button type="button" className="btn btn-light" onClick={add}>
+                Добавить подход
+              </button>
             </div>
-            <button className="btn btn-primary" disabled={handling}>
-              Сохранить
-            </button>
-            <button type="button" className="btn btn-light" onClick={add}>
-              Добавить подход
-            </button>
           </div>
           {error && <div className="mb-2 alert alert-danger">{error}</div>}
         </form>

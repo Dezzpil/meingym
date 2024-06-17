@@ -87,8 +87,8 @@ export default async function ActionStatePage({ params }: PageParams) {
         {state.mass ? (
           <ApproachesManagement
             create={{ purpose: "MASS", actionPurposeId: state.mass.id }}
-            approaches={state.mass.CurrentApproachGroup.Approaches}
             actionId={action.id}
+            approachGroup={state.mass.CurrentApproachGroup}
           />
         ) : (
           <ActionCreateMass action={action} />
@@ -103,8 +103,8 @@ export default async function ActionStatePage({ params }: PageParams) {
                 purpose: "STRENGTH",
                 actionPurposeId: state.strength.id,
               }}
-              approaches={state.strength.CurrentApproachGroup.Approaches}
               actionId={action.id}
+              approachGroup={state.strength.CurrentApproachGroup}
             />
           ) : (
             <ActionCreateStrength action={action} />
@@ -116,8 +116,8 @@ export default async function ActionStatePage({ params }: PageParams) {
         {state.loss ? (
           <ApproachesManagement
             create={{ purpose: "LOSS", actionPurposeId: state.loss.id }}
-            approaches={state.loss.CurrentApproachGroup.Approaches}
             actionId={action.id}
+            approachGroup={state.loss.CurrentApproachGroup}
           />
         ) : (
           <ActionCreateLoss action={action} />

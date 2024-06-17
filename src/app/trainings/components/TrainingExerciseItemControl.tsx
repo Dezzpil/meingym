@@ -57,12 +57,12 @@ export default function TrainingExerciseItemControl({
   return (
     <div className="row">
       <div className="mb-3 col-md-3 col-sm-12">
-        <div className="hstack gap-2 mb-2">
+        <div className="mb-2">
           <Link href={`/actions/${exercise.Action.id}`}>
             {exercise.Action.alias
               ? exercise.Action.alias
               : exercise.Action.title}
-          </Link>
+          </Link>{" "}
           <PurposeText purpose={exercise.purpose} />
         </div>
         <div className="d-flex gap-2">
@@ -152,7 +152,7 @@ export default function TrainingExerciseItemControl({
             groupId: exercise.approachGroupId,
             trainingId: exercise.trainingId,
           }}
-          approaches={exercise.ApproachGroup.Approaches}
+          approachGroup={exercise.ApproachGroup}
           actionId={exercise.actionId}
         />
       </div>

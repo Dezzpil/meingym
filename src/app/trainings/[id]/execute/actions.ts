@@ -84,7 +84,6 @@ export async function handleTrainingExerciseExecuted(
   rating?: TrainingRating | null,
   comment?: string | null,
 ): Promise<ServerActionResult> {
-  console.log(rating, comment);
   try {
     await prisma.trainingExerciseExecution.updateMany({
       where: {

@@ -6,6 +6,7 @@ import { TrainingRepeatForm } from "@/app/trainings/[id]/execute/components/Trai
 import { TrainingProcessPanel } from "@/app/trainings/[id]/execute/components/TrainingProcessPanel";
 import { handleCompleteTrainingManually } from "@/app/trainings/[id]/execute/actions";
 import Link from "next/link";
+import { TimeFormat } from "@/tools/dates";
 
 type Props = {
   training: Training;
@@ -26,12 +27,12 @@ export function TrainingExecuteCompletePanel({ training }: Props) {
     }
   }, [training.id]);
   return (
-    <div className="alert alert-light d-flex gap-5 justify-content-between align-items-baseline">
+    <div className="alert alert-light d-flex gap-5 justify-content-between align-items-top">
       {training.completedAt ? (
         <>
-          <div className="hstack gap-2">
+          <div className="">
             <span>
-              Завершена в {moment(training.completedAt).format("H:mm")} (+
+              Завершена в {moment(training.completedAt).format(TimeFormat)} (+
               {moment(training.completedAt).diff(
                 moment(training.startedAt),
                 "minute",

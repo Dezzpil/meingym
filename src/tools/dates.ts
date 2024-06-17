@@ -6,4 +6,4 @@ export function getCurrentDayBorders(): { gte: Date; lt: Date } {
 }
 
 export const DateFormat = "Y-MM-DD";
-export const TimeFormat = "H:mm";
+export const TimeFormat = "HH:mm";

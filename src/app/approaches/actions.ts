@@ -52,4 +52,6 @@ export async function handleCreateNewApproachesGroup(
       newGroup,
     );
   });
+
+  revalidatePath(`/actions/${actionId}/state`);
 }

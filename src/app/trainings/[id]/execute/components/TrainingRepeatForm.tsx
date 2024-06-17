@@ -37,7 +37,7 @@ export function TrainingRepeatForm({ training }: Props) {
       handling={handling}
       error={error}
       register={form.register}
-      btnTitle="Повторить тренировку"
+      btnTitle="Повторить"
     />
   );
 }

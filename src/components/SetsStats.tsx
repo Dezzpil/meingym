@@ -16,37 +16,37 @@ type PropsForExercise = {
 
 export function SetsStats({ current, prev, className }: Props) {
   return (
-    <div className={classNames("d-flex gap-3 text-muted small", className)}>
-      <div className="hstack gap-1">
-        <span>Σ кг:</span>
+    <ul className={classNames("text-muted small list-inline", className)}>
+      <li className="list-inline-item d-inline-flex gap-1">
+        <b>Σ кг:</b>
         <NumberDiffViz
           prev={prev ? prev.sum : undefined}
           current={current.sum}
         />
-      </div>
-      <div className="hstack gap-1">
-        <span>÷ кг:</span>
+      </li>
+      <li className="list-inline-item d-inline-flex gap-1">
+        <b>÷ кг:</b>
         <NumberDiffViz
           prev={prev ? prev.mean : undefined}
           current={current.mean}
         />
-      </div>
-      <div className="hstack gap-1">
-        <span>Σ раз:</span>
+      </li>
+      <li className="list-inline-item d-inline-flex gap-1">
+        <b>Σ раз:</b>
         <NumberDiffViz
           prev={prev ? prev.countTotal : undefined}
           current={current.countTotal}
           toFixed={false}
         />
-      </div>
-      <div className="hstack gap-1">
-        <span>÷ раз:</span>
+      </li>
+      <li className="list-inline-item d-inline-flex gap-1">
+        <b>÷ раз:</b>
         <NumberDiffViz
           prev={prev ? prev.countTotal / prev.count : undefined}
           current={current.countTotal / current.count}
         />
-      </div>
-    </div>
+      </li>
+    </ul>
   );
 }
 

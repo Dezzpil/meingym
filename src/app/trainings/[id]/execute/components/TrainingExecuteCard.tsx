@@ -11,10 +11,9 @@ import type {
   TrainingExerciseExecution,
   ApproachesGroup,
 } from "@prisma/client";
-import { GrRun } from "react-icons/gr";
-import { FaSpinner } from "react-icons/fa6";
 import { TrainingExecuteForm } from "@/app/trainings/[id]/execute/components/TrainingExecuteForm";
 import { PurposeText } from "@/components/PurposeText";
+import classNames from "classnames";
 
 type Props = {
   exercise: TrainingExercise & {
@@ -35,36 +34,34 @@ export function TrainingExecuteCard({ exercise, disabled }: Props) {
 
   return (
     <div className="card mb-3" key={exercise.id}>
-      <div className="card-header d-flex align-items-center gap-2">
-        <span>
-          {exercise.Action.alias
-            ? exercise.Action.alias
-            : exercise.Action.title}
-        </span>
-        <PurposeText purpose={exercise.purpose} />
-        {exercise.startedAt && !exercise.completedAt && <FaSpinner />}
-        {!exercise.startedAt && (
-          <div className="d-flex gap-3">
-            <button
-              disabled={disabled}
-              className="btn btn-primary"
-              onClick={start}
-            >
-              Погнали!
+      <div className="card-header">
+        <ul className="col-lg-6 col-md-12 list-inline mb-0">
+          <li
+            className={classNames("list-inline-item", {
+              "fw-medium": exercise.startedAt && !exercise.completedAt,
+            })}
+          >
+            {exercise.Action.alias
+              ? exercise.Action.alias
+              : exercise.Action.title}
+          </li>
+          <li className="list-inline-item">
+            <PurposeText purpose={exercise.purpose} />
+          </li>
+        </ul>
+        <div className="col-lg-6 col-md-12"></div>
+      </div>
+      <div className="card-body">
+        {!disabled && !exercise.startedAt && (
+          <div className="d-flex justify-content-between mb-2">
+            <button className="btn btn-outline-warning" onClick={pass}>
+              Пропустить
             </button>
-            <button
-              disabled={disabled}
-              className="btn btn-warning"
-              onClick={pass}
-              title="Пропустить"
-            >
-              <GrRun />
+            <button className="btn btn-primary" onClick={start}>
+              Погнали!
             </button>
           </div>
         )}
-        {exercise.isPassed && <GrRun title="Упражнение было пропущено" />}
-      </div>
-      <div className="card-body">
         <TrainingExecuteForm
           exercise={exercise}
           disabled={!exercise.startedAt || !!exercise.completedAt || disabled}

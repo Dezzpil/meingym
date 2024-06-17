@@ -13,6 +13,7 @@ import { findUserInfo, getCurrentUserId } from "@/tools/auth";
 import classNames from "classnames";
 import { TrainingForm } from "@/app/trainings/components/TrainingForm";
 import { NameOfTheDay } from "@/components/NameOfTheDay";
+import { FaLongArrowAltRight } from "react-icons/fa";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
@@ -54,27 +55,36 @@ export default async function TrainingPage({ params }: ItemPageParams) {
       </header>
       {training.startedAt && (
         <div
-          className={classNames("alert", {
-            "alert-light": !training.startedAt,
-            "alert-primary": training.startedAt,
-            "alert-success": training.completedAt,
-          })}
-        >
-          {training.startedAt && (
-            <div>
-              Тренировка начата в{" "}
-              {moment(training.startedAt).format(TimeFormat)}
-            </div>
+          className={classNames(
+            "alert",
+            {
+              "alert-light": !training.startedAt,
+              "alert-primary": training.startedAt,
+              "alert-success": training.completedAt,
+            },
+            "d-flex align-items-center gap-2",
           )}
+        >
           {training.completedAt && (
-            <div>
-              Тренировка завершена через{" "}
-              {moment(training.completedAt).diff(
-                moment(training.startedAt),
-                "minute",
-              )}{" "}
-              минуты
-            </div>
+            <>
+              <span>{moment(training.startedAt).format(TimeFormat)}</span>
+              <FaLongArrowAltRight />
+              <span>{moment(training.completedAt).format(TimeFormat)}</span>
+              <span>
+                (+
+                {moment(training.completedAt).diff(
+                  moment(training.startedAt),
+                  "minute",
+                )}{" "}
+                мин.)
+              </span>
+            </>
+          )}
+          {training.startedAt && !training.completedAt && (
+            <span>
+              Тренировка начата в{" "}
+              {moment(training.startedAt).format(TimeFormat)}!
+            </span>
           )}
         </div>
       )}

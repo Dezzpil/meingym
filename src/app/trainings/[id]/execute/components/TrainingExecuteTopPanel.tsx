@@ -5,7 +5,8 @@ import { handleTrainingStart } from "@/app/trainings/[id]/execute/actions";
 import classNames from "classnames";
 import moment from "moment/moment";
 import type { Training } from "@prisma/client";
-import { DateFormat } from "@/tools/dates";
+import { DateFormat, TimeFormat } from "@/tools/dates";
+import { FaLongArrowAltRight } from "react-icons/fa";
 
 type Props = {
   training: Training;
@@ -22,37 +23,41 @@ export function TrainingExecuteTopPanel({ training }: Props) {
         Выполнение тренировки {moment(training.plannedTo).format(DateFormat)}
       </h4>
       <div
-        className={classNames("alert", {
-          "alert-light": !training.startedAt,
-          "alert-primary": training.startedAt,
-          "alert-success": training.completedAt,
-        })}
+        className={classNames(
+          "alert",
+          {
+            "alert-light": !training.startedAt,
+            "alert-primary": training.startedAt,
+            "alert-success": training.completedAt,
+          },
+          "d-flex align-items-center gap-2",
+        )}
         role="alert"
       >
-        <div className="d-flex align-items-baseline justify-content-between">
-          {training.startedAt ? (
-            <span>
-              Тренировка начата в {moment(training.startedAt).format("HH:mm")}!
-            </span>
-          ) : (
-            <>
-              <span>Тренировка еще не начата!</span>
-              <button className="btn btn-primary" onClick={start}>
-                Начать
-              </button>
-            </>
-          )}
-        </div>
         {training.completedAt && (
-          <div className="d-flex align-items-baseline justify-content-between">
-            Тренировка завершена в {moment(training.completedAt).format("H:mm")}{" "}
-            (+
-            {moment(training.completedAt).diff(
-              moment(training.startedAt),
-              "minute",
-            )}{" "}
-            мин.)!
-          </div>
+          <>
+            <span>{moment(training.startedAt).format(TimeFormat)}</span>
+            <FaLongArrowAltRight />
+            <span>{moment(training.completedAt).format(TimeFormat)}</span>
+            <span>
+              (+
+              {moment(training.completedAt).diff(
+                moment(training.startedAt),
+                "minute",
+              )}{" "}
+              мин.)
+            </span>
+          </>
+        )}
+        {training.startedAt && !training.completedAt && (
+          <span>
+            Тренировка начата в {moment(training.startedAt).format(TimeFormat)}!
+          </span>
+        )}
+        {!training.startedAt && (
+          <button className="btn btn-primary" onClick={start}>
+            Начать тренировку
+          </button>
         )}
       </div>
     </>

@@ -98,7 +98,7 @@ export function TrainingExecuteForm({ exercise, disabled }: Props) {
         </div>
 
         <div>
-          {exercise.completedAt ? (
+          {exercise.completedAt && (
             <div
               className={classNames(
                 "alert mb-0",
@@ -109,32 +109,25 @@ export function TrainingExecuteForm({ exercise, disabled }: Props) {
                 {exercise.isPassed ? (
                   <span>Упражнение пропущено</span>
                 ) : (
-                  <div className="hstack gap-2">
-                    <span>
-                      Упражнение выполнено в{" "}
-                      {moment(exercise.completedAt).format("H:mm")}
-                    </span>
-                    <span>
-                      (+
-                      {moment(exercise.completedAt).diff(
-                        moment(exercise.startedAt),
-                        "minute",
-                      )}{" "}
-                      мин.)
-                    </span>
-                    <TrainingRatingEmoji rating={exercise.rating} />
+                  <div className="">
+                    Выполнено в {moment(exercise.completedAt).format("H:mm")} (+
+                    {moment(exercise.completedAt).diff(
+                      moment(exercise.startedAt),
+                      "minute",
+                    )}{" "}
+                    мин.) <TrainingRatingEmoji rating={exercise.rating} />
                   </div>
                 )}
               </div>
               <SetsStatsForExercise exercise={exercise} className="mb-1" />
               {exercise.comment && (
-                <div className="text-muted hstack gap-1">
-                  <span>Комментарий:</span>
-                  <span>{exercise.comment}</span>
+                <div className="text-muted">
+                  Комментарий: {exercise.comment}
                 </div>
               )}
             </div>
-          ) : (
+          )}
+          {exercise.startedAt && !exercise.completedAt && (
             <>
               <div className="d-flex justify-content-between gap-2">
                 <button

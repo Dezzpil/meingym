@@ -66,6 +66,6 @@ export function calculateStats(
       mean += weight;
     }
   }
-  mean = mean / count;
+  mean = count ? mean / count : 0;
   return { count, sum, mean, countTotal };
 }
