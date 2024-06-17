@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.15.0](https://github.com/Dezzpil/meingym/compare/v0.14.0...v0.15.0) (2024-06-17)
+
+
+### Features
+
+* доработать отображение на телефоне ([a971292](https://github.com/Dezzpil/meingym/commits/a971292ecd8d36b8d4067a8ae1389ef9e770a3bc))
+
 ## [0.14.0](https://github.com/Dezzpil/meingym/compare/v0.13.0...v0.14.0) (2024-06-17)
 
 
