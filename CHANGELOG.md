@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.14.0](https://github.com/Dezzpil/meingym/compare/v0.13.0...v0.14.0) (2024-06-17)
+
+
+### Features
+
+* добавить вход через google ([de24684](https://github.com/Dezzpil/meingym/commits/de2468499c1e0583f4e1bb3ddb6efb870117c8ff))
+
 ## [0.13.0](https://github.com/Dezzpil/meingym/compare/v0.12.0...v0.13.0) (2024-06-06)
 
 
