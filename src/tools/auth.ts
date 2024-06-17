@@ -7,6 +7,7 @@ import type { AuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/tools/db";
 import GitHubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { redirect } from "next/navigation";
 import { UserInfo } from "@prisma/client";
@@ -20,6 +21,11 @@ export const authOptions = {
       clientId: process.env.GITHUB_APP_ID as string,
       clientSecret: process.env.GITHUB_SECRET as string,
     }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      allowDangerousEmailAccountLinking: true,
+    }),
   ],
   callbacks: {
     session: async ({ session, user }) => {
@@ -30,7 +36,12 @@ export const authOptions = {
   },
   events: {
     createUser: async ({ user }) => {
-      console.log("New user created:", user.email);
+      if (user.email) {
+        const existed = await prisma.user.findFirst({
+          where: { email: user.email },
+        });
+        if (existed) return;
+      }
       // Implement your custom logic here
       // For example, sending a welcome email or integrating with third-party services
       await prisma.userInfo.create({
