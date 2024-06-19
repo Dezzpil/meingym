@@ -63,7 +63,7 @@ export default function ActionForm({ muscles, action }: Props) {
                 {...form.register("strengthAllowed", {})}
               />
               <label htmlFor="strengthAllowed" className="form-check-label">
-                Подходит для силовых тренировок?
+                Допустимо выполнение на силу?
               </label>
             </div>
           </div>
