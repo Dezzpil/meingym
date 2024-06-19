@@ -52,7 +52,15 @@ export function TrainingsPicker({ trainings }: Props) {
       if (
         confirm(`Назначить тренировку на ${moment(day).format(DateFormat)}`)
       ) {
-        await handleCreateTraining({ plannedTo: day });
+        const plannedTo = new Date(
+          day.getFullYear(),
+          day.getMonth(),
+          day.getDate(),
+          0,
+          0,
+          0,
+        );
+        await handleCreateTraining({ plannedTo });
       }
     }
   };
