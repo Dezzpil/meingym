@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.1](https://github.com/Dezzpil/meingym/compare/v0.15.0...v0.15.1) (2024-06-19)
+
+
+### Bug Fixes
+
+* заменил фразу про силовое выполнение на странице движений ([ddc5b66](https://github.com/Dezzpil/meingym/commits/ddc5b66c348529d928da0f4af2146260ccb9c2c0))
+* исправить съезжание даты на предыдущий день при создании тренировки ([d586f49](https://github.com/Dezzpil/meingym/commits/d586f49b1b66b8e7cca17afbd91cb61c8d859fea))
+
 ## [0.15.0](https://github.com/Dezzpil/meingym/compare/v0.14.0...v0.15.0) (2024-06-17)
 
 
