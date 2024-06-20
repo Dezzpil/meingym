@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.15.2](https://github.com/Dezzpil/meingym/compare/v0.15.1...v0.15.2) (2024-06-20)
+
+
+### Features
+
+* доработать форму описания движения ([e605573](https://github.com/Dezzpil/meingym/commits/e605573018c680ee50739e685fd8cea8620e57ad))
+* улучшить отображение большого колва подходов упражнения ([2c3da67](https://github.com/Dezzpil/meingym/commits/2c3da6759670d4284a9c7670506902e45246fdb0))
+
 ### [0.15.1](https://github.com/Dezzpil/meingym/compare/v0.15.0...v0.15.1) (2024-06-19)
 
 
