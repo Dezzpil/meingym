@@ -12,6 +12,7 @@ export const ActionsFormFields = z.object({
   strengthAllowed: z.boolean().default(false),
   bigCount: z.boolean().default(false),
   allowCheating: z.boolean().default(false),
+  anotherTitles: z.string().min(2).nullable(),
 });
 
 export type ActionsFormFieldsType = z.infer<typeof ActionsFormFields>;

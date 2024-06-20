@@ -70,38 +70,13 @@ export async function handleCreate(data: ActionsFormFieldsType) {
     throw new Error(`Движение ${title} уже существует`);
   } else {
     const action = await prisma.$transaction(async (tx) => {
-      const action = await tx.action.create({
+      return tx.action.create({
         data: {
           title,
           rig,
           desc: data.desc,
-          strengthAllowed: data.strengthAllowed,
-          bigCount: data.bigCount,
-          allowCheating: data.allowCheating,
-          MusclesAgony: {
-            createMany: {
-              data: data.musclesAgonyIds.map((id) => {
-                return { muscleId: parseInt(id) };
-              }),
-            },
-          },
-          MusclesSynergy: {
-            createMany: {
-              data: data.musclesSynergyIds.map((id) => {
-                return { muscleId: parseInt(id) };
-              }),
-            },
-          },
-          MusclesStabilizer: {
-            createMany: {
-              data: data.musclesStabilizerIds.map((id) => {
-                return { muscleId: parseInt(id) };
-              }),
-            },
-          },
         },
       });
-      return action;
     });
 
     redirect(`/actions/${action.id}`);

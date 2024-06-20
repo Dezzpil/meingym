@@ -10,12 +10,12 @@ import type {
 import { useForm } from "react-hook-form";
 import { ActionsFormFieldsType } from "@/app/actions/types";
 import { useState } from "react";
-import { handleCreate, handleUpdate } from "@/app/actions/actions";
+import { handleUpdate } from "@/app/actions/actions";
 import { ActionRig } from "@prisma/client";
 
 type Props = {
   muscles: Array<Muscle & { Group: { title: string } }>;
-  action?: Action & {
+  action: Action & {
     MusclesSynergy: ActionsOnMusclesAgony[];
     MusclesAgony: ActionsOnMusclesSynergy[];
     MusclesStabilizer: ActionsOnMusclesStabilizer[];
@@ -32,11 +32,7 @@ export default function ActionForm({ muscles, action }: Props) {
     setError(null);
     setHandling(true);
     try {
-      if (action) {
-        await handleUpdate(action.id, data);
-      } else {
-        await handleCreate(data);
-      }
+      await handleUpdate(action.id, data);
     } catch (e: any) {
       console.error(e);
       setError(e.message);
@@ -164,20 +160,6 @@ export default function ActionForm({ muscles, action }: Props) {
           </select>
         </div>
         <div className="mb-2">
-          <label className="form-label">Описание</label>
-          <textarea
-            className="form-control"
-            {...form.register("desc", { required: false })}
-          />
-        </div>
-        <div className="mb-2">
-          <label className="form-label">Сокращенное название</label>
-          <input
-            className="form-control"
-            {...form.register("alias", { required: false })}
-          />
-        </div>
-        <div className="mb-2">
           <label className="form-label">Отягощение</label>
           <select className="form-control" {...form.register("rig")}>
             {[
@@ -191,6 +173,27 @@ export default function ActionForm({ muscles, action }: Props) {
               </option>
             ))}
           </select>
+        </div>{" "}
+        <div className="mb-2">
+          <label className="form-label">Описание</label>
+          <textarea
+            className="form-control"
+            {...form.register("desc", { required: false })}
+          />
+        </div>
+        <div className="mb-2">
+          <label className="form-label">Другие названия</label>
+          <textarea
+            className="form-control"
+            {...form.register("anotherTitles", { required: false })}
+          />
+        </div>
+        <div className="mb-2">
+          <label className="form-label">Сокращенное название</label>
+          <input
+            className="form-control"
+            {...form.register("alias", { required: false })}
+          />
         </div>
         <div className="mb-2">
           <button className="btn btn-success" disabled={handling}>
