@@ -65,9 +65,9 @@ export default function TrainingExerciseItemControl({
           </Link>{" "}
           <PurposeText purpose={exercise.purpose} />
         </div>
-        <div className="d-flex gap-2">
+        <div className="d-flex column-gap-2 flex-wrap mb-1">
           {exercise.ApproachGroup.Approaches.map((a) => (
-            <span key={a.id}>
+            <div key={a.id}>
               <NumberDiffViz current={a.weight} tooltip={false} />
               x
               <NumberDiffViz
@@ -75,7 +75,7 @@ export default function TrainingExerciseItemControl({
                 toFixed={false}
                 tooltip={false}
               />
-            </span>
+            </div>
           ))}
         </div>
         <SetsStatsForApproachGroup
@@ -118,9 +118,9 @@ export default function TrainingExerciseItemControl({
               </span>
               <TrainingRatingEmoji rating={exercise.rating} />
             </div>
-            <div className="d-flex gap-2">
+            <div className="d-flex column-gap-2 flex-wrap mb-1">
               {exercise.TrainingExerciseExecution.map((execution) => (
-                <span key={execution.id}>
+                <div key={execution.id}>
                   <NumberDiffViz
                     prev={execution.plannedWeigth}
                     current={execution.liftedWeight}
@@ -133,7 +133,7 @@ export default function TrainingExerciseItemControl({
                     toFixed={false}
                     tooltip={false}
                   />
-                </span>
+                </div>
               ))}
             </div>
             <SetsStatsForExercise exercise={exercise} className="mb-2" />
