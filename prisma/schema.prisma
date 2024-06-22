@@ -194,6 +194,7 @@ model Action {
   ActionLoss ActionLoss[]
 
   anotherTitles String?
+  search        String?
 }
 
 model ActionMass {

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ActionRig } from "@prisma/client";
+import type { Action, Muscle, MuscleGroup } from "@prisma/client";
 
 export const ActionsFormFields = z.object({
   title: z.string().min(2),
@@ -16,3 +17,14 @@ export const ActionsFormFields = z.object({
 });
 
 export type ActionsFormFieldsType = z.infer<typeof ActionsFormFields>;
+export type MuscleGroupType = Muscle & { Group: MuscleGroup };
+export type ActionMusclesType = {
+  muscleId: number;
+  actionId: number;
+  Muscle: MuscleGroupType;
+};
+export type ActionWithMusclesType = Action & {
+  MusclesAgony: ActionMusclesType[];
+  MusclesSynergy: ActionMusclesType[];
+  MusclesStabilizer: ActionMusclesType[];
+};

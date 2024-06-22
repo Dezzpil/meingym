@@ -7,7 +7,14 @@ import { prisma } from "@/tools/db";
 import { ActionRig } from "@prisma/client";
 
 export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
-  const title = data.title;
+  const title = data.title.trim();
+  const existed = await prisma.action.findFirst({
+    where: { title, id: { not: id } },
+  });
+  if (existed) {
+    throw new Error(`Движение ${title} уже существует`);
+  }
+
   await prisma.action.update({
     where: { id },
     data: {
@@ -43,6 +50,13 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
       },
       rig: data.rig,
       updatedAt: new Date(),
+      search: [
+        data.title.toLowerCase(),
+        data.alias?.toLowerCase(),
+        data.anotherTitles?.toLowerCase(),
+      ]
+        .filter((s) => s && s.trim().length)
+        .join(" "),
     },
   });
   revalidatePath(`/actions/${id}`);
@@ -62,23 +76,23 @@ function autoDefineRig(title: string, def: ActionRig): ActionRig {
 }
 
 export async function handleCreate(data: ActionsFormFieldsType) {
-  const title = data.title;
+  const title = data.title.trim();
   const rig = autoDefineRig(data.title, data.rig);
 
   const existed = await prisma.action.findFirst({ where: { title } });
   if (existed) {
     throw new Error(`Движение ${title} уже существует`);
-  } else {
-    const action = await prisma.$transaction(async (tx) => {
-      return tx.action.create({
-        data: {
-          title,
-          rig,
-          desc: data.desc,
-        },
-      });
-    });
-
-    redirect(`/actions/${action.id}`);
   }
+  const action = await prisma.$transaction(async (tx) => {
+    return tx.action.create({
+      data: {
+        title,
+        rig,
+        desc: data.desc,
+        search: title,
+      },
+    });
+  });
+
+  redirect(`/actions/${action.id}`);
 }

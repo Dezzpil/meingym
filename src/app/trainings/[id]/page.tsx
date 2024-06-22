@@ -1,6 +1,6 @@
 import { ItemPageParams } from "@/tools/types";
 import { prisma } from "@/tools/db";
-import TrainingAddExerciseForm from "@/app/trainings/components/TrainingAddExerciseForm";
+import { TrainingAddExerciseForm } from "@/app/trainings/components/TrainingAddExerciseForm";
 import React from "react";
 import TrainingExerciseItemControl from "@/app/trainings/components/TrainingExerciseItemControl";
 import type { Training } from "@prisma/client";
@@ -22,7 +22,14 @@ export default async function TrainingPage({ params }: ItemPageParams) {
   })) as Training;
   const userId = await getCurrentUserId();
   const userInfo = await findUserInfo(userId);
-  const actions = await prisma.action.findMany({});
+  const actions = await prisma.action.findMany({
+    orderBy: { updatedAt: "desc" },
+    include: {
+      MusclesAgony: { include: { Muscle: { include: { Group: true } } } },
+      MusclesSynergy: { include: { Muscle: { include: { Group: true } } } },
+      MusclesStabilizer: { include: { Muscle: { include: { Group: true } } } },
+    },
+  });
   const exercises = await prisma.trainingExercise.findMany({
     where: { trainingId: id },
     include: {
@@ -100,7 +107,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
           ))}
         </ul>
       ) : (
-        <p>Упражнения еще не добавлены...</p>
+        <p className="text-muted">Упражнения еще не добавлены...</p>
       )}
       {!training.startedAt && (
         <TrainingAddExerciseForm

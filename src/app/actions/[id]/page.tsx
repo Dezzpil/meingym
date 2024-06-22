@@ -40,7 +40,7 @@ export default async function ActionPage({ params }: PageParams) {
         </li>
       </ul>
       <ActionControl
-        actionId={action.id}
+        action={action}
         trainingsCount={action.TrainingExercise.length}
       />
       <ActionForm action={action} muscles={muscles} />

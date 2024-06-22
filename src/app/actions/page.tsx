@@ -5,6 +5,8 @@ import { PageParams } from "@/tools/types";
 import { DateFormat } from "@/tools/dates";
 import moment from "moment";
 import type { ApproachesGroup } from "@prisma/client";
+import { ActionWithMusclesType } from "@/app/actions/types";
+import { ActionMuscles } from "@/app/actions/components/ActionMuscles";
 
 type HasCurrentApproachGroup = { CurrentApproachGroup: ApproachesGroup };
 
@@ -128,45 +130,18 @@ export default async function ActionsPage({ searchParams }: PageParams) {
                 </div>
               </div>
               <div className="card-body">
-                <ul className="list-inline mb-2">
-                  <li className="list-inline-item">
-                    <b>Мышцы-агонисты:</b>
-                  </li>
-                  {a.MusclesAgony.length ? (
-                    a.MusclesAgony.map((l) => (
-                      <li className="list-inline-item" key={l.muscleId}>
-                        {l.Muscle.Group.title}: {l.Muscle.title}
-                      </li>
-                    ))
-                  ) : (
-                    <span className="text-muted">Не указаны</span>
-                  )}
-                </ul>
-                <ul className="list-inline mb-2">
-                  <li className="list-inline-item">
-                    <b>Мышцы-синергисты:</b>
-                  </li>
-                  {a.MusclesSynergy.length ? (
-                    a.MusclesSynergy.map((l) => (
-                      <li className="list-inline-item" key={l.muscleId}>
-                        {l.Muscle.Group.title}: {l.Muscle.title}
-                      </li>
-                    ))
-                  ) : (
-                    <span className="text-muted">Не указаны</span>
-                  )}
-                </ul>
+                <ActionMuscles action={a as ActionWithMusclesType} />
 
-                <div className="mb-2">
-                  <b>На массу: </b>
+                <div className="mb-1">
+                  <span className="fw-medium">На массу: </span>
                   {printStats(a.ActionMass)}
                 </div>
-                <div className="mb-2">
-                  <b>На силу: </b>
+                <div className="mb-1">
+                  <span className="fw-medium">На силу: </span>
                   {printStats(a.ActionStrength)}
                 </div>
-                <div className="mb-2">
-                  <b>На снижение веса: </b>
+                <div className="mb-1">
+                  <span className="fw-medium">На снижение веса: </span>
                   {printStats(a.ActionLoss)}
                 </div>
               </div>
