@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.16.0](https://github.com/Dezzpil/meingym/compare/v0.15.2...v0.16.0) (2024-06-22)
+
+
+### Features
+
+* добавить поиск движений для выбора в тренировку ([c032573](https://github.com/Dezzpil/meingym/commits/c03257373ad704b7e579a97a0584dee039889d70))
+
 ### [0.15.2](https://github.com/Dezzpil/meingym/compare/v0.15.1...v0.15.2) (2024-06-20)
 
 
