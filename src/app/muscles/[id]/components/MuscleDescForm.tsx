@@ -13,10 +13,12 @@ import {
 type Props = {
   muscle: Muscle;
   desc?: MuscleDesc;
+  control?: boolean;
 };
-export function MuscleDescForm({ muscle, desc }: Props) {
+export function MuscleDescForm({ muscle, desc, control }: Props) {
   const form = useForm<MuscleDescType>({
     defaultValues: desc ? desc : {},
+    disabled: !control,
   });
   const [error, setError] = useState<string | null>(null);
   const [handling, setHandling] = useState(false);
@@ -55,17 +57,21 @@ export function MuscleDescForm({ muscle, desc }: Props) {
         {...form.register("link", { required: false })}
       />
 
-      <div className="hstack gap-2">
-        <button disabled={handling} className="btn btn-secondary">
-          {desc ? "Обновить" : "Добавить"}
-        </button>
-        {desc && (
-          <button type="button" onClick={del} className="btn btn-warning">
-            Удалить
-          </button>
-        )}
-      </div>
-      {error && <div className="alert alert-danger">{error}</div>}
+      {control && (
+        <>
+          <div className="hstack gap-2">
+            <button disabled={handling} className="btn btn-secondary">
+              {desc ? "Обновить" : "Добавить"}
+            </button>
+            {desc && (
+              <button type="button" onClick={del} className="btn btn-warning">
+                Удалить
+              </button>
+            )}
+          </div>
+          {error && <div className="alert alert-danger">{error}</div>}
+        </>
+      )}
     </form>
   );
 }

@@ -2,12 +2,15 @@ import { prisma } from "@/tools/db";
 import { ActionControl } from "@/app/actions/[id]/control";
 import ActionForm from "@/app/actions/components/ActionForm";
 import Link from "next/link";
+import { getCurrentUser } from "@/tools/auth";
+import { UserRole } from ".prisma/client";
 
 type PageParams = {
   params: { id: string };
 };
 
 export default async function ActionPage({ params }: PageParams) {
+  const user = await getCurrentUser();
   const id = parseInt(params.id);
 
   const action = await prisma.action.findUniqueOrThrow({
@@ -39,11 +42,17 @@ export default async function ActionPage({ params }: PageParams) {
           </Link>
         </li>
       </ul>
-      <ActionControl
+      {user.role !== UserRole.ADMIN && (
+        <ActionControl
+          action={action}
+          trainingsCount={action.TrainingExercise.length}
+        />
+      )}
+      <ActionForm
         action={action}
-        trainingsCount={action.TrainingExercise.length}
+        muscles={muscles}
+        control={user.role === UserRole.ADMIN}
       />
-      <ActionForm action={action} muscles={muscles} />
     </>
   );
 }

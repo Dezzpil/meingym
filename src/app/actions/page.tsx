@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { prisma } from "@/tools/db";
-import { getCurrentUserId } from "@/tools/auth";
+import { getCurrentUser } from "@/tools/auth";
 import { PageParams } from "@/tools/types";
 import { DateFormat } from "@/tools/dates";
 import moment from "moment";
 import type { ApproachesGroup } from "@prisma/client";
 import { ActionWithMusclesType } from "@/app/actions/types";
 import { ActionMuscles } from "@/app/actions/components/ActionMuscles";
+import { UserRole } from ".prisma/client";
 
 type HasCurrentApproachGroup = { CurrentApproachGroup: ApproachesGroup };
 
@@ -26,7 +27,8 @@ function printStats(actionsPurpose: HasCurrentApproachGroup[]) {
 }
 
 export default async function ActionsPage({ searchParams }: PageParams) {
-  const userId = await getCurrentUserId();
+  const user = await getCurrentUser();
+  const userId = user.id;
 
   const groupId = searchParams.group ? parseInt(searchParams.group) : null;
   const where: Record<string, any> = {
@@ -109,9 +111,11 @@ export default async function ActionsPage({ searchParams }: PageParams) {
             <button type="submit" className="btn btn-primary">
               Найти
             </button>
-            <Link className="btn btn-light" href={`/actions/create`}>
-              Добавить движение
-            </Link>
+            {user.role === UserRole.ADMIN && (
+              <Link className="btn btn-light" href={`/actions/create`}>
+                Добавить движение
+              </Link>
+            )}
           </div>
         </form>
       </div>

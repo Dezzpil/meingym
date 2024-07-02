@@ -20,13 +20,15 @@ type Props = {
     MusclesAgony: ActionsOnMusclesSynergy[];
     MusclesStabilizer: ActionsOnMusclesStabilizer[];
   };
+  control?: boolean;
 };
 
-export default function ActionForm({ muscles, action }: Props) {
+export default function ActionForm({ muscles, action, control }: Props) {
   const [error, setError] = useState<null | string>(null);
   const [handling, setHandling] = useState<boolean>(false);
   const form = useForm<ActionsFormFieldsType>({
     defaultValues: action,
+    disabled: !control,
   });
   const onSubmit = form.handleSubmit(async (data) => {
     setError(null);
@@ -195,12 +197,16 @@ export default function ActionForm({ muscles, action }: Props) {
             {...form.register("alias", { required: false })}
           />
         </div>
-        <div className="mb-2">
-          <button className="btn btn-success" disabled={handling}>
-            Сохранить
-          </button>
-        </div>
-        {error && <div className="mb-2 alert alert-danger">{error}</div>}
+        {control && (
+          <>
+            <div className="mb-2">
+              <button className="btn btn-success" disabled={handling}>
+                Сохранить
+              </button>
+            </div>
+            {error && <div className="mb-2 alert alert-danger">{error}</div>}
+          </>
+        )}
       </form>
     </>
   );

@@ -3,6 +3,8 @@ import Link from "next/link";
 import classNames from "classnames";
 import { MuscleGroupsDescForm } from "@/app/musclesgroups/[id]/components/MuscleGroupsDescForm";
 import MusclesGroupsButtons from "@/app/musclesgroups/[id]/components/MusclesGroupsButtons";
+import { getCurrentUser } from "@/tools/auth";
+import { UserRole } from ".prisma/client";
 
 type Props = {
   params: { id: string };
@@ -10,6 +12,7 @@ type Props = {
 
 export default async function MusclesGroupsIdPage({ params }: Props) {
   const id = parseInt(params.id);
+  const user = await getCurrentUser();
   const group = await prisma.muscleGroup.findUniqueOrThrow({
     where: { id },
     include: {
@@ -64,10 +67,19 @@ export default async function MusclesGroupsIdPage({ params }: Props) {
         <p className="mb-3 text-muted">Мышцы еще не добавлены...</p>
       )}
       {group.MuscleGroupDesc.map((desc) => (
-        <MuscleGroupsDescForm group={group} desc={desc} key={desc.id} />
+        <MuscleGroupsDescForm
+          group={group}
+          desc={desc}
+          key={desc.id}
+          control={user.role === UserRole.ADMIN}
+        />
       ))}
-      <MuscleGroupsDescForm group={group} />
-      <MusclesGroupsButtons id={group.id} />
+      {user.role === UserRole.ADMIN && (
+        <>
+          <MuscleGroupsDescForm group={group} />
+          <MusclesGroupsButtons id={group.id} />
+        </>
+      )}
     </>
   );
 }

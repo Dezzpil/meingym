@@ -13,13 +13,15 @@ import {
 type Props = {
   groups: MuscleGroup[];
   muscle?: Muscle & { AgonyInActions: any[]; SynergyInActions: any[] };
+  control?: boolean;
 };
 
-export default function MuscleForm({ groups, muscle }: Props) {
+export default function MuscleForm({ groups, muscle, control }: Props) {
   const [error, setError] = useState<null | string>(null);
   const [handling, setHandling] = useState<boolean>(false);
   const form = useForm<MusclesFormFieldsType>({
     defaultValues: muscle,
+    disabled: !control,
   });
   const onSubmit = form.handleSubmit(async (data) => {
     setError(null);
@@ -76,32 +78,36 @@ export default function MuscleForm({ groups, muscle }: Props) {
             ))}
           </select>
         </div>
-        <div className="mb-2 d-flex justify-content-between">
-          {!muscle ? (
-            <button className="btn btn-success" disabled={handling}>
-              Добавить
-            </button>
-          ) : (
-            <>
-              <button disabled={handling} className="btn btn-primary">
-                Обновить
-              </button>
-              {muscle &&
-                muscle.AgonyInActions.length === 0 &&
-                muscle.SynergyInActions.length === 0 && (
-                  <button
-                    type="button"
-                    onClick={onDelete}
-                    className="btn btn-danger"
-                    disabled={handling}
-                  >
-                    Удалить
+        {control && (
+          <>
+            <div className="mb-2 d-flex justify-content-between">
+              {!muscle ? (
+                <button className="btn btn-success" disabled={handling}>
+                  Добавить
+                </button>
+              ) : (
+                <>
+                  <button disabled={handling} className="btn btn-primary">
+                    Обновить
                   </button>
-                )}
-            </>
-          )}
-        </div>
-        {error && <div className="alert alert-danger">{error}</div>}
+                  {muscle &&
+                    muscle.AgonyInActions.length === 0 &&
+                    muscle.SynergyInActions.length === 0 && (
+                      <button
+                        type="button"
+                        onClick={onDelete}
+                        className="btn btn-danger"
+                        disabled={handling}
+                      >
+                        Удалить
+                      </button>
+                    )}
+                </>
+              )}
+            </div>
+            {error && <div className="alert alert-danger">{error}</div>}
+          </>
+        )}
       </form>
     </>
   );

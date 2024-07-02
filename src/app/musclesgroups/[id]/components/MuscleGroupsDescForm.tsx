@@ -13,10 +13,12 @@ import { useCallback, useState } from "react";
 type Props = {
   group: MuscleGroup;
   desc?: MuscleGroupDesc;
+  control?: boolean;
 };
-export function MuscleGroupsDescForm({ group, desc }: Props) {
+export function MuscleGroupsDescForm({ group, desc, control }: Props) {
   const form = useForm<MuscleGroupDescType>({
     defaultValues: desc ? desc : {},
+    disabled: !control,
   });
   const [error, setError] = useState<string | null>(null);
   const [handling, setHandling] = useState(false);
@@ -54,17 +56,21 @@ export function MuscleGroupsDescForm({ group, desc }: Props) {
         placeholder="https://"
         {...form.register("link", { required: false })}
       />
-      <div className="hstack gap-2">
-        <button disabled={handling} className="btn btn-secondary">
-          {desc ? "Обновить" : "Добавить"}
-        </button>
-        {desc && (
-          <button type="button" onClick={del} className="btn btn-warning">
-            Удалить
-          </button>
-        )}
-      </div>
-      {error && <div className="alert alert-danger">{error}</div>}
+      {control && (
+        <>
+          <div className="hstack gap-2">
+            <button disabled={handling} className="btn btn-secondary">
+              {desc ? "Обновить" : "Добавить"}
+            </button>
+            {desc && (
+              <button type="button" onClick={del} className="btn btn-warning">
+                Удалить
+              </button>
+            )}
+          </div>
+          {error && <div className="alert alert-danger">{error}</div>}
+        </>
+      )}
     </form>
   );
 }

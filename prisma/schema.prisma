@@ -11,6 +11,11 @@ datasource db {
   directUrl = env("DATABASE_URL_NON_POOLING") // for vercel
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -30,6 +35,8 @@ model User {
   Rig             Rig[]
   UserInfo        UserInfo[]
   ActionLoss      ActionLoss[]
+
+  role UserRole @default(USER)
 }
 
 enum TrainingProgression {

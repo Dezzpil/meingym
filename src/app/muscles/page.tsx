@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { prisma } from "@/tools/db";
+import { getCurrentUser } from "@/tools/auth";
+import { UserRole } from ".prisma/client";
 export default async function MusclesPage() {
+  const user = await getCurrentUser();
   const muscles = await prisma.muscle.findMany({
     include: {
       Group: true,
@@ -11,12 +14,13 @@ export default async function MusclesPage() {
 
   return (
     <>
-      <header className="mb-3">Список мышц</header>
-      <div className="mb-3">
-        <Link className="btn btn-primary" href={`/muscles/create`}>
-          Добавить
-        </Link>
-      </div>
+      {user.role === UserRole.ADMIN && (
+        <div className="mb-3">
+          <Link className="btn btn-primary" href={`/muscles/create`}>
+            Добавить
+          </Link>
+        </div>
+      )}
 
       {muscles.length ? (
         <table className="table">
