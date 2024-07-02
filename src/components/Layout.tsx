@@ -15,64 +15,54 @@ export function Layout({ children }: Props) {
     <div className="container-fluid">
       <nav className="navbar navbar-expand-lg bg-body-tertiary mb-3">
         <div className="container-fluid gap-2">
-          {session.status === "authenticated" ? (
-            <Link href={"/profile"}>👤 {session.data?.user?.name}</Link>
-          ) : (
-            ""
-          )}
+          <div>
+            <a className="navbar-brand" href="/">
+              💪 Ты в зале
+            </a>
+            <a
+              className="navbar-brand"
+              href="https://github.com/Dezzpil/meingym/blob/main/CHANGELOG.md"
+              target="_blank"
+            >
+              <span className="badge text-bg-primary">
+                {PackageJson.version}
+              </span>
+            </a>
 
-          <a className="navbar-brand" href="/">
-            💪 Ты в зале
-          </a>
-
-          <a
-            className="navbar-brand"
-            href="https://github.com/Dezzpil/meingym/blob/main/CHANGELOG.md"
-            target="_blank"
-          >
-            <span className="badge text-bg-primary">{PackageJson.version}</span>
-          </a>
-
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              <li className="nav-item">
-                <Link href={`/musclesgroups`} className="nav-link">
-                  Группы
-                </Link>
-              </li>
-              <li>
-                <Link href={`/muscles`} className="nav-link">
-                  Мышцы
-                </Link>
-              </li>
-              <li>
-                <Link href={"/rigs"} className="nav-link">
-                  Оборудование
-                </Link>
-              </li>
-              <li>
-                <Link href={`/actions`} className="nav-link">
-                  Движения
-                </Link>
-              </li>
-              <li>
-                <Link href={`/trainings`} className="nav-link">
-                  Тренировки
-                </Link>
-              </li>
-            </ul>
+            {session.status === "authenticated" ? (
+              <Link href={"/profile"}>{session.data?.user?.name}</Link>
+            ) : (
+              ""
+            )}
           </div>
+
+          <ul className="list-inline d-inline-flex flex-wrap column-gap-3 row-gap-1 mb-2 mb-lg-0">
+            <li className="list-inline-item">
+              <Link href={`/trainings`} className="">
+                Тренировки
+              </Link>
+            </li>
+            <li className="list-inline-item">
+              <Link href={"/rigs"} className="">
+                Оборудование
+              </Link>
+            </li>
+            <li className="list-inline-item">
+              <Link href={`/actions`} className="">
+                Движения
+              </Link>
+            </li>
+            <li className="list-inline-item">
+              <Link href={`/musclesgroups`} className="">
+                Группы
+              </Link>
+            </li>
+            <li className="list-inline-item">
+              <Link href={`/muscles`} className="">
+                Мышцы
+              </Link>
+            </li>
+          </ul>
         </div>
       </nav>
       {session.status === "loading" && (
