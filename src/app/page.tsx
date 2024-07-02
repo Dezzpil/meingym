@@ -38,7 +38,6 @@ export default async function HomePage() {
                 Упражнения:{" "}
                 {t.TrainingExercise.map((e) => e.Action.title).join(", ")}
               </div>
-              <div className="card-text">Цель: 50 / 50</div>
               <div className="card-link d-flex gap-3">
                 <Link href={`/trainings/${t.id}/execute`}>Погнали</Link>
               </div>

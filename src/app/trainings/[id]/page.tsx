@@ -109,7 +109,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
       ) : (
         <p className="text-muted">Упражнения еще не добавлены...</p>
       )}
-      {!training.startedAt && (
+      {!training.completedAt && (
         <TrainingAddExerciseForm
           training={training}
           actions={actions}

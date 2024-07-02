@@ -28,7 +28,6 @@ export function Layout({ children }: Props) {
                 {PackageJson.version}
               </span>
             </a>
-
             {session.status === "authenticated" ? (
               <Link href={"/profile"}>{session.data?.user?.name}</Link>
             ) : (

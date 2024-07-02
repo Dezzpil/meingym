@@ -44,6 +44,10 @@ export function TrainingAddExerciseForm({
   });
   const submit = form.handleSubmit(async (data) => {
     console.log(data);
+    if (!data.actionTitle) {
+      setError(`Выберите движение`);
+      return;
+    }
     data.actionId = actionsTitlesMap[data.actionTitle as string].id;
     setError(null);
     const result = await handleAddExercise(training.id, data);
@@ -109,7 +113,9 @@ export function TrainingAddExerciseForm({
             {...form.register("actionTitle")}
             onChange={chooseAction}
             ref={actionRef}
+            defaultValue={""}
           >
+            <option value="">-</option>
             {filteredActions.map((a) => (
               <option value={getActionName(a)} key={a.id}>
                 {getActionName(a)}
