@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/Dezzpil/meingym/compare/v0.16.0...v1.0.0) (2024-07-02)
+
+
+### Features
+
+* возможность добавить упражнение после старта тренировки ([6f0b118](https://github.com/Dezzpil/meingym/commits/6f0b11858fc5715900e10a3e55b1060a93dc7826))
+* добавить роль администратора ([004ea65](https://github.com/Dezzpil/meingym/commits/004ea656490e325e37e3aa72d20f7df8ed9c4651))
+* исправить мелкие недочеты ([89dbc3a](https://github.com/Dezzpil/meingym/commits/89dbc3a7f05a98c3b565a57bbde861ab68951d95))
+* переделать порядок и отображение меню ([9f12102](https://github.com/Dezzpil/meingym/commits/9f12102d059de46460f59ab4f161d37be629e919))
+
 ## [0.16.0](https://github.com/Dezzpil/meingym/compare/v0.15.2...v0.16.0) (2024-06-22)
 
 
