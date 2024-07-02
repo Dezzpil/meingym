@@ -49,16 +49,24 @@ export function TrainingExecuteCompletePanel({ training }: Props) {
           )}
         </>
       ) : (
-        <div>
-          <button
-            className="btn btn-warning"
-            disabled={handling}
-            onClick={handle}
-          >
-            Завершить
-          </button>
+        <>
+          <div className="d-flex gap-3 justify-content-between">
+            <button
+              className="btn btn-warning"
+              disabled={handling}
+              onClick={handle}
+            >
+              Завершить
+            </button>
+            <Link
+              className="btn btn-outline-secondary"
+              href={`/trainings/${training.id}`}
+            >
+              Настроить
+            </Link>
+          </div>
           {error && <div className="alert alert-danger">{error}</div>}
-        </div>
+        </>
       )}
     </div>
   );
