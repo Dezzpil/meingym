@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/Dezzpil/meingym/compare/v1.0.0...v1.1.0) (2024-07-12)
+
+
+### Bug Fixes
+
+* исправить сохранение порядок упражнений при повторении ([61cd714](https://github.com/Dezzpil/meingym/commits/61cd714bc65c9ad62ae27701f7fb06c317f571e8))
+
 ## [1.0.0](https://github.com/Dezzpil/meingym/compare/v0.16.0...v1.0.0) (2024-07-02)
 
 
