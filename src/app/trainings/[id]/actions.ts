@@ -18,7 +18,7 @@ export async function handleRepeatTraining(
   const training = await prisma.$transaction(async (tx) => {
     const curTraining = await tx.training.findUniqueOrThrow({
       where: { id },
-      include: { TrainingExercise: true },
+      include: { TrainingExercise: { orderBy: { priority: "asc" } } },
     });
 
     const nextTraining = await tx.training.create({
