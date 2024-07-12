@@ -9,9 +9,9 @@
     "lint": "next lint",
     "prisma:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "prepare": "husky install",
-    "release": "standard-version",
-    "release:minor": "standard-version -r minor",
-    "release:major": "standard-version -r major",
+    "release:patch": "standard-version",
+    "release:feature": "standard-version -r minor",
+    "release:breaking": "standard-version -r major",
     "test": "node --loader tsx src/tests/**/**/**/*.test.ts",
     "test:only": "node --loader tsx --test-only src/tests/**/**/**/*.test.ts"
   },
