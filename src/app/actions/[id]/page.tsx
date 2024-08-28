@@ -4,12 +4,9 @@ import ActionForm from "@/app/actions/components/ActionForm";
 import Link from "next/link";
 import { getCurrentUser } from "@/tools/auth";
 import { UserRole } from ".prisma/client";
+import { ItemPageParams } from "@/tools/types";
 
-type PageParams = {
-  params: { id: string };
-};
-
-export default async function ActionPage({ params }: PageParams) {
+export default async function ActionPage({ params }: ItemPageParams) {
   const user = await getCurrentUser();
   const id = parseInt(params.id);
 
@@ -39,6 +36,11 @@ export default async function ActionPage({ params }: PageParams) {
         <li className="nav-item">
           <Link href={`/actions/${id}/state`} className="nav-link">
             Подходы
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link href={`/actions/${id}/history`} className="nav-link">
+            История
           </Link>
         </li>
       </ul>

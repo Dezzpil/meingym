@@ -12,14 +12,11 @@ import { ApproachesManagement } from "@/components/approaches/Managment";
 import { ActionCreateLoss } from "@/app/actions/[id]/state/components/ActionCreateLoss";
 import { ActionCreateMass } from "@/app/actions/[id]/state/components/ActionCreateMass";
 import { ActionCreateStrength } from "@/app/actions/[id]/state/components/ActionCreateStrength";
-
-type PageParams = {
-  params: { id: string };
-};
+import { ItemPageParams } from "@/tools/types";
 
 type ActionRelationName = "ActionStrength" | "ActionMass" | "ActionLoss";
 
-export default async function ActionStatePage({ params }: PageParams) {
+export default async function ActionStatePage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
   const userId = await getCurrentUserId();
   const action = await prisma.action.findUniqueOrThrow({
@@ -80,6 +77,11 @@ export default async function ActionStatePage({ params }: PageParams) {
           <a className="nav-link active" aria-current="page" href="#">
             Подходы
           </a>
+        </li>
+        <li className="nav-item">
+          <Link href={`/actions/${id}/history`} className="nav-link">
+            История
+          </Link>
         </li>
       </ul>
       <div className="mb-3">
