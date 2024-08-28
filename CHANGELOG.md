@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/Dezzpil/meingym/compare/v1.1.2...v1.2.0) (2024-08-28)
+
+
+### Features
+
+* добавить вкладку История и отобразить статы по упражнению ([712fef2](https://github.com/Dezzpil/meingym/commits/712fef2764311458d96c711a4fb713e169e55f9d))
+
 ### [1.1.2](https://github.com/Dezzpil/meingym/compare/v1.1.1...v1.1.2) (2024-07-12)
 
 ### [1.1.1](https://github.com/Dezzpil/meingym/compare/v1.1.0...v1.1.1) (2024-07-12)
