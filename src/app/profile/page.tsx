@@ -9,6 +9,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { ProfileForm } from "@/app/profile/components/ProfileForm";
 import type { UserInfo } from "@prisma/client";
+import { WeightsChart } from "./components/WeightsChart";
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -30,12 +31,18 @@ export default async function ProfilePage() {
       createdAt: { gte, lt },
     },
   });
+  const weights = await prisma.weight.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    take: 20,
+  });
 
   return (
     <>
       <h1>Профиль </h1>
       <ProfileForm userInfo={userInfo} />
       {weight ? <WeightPanel weight={weight} /> : <WeightsForm />}
+      {weights && <WeightsChart weights={weights} />}
       <hr />
       <h3>Достижения</h3>
       <div>...</div>

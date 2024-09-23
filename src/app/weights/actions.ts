@@ -15,12 +15,12 @@ export type WeightType = z.infer<typeof WeightField>;
 export async function handleWeightSave(data: WeightType) {
   const userId = await getCurrentUserId();
   await prisma.weight.create({ data: { value: data.value, userId } });
-  redirect(`/`);
+  redirect(`/profile`);
 }
 
 export async function handleWeightDelete() {
   const userId = await getCurrentUserId();
   const { gte, lt } = getCurrentDayBorders();
   await prisma.weight.deleteMany({ where: { userId, createdAt: { gte, lt } } });
-  redirect(`/`);
+  redirect(`/profile`);
 }
