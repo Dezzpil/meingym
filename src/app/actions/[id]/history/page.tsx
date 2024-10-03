@@ -128,7 +128,10 @@ export default async function ActionHistoryPage({ params }: ItemPageParams) {
           {itemsByPurpose[Purpose.MASS].length ? (
             <>
               <ActionHistoryScoreChart items={itemsByPurpose[Purpose.MASS]} />
-              <ActionHistoryDataTable items={itemsByPurpose[Purpose.MASS]} />
+              <ActionHistoryDataTable
+                items={itemsByPurpose[Purpose.MASS]}
+                purpose={Purpose.MASS}
+              />
             </>
           ) : (
             <p className="text-muted">Нет данных</p>
@@ -144,6 +147,7 @@ export default async function ActionHistoryPage({ params }: ItemPageParams) {
               />
               <ActionHistoryDataTable
                 items={itemsByPurpose[Purpose.STRENGTH]}
+                purpose={Purpose.STRENGTH}
               />
             </>
           ) : (
@@ -156,7 +160,10 @@ export default async function ActionHistoryPage({ params }: ItemPageParams) {
           {itemsByPurpose[Purpose.LOSS].length ? (
             <>
               <ActionHistoryScoreChart items={itemsByPurpose[Purpose.LOSS]} />
-              <ActionHistoryDataTable items={itemsByPurpose[Purpose.LOSS]} />
+              <ActionHistoryDataTable
+                items={itemsByPurpose[Purpose.LOSS]}
+                purpose={Purpose.LOSS}
+              />
             </>
           ) : (
             <p className="text-muted">Нет данных</p>

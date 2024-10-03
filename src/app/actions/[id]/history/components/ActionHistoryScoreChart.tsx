@@ -19,7 +19,7 @@ export function ActionHistoryScoreChart({ items }: Props) {
   const data: Array<{
     key: string;
     maxWeight: number | string;
-    liftedSum: number | string;
+    // liftedSum: number | string;
     liftedMean: number | string;
     liftedCountTotal: number | string;
     score: number | string;
@@ -28,7 +28,7 @@ export function ActionHistoryScoreChart({ items }: Props) {
     data.unshift({
       key: moment(w.completedAt).format(DateFormat),
       maxWeight: w.extended ? w.extended.maxWeightNorm.toPrecision(3) : 0,
-      liftedSum: w.extended ? w.extended.liftedSumNorm.toPrecision(3) : 0,
+      // liftedSum: w.extended ? w.extended.liftedSumNorm.toPrecision(3) : 0,
       liftedMean: w.extended ? w.extended.liftedMeanNorm.toPrecision(3) : 0,
       liftedCountTotal: w.extended
         ? w.extended.liftedCountTotalNorm.toPrecision(3)
@@ -65,12 +65,12 @@ export function ActionHistoryScoreChart({ items }: Props) {
           stroke="#00CCDD"
           name="÷ кг"
         />
-        <Line
-          type="monotone"
-          dataKey="liftedSum"
-          stroke="#4F75FF"
-          name="Σ кг"
-        />
+        {/*<Line*/}
+        {/*  type="monotone"*/}
+        {/*  dataKey="liftedSum"*/}
+        {/*  stroke="#4F75FF"*/}
+        {/*  name="Σ кг"*/}
+        {/*/>*/}
 
         <Line type="monotone" dataKey="max" stroke="#6439FF" name="MAX кг" />
 

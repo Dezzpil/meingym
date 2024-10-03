@@ -2,11 +2,14 @@
 import { ActionHistoryData } from "@/app/actions/[id]/history/page";
 import { DateFormat } from "@/tools/dates";
 import moment from "moment";
+import type { Purpose } from "@prisma/client";
+import { Scores } from "@/core/progression/scores";
 
 type Props = {
   items: ActionHistoryData[];
+  purpose: Purpose;
 };
-export function ActionHistoryDataTable({ items }: Props) {
+export function ActionHistoryDataTable({ items, purpose }: Props) {
   return (
     <table className="table table-sm table">
       <colgroup>
@@ -21,10 +24,38 @@ export function ActionHistoryDataTable({ items }: Props) {
         <tr>
           <th>Выполнено</th>
           <th>Оценка</th>
-          <th>Σ раз</th>
-          <th>÷ кг</th>
-          <th>Σ кг</th>
-          <th>MAX кг</th>
+          <th>
+            <div className="d-flex column-gap-2 align-items-center">
+              <span>Σ раз</span>
+              <small className="text-muted" title="Коэф. при расчете Оценки">
+                *{Scores[purpose].liftedCountTotalNorm}
+              </small>
+            </div>
+          </th>
+          <th>
+            <div className="d-flex column-gap-2 align-items-center">
+              <span>÷ кг</span>
+              <small className="text-muted" title="Коэф. при расчете Оценки">
+                *{Scores[purpose].liftedMeanNorm}
+              </small>
+            </div>
+          </th>
+          <th>
+            <div className="d-flex column-gap-2 align-items-center">
+              <span>Σ кг</span>
+              <small className="text-muted" title="Коэф. при расчете Оценки">
+                *{Scores[purpose].liftedSumNorm}
+              </small>
+            </div>
+          </th>
+          <th>
+            <div className="d-flex column-gap-2 align-items-center">
+              <span>MAX кг</span>
+              <small className="text-muted" title="Коэф. при расчете Оценки">
+                *{Scores[purpose].maxWeightNorm}
+              </small>
+            </div>
+          </th>
         </tr>
       </thead>
       <tbody>
