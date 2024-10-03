@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/Dezzpil/meingym/compare/v1.3.0...v1.4.0) (2024-10-03)
+
+
+### Features
+
+* доработать вкладку История движения ([81eef69](https://github.com/Dezzpil/meingym/commits/81eef69c40b8aafc61309c1b53176f4bee078bbc))
+
 ## [1.3.0](https://github.com/Dezzpil/meingym/compare/v1.2.0...v1.3.0) (2024-09-23)
 
 
