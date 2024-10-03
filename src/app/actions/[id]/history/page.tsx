@@ -4,13 +4,46 @@ import { getCurrentUserId } from "@/tools/auth";
 import { prisma } from "@/tools/db";
 import { Purpose } from "@prisma/client";
 import { ActionHistoryDataTable } from "@/app/actions/[id]/history/components/ActionHistoryDataTable";
+import { convert, normLog } from "@/core/convert";
+import { DataRows, score } from "@/core/progression/scores";
+import { ActionHistoryScoreChart } from "@/app/actions/[id]/history/components/ActionHistoryScoreChart";
 
 export type ActionHistoryData = {
+  id: number;
   completedAt: Date;
   purpose: Purpose;
   liftedCountTotal: number;
   liftedMean: number;
   liftedSum: number;
+  maxWeight: number;
+  extended?: Record<keyof DataRows, number> & {
+    score: number;
+    scoreUp: boolean;
+  };
+};
+
+const processData = (
+  items: Record<Purpose, ActionHistoryData[]>,
+  fn: CallableFunction,
+): Record<Purpose, DataRows> => {
+  // @ts-ignore
+  const result: Record<Purpose, DataRows> = {};
+  for (const key of Object.keys(items)) {
+    const purpose = key as Purpose;
+    const converted = convert<ActionHistoryData>(items[purpose], [
+      "maxWeight",
+      "liftedSum",
+      "liftedMean",
+      "liftedCountTotal",
+    ]);
+    result[purpose] = {
+      maxWeightNorm: fn(converted.maxWeight),
+      liftedSumNorm: fn(converted.liftedSum),
+      liftedMeanNorm: fn(converted.liftedMean),
+      liftedCountTotalNorm: fn(converted.liftedCountTotal),
+    };
+  }
+  return result;
 };
 
 export default async function ActionHistoryPage({ params }: ItemPageParams) {
@@ -22,22 +55,51 @@ export default async function ActionHistoryPage({ params }: ItemPageParams) {
   });
 
   const data = await prisma.$queryRaw<ActionHistoryData[]>`
-      SELECT te."completedAt", te."purpose", te."liftedCountTotal", te."liftedMean", te."liftedSum"
+      SELECT
+          te.id,
+          te."completedAt",
+          te."purpose",
+          te."liftedCountTotal",
+          te."liftedMean",
+          te."liftedSum",
+          MAX(exec."liftedWeight") as "maxWeight"
       FROM "TrainingExercise" te
-               LEFT JOIN "Training" t on t.id = te."trainingId"
-      WHERE te."actionId" = ${id} AND te."completedAt" IS NOT NULL AND te."isPassed" IS false AND t."userId" = ${userId}
+        LEFT JOIN "Training" t on t.id = te."trainingId"
+        LEFT JOIN "TrainingExerciseExecution" exec on te.id = exec."exerciseId"
+      WHERE
+        te."actionId" = ${id} AND te."completedAt" IS NOT NULL AND te."isPassed" IS false
+        AND t."userId" = ${userId}
+        AND exec."executedAt" IS NOT NULL AND exec."isPassed" IS FALSE
+      GROUP BY te.id
       ORDER BY te."id" DESC
       LIMIT 100;
   `;
 
-  const dataByPurpose: Record<Purpose, ActionHistoryData[]> = {
+  const itemsByPurpose: Record<Purpose, ActionHistoryData[]> = {
     LOSS: [],
     MASS: [],
     STRENGTH: [],
   };
   for (let i = 0; i < data.length; i++) {
     const item = data[i];
-    dataByPurpose[item.purpose].push(item);
+    itemsByPurpose[item.purpose].push(item);
+  }
+  const result = processData(itemsByPurpose, normLog);
+  const scores = score(result, data.length);
+
+  for (const [purpose, items] of Object.entries(itemsByPurpose)) {
+    const key = purpose as Purpose;
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      item.extended = {
+        liftedCountTotalNorm: result[key].liftedCountTotalNorm[i],
+        maxWeightNorm: result[key].maxWeightNorm[i],
+        liftedSumNorm: result[key].liftedSumNorm[i],
+        liftedMeanNorm: result[key].liftedMeanNorm[i],
+        score: scores[key][i],
+        scoreUp: i < items.length - 1 && scores[key][i] > scores[key][i + 1],
+      };
+    }
   }
 
   return (
@@ -63,8 +125,11 @@ export default async function ActionHistoryPage({ params }: ItemPageParams) {
       <div className="mb-3">
         <div className="mb-5">
           <h5>На массу</h5>
-          {dataByPurpose[Purpose.MASS].length ? (
-            <ActionHistoryDataTable items={dataByPurpose[Purpose.MASS]} />
+          {itemsByPurpose[Purpose.MASS].length ? (
+            <>
+              <ActionHistoryScoreChart items={itemsByPurpose[Purpose.MASS]} />
+              <ActionHistoryDataTable items={itemsByPurpose[Purpose.MASS]} />
+            </>
           ) : (
             <p className="text-muted">Нет данных</p>
           )}
@@ -72,8 +137,15 @@ export default async function ActionHistoryPage({ params }: ItemPageParams) {
 
         <div className="mb-5">
           <h5>На силу</h5>
-          {dataByPurpose[Purpose.STRENGTH].length ? (
-            <ActionHistoryDataTable items={dataByPurpose[Purpose.STRENGTH]} />
+          {itemsByPurpose[Purpose.STRENGTH].length ? (
+            <>
+              <ActionHistoryScoreChart
+                items={itemsByPurpose[Purpose.STRENGTH]}
+              />
+              <ActionHistoryDataTable
+                items={itemsByPurpose[Purpose.STRENGTH]}
+              />
+            </>
           ) : (
             <p className="text-muted">Нет данных</p>
           )}
@@ -81,8 +153,11 @@ export default async function ActionHistoryPage({ params }: ItemPageParams) {
 
         <div className="mb-5">
           <h5>На снижение веса</h5>
-          {dataByPurpose[Purpose.LOSS].length ? (
-            <ActionHistoryDataTable items={dataByPurpose[Purpose.LOSS]} />
+          {itemsByPurpose[Purpose.LOSS].length ? (
+            <>
+              <ActionHistoryScoreChart items={itemsByPurpose[Purpose.LOSS]} />
+              <ActionHistoryDataTable items={itemsByPurpose[Purpose.LOSS]} />
+            </>
           ) : (
             <p className="text-muted">Нет данных</p>
           )}
