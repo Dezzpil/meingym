@@ -27,10 +27,6 @@ export const authOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       allowDangerousEmailAccountLinking: true,
     }),
-    VkProvider({
-      clientId: "52560181",
-      clientSecret: "poO85zJlRsNyTlKsI7V1",
-    }),
   ],
   callbacks: {
     session: async ({ session, user }) => {
