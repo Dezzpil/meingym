@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.1](https://github.com/Dezzpil/meingym/compare/v1.6.0...v1.6.1) (2024-10-29)
+
+
+### Bug Fixes
+
+* vk auth не возвращает почту и не работает, зато гугл ок ([137d3f9](https://github.com/Dezzpil/meingym/commits/137d3f900bff7940a779dc865b793ec4463ea71c))
+
 ## [1.6.0](https://github.com/Dezzpil/meingym/compare/v1.5.1...v1.6.0) (2024-10-29)
 
 
