@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/Dezzpil/meingym/compare/v1.6.1...v1.7.0) (2024-11-01)
+
+
+### Features
+
+* изменить лог на минмакс в оценке истории прогресса ([00ede32](https://github.com/Dezzpil/meingym/commits/00ede32a0f6d68cdceff479d3e2b58592f1331fd))
+
 ### [1.6.1](https://github.com/Dezzpil/meingym/compare/v1.6.0...v1.6.1) (2024-10-29)
 
 
