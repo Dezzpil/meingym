@@ -4,7 +4,7 @@ import { getCurrentUserId } from "@/tools/auth";
 import { prisma } from "@/tools/db";
 import { Purpose } from "@prisma/client";
 import { ActionHistoryDataTable } from "@/app/actions/[id]/history/components/ActionHistoryDataTable";
-import { convert, normLog } from "@/core/convert";
+import { convert, normLog, normMinMax } from "@/core/convert";
 import { DataRows, score } from "@/core/progression/scores";
 import { ActionHistoryScoreChart } from "@/app/actions/[id]/history/components/ActionHistoryScoreChart";
 
@@ -26,6 +26,10 @@ const processData = (
   items: Record<Purpose, ActionHistoryData[]>,
   fn: CallableFunction,
 ): Record<Purpose, DataRows> => {
+  // const minWeight = 3;
+  // const minCount = 10;
+  // const maxWeight = 200;
+  // const maxCount = 20;
   // @ts-ignore
   const result: Record<Purpose, DataRows> = {};
   for (const key of Object.keys(items)) {
@@ -37,10 +41,10 @@ const processData = (
       "liftedCountTotal",
     ]);
     result[purpose] = {
-      maxWeightNorm: fn(converted.maxWeight),
-      liftedSumNorm: fn(converted.liftedSum),
-      liftedMeanNorm: fn(converted.liftedMean),
-      liftedCountTotalNorm: fn(converted.liftedCountTotal),
+      maxWeightNorm: fn(converted.maxWeight, 5, 200),
+      liftedSumNorm: fn(converted.liftedSum, 100, 5000),
+      liftedMeanNorm: fn(converted.liftedMean, 20, 100),
+      liftedCountTotalNorm: fn(converted.liftedCountTotal, 12, 100),
     };
   }
   return result;
@@ -84,7 +88,7 @@ export default async function ActionHistoryPage({ params }: ItemPageParams) {
     const item = data[i];
     itemsByPurpose[item.purpose].push(item);
   }
-  const result = processData(itemsByPurpose, normLog);
+  const result = processData(itemsByPurpose, normMinMax);
   const scores = score(result, data.length);
 
   for (const [purpose, items] of Object.entries(itemsByPurpose)) {

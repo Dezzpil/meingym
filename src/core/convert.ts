@@ -11,10 +11,9 @@ export function convert<T>(items: T[], keys: Array<keyof T>) {
   return r as Record<keyof T, number[]>;
 }
 
-export function normMinMax(vals: number[]): number[] {
+export function normMinMax(vals: number[], min: number, max: number): number[] {
   // X_normalized = (X - X_min) / (X_max - X_min)
-  let min = 0;
-  let max = 0;
+
   const norm = [];
   if (vals) {
     for (const val of vals) {
