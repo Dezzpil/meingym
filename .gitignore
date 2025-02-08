@@ -37,3 +37,7 @@ next-env.d.ts
 
 data
 !data/.gitkeep
+.goosehints
+.goose
+
+*.sql
