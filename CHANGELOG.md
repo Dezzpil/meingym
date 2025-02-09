@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/Dezzpil/meingym/compare/v1.7.0...v1.8.0) (2025-02-09)
+
+
+### Features
+
+* добавить анимацию конфетти при завершении тренировки ([a09a59b](https://github.com/Dezzpil/meingym/commits/a09a59ba96cc03813e1f86e8e53298c6086dbcc4))
+
 ## [1.7.0](https://github.com/Dezzpil/meingym/compare/v1.6.1...v1.7.0) (2024-11-01)
 
 
