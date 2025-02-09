@@ -13,14 +13,14 @@ import {ConfettiConfig} from "dom-confetti";
 const ConfettiConfig1: ConfettiConfig = {
   elementCount: 75,
   duration: 3000,
-  angle: 45,
-  spread: 45
+  angle: 75,
+  spread: 15
 };
 const ConfettiConfig2: ConfettiConfig = {
   elementCount: 75,
   duration: 3000,
-  angle: 135,
-  spread: 45
+  angle: 105,
+  spread: 15
 };
 
 type Props = {
@@ -51,12 +51,9 @@ export function TrainingExecuteCompletePanel({ training }: Props) {
       }
   }, [training.id]);
   return (
-    <div>
-    <div className="alert alert-light d-flex justify-content-between">
-      <Confetti active={ isConfettiActive } config={ConfettiConfig1} />
-      <div className='flex-fill d-flex gap-3 justify-content-end align-items-center'>
-      {training.completedAt ? (
-        <>
+    <div className="alert alert-light">
+      {training.completedAt && (
+        <p>
           <span>
             Завершена в {moment(training.completedAt).format(TimeFormat)} (+
             {moment(training.completedAt).diff(
@@ -65,37 +62,45 @@ export function TrainingExecuteCompletePanel({ training }: Props) {
             )}{" "}
             мин.)
           </span>
-          <Link className={'btn btn-outline-primary'} href={`/trainings/${training.id}`}>Подробнее...</Link>
-          <button className="btn btn-default" onClick={() => { setConfettiActive(true); }}>Ура!</button>
-          {training.processedAt ? (
-            <TrainingRepeatForm training={training} />
-          ) : (
-            <TrainingProcessPanel training={training} />
-          )}
-        </>
-      ) : (
-        <>
-          <div className="d-flex gap-3 justify-content-between">
-            <button
-              className="btn btn-warning"
-              disabled={handling}
-              onClick={handle}
-            >
-              Завершить
-            </button>
-            <Link
-              className="btn btn-outline-secondary"
-              href={`/trainings/${training.id}`}
-            >
-              Настроить
-            </Link>
-          </div>
-          {error && <div className="alert alert-danger">{error}</div>}
-        </>
+          <span>&nbsp;</span>
+          <Link href={`/trainings/${training.id}`}>Подробнее...</Link>
+        </p>
       )}
+      <div className="flex-row d-flex gap-3 justify-content-end align-items-center">
+        <Confetti active={ isConfettiActive } config={ConfettiConfig1} />
+        <div className='flex-fill d-flex gap-3 justify-content-end align-items-center'>
+        {training.completedAt ? (
+          <>
+            <button className="btn btn-default" onClick={() => { setConfettiActive(true); }}>Ура!</button>
+            {training.processedAt ? (
+              <TrainingRepeatForm training={training} />
+            ) : (
+              <TrainingProcessPanel training={training} />
+            )}
+          </>
+        ) : (
+          <>
+            <div className="d-flex gap-3 justify-content-between">
+              <button
+                className="btn btn-warning"
+                disabled={handling}
+                onClick={handle}
+              >
+                Завершить
+              </button>
+              <Link
+                className="btn btn-outline-secondary"
+                href={`/trainings/${training.id}`}
+              >
+                Настроить
+              </Link>
+            </div>
+            {error && <div className="alert alert-danger">{error}</div>}
+          </>
+        )}
+        </div>
+        <Confetti active={ isConfettiActive } config={ConfettiConfig2} />
       </div>
-      <Confetti active={ isConfettiActive } config={ConfettiConfig2} />
-    </div>
     </div>
   );
 }
