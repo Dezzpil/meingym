@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ItemPageParams } from "@/tools/types";
 import { getCurrentUserId } from "@/tools/auth";
 import { prisma } from "@/tools/db";
@@ -7,6 +6,7 @@ import { ActionHistoryDataTable } from "@/app/actions/[id]/history/components/Ac
 import { convert, normLog, normMinMax } from "@/core/convert";
 import { DataRows, score } from "@/core/progression/scores";
 import { ActionHistoryScoreChart } from "@/app/actions/[id]/history/components/ActionHistoryScoreChart";
+import { ActionTabs } from "@/app/actions/[id]/ActionTabs";
 
 export type ActionHistoryData = {
   id: number;
@@ -109,23 +109,7 @@ export default async function ActionHistoryPage({ params }: ItemPageParams) {
   return (
     <>
       <h2 className="mb-3">{action.alias ? action.alias : action.title}</h2>
-      <ul className="nav nav-tabs mb-3">
-        <li className="nav-item">
-          <Link href={`/actions/${id}`} className="nav-link">
-            Редактирование
-          </Link>
-        </li>
-        <li className="nav-item">
-          <Link href={`/actions/${id}/state`} className="nav-link">
-            Подходы
-          </Link>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link active" aria-current="page" href="#">
-            История
-          </a>
-        </li>
-      </ul>
+      <ActionTabs id={id} current={"history"} className={"mb-2"} />
       <div className="mb-3">
         <div className="mb-5">
           <h5>На массу</h5>

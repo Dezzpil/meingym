@@ -1,6 +1,5 @@
 import { getCurrentUserId } from "@/tools/auth";
 import { prisma } from "@/tools/db";
-import Link from "next/link";
 import {
   ActionLoss,
   ActionMass,
@@ -13,6 +12,7 @@ import { ActionCreateLoss } from "@/app/actions/[id]/state/components/ActionCrea
 import { ActionCreateMass } from "@/app/actions/[id]/state/components/ActionCreateMass";
 import { ActionCreateStrength } from "@/app/actions/[id]/state/components/ActionCreateStrength";
 import { ItemPageParams } from "@/tools/types";
+import { ActionTabs } from "@/app/actions/[id]/ActionTabs";
 
 type ActionRelationName = "ActionStrength" | "ActionMass" | "ActionLoss";
 
@@ -67,23 +67,7 @@ export default async function ActionStatePage({ params }: ItemPageParams) {
   return (
     <>
       <h2 className="mb-3">{action.alias ? action.alias : action.title}</h2>
-      <ul className="nav nav-tabs mb-3">
-        <li className="nav-item">
-          <Link href={`/actions/${id}`} className="nav-link">
-            Редактирование
-          </Link>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link active" aria-current="page" href="#">
-            Подходы
-          </a>
-        </li>
-        <li className="nav-item">
-          <Link href={`/actions/${id}/history`} className="nav-link">
-            История
-          </Link>
-        </li>
-      </ul>
+      <ActionTabs id={id} current={"state"} className={"mb-2"} />
       <div className="mb-3">
         <h5 className="mb-3">На массу</h5>
         {state.mass ? (

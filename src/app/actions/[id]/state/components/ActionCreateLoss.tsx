@@ -1,4 +1,5 @@
 "use client";
+
 import { useCallback, useState } from "react";
 import type { Action } from "@prisma/client";
 import { handleCreateLossInitial } from "@/app/actions/[id]/actions";

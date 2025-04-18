@@ -12,8 +12,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Me in Gym",
-  description: "Приложение по планированию и исполнению программы тренировок",
+  title: "Me In Gym",
+  description:
+    "Приложение по планированию и учету результатов тренировок в зале",
 };
 
 export default function RootLayout({
