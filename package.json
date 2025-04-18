@@ -13,7 +13,8 @@
     "release:feature": "standard-version -r minor",
     "release:breaking": "standard-version -r major",
     "test": "node --loader tsx src/tests/**/**/**/*.test.ts",
-    "test:only": "node --loader tsx --test-only src/tests/**/**/**/*.test.ts"
+    "test:only": "node --loader tsx --test-only src/tests/**/**/**/*.test.ts",
+    "update-actions": "node --loader tsx src/scripts/update-actions.ts"
   },
   "dependencies": {
     "@commitlint/cli": "^19.2.2",
