@@ -96,18 +96,36 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         </div>
       )}
       {exercises.length ? (
-        <ul className="list-group mb-3">
-          {exercises.map((e) => (
-            <li className="list-group-item mb-3" key={e.id}>
-              <TrainingExerciseItemControl
-                exercise={e}
-                canControl={!training.startedAt}
-              />
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul className="list-group mb-3">
+            {exercises.map((e) => (
+              <li className="list-group-item mb-3" key={e.id}>
+                <TrainingExerciseItemControl
+                  exercise={e}
+                  canControl={!training.startedAt}
+                />
+              </li>
+            ))}
+          </ul>
+          <div className="alert alert-light d-inline-flex gap-3">
+            <b>Оценка времени выполнения упражнений:</b>
+            <span>
+              {training.timeScoreInMins
+                ? training.timeScoreInMins.toFixed(2)
+                : 0}{" "}
+              мин.
+            </span>
+            {training.timeScoreInSecs && (
+              <span className={"text-muted"}>
+                {training.timeScoreInSecs} в сек.
+              </span>
+            )}
+          </div>
+        </>
       ) : (
-        <p className="text-muted">Упражнения еще не добавлены...</p>
+        <div className="alert alert-warning">
+          Упражнения еще не добавлены...
+        </div>
       )}
       {!training.completedAt && (
         <TrainingAddExerciseForm

@@ -10,6 +10,7 @@ import { createExercise } from "@/core/exercises";
 import { redirect } from "next/navigation";
 import { ServerActionResult } from "@/tools/types";
 import moment from "moment";
+import { IntegrationTrainingTimeScorer } from "@/integrations/trainingTime/scorer";
 
 export async function handleRepeatTraining(
   id: number,
@@ -67,6 +68,7 @@ export async function handleTrainingUpdate(
         dateIsChanged ? { plannedTo: data.plannedTo } : {},
       ),
     });
+    new IntegrationTrainingTimeScorer().update(id).then();
     revalidatePath(`/training/${id}`);
   } catch (e: any) {
     return { ok: false, error: e.message };

@@ -302,6 +302,10 @@ model Training {
   isCircuit       Boolean @default(false)
   commonComment   String?
   completeComment String?
+
+  timeScoreInMins Float     @default(0)
+  timeScoreInSecs String?
+  timeScoredAt    DateTime?
 }
 
 model TrainingExercise {

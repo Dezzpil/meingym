@@ -6,6 +6,7 @@ import { ExerciseAddFieldsType } from "@/app/trainings/exercises/types";
 import { getCurrentUserId } from "@/tools/auth";
 import { createExercise } from "@/core/exercises";
 import { ServerActionResult } from "@/tools/types";
+import { IntegrationTrainingTimeScorer } from "@/integrations/trainingTime/scorer";
 
 export async function handleAddExercise(
   trainingId: number,
@@ -18,9 +19,12 @@ export async function handleAddExercise(
     });
     if (existed)
       return { ok: false, error: "Движение уже присутствует в тренировке" };
+
     await prisma.$transaction(async (tx) => {
       await createExercise(trainingId, data.actionId, data.purpose, userId, tx);
     });
+
+    new IntegrationTrainingTimeScorer().update(trainingId).then();
   } catch (e: any) {
     return { ok: false, error: e.message };
   }
@@ -29,6 +33,7 @@ export async function handleAddExercise(
 
 export async function handleDeleteExercise(id: number) {
   const ex = await prisma.trainingExercise.delete({ where: { id } });
+  new IntegrationTrainingTimeScorer().update(id).then();
   revalidatePath(`/trainings/${ex.trainingId}`);
 }
 
@@ -57,6 +62,8 @@ export async function handleChangeExercisePriority(
         });
       });
     }
+
+    new IntegrationTrainingTimeScorer().update(ex.trainingId).then();
   }
 
   revalidatePath(`/trainings/${ex.trainingId}`);

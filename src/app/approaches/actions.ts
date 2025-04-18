@@ -13,6 +13,7 @@ import {
   calculateStats,
   findInfoForCalculateStatsForApproach,
 } from "@/core/stats";
+import { IntegrationTrainingTimeScorer } from "@/integrations/trainingTime/scorer";
 
 export async function handleUpdateApproachGroup(
   groupId: number,
@@ -31,6 +32,7 @@ export async function handleUpdateApproachGroup(
     });
   });
   if (trainingId) {
+    new IntegrationTrainingTimeScorer().update(trainingId).then();
     revalidatePath(`/trainings/${trainingId}`);
   }
 }
