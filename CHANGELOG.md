@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.11.0](https://github.com/Dezzpil/meingym/compare/v1.10.0...v1.11.0) (2025-04-18)
+
+
+### Features
+
+* включить название группы мышц в поисковую строку упражнения ([eaa0605](https://github.com/Dezzpil/meingym/commits/eaa0605dd136b27f1d85dd53aaefd2b46659ff6c))
+* добавить вкладку с техническими деталями о движении ([84668b0](https://github.com/Dezzpil/meingym/commits/84668b093d75d53b95204e8f1aa1973a5c2ef113))
+
 ## [1.10.0](https://github.com/Dezzpil/meingym/compare/v1.9.0...v1.10.0) (2025-04-18)
 
 
