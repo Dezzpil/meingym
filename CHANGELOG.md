@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/Dezzpil/meingym/compare/v1.9.0...v1.10.0) (2025-04-18)
+
+
+### Features
+
+* добавить оценивание времени тренировки ([9347a95](https://github.com/Dezzpil/meingym/commits/9347a957d6e6fa6e6e5049b45e433ecc82fafb4c))
+
 ## [1.9.0](https://github.com/Dezzpil/meingym/compare/v1.8.0...v1.9.0) (2025-02-09)
 
 
