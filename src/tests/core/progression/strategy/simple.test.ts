@@ -78,10 +78,10 @@ test("_upgradeStrengthWorkingSets", async (context) => {
     const was = calculateStats(sets, ActionRig.BARBELL, 0);
     const now = calculateStats(sets4, ActionRig.BARBELL, 0);
 
-    assert.isAbove(now.mean, was.mean);
-    assert.equal(now.mean - was.mean, add);
+    assert.isAbove(now.weightMean, was.weightMean);
+    assert.equal(now.weightMean - was.weightMean, add);
 
-    assert.isAbove(now.sum, was.sum);
+    assert.isAbove(now.weightSum, was.weightSum);
   });
 
   await context.test("should increase data 2", function () {

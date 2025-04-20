@@ -25,6 +25,7 @@ import {
 import type { TrainingExercise, TrainingRating } from "@prisma/client";
 import { findUserInfo, getCurrentUserId } from "@/tools/auth";
 import { ProgressionStrategySimple } from "@/core/progression/strategy/simple";
+import { scheduleScoreCalculation } from "@/jobs";
 
 export async function handleTrainingStart(id: number, isCircuit: boolean) {
   await prisma.training.update({
@@ -108,9 +109,11 @@ export async function handleTrainingExerciseExecuted(
         tx,
       );
       const {
-        sum: liftedSum,
-        mean: liftedMean,
-        countTotal: liftedCountTotal,
+        weightSum: liftedSum,
+        weightMean: liftedMean,
+        countSum: liftedCountTotal,
+        weightMax,
+        countMean: liftedCountMean,
       } = calculateStats(sets, info.actionrig, info.userweight);
 
       await tx.trainingExercise.update({
@@ -121,6 +124,8 @@ export async function handleTrainingExerciseExecuted(
             liftedSum,
             liftedMean,
             liftedCountTotal,
+            liftedCountMean,
+            weightMax: weightMax,
           },
           rating ? { rating } : {},
           comment ? { comment } : {},
@@ -292,6 +297,9 @@ export async function handleProcessCompletedTraining(
           );
         });
       }
+
+      // Schedule score calculation job for this action
+      await scheduleScoreCalculation(trainingId);
     }
   }
 

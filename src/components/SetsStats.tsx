@@ -20,30 +20,30 @@ export function SetsStats({ current, prev, className }: Props) {
       <li className="list-inline-item d-inline-flex gap-1">
         <b>Σ кг:</b>
         <NumberDiffViz
-          prev={prev ? prev.sum : undefined}
-          current={current.sum}
+          prev={prev ? prev.weightSum : undefined}
+          current={current.weightSum}
         />
       </li>
       <li className="list-inline-item d-inline-flex gap-1">
         <b>÷ кг:</b>
         <NumberDiffViz
-          prev={prev ? prev.mean : undefined}
-          current={current.mean}
+          prev={prev ? prev.weightMean : undefined}
+          current={current.weightMean}
         />
       </li>
       <li className="list-inline-item d-inline-flex gap-1">
         <b>Σ раз:</b>
         <NumberDiffViz
-          prev={prev ? prev.countTotal : undefined}
-          current={current.countTotal}
+          prev={prev ? prev.countSum : undefined}
+          current={current.countSum}
           toFixed={false}
         />
       </li>
       <li className="list-inline-item d-inline-flex gap-1">
         <b>÷ раз:</b>
         <NumberDiffViz
-          prev={prev ? prev.countTotal / prev.count : undefined}
-          current={current.countTotal / current.count}
+          prev={prev ? prev.countSum / prev.len : undefined}
+          current={current.countSum / current.len}
         />
       </li>
     </ul>
@@ -54,7 +54,15 @@ export function SetsStatsForApproachGroup({
   group,
   className,
 }: PropsForApproachGroup) {
-  return <SetsStats current={group} className={className} />;
+  const current: SetsStats = {
+    len: group.count,
+    weightSum: group.sum,
+    weightMean: group.mean,
+    weightMax: group.max,
+    countSum: group.countTotal,
+    countMean: group.countMean,
+  };
+  return <SetsStats current={current} className={className} />;
 }
 
 export function SetsStatsForExercise({
@@ -62,16 +70,20 @@ export function SetsStatsForExercise({
   className,
 }: PropsForExercise) {
   const current: SetsStats = {
-    sum: exercise.liftedSum,
-    mean: exercise.liftedMean,
-    countTotal: exercise.liftedCountTotal,
-    count: exercise.TrainingExerciseExecution.length,
+    len: exercise.TrainingExerciseExecution.length,
+    weightSum: exercise.liftedSum,
+    weightMean: exercise.liftedMean,
+    weightMax: exercise.liftedMax,
+    countSum: exercise.liftedCountTotal,
+    countMean: exercise.liftedCountMean,
   };
-  return (
-    <SetsStats
-      current={current}
-      prev={exercise.ApproachGroup}
-      className={className}
-    />
-  );
+  const prev: SetsStats = {
+    len: exercise.ApproachGroup.count,
+    weightSum: exercise.ApproachGroup.sum,
+    weightMean: exercise.ApproachGroup.mean,
+    weightMax: exercise.ApproachGroup.max,
+    countSum: exercise.ApproachGroup.countTotal,
+    countMean: exercise.ApproachGroup.countMean,
+  };
+  return <SetsStats current={current} prev={prev} className={className} />;
 }

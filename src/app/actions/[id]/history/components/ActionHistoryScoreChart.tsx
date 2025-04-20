@@ -1,6 +1,6 @@
 "use client";
 
-import { ActionHistoryData } from "@/app/actions/[id]/history/page";
+import moment from "moment";
 import {
   Legend,
   Line,
@@ -11,29 +11,27 @@ import {
   YAxis,
 } from "recharts";
 import { CustomizedAxisTick } from "@/components/recharts/CustomizedAxisTick";
-import moment from "moment";
 import { DateFormat } from "@/tools/dates";
+import { TrainingHistoryScore } from "@/app/actions/[id]/history/components/ActionHistoryScores";
 
-type Props = { items: ActionHistoryData[] };
-export function ActionHistoryScoreChart({ items }: Props) {
+type Props = { scores: TrainingHistoryScore[] };
+export function ActionHistoryScoreChart({ scores }: Props) {
   const data: Array<{
     key: string;
-    maxWeight: number | string;
-    // liftedSum: number | string;
     liftedMean: number | string;
     liftedCountTotal: number | string;
+    liftedSumNorm: number | string;
+    maxWeight: number | string;
     score: number | string;
   }> = [];
-  items.forEach((w) => {
+  scores.forEach((w) => {
     data.unshift({
-      key: moment(w.completedAt).format(DateFormat),
-      maxWeight: w.extended ? w.extended.maxWeightNorm.toPrecision(3) : 0,
-      // liftedSum: w.extended ? w.extended.liftedSumNorm.toPrecision(3) : 0,
-      liftedMean: w.extended ? w.extended.liftedMeanNorm.toPrecision(3) : 0,
-      liftedCountTotal: w.extended
-        ? w.extended.liftedCountTotalNorm.toPrecision(3)
-        : 0,
-      score: w.extended ? w.extended.score.toPrecision(3) : 0,
+      key: moment(w.createdAt).format(DateFormat),
+      liftedMean: w.liftedMeanNorm.toPrecision(3),
+      liftedCountTotal: w.liftedCountTotalNorm.toPrecision(3),
+      liftedSumNorm: w.liftedSumNorm.toPrecision(3),
+      maxWeight: w.liftedMaxNorm.toPrecision(3),
+      score: w.score.toPrecision(3),
     });
   });
   return (
@@ -47,7 +45,6 @@ export function ActionHistoryScoreChart({ items }: Props) {
         <Line
           type="monotone"
           dataKey="score"
-          // stroke="#72BF78"
           stroke="#198754"
           name="Оценка"
           strokeWidth={3}
@@ -65,14 +62,19 @@ export function ActionHistoryScoreChart({ items }: Props) {
           stroke="#00CCDD"
           name="÷ кг"
         />
-        {/*<Line*/}
-        {/*  type="monotone"*/}
-        {/*  dataKey="liftedSum"*/}
-        {/*  stroke="#4F75FF"*/}
-        {/*  name="Σ кг"*/}
-        {/*/>*/}
+        <Line
+          type="monotone"
+          dataKey="liftedSumNorm"
+          stroke="#00CCDD"
+          name="Σ кг"
+        />
 
-        <Line type="monotone" dataKey="max" stroke="#6439FF" name="MAX кг" />
+        <Line
+          type="monotone"
+          dataKey="maxWeight"
+          stroke="#6439FF"
+          name="MAX кг"
+        />
 
         <Tooltip />
         <Legend />

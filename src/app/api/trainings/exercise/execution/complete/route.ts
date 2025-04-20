@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     burning,
     comment,
   } = (await request.json()) as TrainingsExerciseCompleteDTO;
-  console.log(technique, techniqueUpgrade);
+
   const exec = await prisma.trainingExerciseExecution.update({
     where: { id },
     data: {

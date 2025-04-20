@@ -1,4 +1,11 @@
-import { Purpose } from "@prisma/client";
+import { Purpose, TrainingExercise } from "@prisma/client";
+
+export type ActionHistoryDataNormalized = {
+  liftedSumNorm: number;
+  liftedMeanNorm: number;
+  liftedCountTotalNorm: number;
+  maxWeightNorm: number;
+};
 
 export type DataRows = {
   liftedSumNorm: number[];
@@ -7,7 +14,38 @@ export type DataRows = {
   maxWeightNorm: number[];
 };
 
-export const Scores: Record<Purpose, Record<keyof DataRows, number>> = {
+export function normLogFn(val: number): number {
+  return val > 0 ? Math.log(val) : 0;
+}
+
+export const norm = (item: TrainingExercise): ActionHistoryDataNormalized => {
+  return {
+    maxWeightNorm: normLogFn(item.liftedMax),
+    liftedSumNorm: normLogFn(item.liftedSum),
+    liftedMeanNorm: normLogFn(item.liftedMean),
+    liftedCountTotalNorm: normLogFn(item.liftedCountTotal),
+  };
+};
+
+export const scoreNormalized = (
+  purpose: Purpose,
+  data: ActionHistoryDataNormalized,
+) => {
+  const coefficients = ScoreCoefficients[purpose as Purpose];
+  let score = 0;
+  for (const key in coefficients) {
+    const k = key as keyof ActionHistoryDataNormalized;
+    if (data[k]) {
+      score += data[k] * coefficients[k];
+    }
+  }
+  return { score, coefficients } as const;
+};
+
+export const ScoreCoefficients: Record<
+  Purpose,
+  Record<keyof DataRows, number>
+> = {
   MASS: {
     liftedMeanNorm: 0.5,
     maxWeightNorm: 0.4,
@@ -36,7 +74,7 @@ export function score(dataRows: Record<Purpose, DataRows>, n: number) {
   };
   for (const purpose in dataRows) {
     const data = dataRows[purpose as Purpose];
-    const scoreCoefficients = Scores[purpose as Purpose];
+    const scoreCoefficients = ScoreCoefficients[purpose as Purpose];
     const scores = [];
     for (let i = 0; i < n; i++) {
       let score = 0;

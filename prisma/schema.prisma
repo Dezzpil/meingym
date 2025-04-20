@@ -17,26 +17,27 @@ enum UserRole {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String?
-  email         String    @unique
+  email         String     @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
+  role          UserRole   @default(USER)
+  UserInfo      UserInfo[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  Rig             Rig[]
   ActionMass      ActionMass[]
+  ActionLoss      ActionLoss[]
   ActionStrength  ActionStrength[]
   ApproachesGroup ApproachesGroup[]
-  Training        Training[]
-  Rig             Rig[]
-  UserInfo        UserInfo[]
-  ActionLoss      ActionLoss[]
 
-  role UserRole @default(USER)
+  Training              Training[]
+  TrainingExerciseScore TrainingExerciseScore[]
 }
 
 enum TrainingProgression {
@@ -176,32 +177,33 @@ model ActionsOnMusclesStabilizer {
 model Action {
   id Int @id @default(autoincrement())
 
-  title String
-  desc  String
-  alias String?
+  title         String
+  desc          String
+  alias         String?
+  anotherTitles String?
+  search        String?
 
-  MusclesAgony      ActionsOnMusclesAgony[]
-  MusclesSynergy    ActionsOnMusclesSynergy[]
-  MusclesStabilizer ActionsOnMusclesStabilizer[]
-
-  TrainingExercise TrainingExercise[]
-
-  rig ActionRig @default(OTHER)
-
-  ActionMass      ActionMass[]
-  ActionStrength  ActionStrength[]
-  ApproachesGroup ApproachesGroup[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
 
   strengthAllowed Boolean @default(false)
   bigCount        Boolean @default(false)
   allowCheating   Boolean @default(false)
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @default(now())
-  ActionLoss ActionLoss[]
+  MusclesAgony      ActionsOnMusclesAgony[]
+  MusclesSynergy    ActionsOnMusclesSynergy[]
+  MusclesStabilizer ActionsOnMusclesStabilizer[]
 
-  anotherTitles String?
-  search        String?
+  rig ActionRig @default(OTHER)
+
+  ActionMass     ActionMass[]
+  ActionLoss     ActionLoss[]
+  ActionStrength ActionStrength[]
+
+  ApproachesGroup ApproachesGroup[]
+
+  TrainingExercise      TrainingExercise[]
+  TrainingExerciseScore TrainingExerciseScore[]
 }
 
 model ActionMass {
@@ -249,10 +251,18 @@ model ApproachesGroup {
   createdAt DateTime @default(now())
 
   // см. SetsStats
-  count      Int   @default(0)
-  sum        Int   @default(0)
-  mean       Float @default(0.0)
+
+  // кол-во подходов
+  count Int @default(0)
+
+  // статистики по весам
+  sum  Float @default(0)
+  mean Float @default(0)
+  max  Float @default(0)
+
+  // статистики по кол-вам
   countTotal Int   @default(0)
+  countMean  Float @default(0)
 
   ActionMass     ActionMass[]
   ActionStrength ActionStrength[]
@@ -332,11 +342,15 @@ model TrainingExercise {
   isPassed Boolean @default(false)
 
   liftedSum        Int   @default(0)
-  liftedMean       Float @default(0.0)
+  liftedMean       Float @default(0)
+  liftedMax        Float @default(0)
   liftedCountTotal Int   @default(0)
+  liftedCountMean  Float @default(0)
 
   rating  TrainingRating @default(OK)
   comment String?
+
+  Score TrainingExerciseScore[]
 }
 
 enum TrainingRating {
@@ -430,4 +444,28 @@ model Weight {
   userId    String
   createdAt DateTime @default(now())
   value     Float
+}
+
+model TrainingExerciseScore {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  userId    String
+  actionId  Int
+  purpose   Purpose
+
+  trainingExerciseId Int  @default(0)
+  coefficients       Json @default("{}")
+
+  liftedSumNorm        Float @default(0)
+  liftedMeanNorm       Float @default(0)
+  liftedMaxNorm        Float @default(0)
+  liftedCountTotalNorm Float @default(0)
+  liftedCountMeanNorm  Float @default(0)
+  score                Float @default(0)
+
+  User     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Action   Action           @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  Exercise TrainingExercise @relation(fields: [trainingExerciseId], references: [id], onDelete: Cascade)
+
+  @@index([userId, actionId, purpose, createdAt])
 }

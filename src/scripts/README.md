@@ -2,10 +2,6 @@
 
 This directory contains utility scripts for the MeinGym project.
 
-## update-actions.ts
-
-This script updates all actions/exercises in the database by calling the `handleUpdate` function for each action. It is used during the deployment process to ensure that all actions have the latest data structure and search terms.
-
 ### Purpose
 
 The script serves to:
