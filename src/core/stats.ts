@@ -66,7 +66,7 @@ export function calculateStats(
       countTotal += set.count;
       sum += weight * set.count;
       mean += weight;
-      maxWeight = Math.max(maxWeight, set.weight);
+      maxWeight = Math.max(maxWeight, weight);
     }
   }
   mean = count ? mean / count : 0;

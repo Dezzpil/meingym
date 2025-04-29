@@ -1,5 +1,6 @@
 import { prisma } from "@/tools/db";
 import { norm, scoreNormalized } from "@/core/progression/scores";
+import { createScore } from "@/core/scores";
 
 export const calculationScoreProcessor = async (job: any) => {
   const { trainingId } = job.data;
@@ -16,27 +17,7 @@ export const calculationScoreProcessor = async (job: any) => {
 
     for (const exercise of exercises) {
       console.log("exercise", exercise.id);
-      // @ts-ignore
-      const normalized = norm(exercise);
-      const { score, coefficients } = scoreNormalized(
-        exercise.purpose,
-        normalized,
-      );
-
-      const item = await prisma.trainingExerciseScore.create({
-        data: {
-          userId: exercise.Training.userId,
-          actionId: exercise.actionId,
-          purpose: exercise.purpose,
-          liftedSumNorm: normalized.liftedSumNorm,
-          liftedMeanNorm: normalized.liftedMeanNorm,
-          liftedMaxNorm: normalized.maxWeightNorm,
-          liftedCountTotalNorm: normalized.liftedCountTotalNorm,
-          trainingExerciseId: exercise.id,
-          score,
-          coefficients,
-        },
-      });
+      const item = await createScore(exercise);
       console.log("item", item);
     }
 

@@ -32,6 +32,13 @@ export function SetsStats({ current, prev, className }: Props) {
         />
       </li>
       <li className="list-inline-item d-inline-flex gap-1">
+        <b>MAX кг:</b>
+        <NumberDiffViz
+          prev={prev ? prev.weightMax : undefined}
+          current={current.weightMax}
+        />
+      </li>
+      <li className="list-inline-item d-inline-flex gap-1">
         <b>Σ раз:</b>
         <NumberDiffViz
           prev={prev ? prev.countSum : undefined}
@@ -42,8 +49,8 @@ export function SetsStats({ current, prev, className }: Props) {
       <li className="list-inline-item d-inline-flex gap-1">
         <b>÷ раз:</b>
         <NumberDiffViz
-          prev={prev ? prev.countSum / prev.len : undefined}
-          current={current.countSum / current.len}
+          prev={prev ? prev.countMean : undefined}
+          current={current.countMean}
         />
       </li>
     </ul>
@@ -69,14 +76,6 @@ export function SetsStatsForExercise({
   exercise,
   className,
 }: PropsForExercise) {
-  const current: SetsStats = {
-    len: exercise.TrainingExerciseExecution.length,
-    weightSum: exercise.liftedSum,
-    weightMean: exercise.liftedMean,
-    weightMax: exercise.liftedMax,
-    countSum: exercise.liftedCountTotal,
-    countMean: exercise.liftedCountMean,
-  };
   const prev: SetsStats = {
     len: exercise.ApproachGroup.count,
     weightSum: exercise.ApproachGroup.sum,
@@ -84,6 +83,14 @@ export function SetsStatsForExercise({
     weightMax: exercise.ApproachGroup.max,
     countSum: exercise.ApproachGroup.countTotal,
     countMean: exercise.ApproachGroup.countMean,
+  };
+  const current: SetsStats = {
+    len: exercise.TrainingExerciseExecution.length,
+    weightSum: exercise.liftedSum,
+    weightMean: exercise.liftedMean,
+    weightMax: exercise.liftedMax,
+    countSum: exercise.liftedCountTotal,
+    countMean: exercise.liftedCountMean,
   };
   return <SetsStats current={current} prev={prev} className={className} />;
 }

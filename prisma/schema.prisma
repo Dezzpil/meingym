@@ -448,7 +448,7 @@ model Weight {
 
 model TrainingExerciseScore {
   id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
+  createdAt DateTime
   userId    String
   actionId  Int
   purpose   Purpose

@@ -1,30 +1,65 @@
-# Scripts Directory
+# Scripts Documentation
 
-This directory contains utility scripts for the MeinGym project.
+This directory contains utility scripts for maintaining and updating the MeinGym database.
 
-### Purpose
+## Available Scripts
 
-The script serves to:
-1. Fetch all actions from the database
-2. Process each action by calling the `handleUpdate` function
-3. Update the search terms and other fields for each action
+### update-actions.ts
 
-### Usage
+**Purpose**: Updates all actions in the database.
 
-The script can be run manually with:
+**Functionality**:
+- Fetches all actions from the database with their associated muscles (agony, synergy, stabilizer)
+- Updates each action using the `handleUpdate` function from the actions module
+- Includes error handling for individual action updates
+- Logs the progress and results of the update process
 
+**Usage**:
 ```bash
-npm run update-actions
+npx tsx src/scripts/update-actions.ts
 ```
 
-It is also automatically executed during the deployment process after the build step, as defined in the `deploy.sh` script.
+### update-training-exercises.ts
 
-### Implementation Details
+**Purpose**: Updates training exercises statistics and scores.
 
-The script:
-1. Fetches all actions with their related muscle data
-2. For each action, it prepares the data in the format expected by `handleUpdate`
-3. Calls `handleUpdate` for each action
-4. Handles errors and disconnects from the database when done
+**Functionality**:
+- Fetches all training exercises from the database
+- For exercises with missing statistics (liftedMax or liftedCountMean equal to 0):
+  - Retrieves all executions for that exercise
+  - Calculates statistics based on the executions
+  - Updates the exercise with the calculated values
+- For exercises without a Score, creates a score using the `createScore` function
+- Logs the progress and results of the update process
 
-This ensures that all actions are up-to-date with the latest schema and search terms after deployment.
+**Usage**:
+```bash
+npx tsx src/scripts/update-training-exercises.ts
+```
+
+### update-approaches-groups.ts
+
+**Purpose**: Updates statistics for approach groups in the database.
+
+**Functionality**:
+- Fetches all approach groups from the database with their associated approaches
+- For groups with missing statistics (max, countTotal, or countMean equal to 0):
+  - Retrieves information needed for calculation
+  - Calculates statistics based on the approaches
+  - Updates the group with the calculated values
+- Logs the progress and results of the update process
+
+**Usage**:
+```bash
+npx tsx src/scripts/update-approaches-groups.ts
+```
+
+## Running Scripts
+
+All scripts in this directory can be executed using the Node.js runtime with the TypeScript executor:
+
+```bash
+npx tsx src/scripts/<script-name>.ts
+```
+
+The scripts automatically load environment variables from the `.env` file using dotenv.

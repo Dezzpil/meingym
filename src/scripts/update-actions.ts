@@ -4,9 +4,11 @@ import { prisma } from "@/tools/db";
 import { handleUpdate } from "@/app/actions/actions";
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({
+  path: ".env.local",
+});
 
-async function updateAllActions() {
+async function updateActions() {
   console.log("Starting to update all actions...");
 
   try {
@@ -66,12 +68,12 @@ async function updateAllActions() {
 }
 
 // Run the update function
-updateAllActions()
+updateActions()
   .then(() => {
-    console.log("Update process completed");
+    console.log("Update actions completed");
     process.exit(0);
   })
   .catch((error) => {
-    console.error("Fatal error during update process:", error);
+    console.error("Fatal error during update actions:", error);
     process.exit(1);
   });

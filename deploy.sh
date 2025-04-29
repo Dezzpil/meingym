@@ -4,6 +4,11 @@ pm2 stop meingym
 prisma generate
 prisma migrate deploy
 npm run build
-echo "Updating all actions..."
+
+echo "Updating data in DB..."
 npm run update-actions
+npm run update-training-exercises
+npm run update-approaches-groups
+
+
 pm2 start meingym
