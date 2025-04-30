@@ -14,11 +14,17 @@ const strategy = new ProgressionStrategySimple(
     bigCount: false,
   },
   {
-    StrengthWorkingSetsCount: 4,
-    StrengthPrepareSetsCount: 2,
-    MassSetsCount: 4,
-    MassAddDropSet: false,
-    MassBigCountCoef: 1.8,
+    strengthWorkingSetsCount: 4,
+    strengthPrepareSetsCount: 2,
+    strengthWeightDelta: 5,
+    massSetsCount: 4,
+    massAddDropSet: false,
+    massBigCountCoef: 1.8,
+    massWeightDelta: 2.5,
+    lossCountStep: 2,
+    lossCountMax: 16,
+    lossMaxSets: 6,
+    lossWeightDelta: 1.25,
   },
 );
 
@@ -32,7 +38,7 @@ test("_upgradeStrengthWorkingSets", async (context) => {
       { weight: 95, count: 1 },
     ];
     const sets1 = strategy._upgradeStrengthWorkingSets(sets, 5);
-    assert.lengthOf(sets1, strategy._opts.StrengthWorkingSetsCount);
+    assert.lengthOf(sets1, strategy._opts.strengthWorkingSetsCount);
     assert.equal(str(sets1[0]), "80x2");
     assert.equal(str(sets1[1]), "85x1");
   });
@@ -146,7 +152,7 @@ test("mass", async (context) => {
       },
     ];
     const upgraded = strategy.mass(sets, sets);
-    assert.lengthOf(upgraded, strategy._opts.MassSetsCount);
+    assert.lengthOf(upgraded, strategy._opts.massSetsCount);
   });
   await context.test("should upgrade load in sets", function () {
     const sets: SetDataExecuted[] = [

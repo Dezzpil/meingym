@@ -1,5 +1,30 @@
 import { prisma } from "@/tools/db";
-import type { TrainingPeriod } from "@prisma/client";
+import type {
+  ProgressionStrategySimpleOpts,
+  TrainingPeriod,
+} from "@prisma/client";
+import {
+  ProgressionStrategySimpleOptsType,
+  ProgressionStrategySimpleOptsDefaults,
+} from "@/core/progression/strategy/simple";
+
+export function pickOnlyOptsFromItem(
+  item: ProgressionStrategySimpleOpts,
+): ProgressionStrategySimpleOptsType {
+  return {
+    strengthPrepareSetsCount: item.strengthPrepareSetsCount,
+    strengthWorkingSetsCount: item.strengthWorkingSetsCount,
+    strengthWeightDelta: item.strengthWeightDelta,
+    massSetsCount: item.massSetsCount,
+    massBigCountCoef: item.massBigCountCoef,
+    massWeightDelta: item.massWeightDelta,
+    massAddDropSet: item.massAddDropSet,
+    lossCountMax: item.lossCountMax,
+    lossCountStep: item.lossCountStep,
+    lossWeightDelta: item.lossWeightDelta,
+    lossMaxSets: item.lossMaxSets,
+  };
+}
 
 /**
  * Creates a new training period for a user.
@@ -7,10 +32,12 @@ import type { TrainingPeriod } from "@prisma/client";
  * and its end date will be set to the current date.
  *
  * @param userId - The ID of the user to create a training period for
+ * @param progressionOpts - Options for simple progression strategy for new training period
  * @returns The newly created training period
  */
 export async function createTrainingPeriod(
   userId: string,
+  progressionOpts?: ProgressionStrategySimpleOptsType,
 ): Promise<TrainingPeriod> {
   // First, find any current training period for the user and mark it as not current
   await prisma.trainingPeriod.updateMany({
@@ -24,12 +51,26 @@ export async function createTrainingPeriod(
     },
   });
 
-  // Then create a new training period
+  const lastProgressionSimpleOpts =
+    await prisma.progressionStrategySimpleOpts.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    });
+
+  let opts = ProgressionStrategySimpleOptsDefaults;
+  if (lastProgressionSimpleOpts) {
+    opts = pickOnlyOptsFromItem(lastProgressionSimpleOpts);
+  }
+  if (progressionOpts) opts = Object.assign(opts, progressionOpts);
+
   return prisma.trainingPeriod.create({
     data: {
       userId,
       startDate: new Date(),
       isCurrent: true,
+      ProgressionStrategySimpleOpts: {
+        create: Object.assign({ userId }, opts),
+      },
     },
   });
 }

@@ -8,15 +8,17 @@ import type {
 export type ActionHistoryDataNormalized = {
   liftedSumNorm: number;
   liftedMeanNorm: number;
+  liftedMaxNorm: number;
   liftedCountTotalNorm: number;
-  maxWeightNorm: number;
+  liftedCountMeanNorm: number;
 };
 
 export type DataRows = {
   liftedSumNorm: number[];
   liftedMeanNorm: number[];
+  liftedMaxNorm: number[];
   liftedCountTotalNorm: number[];
-  maxWeightNorm: number[];
+  liftedCountMeanNorm: number[];
 };
 
 export function normLogFn(val: number): number {
@@ -25,10 +27,11 @@ export function normLogFn(val: number): number {
 
 export const norm = (item: TrainingExercise): ActionHistoryDataNormalized => {
   return {
-    maxWeightNorm: normLogFn(item.liftedMax),
+    liftedMaxNorm: normLogFn(item.liftedMax),
     liftedSumNorm: normLogFn(item.liftedSum),
     liftedMeanNorm: normLogFn(item.liftedMean),
     liftedCountTotalNorm: normLogFn(item.liftedCountTotal),
+    liftedCountMeanNorm: normLogFn(item.liftedCountMean),
   };
 };
 
@@ -51,23 +54,26 @@ export const ScoreCoefficients: Record<
   Purpose,
   Record<keyof DataRows, number>
 > = {
+  STRENGTH: {
+    liftedMaxNorm: 0.5,
+    liftedSumNorm: 0.5,
+    liftedMeanNorm: 0,
+    liftedCountTotalNorm: 0,
+    liftedCountMeanNorm: -0.5,
+  },
   MASS: {
     liftedMeanNorm: 0.5,
-    maxWeightNorm: 0.4,
-    liftedSumNorm: 0.05,
-    liftedCountTotalNorm: 0.05,
-  },
-  STRENGTH: {
-    maxWeightNorm: 0.5,
-    liftedSumNorm: 0.4,
-    liftedMeanNorm: 0.05,
-    liftedCountTotalNorm: 0.05,
+    liftedCountMeanNorm: 0.25,
+    liftedSumNorm: 0.25,
+    liftedCountTotalNorm: 0,
+    liftedMaxNorm: -0.5,
   },
   LOSS: {
     liftedCountTotalNorm: 0.5,
-    liftedSumNorm: 0.4,
-    liftedMeanNorm: 0.05,
-    maxWeightNorm: 0.05,
+    liftedCountMeanNorm: 0.5,
+    liftedMaxNorm: 0.5,
+    liftedMeanNorm: 0,
+    liftedSumNorm: 0,
   },
 };
 
@@ -110,8 +116,9 @@ export async function createScore(
       purpose: exercise.purpose,
       liftedSumNorm: normalized.liftedSumNorm,
       liftedMeanNorm: normalized.liftedMeanNorm,
-      liftedMaxNorm: normalized.maxWeightNorm,
+      liftedMaxNorm: normalized.liftedMaxNorm,
       liftedCountTotalNorm: normalized.liftedCountTotalNorm,
+      liftedCountMeanNorm: normalized.liftedCountMeanNorm,
       trainingExerciseId: exercise.id,
       score,
       coefficients,

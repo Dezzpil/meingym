@@ -6,9 +6,30 @@ import { prisma } from "@/tools/db";
 // Mock the Prisma client
 mock.method(prisma.trainingPeriod, "updateMany", async () => ({ count: 1 }));
 mock.method(prisma.trainingPeriod, "create", async (args: any) => {
+  // Extract ProgressionStrategySimpleOpts data if it exists
+  const progressionOpts = args.data.ProgressionStrategySimpleOpts?.create;
+
+  // Create a mock ProgressionStrategySimpleOpts if it was provided
+  const progressionStrategySimpleOpts = progressionOpts ? {
+    id: 1,
+    userId: progressionOpts.userId,
+    trainingPeriodId: 1,
+    strengthWorkingSetsCount: progressionOpts.strengthWorkingSetsCount,
+    strengthPrepareSetsCount: progressionOpts.strengthPrepareSetsCount,
+    massSetsCount: progressionOpts.massSetsCount,
+    massAddDropSet: progressionOpts.massAddDropSet,
+    massBigCountCoef: progressionOpts.massBigCountCoef,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  } : null;
+
+  // Remove the nested create from the data
+  const { ProgressionStrategySimpleOpts, ...restData } = args.data;
+
   return {
     id: 1,
-    ...args.data,
+    ...restData,
+    ProgressionStrategySimpleOpts: progressionStrategySimpleOpts,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -65,12 +86,22 @@ test("Training Periods", async (context) => {
   const userId = "test-user";
 
   await context.test(
-    "createTrainingPeriod should create a new training period",
+    "createTrainingPeriod should create a new training period with ProgressionStrategySimpleOpts",
     async () => {
       const period = await trainingPeriods.createTrainingPeriod(userId);
       assert.equal(period.userId, userId);
       assert.equal(period.isCurrent, true);
       assert.isNull(period.endDate);
+
+      // Verify ProgressionStrategySimpleOpts was created
+      assert.isNotNull(period.ProgressionStrategySimpleOpts);
+      assert.equal(period.ProgressionStrategySimpleOpts.userId, userId);
+      assert.equal(period.ProgressionStrategySimpleOpts.trainingPeriodId, period.id);
+      assert.equal(period.ProgressionStrategySimpleOpts.strengthWorkingSetsCount, 4);
+      assert.equal(period.ProgressionStrategySimpleOpts.strengthPrepareSetsCount, 2);
+      assert.equal(period.ProgressionStrategySimpleOpts.massSetsCount, 4);
+      assert.equal(period.ProgressionStrategySimpleOpts.massAddDropSet, true);
+      assert.equal(period.ProgressionStrategySimpleOpts.massBigCountCoef, 1.8);
     },
   );
 

@@ -58,7 +58,7 @@ export function ActionHistoryDataTable({ scores, purpose }: Props) {
             <div className="d-flex column-gap-2 align-items-center">
               <span>MAX кг</span>
               <small className="text-muted" title="Коэф. при расчете Оценки">
-                *{ScoreCoefficients[purpose].maxWeightNorm}
+                *{ScoreCoefficients[purpose].liftedMaxNorm}
               </small>
             </div>
           </th>

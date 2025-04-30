@@ -36,9 +36,10 @@ model User {
   ActionStrength  ActionStrength[]
   ApproachesGroup ApproachesGroup[]
 
-  Training              Training[]
-  TrainingExerciseScore TrainingExerciseScore[]
-  TrainingPeriod        TrainingPeriod[]
+  Training                      Training[]
+  TrainingExerciseScore         TrainingExerciseScore[]
+  TrainingPeriod                TrainingPeriod[]
+  ProgressionStrategySimpleOpts ProgressionStrategySimpleOpts[]
 }
 
 enum TrainingProgression {
@@ -480,13 +481,41 @@ model TrainingPeriod {
   endDate   DateTime?
   isCurrent Boolean   @default(true)
 
-  userId    String
-  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  Trainings Training[]
+  Trainings                     Training[]
+  ProgressionStrategySimpleOpts ProgressionStrategySimpleOpts?
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId, isCurrent])
+}
+
+model ProgressionStrategySimpleOpts {
+  id Int @id @default(autoincrement())
+
+  userId String
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  trainingPeriodId Int            @unique
+  TrainingPeriod   TrainingPeriod @relation(fields: [trainingPeriodId], references: [id], onDelete: Cascade)
+
+  strengthWorkingSetsCount Int   @default(4)
+  strengthPrepareSetsCount Int   @default(2)
+  strengthWeightDelta      Float @default(5)
+
+  massSetsCount    Int     @default(4)
+  massBigCountCoef Float   @default(1.8)
+  massWeightDelta  Float   @default(2.5)
+  massAddDropSet   Boolean @default(true)
+
+  lossCountStep   Int   @default(2)
+  lossCountMax    Int   @default(16)
+  lossWeightDelta Float @default(1.25)
+  lossMaxSets     Int   @default(6)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

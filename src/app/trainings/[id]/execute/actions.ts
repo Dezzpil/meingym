@@ -31,19 +31,16 @@ import { createTrainingPeriod, getCurrentTrainingPeriod } from "@/core/periods";
 export async function handleTrainingStart(id: number, isCircuit: boolean) {
   const userId = await getCurrentUserId();
 
-  // Check if there's a current training period for the user
   let currentPeriod = await getCurrentTrainingPeriod(userId);
-
-  // If there's no current period, create one
   if (!currentPeriod) {
     currentPeriod = await createTrainingPeriod(userId);
   }
 
   await prisma.training.update({
     where: { id },
-    data: { 
+    data: {
       startedAt: new Date(),
-      periodId: currentPeriod.id
+      periodId: currentPeriod.id,
     },
   });
   if (isCircuit) {
@@ -139,7 +136,7 @@ export async function handleTrainingExerciseExecuted(
             liftedMean,
             liftedCountTotal,
             liftedCountMean,
-            weightMax: weightMax,
+            liftedMax: weightMax,
           },
           rating ? { rating } : {},
           comment ? { comment } : {},
@@ -228,6 +225,11 @@ export async function handleProcessCompletedTraining(
           },
         },
       },
+      Period: {
+        include: {
+          ProgressionStrategySimpleOpts: true,
+        },
+      },
     },
   });
   if (!training.completedAt) {
@@ -273,8 +275,10 @@ export async function handleProcessCompletedTraining(
 
         // Если хотя бы один подход был выполнен, то рассчитываем прогрессию
         // и обновляем нагрузку на будущее. Иначе просто оставляем ту нагрузку, что была
-        // TODO пока одна стратегия
-        let strategy = new ProgressionStrategySimple(exercise.Action);
+        let strategy = new ProgressionStrategySimple(
+          exercise.Action,
+          training.Period?.ProgressionStrategySimpleOpts,
+        );
 
         // TODO рефакторинг
         if (exercise.purpose === Purpose.MASS) {
