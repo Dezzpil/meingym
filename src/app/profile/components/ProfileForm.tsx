@@ -30,7 +30,7 @@ export function ProfileForm({ userInfo }: Props) {
   });
 
   return (
-    <form onSubmit={submit} className="mb-4">
+    <form onSubmit={submit} className="mb-3">
       <div className=" mb-2">
         <label className="form-label" htmlFor="height">
           Рост

@@ -50,31 +50,31 @@ export function ActionHistoryScoreChart({ scores }: Props) {
           strokeWidth={3}
           dot={true}
         />
-        <Line
-          type="monotone"
-          dataKey="liftedCountTotal"
-          stroke="#00F5FF"
-          name="Σ раз"
-        />
-        <Line
-          type="monotone"
-          dataKey="liftedMean"
-          stroke="#00CCDD"
-          name="÷ кг"
-        />
-        <Line
-          type="monotone"
-          dataKey="liftedSumNorm"
-          stroke="#00CCDD"
-          name="Σ кг"
-        />
+        {/*<Line*/}
+        {/*  type="monotone"*/}
+        {/*  dataKey="liftedCountTotal"*/}
+        {/*  stroke="#00F5FF"*/}
+        {/*  name="Σ раз"*/}
+        {/*/>*/}
+        {/*<Line*/}
+        {/*  type="monotone"*/}
+        {/*  dataKey="liftedMean"*/}
+        {/*  stroke="#00CCDD"*/}
+        {/*  name="÷ кг"*/}
+        {/*/>*/}
+        {/*<Line*/}
+        {/*  type="monotone"*/}
+        {/*  dataKey="liftedSumNorm"*/}
+        {/*  stroke="#00CCDD"*/}
+        {/*  name="Σ кг"*/}
+        {/*/>*/}
 
-        <Line
-          type="monotone"
-          dataKey="maxWeight"
-          stroke="#6439FF"
-          name="MAX кг"
-        />
+        {/*<Line*/}
+        {/*  type="monotone"*/}
+        {/*  dataKey="maxWeight"*/}
+        {/*  stroke="#6439FF"*/}
+        {/*  name="MAX кг"*/}
+        {/*/>*/}
 
         <Tooltip />
         <Legend />

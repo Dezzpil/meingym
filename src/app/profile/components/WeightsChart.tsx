@@ -35,7 +35,12 @@ export function WeightsChart({ weights }: Props) {
       <LineChart width={500} height={300} data={data}>
         <Line type="monotone" dataKey="val" stroke="#8884d8" name="Вес" />
         <XAxis dataKey="key" tick={<CustomizedAxisTick />} height={80} />
-        <YAxis domain={[min - 5, max]} tickCount={10} height={300} />
+        <YAxis
+          domain={[min - 5, max]}
+          tickCount={10}
+          height={300}
+          orientation={"right"}
+        />
         <Tooltip />
         <Legend />
       </LineChart>

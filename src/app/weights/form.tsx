@@ -24,7 +24,7 @@ export function WeightsForm({ value }: Props) {
   });
   return (
     <form className="mb-3" onSubmit={submit}>
-      <div className="d-flex gap-3 justify-content-end align-items-baseline">
+      <div className="d-flex gap-3 justify-content-start align-items-baseline">
         <div>Ваш вес сегодня:</div>
         <div className="col-2">
           <input
@@ -36,7 +36,7 @@ export function WeightsForm({ value }: Props) {
             {...form.register("value", { valueAsNumber: true, required: true })}
           />
         </div>
-        <button disabled={handling} className="btn btn-primary">
+        <button disabled={handling} className="btn btn-outline-primary">
           Сохранить
         </button>
       </div>

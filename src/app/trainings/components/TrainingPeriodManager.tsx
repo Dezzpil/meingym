@@ -28,30 +28,29 @@ export default function TrainingPeriodManager({
   };
 
   return (
-    <Card className="mb-4">
-      <Card.Body>
-        <Card.Title>Период тренировок</Card.Title>
-        {currentPeriod ? (
-          <div>
-            <p>
-              Текущий период: с{" "}
-              {moment(currentPeriod.startDate).format(DateFormat)}
-              {currentPeriod.endDate &&
-                ` по ${moment(currentPeriod.endDate).format(DateFormat)}`}
-            </p>
-            <Button variant="outline-danger" onClick={handleEndPeriod}>
-              Завершить период
-            </Button>
-          </div>
-        ) : (
-          <div>
-            <p>У вас нет активного периода тренировок</p>
-            <Button variant="primary" onClick={handleCreate}>
-              Создать новый период
-            </Button>
-          </div>
-        )}
-      </Card.Body>
-    </Card>
+    <div className="mb-3">
+      <h5>Период тренировок</h5>
+      {currentPeriod ? (
+        <div className="d-flex gap-3">
+          <span>
+            Текущий период: с{" "}
+            {moment(currentPeriod.startDate).format(DateFormat)}
+            {currentPeriod.endDate &&
+              ` по ${moment(currentPeriod.endDate).format(DateFormat)}`}
+            .
+          </span>
+          <span className="pointer text-danger" onClick={handleEndPeriod}>
+            Завершить период
+          </span>
+        </div>
+      ) : (
+        <div className="d-flex gap-3">
+          <span>У вас нет активного периода тренировок.</span>
+          <span className="pointer text-primary" onClick={handleCreate}>
+            Создать новый период
+          </span>
+        </div>
+      )}
+    </div>
   );
 }

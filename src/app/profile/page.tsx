@@ -30,19 +30,6 @@ export default async function ProfilePage() {
     where: { userId },
   })) as UserInfo;
 
-  const { gte, lt } = getCurrentDayBorders();
-  const weight = await prisma.weight.findFirst({
-    where: {
-      userId,
-      createdAt: { gte, lt },
-    },
-  });
-  const weights = await prisma.weight.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    take: 20,
-  });
-
   let progressionOpts = null;
   const currentPeriod = await getCurrentTrainingPeriod(userId);
   if (currentPeriod) {
@@ -57,15 +44,14 @@ export default async function ProfilePage() {
       <ProfileForm userInfo={userInfo} />
       {progressionOpts && <SimpleProgressionOptsForm item={progressionOpts} />}
       <TrainingPeriodManager currentPeriod={currentPeriod} userId={userId} />
-      {weight ? <WeightPanel weight={weight} /> : <WeightsForm />}
-      {weights && <WeightsChart weights={weights} />}
-      <hr />
-      <h3>Достижения</h3>
-      <div>...</div>
-      <hr />
-      <Link className="btn btn-outline-danger" href={"/api/auth/signout"}>
-        Выйти
-      </Link>
+      <div>
+        <h5>Управление</h5>
+        <div className="mb-3 d-flex justify-content-start">
+          <Link className="btn btn-outline-danger" href={"/api/auth/signout"}>
+            Выйти
+          </Link>
+        </div>
+      </div>
     </>
   );
 }
