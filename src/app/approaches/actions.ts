@@ -28,7 +28,14 @@ export async function handleUpdateApproachGroup(
     await tx.approach.createMany({ data: approachesData });
     await tx.approachesGroup.update({
       where: { id: groupId },
-      data: stats,
+      data: {
+        count: approachesData.length,
+        mean: stats.weightMean,
+        sum: stats.weightSum,
+        max: stats.weightMax,
+        countTotal: stats.countSum,
+        countMean: stats.countMean,
+      },
     });
   });
   if (trainingId) {

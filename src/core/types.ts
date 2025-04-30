@@ -1,8 +1,10 @@
 export type SetsStats = {
-  count: number; // sets count
-  sum: number; // weight sum by all sets
-  mean: number; // weight mean by all sets
-  countTotal: number; // counts in all sets
+  len: number; // sets count
+  weightSum: number;
+  weightMean: number;
+  weightMax: number;
+  countSum: number;
+  countMean: number;
 };
 
 export type SetData = { weight: number; count: number };

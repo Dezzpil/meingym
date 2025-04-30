@@ -31,3 +31,7 @@
 .rdp-month {
     margin: 0 !important;
 }
+
+.pointer:hover {
+    cursor: pointer;
+}

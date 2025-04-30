@@ -46,17 +46,16 @@ export async function createApproachGroup(
 ): Promise<ApproachesGroup> {
   const info = await findInfoForCalculationStatsForAction(actionId, userId, tx);
   const given = approaches.length ? approaches : ApproachesStrengthDefault;
-  const { count, sum, mean, countTotal } = calculateStats(
-    given,
-    info.actionrig,
-    info.userweight,
-  );
+  const { len, weightSum, weightMean, weightMax, countSum, countMean } =
+    calculateStats(given, info.actionrig, info.userweight);
   return tx.approachesGroup.create({
     data: {
-      count,
-      sum,
-      mean,
-      countTotal,
+      count: len,
+      sum: weightSum,
+      mean: weightMean,
+      countTotal: countSum,
+      countMean: countMean,
+      max: weightMax,
       Approaches: {
         createMany: {
           data: given,

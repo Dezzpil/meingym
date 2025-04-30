@@ -99,7 +99,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         <>
           <ul className="list-group mb-3">
             {exercises.map((e) => (
-              <li className="list-group-item mb-3" key={e.id}>
+              <li className="list-group-item mb-3" data-id={e.id} key={e.id}>
                 <TrainingExerciseItemControl
                   exercise={e}
                   canControl={!training.startedAt}

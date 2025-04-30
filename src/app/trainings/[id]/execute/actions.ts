@@ -25,11 +25,23 @@ import {
 import type { TrainingExercise, TrainingRating } from "@prisma/client";
 import { findUserInfo, getCurrentUserId } from "@/tools/auth";
 import { ProgressionStrategySimple } from "@/core/progression/strategy/simple";
+import { scheduleScoreCalculation } from "@/jobs";
+import { createTrainingPeriod, getCurrentTrainingPeriod } from "@/core/periods";
 
 export async function handleTrainingStart(id: number, isCircuit: boolean) {
+  const userId = await getCurrentUserId();
+
+  let currentPeriod = await getCurrentTrainingPeriod(userId);
+  if (!currentPeriod) {
+    currentPeriod = await createTrainingPeriod(userId);
+  }
+
   await prisma.training.update({
     where: { id },
-    data: { startedAt: new Date() },
+    data: {
+      startedAt: new Date(),
+      periodId: currentPeriod.id,
+    },
   });
   if (isCircuit) {
     await prisma.trainingExercise.updateMany({
@@ -108,9 +120,11 @@ export async function handleTrainingExerciseExecuted(
         tx,
       );
       const {
-        sum: liftedSum,
-        mean: liftedMean,
-        countTotal: liftedCountTotal,
+        weightSum: liftedSum,
+        weightMean: liftedMean,
+        countSum: liftedCountTotal,
+        weightMax,
+        countMean: liftedCountMean,
       } = calculateStats(sets, info.actionrig, info.userweight);
 
       await tx.trainingExercise.update({
@@ -121,6 +135,8 @@ export async function handleTrainingExerciseExecuted(
             liftedSum,
             liftedMean,
             liftedCountTotal,
+            liftedCountMean,
+            liftedMax: weightMax,
           },
           rating ? { rating } : {},
           comment ? { comment } : {},
@@ -209,6 +225,11 @@ export async function handleProcessCompletedTraining(
           },
         },
       },
+      Period: {
+        include: {
+          ProgressionStrategySimpleOpts: true,
+        },
+      },
     },
   });
   if (!training.completedAt) {
@@ -254,8 +275,10 @@ export async function handleProcessCompletedTraining(
 
         // Если хотя бы один подход был выполнен, то рассчитываем прогрессию
         // и обновляем нагрузку на будущее. Иначе просто оставляем ту нагрузку, что была
-        // TODO пока одна стратегия
-        let strategy = new ProgressionStrategySimple(exercise.Action);
+        let strategy = new ProgressionStrategySimple(
+          exercise.Action,
+          training.Period?.ProgressionStrategySimpleOpts,
+        );
 
         // TODO рефакторинг
         if (exercise.purpose === Purpose.MASS) {
@@ -292,6 +315,9 @@ export async function handleProcessCompletedTraining(
           );
         });
       }
+
+      // Schedule score calculation job for this action
+      await scheduleScoreCalculation(trainingId);
     }
   }
 

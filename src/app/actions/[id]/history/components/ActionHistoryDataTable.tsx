@@ -1,15 +1,16 @@
 "use client";
-import { ActionHistoryData } from "@/app/actions/[id]/history/page";
-import { DateFormat } from "@/tools/dates";
+
 import moment from "moment";
+import { DateFormat } from "@/tools/dates";
 import type { Purpose } from "@prisma/client";
-import { Scores } from "@/core/progression/scores";
+import { TrainingHistoryScore } from "@/app/actions/[id]/history/components/ActionHistoryScores";
+import { ScoreCoefficients } from "@/core/scores";
 
 type Props = {
-  items: ActionHistoryData[];
+  scores: TrainingHistoryScore[];
   purpose: Purpose;
 };
-export function ActionHistoryDataTable({ items, purpose }: Props) {
+export function ActionHistoryDataTable({ scores, purpose }: Props) {
   return (
     <table className="table table-sm table">
       <colgroup>
@@ -26,9 +27,9 @@ export function ActionHistoryDataTable({ items, purpose }: Props) {
           <th>Оценка</th>
           <th>
             <div className="d-flex column-gap-2 align-items-center">
-              <span>Σ раз</span>
+              <span>Σ кг</span>
               <small className="text-muted" title="Коэф. при расчете Оценки">
-                *{Scores[purpose].liftedCountTotalNorm}
+                *{ScoreCoefficients[purpose].liftedSumNorm}
               </small>
             </div>
           </th>
@@ -36,82 +37,71 @@ export function ActionHistoryDataTable({ items, purpose }: Props) {
             <div className="d-flex column-gap-2 align-items-center">
               <span>÷ кг</span>
               <small className="text-muted" title="Коэф. при расчете Оценки">
-                *{Scores[purpose].liftedMeanNorm}
+                *{ScoreCoefficients[purpose].liftedMeanNorm}
               </small>
             </div>
           </th>
           <th>
             <div className="d-flex column-gap-2 align-items-center">
-              <span>Σ кг</span>
+              <span>Σ раз</span>
               <small className="text-muted" title="Коэф. при расчете Оценки">
-                *{Scores[purpose].liftedSumNorm}
+                *{ScoreCoefficients[purpose].liftedCountTotalNorm}
               </small>
+            </div>
+          </th>
+          <th>
+            <div className="d-flex column-gap-2 align-items-center">
+              <span>÷ раз</span>
             </div>
           </th>
           <th>
             <div className="d-flex column-gap-2 align-items-center">
               <span>MAX кг</span>
               <small className="text-muted" title="Коэф. при расчете Оценки">
-                *{Scores[purpose].maxWeightNorm}
+                *{ScoreCoefficients[purpose].liftedMaxNorm}
               </small>
             </div>
           </th>
         </tr>
       </thead>
       <tbody>
-        {items.map((i) => (
-          <tr key={i.completedAt.toString()}>
-            <td>{moment(i.completedAt).format(`${DateFormat}`)}</td>
+        {scores.map((i) => (
+          <tr key={i.createdAt.toString()}>
+            <td>{moment(i.createdAt).format(`${DateFormat}`)}</td>
             <td>
-              {i.extended ? (
-                <b className={i.extended.scoreUp ? "text-success" : ""}>
-                  {i.extended.score.toPrecision(3)}
-                </b>
-              ) : (
-                <span>&mdash;</span>
-              )}
+              <b className={"text-success"}>{i.score.toPrecision(3)}</b>
             </td>
             <td>
               <div className={"d-flex column-gap-2"}>
-                <span>{i.liftedCountTotal.toFixed(2)}</span>
-                {i.extended && (
-                  <span className="text-muted">
-                    {i.extended.liftedCountTotalNorm.toFixed(2)}
-                  </span>
-                )}
+                <span>{i.Exercise.liftedSum.toFixed(2)}</span>
+                <span className="text-muted">{i.liftedSumNorm.toFixed(2)}</span>
               </div>
             </td>
-
             <td>
               <div className={"d-flex column-gap-2"}>
-                <span>{i.liftedMean.toFixed(2)}</span>
-                {i.extended && (
-                  <span className="text-muted">
-                    {i.extended.liftedMeanNorm.toFixed(2)}
-                  </span>
-                )}
+                <span>{i.Exercise.liftedMean.toFixed(2)}</span>
+                <span className="text-muted">
+                  {i.liftedMeanNorm.toFixed(2)}
+                </span>
               </div>
             </td>
-
             <td>
               <div className={"d-flex column-gap-2"}>
-                <span>{i.liftedSum.toFixed(2)}</span>
-                {i.extended && (
-                  <span className="text-muted">
-                    {i.extended.liftedSumNorm.toFixed(2)}
-                  </span>
-                )}
+                <span>{i.Exercise.liftedCountTotal.toFixed(2)}</span>
+                <span className="text-muted">
+                  {i.liftedCountTotalNorm.toFixed(2)}
+                </span>
               </div>
             </td>
-
             <td>
               <div className={"d-flex column-gap-2"}>
-                <span>{i.maxWeight.toFixed(2)}</span>
-                {i.extended && (
-                  <span className="text-muted">
-                    {i.extended.maxWeightNorm.toFixed(2)}
-                  </span>
-                )}
+                <span>{i.Exercise.liftedCountMean.toFixed(2)}</span>
+              </div>
+            </td>
+            <td>
+              <div className={"d-flex column-gap-2"}>
+                <span>{i.Exercise.liftedMax.toFixed(2)}</span>
+                <span className="text-muted">{i.liftedMaxNorm.toFixed(2)}</span>
               </div>
             </td>
           </tr>

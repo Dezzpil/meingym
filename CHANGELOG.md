@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.13.0](https://github.com/Dezzpil/meingym/compare/v1.12.0...v1.13.0) (2025-04-30)
+
+
+### Features
+
+* вынести настройки прогрессии нагрузки в БД и доработать логику прогресса снижения веса ([6ce0add](https://github.com/Dezzpil/meingym/commits/6ce0add66013c3f378ffcd00b8f6cee5e34cbebe))
+* добавить поддержку периодов тренировок ([ca7db14](https://github.com/Dezzpil/meingym/commits/ca7db149c4ba1d2b95ce9b06f8edc3e7d87d2c7d))
+* перенести вес на дашборд и доработать профиль ([f20eb73](https://github.com/Dezzpil/meingym/commits/f20eb7351f1061c195d41c52d161921d3b6ec9ae))
+* управлять периодами и параметрами прогрессии в профиле ([c2b1de1](https://github.com/Dezzpil/meingym/commits/c2b1de14d7d1a332fa248cb41336a82f4fc5ca17))
+
+## [1.12.0](https://github.com/Dezzpil/meingym/compare/v1.10.0...v1.12.0) (2025-04-29)
+
+
+### Features
+
+* включить название группы мышц в поисковую строку упражнения ([4b28c0e](https://github.com/Dezzpil/meingym/commits/4b28c0e6a7fec0c7462622176bd789519bea54a7))
+* добавить вкладку с техническими деталями о движении ([84668b0](https://github.com/Dezzpil/meingym/commits/84668b093d75d53b95204e8f1aa1973a5c2ef113))
+* доработать денормализацию хранения и использования метрик и оценок ([d7a26dd](https://github.com/Dezzpil/meingym/commits/d7a26ddfa874f362fd7786211518ca9adf961cfa))
+* улучшить сбор и обработку результатов тренировки ([e973fbd](https://github.com/Dezzpil/meingym/commits/e973fbd82407e86f34ef880283f137bba92d5af1))
+
 ## [1.11.0](https://github.com/Dezzpil/meingym/compare/v1.10.0...v1.11.0) (2025-04-18)
 
 

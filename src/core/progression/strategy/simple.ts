@@ -5,42 +5,59 @@ import { assert } from "chai";
 /**
  * Простейшая стратегия.
  *
+ * @todo согласовать с ScoreCoefficients
+ *
  * На силовые:
- *   Цель - плавное повышения взятия веса на раз, с небольшим повышением mean.
+ *   Плавное повышения взятия веса на раз, с небольшим повышением тонажа.
  *   Последний подход всегда на 1 раз.
+ *   Штрафуем за увеличение среднего количества повторений
  *
  * На массу:
  *   Увеличиваем вес на минимальный шаг с сохранением кол-ва повторений елочкой.
- *   Последний подход всегда на меньший вес, но на 12, если задан MassAddDropSet.
+ *   Если задан MassAddDropSet, то добавляется последний подход всегда на меньший вес, но на 12 раз
+ *
+ * На снижение веса:
+ *   Увеличение количества с постепенным повышением максимального веса
  */
 
-export type ProgressionStrategySimpleOpts = {
-  StrengthWorkingSetsCount: number;
-  StrengthPrepareSetsCount: number;
-  MassSetsCount: number;
-  MassAddDropSet: boolean;
-  MassBigCountCoef: number;
+export type ProgressionStrategySimpleOptsType = {
+  strengthWorkingSetsCount: number;
+  strengthPrepareSetsCount: number;
+  strengthWeightDelta: number;
+  massSetsCount: number;
+  massAddDropSet: boolean;
+  massBigCountCoef: number;
+  massWeightDelta: number;
+  lossCountStep: number;
+  lossCountMax: number;
+  lossWeightDelta: number;
+  lossMaxSets: number;
 };
 
-const Defaults = {
-  StrengthWorkingSetsCount: 4,
-  StrengthPrepareSetsCount: 2,
-  MassSetsCount: 4,
-  MassAddDropSet: true,
-  MassBigCountCoef: 1.8,
-};
+export const ProgressionStrategySimpleOptsDefaults: ProgressionStrategySimpleOptsType =
+  {
+    strengthWorkingSetsCount: 4,
+    strengthPrepareSetsCount: 2,
+    strengthWeightDelta: 5,
+    massSetsCount: 4,
+    massAddDropSet: true,
+    massBigCountCoef: 1.8,
+    massWeightDelta: 2.5,
+    lossCountStep: 4,
+    lossCountMax: 16,
+    lossWeightDelta: 1.25,
+    lossMaxSets: 6,
+  };
 
 export class ProgressionStrategySimple {
-  public readonly _opts: ProgressionStrategySimpleOpts;
-  private _weightMassDelta: number;
-  private _weightStrDelta: number;
+  public readonly _opts: ProgressionStrategySimpleOptsType;
   constructor(
     private _action: Pick<Action, "rig" | "strengthAllowed" | "bigCount">,
-    opts?: ProgressionStrategySimpleOpts,
+    opts?: ProgressionStrategySimpleOptsType | null,
   ) {
-    this._opts = opts ? Object.assign(Defaults, opts) : Defaults;
-    this._weightMassDelta = 2.5;
-    this._weightStrDelta = 5;
+    this._opts = opts
+      ? Object.assign(ProgressionStrategySimpleOptsDefaults, opts)
+      : ProgressionStrategySimpleOptsDefaults;
   }
 
   _upgradeStrengthWorkingSets(
@@ -51,18 +68,18 @@ export class ProgressionStrategySimple {
     const setsCopy: SetData[] = [];
 
     for (const set of executedSets.slice(
-      -this._opts.StrengthWorkingSetsCount,
+      -this._opts.strengthWorkingSetsCount,
     )) {
       if (set.count !== 0)
         setsCopy.push({ count: set.count, weight: set.weight });
     }
-    if (setsCopy.length !== this._opts.StrengthWorkingSetsCount) {
+    if (setsCopy.length !== this._opts.strengthWorkingSetsCount) {
       // какие-то подходы не удалось выполнить, надо перестроить нагрузку
       // берем последний успешный вес и выстраиваем новую пирамиду весов
       const setsRebuild: SetData[] = [];
       let lastSet = setsCopy[setsCopy.length - 1];
       setsRebuild.unshift({ weight: lastSet.weight, count: 1 });
-      for (let i = 0; i < this._opts.StrengthWorkingSetsCount - 1; i++) {
+      for (let i = 0; i < this._opts.strengthWorkingSetsCount - 1; i++) {
         lastSet = {
           weight: lastSet.weight - weightDelta,
           count: 1 + i,
@@ -101,7 +118,7 @@ export class ProgressionStrategySimple {
   ): SetData[] {
     const sets: SetData[] = [];
     let set = workingSets[0];
-    for (let i = 0; i < this._opts.StrengthPrepareSetsCount; i++) {
+    for (let i = 0; i < this._opts.strengthPrepareSetsCount; i++) {
       set = {
         weight: set.weight - weightDelta * 2,
         count: Math.min(set.count * 2, 12),
@@ -121,11 +138,11 @@ export class ProgressionStrategySimple {
 
     let working = this._upgradeStrengthWorkingSets(
       executed,
-      this._weightStrDelta,
+      this._opts.strengthWeightDelta,
     );
     let preparing = this._upgradeStrengthPrepareSets(
       working,
-      this._weightStrDelta,
+      this._opts.strengthWeightDelta * 2,
     );
     return preparing.concat(working);
   }
@@ -134,7 +151,7 @@ export class ProgressionStrategySimple {
     assert.isAbove(executed.length, 0);
 
     let sets: SetData[] = [];
-    for (let i = 0; i < this._opts.MassSetsCount; i++) {
+    for (let i = 0; i < this._opts.massSetsCount; i++) {
       if (executed[i]) {
         const set = {
           count: executed[i].count,
@@ -154,15 +171,16 @@ export class ProgressionStrategySimple {
       { above: 13, to: 12 },
       { above: 11, to: 10 },
       { above: 9, to: 8 },
+      { above: 7, to: 6 },
     ];
     if (this._action.bigCount) {
       for (const item of transitions) {
         item.above = Math.max(
-          Math.floor(item.above * this._opts.MassBigCountCoef),
+          Math.floor(item.above * this._opts.massBigCountCoef),
           30,
         );
         item.to = Math.max(
-          Math.floor(item.to * this._opts.MassBigCountCoef),
+          Math.floor(item.to * this._opts.massBigCountCoef),
           15,
         );
       }
@@ -171,7 +189,7 @@ export class ProgressionStrategySimple {
     for (let i = 0; i < sets.length; i++) {
       if (sets[i].count >= transitions[i].above) {
         sets[i] = {
-          weight: sets[i].weight + this._weightMassDelta,
+          weight: sets[i].weight + this._opts.massWeightDelta,
           count: transitions[i].to,
         };
       } else {
@@ -179,7 +197,7 @@ export class ProgressionStrategySimple {
       }
     }
 
-    if (this._opts.MassAddDropSet) {
+    if (this._opts.massAddDropSet) {
       const dropSet: SetData = {
         count: sets[sets.length - 1].count,
         weight: sets[0].weight,
@@ -199,19 +217,29 @@ export class ProgressionStrategySimple {
     }
     let addSet = false;
     let mean = Math.floor(cnt / executed.length);
-    if (mean >= 16) {
-      mean = 8;
+    if (mean >= this._opts.lossCountMax) {
+      mean = this._opts.lossCountMax - 2 * this._opts.lossCountStep;
       addSet = true;
     } else {
-      mean += 4;
+      mean += this._opts.lossCountStep;
     }
 
     let sets: SetData[] = [];
     for (let i = 0; i < planned.length; i++) {
-      sets.push({ count: mean, weight: planned[i].weight });
+      sets.push({ count: mean, weight: executed[0].weight });
     }
     if (addSet) {
       sets.push({ count: mean, weight: executed[0].weight });
+    }
+
+    if (sets.length > this._opts.lossMaxSets) {
+      sets = [];
+      for (let i = 0; i < this._opts.lossMaxSets - 2; i++) {
+        sets.push({
+          count: mean,
+          weight: executed[0].weight + this._opts.lossWeightDelta,
+        });
+      }
     }
 
     return sets;

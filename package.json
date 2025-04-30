@@ -1,6 +1,6 @@
 {
   "name": "meingym",
-  "version": "1.11.0",
+  "version": "1.13.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3004",
@@ -12,9 +12,12 @@
     "release:patch": "standard-version",
     "release:feature": "standard-version -r minor",
     "release:breaking": "standard-version -r major",
-    "test": "node --loader tsx src/tests/**/**/**/*.test.ts",
-    "test:only": "node --loader tsx --test-only src/tests/**/**/**/*.test.ts",
-    "update-actions": "node --loader tsx src/scripts/update-actions.ts"
+    "test": "node --import tsx src/tests/**/**/**/*.test.ts",
+    "test:only": "node --import tsx --test-only src/tests/**/**/**/*.test.ts",
+    "update-actions": "node --import tsx src/scripts/update-actions.ts",
+    "update-training-exercises": "node --import tsx src/scripts/update-training-exercises.ts",
+    "update-approaches-groups": "node --import tsx src/scripts/update-approaches-groups.ts",
+    "workers": "node --import tsx src/jobs/index.ts"
   },
   "dependencies": {
     "@commitlint/cli": "^19.2.2",
@@ -23,6 +26,7 @@
     "@prisma/client": "^5.7.1",
     "axios": "^1.7.9",
     "bootstrap": "^5.3.2",
+    "bull": "^4.12.2",
     "chai": "^5.1.0",
     "classnames": "^2.5.1",
     "date-fns": "^3.6.0",
@@ -37,9 +41,11 @@
     "react-hook-form": "^7.49.2",
     "react-icons": "^4.12.0",
     "recharts": "^2.12.7",
+    "redis": "^4.6.13",
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/bull": "^4.10.0",
     "@types/chai": "^4.3.14",
     "@types/node": "^20",
     "@types/react": "^18",

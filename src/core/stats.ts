@@ -56,7 +56,9 @@ export function calculateStats(
   const count = setsData.length;
   let sum = 0,
     mean = 0,
-    countTotal = 0;
+    countTotal = 0,
+    countMean = 0,
+    maxWeight = 0;
   for (const set of setsData) {
     const weight =
       actionRig === ActionRig.OTHER ? userWeight + set.weight : set.weight;
@@ -64,8 +66,17 @@ export function calculateStats(
       countTotal += set.count;
       sum += weight * set.count;
       mean += weight;
+      maxWeight = Math.max(maxWeight, weight);
     }
   }
   mean = count ? mean / count : 0;
-  return { count, sum, mean, countTotal };
+  countMean = count ? countTotal / count : 0;
+  return {
+    len: count,
+    weightSum: sum,
+    weightMean: mean,
+    weightMax: maxWeight,
+    countSum: countTotal,
+    countMean,
+  };
 }
