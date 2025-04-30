@@ -10,6 +10,12 @@ import { redirect } from "next/navigation";
 import { ProfileForm } from "@/app/profile/components/ProfileForm";
 import type { UserInfo } from "@prisma/client";
 import { WeightsChart } from "./components/WeightsChart";
+import TrainingPeriodManager from "@/app/trainings/components/TrainingPeriodManager";
+import {
+  getCurrentTrainingPeriod,
+  getCurrentTrainingPeriodWithOptions,
+} from "@/core/periods";
+import { SimpleProgressionOptsForm } from "@/app/progression/SimpleProgressionOptsForm";
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -37,10 +43,20 @@ export default async function ProfilePage() {
     take: 20,
   });
 
+  let progressionOpts = null;
+  const currentPeriod = await getCurrentTrainingPeriod(userId);
+  if (currentPeriod) {
+    progressionOpts = await prisma.progressionStrategySimpleOpts.findUnique({
+      where: { trainingPeriodId: currentPeriod.id },
+    });
+  }
+
   return (
     <>
       <h1>Профиль </h1>
       <ProfileForm userInfo={userInfo} />
+      {progressionOpts && <SimpleProgressionOptsForm item={progressionOpts} />}
+      <TrainingPeriodManager currentPeriod={currentPeriod} userId={userId} />
       {weight ? <WeightPanel weight={weight} /> : <WeightsForm />}
       {weights && <WeightsChart weights={weights} />}
       <hr />

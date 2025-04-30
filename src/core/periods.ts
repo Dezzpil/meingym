@@ -124,6 +124,39 @@ export async function getCurrentTrainingPeriod(
 }
 
 /**
+ * Gets the current training period for a user with its progression options.
+ *
+ * @param userId - The ID of the user to get the current training period for
+ * @returns The current training period with progression options, or null if no current period exists
+ */
+export async function getCurrentTrainingPeriodWithOptions(
+  userId: string,
+): Promise<{
+  currentPeriod: TrainingPeriod | null;
+  progressionOpts: ProgressionStrategySimpleOptsType | null;
+}> {
+  const currentPeriod = await prisma.trainingPeriod.findFirst({
+    where: {
+      userId,
+      isCurrent: true,
+    },
+    include: {
+      ProgressionStrategySimpleOpts: true,
+    },
+  });
+
+  if (!currentPeriod || !currentPeriod.ProgressionStrategySimpleOpts) {
+    return { currentPeriod, progressionOpts: null };
+  }
+
+  const progressionOpts = pickOnlyOptsFromItem(
+    currentPeriod.ProgressionStrategySimpleOpts,
+  );
+
+  return { currentPeriod, progressionOpts };
+}
+
+/**
  * Gets all training periods for a user.
  *
  * @param userId - The ID of the user to get training periods for
@@ -139,5 +172,15 @@ export async function getUserTrainingPeriods(
     orderBy: {
       startDate: "desc",
     },
+  });
+}
+
+export async function updateProgressionStrategySimpleOpts(
+  id: number,
+  opts: ProgressionStrategySimpleOptsType,
+) {
+  await prisma.progressionStrategySimpleOpts.update({
+    where: { id },
+    data: opts,
   });
 }

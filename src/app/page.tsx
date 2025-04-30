@@ -4,24 +4,12 @@ import moment from "moment";
 import { getCurrentUserId } from "@/tools/auth";
 import { DateFormat, getCurrentDayBorders } from "@/tools/dates";
 import TrainingCreateForm from "@/app/trainings/components/TrainingCreateForm";
-import TrainingPeriodManager from "@/app/components/TrainingPeriodManager";
+import TrainingPeriodManager from "@/app/trainings/components/TrainingPeriodManager";
 import { getCurrentTrainingPeriod, pickOnlyOptsFromItem } from "@/core/periods";
 
 export default async function HomePage() {
   const userId = await getCurrentUserId();
   const { gte, lt } = getCurrentDayBorders();
-
-  const currentPeriod = await getCurrentTrainingPeriod(userId);
-
-  let progressionOpts = null;
-  if (currentPeriod) {
-    const item = await prisma.progressionStrategySimpleOpts.findUnique({
-      where: {
-        trainingPeriodId: currentPeriod.id,
-      },
-    });
-    if (item) progressionOpts = pickOnlyOptsFromItem(item);
-  }
 
   const trainings = await prisma.training.findMany({
     where: {
@@ -42,12 +30,6 @@ export default async function HomePage() {
 
   return (
     <div>
-      <TrainingPeriodManager
-        currentPeriod={currentPeriod}
-        progressionOpts={progressionOpts}
-        userId={userId}
-      />
-
       {trainings.length ? (
         trainings.map((t) => (
           <div className="card" key={t.id}>

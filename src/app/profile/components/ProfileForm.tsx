@@ -60,27 +60,8 @@ export function ProfileForm({ userInfo }: Props) {
           <option value={Purpose.LOSS}>Снижение веса</option>
         </select>
       </div>
-      <div className="mb-2">
-        <label htmlFor="trainingProgression" className="form-label">
-          Прогрессия
-        </label>
-        <div className="hstack gap-2">
-          <select
-            className="form-control"
-            {...form.register("trainingProgression")}
-          >
-            <option value={TrainingProgression.NONE}>Нет</option>
-            <option value={TrainingProgression.SIMPLE}>Простая</option>
-          </select>
-          {userInfo.trainingProgression !== TrainingProgression.NONE && (
-            <button type="button" className="btn btn-outline-secondary">
-              Настроить
-            </button>
-          )}
-        </div>
-      </div>
       <div className="mb-2 d-flex justify-content-end">
-        <button className="btn btn-outline-primary" disabled={handling}>
+        <button className="btn btn-primary" disabled={handling}>
           Сохранить
         </button>
       </div>
