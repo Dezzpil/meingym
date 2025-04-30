@@ -1,13 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { scoresQueue } from "@/jobs";
+import { scoresQueue, periodsQueue } from "@/jobs";
 
 export async function GET(request: NextRequest) {
   try {
     // Get queue statistics
-    const [actionsJobCounts] = await Promise.all([scoresQueue.getJobCounts()]);
+    const [scoresJobCounts, periodsJobCounts] = await Promise.all([
+      scoresQueue.getJobCounts(),
+      periodsQueue.getJobCounts()
+    ]);
 
     // Get active jobs
-    const [activeScoresJobs] = await Promise.all([scoresQueue.getActive()]);
+    const [activeScoresJobs, activePeriodsJobs] = await Promise.all([
+      scoresQueue.getActive(),
+      periodsQueue.getActive()
+    ]);
 
     // Format active jobs to include only essential information
     const formatJobs = (jobs: any[]) =>
@@ -25,8 +31,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       queues: {
         scores: {
-          counts: actionsJobCounts,
+          counts: scoresJobCounts,
           active: formatJobs(activeScoresJobs),
+        },
+        periods: {
+          counts: periodsJobCounts,
+          active: formatJobs(activePeriodsJobs),
         },
       },
     });

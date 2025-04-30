@@ -2,9 +2,9 @@
 
 import moment from "moment";
 import { DateFormat } from "@/tools/dates";
-import { ScoreCoefficients } from "@/core/progression/scores";
 import type { Purpose } from "@prisma/client";
 import { TrainingHistoryScore } from "@/app/actions/[id]/history/components/ActionHistoryScores";
+import { ScoreCoefficients } from "@/core/scores";
 
 type Props = {
   scores: TrainingHistoryScore[];

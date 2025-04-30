@@ -2,10 +2,10 @@ import { ItemPageParams } from "@/tools/types";
 import { getCurrentUserId } from "@/tools/auth";
 import { prisma } from "@/tools/db";
 import { Purpose } from "@prisma/client";
-import { DataRows, score } from "@/core/progression/scores";
 import { ActionTabs } from "@/app/actions/[id]/ActionTabs";
 import { Suspense } from "react";
 import { ActionHistoryScores } from "@/app/actions/[id]/history/components/ActionHistoryScores";
+import { DataRows } from "@/core/scores";
 
 export type ActionHistoryData = {
   id: number;

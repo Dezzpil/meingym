@@ -1,5 +1,4 @@
 import { prisma } from "@/tools/db";
-import { norm, scoreNormalized } from "@/core/progression/scores";
 import { createScore } from "@/core/scores";
 
 export const calculationScoreProcessor = async (job: any) => {

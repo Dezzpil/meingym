@@ -38,6 +38,7 @@ model User {
 
   Training              Training[]
   TrainingExerciseScore TrainingExerciseScore[]
+  TrainingPeriod        TrainingPeriod[]
 }
 
 enum TrainingProgression {
@@ -309,6 +310,9 @@ model Training {
   userId String
   User   User   @relation(references: [id], fields: [userId], onDelete: Cascade)
 
+  periodId Int?
+  Period   TrainingPeriod? @relation(fields: [periodId], references: [id])
+
   isCircuit       Boolean @default(false)
   commonComment   String?
   completeComment String?
@@ -468,4 +472,21 @@ model TrainingExerciseScore {
   Exercise TrainingExercise @relation(fields: [trainingExerciseId], references: [id], onDelete: Cascade)
 
   @@index([userId, actionId, purpose, createdAt])
+}
+
+model TrainingPeriod {
+  id        Int       @id @default(autoincrement())
+  startDate DateTime  @default(now())
+  endDate   DateTime?
+  isCurrent Boolean   @default(true)
+
+  userId    String
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  Trainings Training[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId, isCurrent])
 }

@@ -26,11 +26,25 @@ import type { TrainingExercise, TrainingRating } from "@prisma/client";
 import { findUserInfo, getCurrentUserId } from "@/tools/auth";
 import { ProgressionStrategySimple } from "@/core/progression/strategy/simple";
 import { scheduleScoreCalculation } from "@/jobs";
+import { createTrainingPeriod, getCurrentTrainingPeriod } from "@/core/periods";
 
 export async function handleTrainingStart(id: number, isCircuit: boolean) {
+  const userId = await getCurrentUserId();
+
+  // Check if there's a current training period for the user
+  let currentPeriod = await getCurrentTrainingPeriod(userId);
+
+  // If there's no current period, create one
+  if (!currentPeriod) {
+    currentPeriod = await createTrainingPeriod(userId);
+  }
+
   await prisma.training.update({
     where: { id },
-    data: { startedAt: new Date() },
+    data: { 
+      startedAt: new Date(),
+      periodId: currentPeriod.id
+    },
   });
   if (isCircuit) {
     await prisma.trainingExercise.updateMany({

@@ -9,12 +9,16 @@ export const redisConfig = {
 // Queue names
 export const queueNames = {
   scores: "scores",
+  periods: "periods",
 };
 
 // Job names
 export const jobNames = {
   scores: {
     calculateScores: "calculate-scores",
+  },
+  periods: {
+    checkInactive: "check-inactive-periods",
   },
 };
 
