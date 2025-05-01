@@ -9,7 +9,7 @@
     "lint": "next lint",
     "prisma:migrate": "dotenv -e .env.local -- prisma migrate dev",
     "prepare": "husky install",
-    "release:patch": "standard-version",
+    "release:patch": "standard-version -r patch",
     "release:feature": "standard-version -r minor",
     "release:breaking": "standard-version -r major",
     "test": "node --import tsx src/tests/**/**/**/*.test.ts",

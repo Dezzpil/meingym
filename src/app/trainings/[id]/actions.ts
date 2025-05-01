@@ -11,6 +11,8 @@ import { redirect } from "next/navigation";
 import { ServerActionResult } from "@/tools/types";
 import moment from "moment";
 import { IntegrationTrainingTimeScorer } from "@/integrations/trainingTime/scorer";
+import { createTrainingPeriod, getCurrentTrainingPeriod } from "@/core/periods";
+import { findUserInfo } from "@/tools/auth";
 
 export async function handleRepeatTraining(
   id: number,
@@ -22,11 +24,22 @@ export async function handleRepeatTraining(
       include: { TrainingExercise: { orderBy: { priority: "asc" } } },
     });
 
+    const userInfo = await findUserInfo(curTraining.userId);
+
+    let currentPeriod = await getCurrentTrainingPeriod(curTraining.userId);
+    if (!currentPeriod) {
+      currentPeriod = await createTrainingPeriod(curTraining.userId);
+    }
+
     const nextTraining = await tx.training.create({
-      data: {
-        plannedTo: data.plannedTo,
-        userId: curTraining.userId,
-      },
+      data: Object.assign(
+        {
+          plannedTo: data.plannedTo,
+          userId: curTraining.userId,
+          periodId: currentPeriod.id,
+        },
+        userInfo.purpose === "LOSS" ? { isCircuit: true } : {},
+      ),
     });
 
     for (const exercise of curTraining.TrainingExercise) {
