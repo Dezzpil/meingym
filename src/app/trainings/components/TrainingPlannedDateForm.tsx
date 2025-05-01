@@ -26,7 +26,7 @@ export function TrainingPlannedDateForm({
         />
       </div>
       <div className="col-auto">
-        <button className="btn btn-primary" disabled={handling}>
+        <button className="btn btn-outline-primary" disabled={handling}>
           {btnTitle ? btnTitle : "Назначить"}
         </button>
       </div>

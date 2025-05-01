@@ -65,7 +65,7 @@ export default async function HomePage() {
           ))}
         </div>
       ) : (
-        <div>
+        <div className="mb-3 d-flex justify-content-end">
           <TrainingCreateForm btnTitle="Назначить тренировку" />
         </div>
       )}

@@ -8,6 +8,8 @@ import {
 } from "@prisma/client";
 import { ActionHistoryScoreChart } from "./ActionHistoryScoreChart";
 import { ActionHistoryDataTable } from "./ActionHistoryDataTable";
+import { PurposeName } from "@/tools/purposes";
+import { ActionHistoryDataItems } from "@/app/actions/[id]/history/components/ActionHistoryDataItems";
 
 export type TrainingHistoryScore = TrainingExerciseScore & {
   Exercise: TrainingExercise;
@@ -34,10 +36,10 @@ export function ActionHistoryScores({ scores }: Props) {
   return (
     <>
       {Object.entries(items).map(([purpose, scores]) => (
-        <div className={"mb-2"} key={purpose}>
-          <h2>{purpose}</h2>
+        <div className={"mb-3"} key={purpose}>
+          <h4>{PurposeName[purpose as Purpose]}</h4>
           <ActionHistoryScoreChart scores={scores} />
-          <ActionHistoryDataTable
+          <ActionHistoryDataItems
             scores={scores}
             purpose={purpose as Purpose}
           />

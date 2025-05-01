@@ -31,7 +31,7 @@ export default function TrainingPeriodManager({
     <div className="mb-3">
       <h5>Период тренировок</h5>
       {currentPeriod ? (
-        <div className="d-flex gap-3">
+        <div>
           <span>
             Текущий период: с{" "}
             {moment(currentPeriod.startDate).format(DateFormat)}
@@ -39,13 +39,15 @@ export default function TrainingPeriodManager({
               ` по ${moment(currentPeriod.endDate).format(DateFormat)}`}
             .
           </span>
+          <br />
           <span className="pointer text-danger" onClick={handleEndPeriod}>
             Завершить период
           </span>
         </div>
       ) : (
-        <div className="d-flex gap-3">
+        <div>
           <span>У вас нет активного периода тренировок.</span>
+          <br />
           <span className="pointer text-primary" onClick={handleCreate}>
             Создать новый период
           </span>

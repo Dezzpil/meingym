@@ -22,8 +22,8 @@ export function WeightsChart({ weights }: Props) {
   const data: Array<{ key: string; val: number }> = [];
   let [min, max] = [120, 0];
   weights.forEach((w) => {
-    if (w.value < min) min = (Math.round(w.value / 10) - 0.5) * 10;
-    if (w.value > max) max = (Math.round(w.value / 10) + 0.5) * 10;
+    if (w.value < min) min = Math.round(w.value / 10) * 10;
+    if (w.value > max) max = Math.round(w.value / 10) * 10;
     data.unshift({
       key: moment(w.createdAt).format(DateFormat),
       val: w.value,
@@ -36,10 +36,13 @@ export function WeightsChart({ weights }: Props) {
         <Line type="monotone" dataKey="val" stroke="#8884d8" name="Вес" />
         <XAxis dataKey="key" tick={<CustomizedAxisTick />} height={80} />
         <YAxis
-          domain={[min - 5, max]}
+          domain={[min, max]}
           tickCount={10}
           height={300}
           orientation={"right"}
+          tickMargin={0}
+          width={28}
+          fontSize={12}
         />
         <Tooltip />
         <Legend />

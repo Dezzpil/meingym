@@ -77,31 +77,6 @@ export const ScoreCoefficients: Record<
   },
 };
 
-export function score(dataRows: Record<Purpose, DataRows>, n: number) {
-  const result: Record<Purpose, number[]> = {
-    MASS: [],
-    LOSS: [],
-    STRENGTH: [],
-  };
-  for (const purpose in dataRows) {
-    const data = dataRows[purpose as Purpose];
-    const scoreCoefficients = ScoreCoefficients[purpose as Purpose];
-    const scores = [];
-    for (let i = 0; i < n; i++) {
-      let score = 0;
-      for (const key in scoreCoefficients) {
-        const k = key as keyof DataRows;
-        if (data[k][i]) {
-          score += data[k][i] * scoreCoefficients[k];
-        }
-      }
-      scores.push(score);
-    }
-    result[purpose as Purpose] = scores;
-  }
-  return result;
-}
-
 export async function createScore(
   exercise: TrainingExercise & { Training: { userId: string } },
 ): Promise<TrainingExerciseScore> {

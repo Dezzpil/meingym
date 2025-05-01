@@ -14,8 +14,12 @@ import { CustomizedAxisTick } from "@/components/recharts/CustomizedAxisTick";
 import { DateFormat } from "@/tools/dates";
 import { TrainingHistoryScore } from "@/app/actions/[id]/history/components/ActionHistoryScores";
 
-type Props = { scores: TrainingHistoryScore[] };
-export function ActionHistoryScoreChart({ scores }: Props) {
+type Props = {
+  scores: TrainingHistoryScore[];
+  minimal?: boolean;
+  className?: string;
+};
+export function ActionHistoryScoreChart({ scores, minimal, className }: Props) {
   const data: Array<{
     key: string;
     liftedMean: number | string;
@@ -35,13 +39,12 @@ export function ActionHistoryScoreChart({ scores }: Props) {
     });
   });
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <LineChart
-        width={500}
-        height={300}
-        data={data}
-        margin={{ top: 5, right: 30, left: 0, bottom: 5 }}
-      >
+    <ResponsiveContainer
+      className={className}
+      width="100%"
+      height={minimal ? 50 : 300}
+    >
+      <LineChart data={data} margin={{ top: 5, right: 30, left: 5, bottom: 5 }}>
         <Line
           type="monotone"
           dataKey="score"
@@ -68,18 +71,25 @@ export function ActionHistoryScoreChart({ scores }: Props) {
         {/*  stroke="#00CCDD"*/}
         {/*  name="Σ кг"*/}
         {/*/>*/}
-
         {/*<Line*/}
         {/*  type="monotone"*/}
         {/*  dataKey="maxWeight"*/}
         {/*  stroke="#6439FF"*/}
         {/*  name="MAX кг"*/}
         {/*/>*/}
-
-        <Tooltip />
-        <Legend />
-        <XAxis dataKey="key" tick={<CustomizedAxisTick />} height={90} />
-        <YAxis />
+        {!minimal && (
+          <>
+            <Tooltip />
+            <Legend />
+            <XAxis dataKey="key" tick={<CustomizedAxisTick />} height={90} />
+          </>
+        )}
+        <YAxis
+          domain={["dataMin", "dataMax"]}
+          width={minimal ? 0 : 18}
+          fontSize={12}
+          orientation={"right"}
+        />
       </LineChart>
     </ResponsiveContainer>
   );

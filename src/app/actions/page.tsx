@@ -4,27 +4,16 @@ import { getCurrentUser } from "@/tools/auth";
 import { PageParams } from "@/tools/types";
 import { DateFormat } from "@/tools/dates";
 import moment from "moment";
-import type { ApproachesGroup } from "@prisma/client";
+import {
+  Purpose,
+  type ApproachesGroup,
+  type TrainingExerciseScore,
+} from "@prisma/client";
 import { ActionWithMusclesType } from "@/app/actions/types";
 import { ActionMuscles } from "@/app/actions/components/ActionMuscles";
 import { UserRole } from ".prisma/client";
-
-type HasCurrentApproachGroup = { CurrentApproachGroup: ApproachesGroup };
-
-function printStats(actionsPurpose: HasCurrentApproachGroup[]) {
-  return actionsPurpose.length && actionsPurpose[0].CurrentApproachGroup ? (
-    <span className="d-inline-flex gap-2 text-muted">
-      <span>{actionsPurpose[0].CurrentApproachGroup.count} сетов</span>
-      <span>
-        {actionsPurpose[0].CurrentApproachGroup.countTotal} повторений
-      </span>
-      <span>{actionsPurpose[0].CurrentApproachGroup.sum} кг</span>
-      <span>{actionsPurpose[0].CurrentApproachGroup.mean.toFixed(1)} кг</span>
-    </span>
-  ) : (
-    <span className="text-muted">&nbsp;&mdash;</span>
-  );
-}
+import { ActionHistoryScoreChart } from "@/app/actions/[id]/history/components/ActionHistoryScoreChart";
+import { ActionListItem } from "@/app/actions/components/ActionListItem";
 
 export default async function ActionsPage({ searchParams }: PageParams) {
   const user = await getCurrentUser();
@@ -45,7 +34,9 @@ export default async function ActionsPage({ searchParams }: PageParams) {
   const groups = await prisma.muscleGroup.findMany({});
   const actions = await prisma.action.findMany({
     where,
-    orderBy: { updatedAt: "desc" },
+    orderBy: {
+      TrainingExerciseScore: { _count: "desc" },
+    },
     include: {
       ActionMass: {
         where: { userId },
@@ -67,6 +58,11 @@ export default async function ActionsPage({ searchParams }: PageParams) {
       MusclesAgony: { include: { Muscle: { include: { Group: true } } } },
       MusclesSynergy: { include: { Muscle: { include: { Group: true } } } },
       MusclesStabilizer: { include: { Muscle: { include: { Group: true } } } },
+      TrainingExerciseScore: {
+        where: { userId },
+        orderBy: { createdAt: "asc" },
+        include: { Exercise: true },
+      },
     },
   });
 
@@ -122,34 +118,7 @@ export default async function ActionsPage({ searchParams }: PageParams) {
       {actions.length ? (
         <>
           {actions.map((a) => (
-            <div className="card mb-3" key={a.id}>
-              <div className="card-header hstack justify-content-between">
-                <Link href={`/actions/${a.id}`}>
-                  {a.alias ? a.alias : a.title}
-                </Link>
-                <div className="hstack gap-3">
-                  <span className="text-muted">
-                    {moment(a.updatedAt).format(DateFormat)}
-                  </span>
-                </div>
-              </div>
-              <div className="card-body">
-                <ActionMuscles action={a as ActionWithMusclesType} />
-
-                <div className="mb-1">
-                  <span className="fw-medium">На массу: </span>
-                  {printStats(a.ActionMass)}
-                </div>
-                <div className="mb-1">
-                  <span className="fw-medium">На силу: </span>
-                  {printStats(a.ActionStrength)}
-                </div>
-                <div className="mb-1">
-                  <span className="fw-medium">На снижение веса: </span>
-                  {printStats(a.ActionLoss)}
-                </div>
-              </div>
-            </div>
+            <ActionListItem action={a} key={a.id} />
           ))}
         </>
       ) : (
