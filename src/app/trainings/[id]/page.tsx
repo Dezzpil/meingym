@@ -135,7 +135,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
           defaultPurpose={userInfo.purpose}
         />
       )}
-      <div className="d-flex gap-3 mb-3">
+      <div className="mb-3">
         {moment(training.plannedTo).isSame(moment(), "day") && (
           <div className="mb-3">
             <Link

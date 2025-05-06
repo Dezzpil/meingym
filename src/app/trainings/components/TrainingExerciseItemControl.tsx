@@ -6,6 +6,7 @@ import type {
   TrainingExercise,
   Approach,
   TrainingExerciseExecution,
+  TrainingExerciseScore,
 } from "@prisma/client";
 import Link from "next/link";
 import { ApproachesManagement } from "@/components/approaches/Managment";
@@ -24,6 +25,7 @@ import {
   SetsStatsForExercise,
 } from "@/components/SetsStats";
 import { TrainingRatingEmoji } from "@/app/trainings/components/TrainingRatingEmoji";
+import { ActionLastScores } from "@/app/actions/components/ActionLastScores";
 
 type Props = {
   exercise: TrainingExercise & {
@@ -58,7 +60,7 @@ export default function TrainingExerciseItemControl({
     <div className="row">
       <div className="mb-3 col-md-3 col-sm-12">
         <div className="mb-2">
-          <Link href={`/actions/${exercise.Action.id}`}>
+          <Link href={`/actions/${exercise.Action.id}/history`}>
             {exercise.Action.alias
               ? exercise.Action.alias
               : exercise.Action.title}
@@ -138,10 +140,11 @@ export default function TrainingExerciseItemControl({
             </div>
             <SetsStatsForExercise exercise={exercise} className="mb-2" />
             {exercise.comment && (
-              <div className="text-muted small">
+              <div className="text-muted small mb-2">
                 <span>{exercise.comment}</span>
               </div>
             )}
+            <ActionLastScores exerciseId={exercise.id} />
           </>
         )}
       </div>

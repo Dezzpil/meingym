@@ -35,11 +35,16 @@ export async function POST(request: NextRequest) {
     comment,
   } = (await request.json()) as TrainingsExerciseCompleteDTO;
 
+  let isPassed = false;
+  if (!liftedCount) {
+    isPassed = true;
+  }
+
   const exec = await prisma.trainingExerciseExecution.update({
     where: { id },
     data: {
       liftedWeight,
-      liftedCount,
+      liftedCount: !liftedCount ? 0 : liftedCount,
       rating,
       cheating,
       refusing,
@@ -48,6 +53,7 @@ export async function POST(request: NextRequest) {
       comment,
       technique,
       techniqueUpgrade,
+      isPassed,
     },
   });
   return NextResponse.json(exec, { status: 200 });

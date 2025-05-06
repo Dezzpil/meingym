@@ -36,7 +36,7 @@ export function ActionHistoryScores({ scores }: Props) {
   return (
     <>
       {Object.entries(items).map(([purpose, scores]) => (
-        <div className={"mb-3"} key={purpose}>
+        <div className={"mb-5"} key={purpose}>
           <h4>{PurposeName[purpose as Purpose]}</h4>
           <ActionHistoryScoreChart scores={scores} />
           <ActionHistoryDataItems

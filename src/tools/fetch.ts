@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 export async function postApi<T>(
   url: string,
   data: T,
@@ -15,4 +17,47 @@ export async function postApi<T>(
     alert(e.toString());
     return null;
   }
+}
+
+export function useApi<R>(url: string): {
+  loading: boolean;
+  error: null | string;
+  data: R | null;
+} {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<null | string>(null);
+  const [data, setData] = useState<R | null>(null);
+
+  useEffect(() => {
+    fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        setLoading(false);
+        response
+          .json()
+          .then((json) => {
+            setData(json);
+          })
+          .catch((e: any) => {
+            setError(e.toString());
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      })
+      .catch((e: any) => {
+        setError(e.toString());
+        setLoading(false);
+      });
+  }, [url]);
+
+  return {
+    loading,
+    error,
+    data,
+  };
 }

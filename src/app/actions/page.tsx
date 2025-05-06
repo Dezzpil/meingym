@@ -60,7 +60,7 @@ export default async function ActionsPage({ searchParams }: PageParams) {
       MusclesStabilizer: { include: { Muscle: { include: { Group: true } } } },
       TrainingExerciseScore: {
         where: { userId },
-        orderBy: { createdAt: "asc" },
+        orderBy: { createdAt: "desc" },
         include: { Exercise: true },
       },
     },

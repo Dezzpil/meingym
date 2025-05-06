@@ -7,6 +7,8 @@ import moment from "moment/moment";
 import type { Training } from "@prisma/client";
 import { DateFormat, TimeFormat } from "@/tools/dates";
 import { FaLongArrowAltRight } from "react-icons/fa";
+import Link from "next/link";
+import { TrainingCompleteInfo } from "@/app/trainings/components/TrainingCompleteInfo";
 
 type Props = {
   training: Training;
@@ -19,47 +21,32 @@ export function TrainingExecuteTopPanel({ training }: Props) {
 
   return (
     <>
-      <h4>
-        Выполнение тренировки {moment(training.plannedTo).format(DateFormat)}
-      </h4>
-      <div
-        className={classNames(
-          "alert",
-          {
-            "alert-light": !training.startedAt,
-            "alert-primary": training.startedAt,
-            "alert-success": training.completedAt,
-          },
-          "d-flex align-items-center gap-2",
-        )}
-        role="alert"
-      >
-        {training.completedAt && (
-          <>
-            <span>{moment(training.startedAt).format(TimeFormat)}</span>
-            <FaLongArrowAltRight />
-            <span>{moment(training.completedAt).format(TimeFormat)}</span>
-            <span>
-              (+
-              {moment(training.completedAt).diff(
-                moment(training.startedAt),
-                "minute",
-              )}{" "}
-              мин.)
-            </span>
-          </>
-        )}
-        {training.startedAt && !training.completedAt && (
-          <span>
-            Тренировка начата в {moment(training.startedAt).format(TimeFormat)}!
-          </span>
-        )}
-        {!training.startedAt && (
+      <h4>Тренировка {moment(training.plannedTo).format(DateFormat)}</h4>
+      {!training.startedAt && (
+        <div className="alert alert-light d-flex justify-content-between align-items-center">
           <button className="btn btn-primary" onClick={start}>
             Начать тренировку
           </button>
-        )}
-      </div>
+          <Link
+            className="btn btn-outline-secondary"
+            href={`/trainings/${training.id}`}
+          >
+            Настроить
+          </Link>
+        </div>
+      )}
+      {training.startedAt && !training.completedAt && (
+        <div className="alert alert-primary">
+          <span>
+            Тренировка начата в {moment(training.startedAt).format(TimeFormat)}!
+          </span>
+        </div>
+      )}
+      {training.completedAt && (
+        <div className="alert alert-success">
+          <TrainingCompleteInfo training={training} />
+        </div>
+      )}
     </>
   );
 }
