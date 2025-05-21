@@ -65,7 +65,7 @@ export function TrainingExecuteCompletePanel({ training }: Props) {
       <div className="mb-3">
         <div className="flex-row d-flex justify-content-end align-items-center">
           <Confetti active={isConfettiActive} config={ConfettiConfig1} />
-          <div className="flex-fill d-flex gap-3 justify-content-end align-items-center">
+          <div className="d-flex gap-2 justify-content-end align-items-center flex-fill flex-wrap">
             {training.completedAt ? (
               <>
                 <button className="btn btn-light" onClick={hooray}>
