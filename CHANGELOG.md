@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.14.5](https://github.com/Dezzpil/meingym/compare/v1.14.4...v1.14.5) (2025-05-21)
+
+
+### Bug Fixes
+
+* исправить автоматическое создание периода тренировки ([435fd60](https://github.com/Dezzpil/meingym/commits/435fd60b1ecacc0c1fae9036d99b430c707accf9))
+* исправить вызов расчета оценок ([adbd871](https://github.com/Dezzpil/meingym/commits/adbd871e6ebeaf45adb56f24ba995d8659459f24))
+* исправить расположение кнопок с формой повторения тренировок ([3f0cd36](https://github.com/Dezzpil/meingym/commits/3f0cd365bb6a06713b7b82bf633814ae9b19738e))
+
 ### [1.14.4](https://github.com/Dezzpil/meingym/compare/v1.14.3...v1.14.4) (2025-05-06)
 
 
