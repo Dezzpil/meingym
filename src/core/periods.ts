@@ -9,7 +9,7 @@ import {
 } from "@/core/progression/strategy/simple";
 
 export function pickOnlyOptsFromItem(
-  item: ProgressionStrategySimpleOpts,
+  item: ProgressionStrategySimpleOpts | ProgressionStrategySimpleOptsType,
 ): ProgressionStrategySimpleOptsType {
   return {
     strengthPrepareSetsCount: item.strengthPrepareSetsCount,
@@ -51,17 +51,18 @@ export async function createTrainingPeriod(
     },
   });
 
+  let opts = ProgressionStrategySimpleOptsDefaults;
   const lastProgressionSimpleOpts =
     await prisma.progressionStrategySimpleOpts.findFirst({
       where: { userId },
       orderBy: { createdAt: "desc" },
     });
-
-  let opts = ProgressionStrategySimpleOptsDefaults;
   if (lastProgressionSimpleOpts) {
     opts = pickOnlyOptsFromItem(lastProgressionSimpleOpts);
   }
+
   if (progressionOpts) opts = Object.assign(opts, progressionOpts);
+  opts = pickOnlyOptsFromItem(opts);
 
   return prisma.trainingPeriod.create({
     data: {
