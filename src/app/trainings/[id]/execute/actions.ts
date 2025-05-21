@@ -315,10 +315,10 @@ export async function handleProcessCompletedTraining(
           );
         });
       }
-
-      // Schedule score calculation job for this action
-      await scheduleScoreCalculation(trainingId);
     }
+
+    // Schedule score calculation job for this action
+    await scheduleScoreCalculation(trainingId);
   }
 
   await prisma.training.update({
