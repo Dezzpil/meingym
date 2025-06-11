@@ -17,6 +17,7 @@ export default async function ActionPage({ params }: ItemPageParams) {
       MusclesAgony: true,
       MusclesStabilizer: true,
       TrainingExercise: true,
+      ExerciseImages: true,
     },
   });
   const muscles = await prisma.muscle.findMany({

@@ -10,6 +10,7 @@ export const redisConfig = {
 export const queueNames = {
   scores: "scores",
   periods: "periods",
+  images: "images",
 };
 
 // Job names
@@ -19,6 +20,9 @@ export const jobNames = {
   },
   periods: {
     checkInactive: "check-inactive-periods",
+  },
+  images: {
+    cleanupOrphaned: "cleanup-orphaned-images",
   },
 };
 

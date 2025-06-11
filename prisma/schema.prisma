@@ -206,6 +206,8 @@ model Action {
 
   TrainingExercise      TrainingExercise[]
   TrainingExerciseScore TrainingExerciseScore[]
+
+  ExerciseImages ExerciseImage[]
 }
 
 model ActionMass {
@@ -515,6 +517,22 @@ model ProgressionStrategySimpleOpts {
   lossCountMax    Int   @default(16)
   lossWeightDelta Float @default(1.25)
   lossMaxSets     Int   @default(6)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ExerciseImage {
+  id Int @id @default(autoincrement())
+
+  filename String
+  path     String
+  size     Int
+  format   String
+  isMain   Boolean @default(false)
+
+  actionId Int
+  Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

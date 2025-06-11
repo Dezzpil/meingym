@@ -6,12 +6,16 @@ import type {
   ActionsOnMusclesAgony,
   ActionsOnMusclesSynergy,
   ActionsOnMusclesStabilizer,
+  ExerciseImage,
 } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { ActionsFormFieldsType } from "@/app/actions/types";
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { handleUpdate } from "@/app/actions/actions";
 import { ActionRig } from "@prisma/client";
+import { ImagePasteArea } from "@/components/ImagePasteArea";
+import { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 type Props = {
   muscles: Array<Muscle & { Group: { title: string } }>;
@@ -19,6 +23,7 @@ type Props = {
     MusclesSynergy: ActionsOnMusclesAgony[];
     MusclesAgony: ActionsOnMusclesSynergy[];
     MusclesStabilizer: ActionsOnMusclesStabilizer[];
+    ExerciseImages?: ExerciseImage[];
   };
   control?: boolean;
 };
@@ -26,10 +31,43 @@ type Props = {
 export default function ActionForm({ muscles, action, control }: Props) {
   const [error, setError] = useState<null | string>(null);
   const [handling, setHandling] = useState<boolean>(false);
+  const [images, setImages] = useState<ExerciseImage[]>(
+    action.ExerciseImages || [],
+  );
+  const [isLoadingImages, setIsLoadingImages] = useState<boolean>(false);
+  const descTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Define fetchImages with useCallback to avoid recreation on each render
+  const fetchImages = useCallback(async () => {
+    setIsLoadingImages(true);
+    try {
+      const response = await fetch(`/api/images?actionId=${action.id}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch images");
+      }
+      const data = await response.json();
+      setImages(data.images);
+    } catch (err) {
+      console.error("Error fetching images:", err);
+    } finally {
+      setIsLoadingImages(false);
+    }
+  }, [action.id]);
+
+  // Fetch images when component mounts
+  useEffect(() => {
+    if (action.ExerciseImages) {
+      setImages(action.ExerciseImages);
+    } else {
+      fetchImages();
+    }
+  }, [action.ExerciseImages, fetchImages]);
+
   const form = useForm<ActionsFormFieldsType>({
     defaultValues: action,
     disabled: !control,
   });
+
   const onSubmit = form.handleSubmit(async (data) => {
     setError(null);
     setHandling(true);
@@ -41,8 +79,75 @@ export default function ActionForm({ muscles, action, control }: Props) {
     }
     setHandling(false);
   });
+
+  const handleImageUploaded = (imagePath: string) => {
+    if (descTextareaRef.current) {
+      const textarea = descTextareaRef.current;
+      const currentValue = form.getValues("desc") || "";
+      const cursorPosition = textarea.selectionStart;
+
+      // Create image markdown
+      const imageMarkdown = `![Изображение](${imagePath})`;
+
+      // Insert image markdown at cursor position
+      const newValue =
+        currentValue.substring(0, cursorPosition) +
+        imageMarkdown +
+        currentValue.substring(cursorPosition);
+
+      // Update form value
+      form.setValue("desc", newValue);
+
+      // Refresh images list
+      fetchImages();
+    }
+  };
+
+  const handleDeleteImage = async (imageId: number) => {
+    try {
+      const response = await fetch(`/api/images?id=${imageId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete image");
+      }
+
+      // Remove the deleted image from state
+      setImages(images.filter((img) => img.id !== imageId));
+      toast.success("Изображение удалено");
+    } catch (err: any) {
+      console.error("Error deleting image:", err);
+      toast.error(err.message || "Ошибка при удалении изображения");
+    }
+  };
+
+  const handleSetMainImage = async (imageId: number) => {
+    try {
+      const response = await fetch(`/api/images?id=${imageId}&setMain=true`, {
+        method: "PATCH",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to set main image");
+      }
+
+      // Update images in state
+      const updatedImages = images.map(img => ({
+        ...img,
+        isMain: img.id === imageId
+      }));
+
+      setImages(updatedImages);
+      toast.success("Главное изображение установлено");
+    } catch (err: any) {
+      console.error("Error setting main image:", err);
+      toast.error(err.message || "Ошибка при установке главного изображения");
+    }
+  };
   return (
     <>
+      <Toaster position="top-right" />
       <form onSubmit={onSubmit} className="form">
         <div className="mb-2">
           <label className="form-label">Название</label>
@@ -181,7 +286,72 @@ export default function ActionForm({ muscles, action, control }: Props) {
           <textarea
             className="form-control"
             {...form.register("desc", { required: false })}
+            ref={descTextareaRef}
           />
+
+          {/* Display existing images */}
+          {images.length > 0 && (
+            <div className="mt-3 mb-3">
+              <label className="form-label">Изображения упражнения</label>
+              <div className="row g-2">
+                {images.map((image) => (
+                  <div key={image.id} className="col-md-4 col-sm-6">
+                    <div className="card h-100">
+                      <img
+                        src={image.path}
+                        className="card-img-top"
+                        alt="Изображение упражнения"
+                        style={{ maxHeight: "150px", objectFit: "contain" }}
+                      />
+                      <div className="card-body d-flex flex-column">
+                        <p className="card-text small text-muted mb-2">
+                          {new Date(image.createdAt).toLocaleDateString()}
+                          {image.isMain && (
+                            <span className="badge bg-primary ms-2">Главное</span>
+                          )}
+                        </p>
+                        {control && (
+                          <div className="d-flex gap-2 mt-auto">
+                            {!image.isMain && (
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-primary"
+                                onClick={() => handleSetMainImage(image.id)}
+                              >
+                                Сделать главным
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-danger"
+                              onClick={() => handleDeleteImage(image.id)}
+                            >
+                              Удалить
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {isLoadingImages && (
+            <div className="d-flex justify-content-center my-3">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Загрузка...</span>
+              </div>
+            </div>
+          )}
+
+          {control && (
+            <ImagePasteArea
+              actionId={action.id}
+              onImageUploaded={handleImageUploaded}
+            />
+          )}
         </div>
         <div className="mb-2">
           <label className="form-label">Другие названия</label>

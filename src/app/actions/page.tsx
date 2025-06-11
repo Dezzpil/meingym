@@ -38,6 +38,7 @@ export default async function ActionsPage({ searchParams }: PageParams) {
       TrainingExerciseScore: { _count: "desc" },
     },
     include: {
+      ExerciseImages: true,
       ActionMass: {
         where: { userId },
         take: 1,

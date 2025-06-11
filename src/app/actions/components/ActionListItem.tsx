@@ -4,11 +4,14 @@ import { DateFormat } from "@/tools/dates";
 import { ActionMuscles } from "@/app/actions/components/ActionMuscles";
 import { ActionWithMusclesType } from "@/app/actions/types";
 import { ActionHistoryScoreChart } from "@/app/actions/[id]/history/components/ActionHistoryScoreChart";
-import type { ApproachesGroup, TrainingExerciseScore } from "@prisma/client";
+import type { ApproachesGroup, TrainingExerciseScore, ExerciseImage } from "@prisma/client";
 import { useMemo } from "react";
+import Image from "next/image";
 
 type Props = {
-  action: any;
+  action: any & {
+    ExerciseImages?: ExerciseImage[];
+  };
 };
 
 function printStats(actionsPurpose: HasCurrentApproachGroup[]) {
@@ -51,6 +54,25 @@ export function ActionListItem({ action }: Props) {
         </div>
       </div>
       <div className="card-body">
+        {action.ExerciseImages && action.ExerciseImages.length > 0 && (
+          <div className="mb-3">
+            {action.ExerciseImages.find(img => img.isMain) ? (
+              <img 
+                src={action.ExerciseImages.find(img => img.isMain)?.path} 
+                alt={action.title}
+                className="img-fluid"
+                style={{ maxHeight: "200px", objectFit: "contain" }}
+              />
+            ) : (
+              <img 
+                src={action.ExerciseImages[0].path} 
+                alt={action.title}
+                className="img-fluid"
+                style={{ maxHeight: "200px", objectFit: "contain" }}
+              />
+            )}
+          </div>
+        )}
         <ActionMuscles action={action as ActionWithMusclesType} />
 
         {action.ActionMass.length > 0 && (
