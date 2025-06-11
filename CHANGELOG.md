@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.15.0](https://github.com/Dezzpil/meingym/compare/v1.14.7...v1.15.0) (2025-06-11)
+
+
+### Features
+
+* изображения для упражнений ([0d4e2b5](https://github.com/Dezzpil/meingym/commits/0d4e2b5c8ace90079ff5b06f54c5d053b6190f2d))
+
 ### [1.14.7](https://github.com/Dezzpil/meingym/compare/v1.14.6...v1.14.7) (2025-06-11)
 
 
