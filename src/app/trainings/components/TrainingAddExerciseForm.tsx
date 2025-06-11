@@ -67,15 +67,24 @@ export function TrainingAddExerciseForm({
         const item = elem.dataset["name"] as string;
         if (item in actionsTitlesMap) {
           action = actionsTitlesMap[item];
+          setAction(action);
         }
       } else {
         console.log(elem, elem.value);
         if (elem.value in actionsTitlesMap) {
           action = actionsTitlesMap[elem.value];
+          if (action) setAction(action);
+
           form.setValue("actionTitle", getActionName(action));
           form.setValue("actionId", action.id);
+          if (
+            action &&
+            action.strengthAllowed &&
+            defaultPurpose === Purpose.STRENGTH
+          ) {
+            form.setValue("purpose", Purpose.STRENGTH);
+          }
         }
-        if (action) setAction(action);
       }
       return action;
     },
@@ -98,6 +107,12 @@ export function TrainingAddExerciseForm({
         actionRef.current.value = getActionName(chosenAction);
         form.setValue("actionTitle", getActionName(chosenAction));
         form.setValue("actionId", chosenAction.id);
+        if (
+          chosenAction.strengthAllowed &&
+          defaultPurpose === Purpose.STRENGTH
+        ) {
+          form.setValue("purpose", Purpose.STRENGTH);
+        }
       }
       setShowed(false);
     },
