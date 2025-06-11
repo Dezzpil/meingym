@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.14.6](https://github.com/Dezzpil/meingym/compare/v1.14.5...v1.14.6) (2025-06-11)
+
+
+### Bug Fixes
+
+* не подставляется цель "На силу" для силовых упражнений ([47e896f](https://github.com/Dezzpil/meingym/commits/47e896f85f852bb01578171667ef9f7619eae23c))
+
 ### [1.14.5](https://github.com/Dezzpil/meingym/compare/v1.14.4...v1.14.5) (2025-05-21)
 
 
