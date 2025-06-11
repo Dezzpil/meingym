@@ -66,7 +66,7 @@ export const ScoreCoefficients: Record<
     liftedCountMeanNorm: 0.25,
     liftedSumNorm: 0.25,
     liftedCountTotalNorm: 0,
-    liftedMaxNorm: -0.5,
+    liftedMaxNorm: 0.1,
   },
   LOSS: {
     liftedCountTotalNorm: 0.5,
