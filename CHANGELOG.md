@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.14.7](https://github.com/Dezzpil/meingym/compare/v1.14.6...v1.14.7) (2025-06-11)
+
+
+### Features
+
+* не штрафовать за рост макс вес ([9dfa624](https://github.com/Dezzpil/meingym/commits/9dfa6242037cfe579c5812f92f9ecb5acae29e32))
+
 ### [1.14.6](https://github.com/Dezzpil/meingym/compare/v1.14.5...v1.14.6) (2025-06-11)
 
 
