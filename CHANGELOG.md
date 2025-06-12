@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.3](https://github.com/Dezzpil/meingym/compare/v1.15.2...v1.15.3) (2025-06-12)
+
+
+### Bug Fixes
+
+* сделать отдельное поле для изображений ([a9593eb](https://github.com/Dezzpil/meingym/commits/a9593eb26e11e41a4c19f588928391493493ecb5))
+
 ### [1.15.2](https://github.com/Dezzpil/meingym/compare/v1.15.1...v1.15.2) (2025-06-12)
 
 
