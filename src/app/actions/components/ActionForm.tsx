@@ -35,7 +35,7 @@ export default function ActionForm({ muscles, action, control }: Props) {
     action.ExerciseImages || [],
   );
   const [isLoadingImages, setIsLoadingImages] = useState<boolean>(false);
-  const descTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const imgTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Define fetchImages with useCallback to avoid recreation on each render
   const fetchImages = useCallback(async () => {
@@ -81,8 +81,8 @@ export default function ActionForm({ muscles, action, control }: Props) {
   });
 
   const handleImageUploaded = (imagePath: string) => {
-    if (descTextareaRef.current) {
-      const textarea = descTextareaRef.current;
+    if (imgTextareaRef.current) {
+      const textarea = imgTextareaRef.current;
       const currentValue = form.getValues("desc") || "";
       const cursorPosition = textarea.selectionStart;
 
@@ -133,9 +133,9 @@ export default function ActionForm({ muscles, action, control }: Props) {
       }
 
       // Update images in state
-      const updatedImages = images.map(img => ({
+      const updatedImages = images.map((img) => ({
         ...img,
-        isMain: img.id === imageId
+        isMain: img.id === imageId,
       }));
 
       setImages(updatedImages);
@@ -286,7 +286,16 @@ export default function ActionForm({ muscles, action, control }: Props) {
           <textarea
             className="form-control"
             {...form.register("desc", { required: false })}
-            ref={descTextareaRef}
+          />
+        </div>
+        <div className="mb-2">
+          <label className="form-label">Изображения</label>
+          <textarea
+            className="form-control"
+            placeholder={"Ctrl+V изображение сюда"}
+            name={"images"}
+            id={"images"}
+            ref={imgTextareaRef}
           />
 
           {/* Display existing images */}
@@ -307,7 +316,9 @@ export default function ActionForm({ muscles, action, control }: Props) {
                         <p className="card-text small text-muted mb-2">
                           {new Date(image.createdAt).toLocaleDateString()}
                           {image.isMain && (
-                            <span className="badge bg-primary ms-2">Главное</span>
+                            <span className="badge bg-primary ms-2">
+                              Главное
+                            </span>
                           )}
                         </p>
                         {control && (

@@ -39,6 +39,7 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
       title,
       desc: data.desc,
       alias: data.alias,
+      anotherTitles: data.anotherTitles,
       strengthAllowed: data.strengthAllowed,
       bigCount: data.bigCount,
       allowCheating: data.allowCheating,
