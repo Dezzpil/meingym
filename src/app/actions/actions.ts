@@ -96,6 +96,24 @@ function autoDefineRig(title: string, def: ActionRig): ActionRig {
 
 export async function handleCreate(data: ActionsFormFieldsType) {
   const title = data.title.trim();
+  const existed = await prisma.action.findFirst({ where: { title } });
+  if (existed) {
+    throw new Error(`Движение ${title} уже существует`);
+  }
+
+  const desc = data.desc.trim();
+  const newAction = await prisma.action.create({
+    data: {
+      title,
+      desc,
+    },
+  });
+
+  redirect(`/actions/${newAction.id}`);
+}
+
+export async function _handleCreate(data: ActionsFormFieldsType) {
+  const title = data.title.trim();
   const rig = autoDefineRig(data.title, data.rig);
 
   const existed = await prisma.action.findFirst({ where: { title } });
