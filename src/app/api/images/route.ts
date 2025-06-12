@@ -8,7 +8,7 @@ import { existsSync } from "fs";
 const MAX_FILE_SIZE = 1024 * 1024; // 1MB in bytes
 
 // Allowed file formats
-const ALLOWED_FORMATS = ["image/gif"];
+const ALLOWED_FORMATS = ["image/gif", "image/png"];
 
 // Directory to store images
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     // Validate file format
     if (!ALLOWED_FORMATS.includes(file.type)) {
       return NextResponse.json(
-        { error: "Only GIF images are allowed" },
+        { error: "Only GIF and PNG images are allowed" },
         { status: 400 }
       );
     }

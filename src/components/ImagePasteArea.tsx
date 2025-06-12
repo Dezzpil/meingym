@@ -27,10 +27,10 @@ export function ImagePasteArea({
           if (!file) continue;
 
           console.log(file);
-          // Check if it's a GIF
-          if (file.type !== "image/gif") {
-            setError("Только GIF изображения разрешены");
-            toast.error("Только GIF изображения разрешены");
+          // Check if it's a GIF or PNG
+          if (file.type !== "image/gif" && file.type !== "image/png") {
+            setError("Только GIF и PNG изображения разрешены");
+            toast.error("Только GIF и PNG изображения разрешены");
             return;
           }
 
@@ -95,7 +95,7 @@ export function ImagePasteArea({
     <div className="image-paste-area mb-2">
       <div className="alert alert-info">
         <small>
-          Вы можете вставить GIF изображение из буфера обмена (Ctrl+V).
+          Вы можете вставить GIF или PNG изображение из буфера обмена (Ctrl+V).
           Максимальный размер: 1MB.
         </small>
         {isPasting && (
