@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.15.4](https://github.com/Dezzpil/meingym/compare/v1.15.3...v1.15.4) (2025-06-12)
+
+
+### Features
+
+* добавить поддержку png изображений ([4323299](https://github.com/Dezzpil/meingym/commits/4323299b1329391abb4f82fc74f7b9ecaabfd81b))
+
 ### [1.15.3](https://github.com/Dezzpil/meingym/compare/v1.15.2...v1.15.3) (2025-06-12)
 
 
