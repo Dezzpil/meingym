@@ -5,10 +5,10 @@ import { toast } from "react-hot-toast";
 
 type ImagePasteAreaProps = {
   actionId: number;
-  onImageUploaded: (imagePath: string) => void;
+  onImageUploaded: () => void;
 };
 
-export function ImagePasteArea({
+export function ActionImagePasteArea({
   actionId,
   onImageUploaded,
 }: ImagePasteAreaProps) {
@@ -63,7 +63,7 @@ export function ImagePasteArea({
             }
 
             // Call the callback with the image path
-            onImageUploaded(result.image.path);
+            onImageUploaded();
             toast.success("Изображение успешно загружено");
           } catch (err: any) {
             setError(err.message || "Ошибка загрузки изображения");

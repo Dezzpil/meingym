@@ -13,7 +13,7 @@ import { ActionsFormFieldsType } from "@/app/actions/types";
 import { useState, useRef, useEffect, useCallback } from "react";
 import { handleUpdate } from "@/app/actions/actions";
 import { ActionRig } from "@prisma/client";
-import { ImagePasteArea } from "@/components/ImagePasteArea";
+import { ActionImagePasteArea } from "@/app/actions/components/ActionImagePasteArea";
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
 
@@ -80,27 +80,9 @@ export default function ActionForm({ muscles, action, control }: Props) {
     setHandling(false);
   });
 
-  const handleImageUploaded = (imagePath: string) => {
-    if (imgTextareaRef.current) {
-      const textarea = imgTextareaRef.current;
-      const currentValue = form.getValues("desc") || "";
-      const cursorPosition = textarea.selectionStart;
-
-      // Create image markdown
-      const imageMarkdown = `![Изображение](${imagePath})`;
-
-      // Insert image markdown at cursor position
-      const newValue =
-        currentValue.substring(0, cursorPosition) +
-        imageMarkdown +
-        currentValue.substring(cursorPosition);
-
-      // Update form value
-      form.setValue("desc", newValue);
-
-      // Refresh images list
-      fetchImages();
-    }
+  const handleImageUploaded = () => {
+    // Refresh images list
+    fetchImages();
   };
 
   const handleDeleteImage = async (imageId: number) => {
@@ -358,7 +340,7 @@ export default function ActionForm({ muscles, action, control }: Props) {
           )}
 
           {control && (
-            <ImagePasteArea
+            <ActionImagePasteArea
               actionId={action.id}
               onImageUploaded={handleImageUploaded}
             />
