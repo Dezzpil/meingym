@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.4](https://github.com/Dezzpil/meingym/compare/v1.16.3...v1.16.4) (2025-06-13)
+
+
+### Features
+
+* отобразить упражнения плиткой ([5617f9e](https://github.com/Dezzpil/meingym/commits/5617f9e36f2c3c5e48a7885898980dc5b3da9451))
+
 ### [1.16.3](https://github.com/Dezzpil/meingym/compare/v1.16.2...v1.16.3) (2025-06-13)
 
 
