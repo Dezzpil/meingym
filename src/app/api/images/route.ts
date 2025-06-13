@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/tools/db";
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, chown } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 
@@ -59,6 +59,14 @@ export async function POST(request: NextRequest) {
     // Convert file to buffer and save it
     const buffer = Buffer.from(await file.arrayBuffer());
     await writeFile(filepath, buffer);
+
+    // Change group ownership to www-data
+    try {
+      await chown(filepath, -1, "www-data");
+    } catch (chownError) {
+      console.error("Error changing file group ownership:", chownError);
+      // Continue execution even if chown fails
+    }
 
     // Save file information to database
     const image = await prisma.exerciseImage.create({
