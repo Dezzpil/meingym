@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.5](https://github.com/Dezzpil/meingym/compare/v1.16.4...v1.16.5) (2025-06-13)
+
+
+### Bug Fixes
+
+* исправить chown для загруженных изображений ([b156c8f](https://github.com/Dezzpil/meingym/commits/b156c8f309b9804aa5132e1b1b5a576d265dbbbc))
+
 ### [1.16.4](https://github.com/Dezzpil/meingym/compare/v1.16.3...v1.16.4) (2025-06-13)
 
 
