@@ -1,6 +1,4 @@
 import Link from "next/link";
-import moment from "moment/moment";
-import { DateFormat } from "@/tools/dates";
 import { ActionMuscles } from "@/app/actions/components/ActionMuscles";
 import { ActionWithMusclesType } from "@/app/actions/types";
 import { ActionHistoryScoreChart } from "@/app/actions/[id]/history/components/ActionHistoryScoreChart";
@@ -10,6 +8,8 @@ import type {
   ExerciseImage,
 } from "@prisma/client";
 import { useMemo } from "react";
+import { truncateText } from "@/tools/func";
+import Image from "next/image";
 
 type Props = {
   action: any & {
@@ -46,85 +46,66 @@ export function ActionListItem({ action }: Props) {
 
   return (
     <div className="card mb-3" key={action.id}>
-      <div className="card-header hstack justify-content-between">
+      <div className="card-header">
         <Link href={`/actions/${action.id}`}>
-          {action.alias ? action.alias : action.title}
+          {truncateText(action.alias ? action.alias : action.title, 32)}
         </Link>
-        <div className="hstack gap-3">
-          <span className="text-muted">
-            {moment(action.updatedAt).format(DateFormat)}
-          </span>
-        </div>
       </div>
       <div className="card-body">
-        {action.ExerciseImages && action.ExerciseImages.length > 0 && (
-          <div className="mb-3">
-            {action.ExerciseImages.find(
-              (img: { isMain: any }) => img.isMain,
-            ) ? (
-              <img
-                src={
-                  action.ExerciseImages.find(
-                    (img: { isMain: any }) => img.isMain,
-                  )?.path
-                }
-                alt={action.title}
-                className="img-fluid"
-                style={{ maxHeight: "200px", objectFit: "contain" }}
-              />
-            ) : (
-              <img
-                src={action.ExerciseImages[0].path}
-                alt={action.title}
-                className="img-fluid"
-                style={{ maxHeight: "200px", objectFit: "contain" }}
-              />
-            )}
-          </div>
-        )}
-        <ActionMuscles action={action as ActionWithMusclesType} />
-
-        {action.ActionMass.length > 0 && (
-          <div className="mb-1">
-            <span className="fw-medium">На массу: </span>
-            {printStats(action.ActionMass)}
-            {scores.MASS && scores.MASS.length > 1 && (
-              <Link href={`/actions/${action.id}/history`}>
+        {action.ExerciseImages.length ? (
+          <Image
+            src={action.ExerciseImages[0].path}
+            alt={action.title}
+            className="img-fluid"
+            width={200}
+            height={200}
+            style={{ maxHeight: "200px", objectFit: "contain" }}
+          />
+        ) : null}
+        <div>
+          <ActionMuscles action={action as ActionWithMusclesType} />
+          {action.ActionMass.length > 0 && (
+            <div className="mb-1">
+              <span className="fw-medium">На массу: </span>
+              {printStats(action.ActionMass)}
+              {scores.MASS && scores.MASS.length > 1 && (
+                <Link href={`/actions/${action.id}/history`}>
+                  <ActionHistoryScoreChart
+                    className={"mt-2"}
+                    scores={scores.MASS as any}
+                    minimal
+                  />
+                </Link>
+              )}
+            </div>
+          )}
+          {action.ActionStrength.length > 0 && (
+            <div className="mb-1">
+              <span className="fw-medium">На силу: </span>
+              {printStats(action.ActionStrength)}
+              {scores.STRENGTH && scores.STRENGTH.length > 1 && (
                 <ActionHistoryScoreChart
                   className={"mt-2"}
-                  scores={scores.MASS as any}
+                  scores={scores.STRENGTH as any}
                   minimal
                 />
-              </Link>
-            )}
-          </div>
-        )}
-        {action.ActionStrength.length > 0 && (
-          <div className="mb-1">
-            <span className="fw-medium">На силу: </span>
-            {printStats(action.ActionStrength)}
-            {scores.STRENGTH && scores.STRENGTH.length > 1 && (
-              <ActionHistoryScoreChart
-                className={"mt-2"}
-                scores={scores.STRENGTH as any}
-                minimal
-              />
-            )}
-          </div>
-        )}
-        {action.ActionLoss.length > 0 && (
-          <div className="mb-1">
-            <span className="fw-medium">На снижение веса: </span>
-            {printStats(action.ActionLoss)}
-            {scores.LOSS && scores.LOSS.length > 1 && (
-              <ActionHistoryScoreChart
-                className={"mt-2"}
-                scores={scores.LOSS as any}
-                minimal
-              />
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
+          {action.ActionLoss.length > 0 && (
+            <div className="mb-1">
+              <span className="fw-medium">На снижение веса: </span>
+              {printStats(action.ActionLoss)}
+              {scores.LOSS && scores.LOSS.length > 1 && (
+                <ActionHistoryScoreChart
+                  className={"mt-2"}
+                  scores={scores.LOSS as any}
+                  minimal
+                />
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

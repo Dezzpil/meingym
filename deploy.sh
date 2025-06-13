@@ -8,9 +8,9 @@ prisma generate
 prisma migrate deploy
 npm run build
 
-echo "Updating data in DB..."
-npm run update-actions
-npm run update-training-exercises
-npm run update-approaches-groups
+#echo "Updating data in DB..."
+#npm run update-actions
+#npm run update-training-exercises
+#npm run update-approaches-groups
 
 pm2 start meingym
