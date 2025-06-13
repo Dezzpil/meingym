@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { ActionMuscles } from "@/app/actions/components/ActionMuscles";
 import { ActionWithMusclesType } from "@/app/actions/types";
-import { ActionHistoryScoreChart } from "@/app/actions/[id]/history/components/ActionHistoryScoreChart";
 import type {
   ApproachesGroup,
   TrainingExerciseScore,
@@ -10,6 +8,7 @@ import type {
 import { useMemo } from "react";
 import { truncateText } from "@/tools/func";
 import Image from "next/image";
+import { ActionMusclesInLine } from "@/app/actions/components/ActionMusclesInLine";
 
 type Props = {
   action: any & {
@@ -52,57 +51,22 @@ export function ActionListItem({ action }: Props) {
         </Link>
       </div>
       <div className="card-body">
-        {action.ExerciseImages.length ? (
-          <Image
-            src={action.ExerciseImages[0].path}
-            alt={action.title}
-            className="img-fluid"
-            width={200}
-            height={200}
-            style={{ maxHeight: "200px", objectFit: "contain" }}
-          />
-        ) : null}
-        <div>
-          <ActionMuscles action={action as ActionWithMusclesType} />
-          {action.ActionMass.length > 0 && (
-            <div className="mb-1">
-              <span className="fw-medium">На массу: </span>
-              {printStats(action.ActionMass)}
-              {scores.MASS && scores.MASS.length > 1 && (
-                <Link href={`/actions/${action.id}/history`}>
-                  <ActionHistoryScoreChart
-                    className={"mt-2"}
-                    scores={scores.MASS as any}
-                    minimal
-                  />
-                </Link>
-              )}
-            </div>
-          )}
-          {action.ActionStrength.length > 0 && (
-            <div className="mb-1">
-              <span className="fw-medium">На силу: </span>
-              {printStats(action.ActionStrength)}
-              {scores.STRENGTH && scores.STRENGTH.length > 1 && (
-                <ActionHistoryScoreChart
-                  className={"mt-2"}
-                  scores={scores.STRENGTH as any}
-                  minimal
-                />
-              )}
-            </div>
-          )}
-          {action.ActionLoss.length > 0 && (
-            <div className="mb-1">
-              <span className="fw-medium">На снижение веса: </span>
-              {printStats(action.ActionLoss)}
-              {scores.LOSS && scores.LOSS.length > 1 && (
-                <ActionHistoryScoreChart
-                  className={"mt-2"}
-                  scores={scores.LOSS as any}
-                  minimal
-                />
-              )}
+        <div className="d-flex flex-wrap gap-3">
+          {action.ExerciseImages.length ? (
+            <Image
+              src={action.ExerciseImages[0].path}
+              alt={action.title}
+              className="img-fluid"
+              width={200}
+              height={200}
+              style={{ maxHeight: "200px", objectFit: "contain" }}
+            />
+          ) : (
+            <div
+              className="bg-light rounded d-flex align-items-center justify-content-center"
+              style={{ height: "200px", width: "200px" }}
+            >
+              <span className="text-muted">...</span>
             </div>
           )}
         </div>

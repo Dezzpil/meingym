@@ -4,8 +4,7 @@ import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 
-// Maximum file size (1MB)
-const MAX_FILE_SIZE = 1024 * 1024; // 1MB in bytes
+const MAX_FILE_SIZE = 1024 * 1024 * 3;
 
 // Allowed file formats
 const ALLOWED_FORMATS = ["image/gif", "image/png"];
@@ -25,24 +24,21 @@ export async function POST(request: NextRequest) {
     const actionId = formData.get("actionId") as string | null;
 
     if (!file) {
-      return NextResponse.json(
-        { error: "No file provided" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
     if (!actionId) {
       return NextResponse.json(
         { error: "Action ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json(
-        { error: "File size exceeds the maximum limit of 1MB" },
-        { status: 400 }
+        { error: "File size exceeds the maximum limit of 3MB" },
+        { status: 400 },
       );
     }
 
@@ -50,7 +46,7 @@ export async function POST(request: NextRequest) {
     if (!ALLOWED_FORMATS.includes(file.type)) {
       return NextResponse.json(
         { error: "Only GIF and PNG images are allowed" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -75,19 +71,19 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       image: {
         id: image.id,
         path: image.path,
-        filename: image.filename
-      }
+        filename: image.filename,
+      },
     });
   } catch (error) {
     console.error("Error uploading image:", error);
     return NextResponse.json(
       { error: "Failed to upload image" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -99,7 +95,7 @@ export async function GET(request: NextRequest) {
   if (!actionId) {
     return NextResponse.json(
       { error: "Action ID is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -118,7 +114,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching images:", error);
     return NextResponse.json(
       { error: "Failed to fetch images" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -131,7 +127,7 @@ export async function PATCH(request: NextRequest) {
   if (!imageId) {
     return NextResponse.json(
       { error: "Image ID is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -144,10 +140,7 @@ export async function PATCH(request: NextRequest) {
     });
 
     if (!image) {
-      return NextResponse.json(
-        { error: "Image not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Image not found" }, { status: 404 });
     }
 
     if (setMain) {
@@ -173,15 +166,15 @@ export async function PATCH(request: NextRequest) {
       },
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      image: updatedImage
+      image: updatedImage,
     });
   } catch (error) {
     console.error("Error updating image:", error);
     return NextResponse.json(
       { error: "Failed to update image" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -193,7 +186,7 @@ export async function DELETE(request: NextRequest) {
   if (!imageId) {
     return NextResponse.json(
       { error: "Image ID is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -206,10 +199,7 @@ export async function DELETE(request: NextRequest) {
     });
 
     if (!image) {
-      return NextResponse.json(
-        { error: "Image not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Image not found" }, { status: 404 });
     }
 
     // Delete the image from the database
@@ -228,7 +218,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error deleting image:", error);
     return NextResponse.json(
       { error: "Failed to delete image" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

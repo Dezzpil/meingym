@@ -6,35 +6,56 @@ type Props = {
 };
 export function ActionMuscles({ action }: Props) {
   return (
-    <>
-      <ul className="list-inline mb-1">
-        <li className="list-inline-item">
-          <span className="fw-medium">Мышцы-агонисты:</span>
-        </li>
+    <div className="muscles-container">
+      <div className="mb-2">
         {action.MusclesAgony.length ? (
-          action.MusclesAgony.map((l) => (
-            <li className="list-inline-item" key={l.muscleId}>
-              {l.Muscle.Group.title}: {l.Muscle.title}
-            </li>
-          ))
+          <div className="d-flex flex-wrap gap-1">
+            {action.MusclesAgony.map((l) => (
+              <span
+                className="badge bg-success bg-opacity-75 text-white"
+                key={l.muscleId}
+              >
+                <small className="fw-medium">{l.Muscle.Group.title}:</small>{" "}
+                {l.Muscle.title}
+              </span>
+            ))}
+          </div>
         ) : (
-          <span className="text-muted">Не указаны</span>
+          <span className="text-muted fst-italic">Не указаны</span>
         )}
-      </ul>
-      <ul className="list-inline mb-2">
-        <li className="list-inline-item">
-          <span className="fw-medium">Мышцы-синергисты:</span>
-        </li>
-        {action.MusclesSynergy.length ? (
-          action.MusclesSynergy.map((l) => (
-            <li className="list-inline-item" key={l.muscleId}>
-              {l.Muscle.Group.title}: {l.Muscle.title}
-            </li>
-          ))
-        ) : (
-          <span className="text-muted">Не указаны</span>
-        )}
-      </ul>
-    </>
+      </div>
+
+      {action.MusclesSynergy.length && action.MusclesSynergy.length > 0 ? (
+        <div className="mb-2">
+          <div className="d-flex flex-wrap gap-1">
+            {action.MusclesSynergy.map((l) => (
+              <span
+                className="badge bg-primary bg-opacity-75 text-white"
+                key={l.muscleId}
+              >
+                <small className="fw-medium">{l.Muscle.Group.title}:</small>{" "}
+                {l.Muscle.title}
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {action.MusclesStabilizer && action.MusclesStabilizer.length > 0 ? (
+        <div className="mb-2">
+          <div className="d-flex flex-wrap gap-1">
+            {action.MusclesStabilizer.map((l) => (
+              <span
+                className="badge bg-warning bg-opacity-75 text-secondary"
+                key={l.muscleId}
+              >
+                <small className="fw-medium">{l.Muscle.Group.title}:</small>{" "}
+                {l.Muscle.title}
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }

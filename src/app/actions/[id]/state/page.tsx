@@ -1,4 +1,4 @@
-import { getCurrentUserId } from "@/tools/auth";
+import { getCurrentUser, getCurrentUserId } from "@/tools/auth";
 import { prisma } from "@/tools/db";
 import {
   ActionLoss,
@@ -6,6 +6,7 @@ import {
   ActionStrength,
   Approach,
   ApproachesGroup,
+  UserRole,
 } from "@prisma/client";
 import { ApproachesManagement } from "@/components/approaches/Managment";
 import { ActionCreateLoss } from "@/app/actions/[id]/state/components/ActionCreateLoss";
@@ -18,6 +19,7 @@ type ActionRelationName = "ActionStrength" | "ActionMass" | "ActionLoss";
 
 export default async function ActionStatePage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
+  const user = await getCurrentUser();
   const userId = await getCurrentUserId();
   const action = await prisma.action.findUniqueOrThrow({
     where: { id },
@@ -67,7 +69,9 @@ export default async function ActionStatePage({ params }: ItemPageParams) {
   return (
     <>
       <h2 className="mb-3">{action.alias ? action.alias : action.title}</h2>
-      <ActionTabs id={id} current={"state"} className={"mb-2"} />
+      {user.role === UserRole.ADMIN && (
+        <ActionTabs id={id} current={"state"} className={"mb-2"} />
+      )}
       <div className="mb-3">
         <h5 className="mb-3">На массу</h5>
         {state.mass ? (

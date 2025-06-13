@@ -34,10 +34,9 @@ export function ActionImagePasteArea({
             return;
           }
 
-          // Check file size (1MB max)
-          if (file.size > 1024 * 1024) {
-            setError("Размер изображения не должен превышать 1MB");
-            toast.error("Размер изображения не должен превышать 1MB");
+          if (file.size > 1024 * 1024 * 3) {
+            setError("Размер изображения не должен превышать 3MB");
+            toast.error("Размер изображения не должен превышать 3MB");
             return;
           }
 
@@ -96,7 +95,7 @@ export function ActionImagePasteArea({
       <div className="alert alert-info">
         <small>
           Вы можете вставить GIF или PNG изображение из буфера обмена (Ctrl+V).
-          Максимальный размер: 1MB.
+          Максимальный размер: 3MB.
         </small>
         {isPasting && (
           <div className="mt-2">

@@ -5,6 +5,7 @@ import classNames from "classnames";
 
 const tabs = {
   "": "Редактирование",
+  card: "Карточка",
   state: "Подходы",
   history: "История",
   details: "Детали",
@@ -16,24 +17,32 @@ export const ActionTabs = ({
   className,
 }: {
   id: number;
-  current: "" | "state" | "history" | "details";
+  current: "" | "card" | "state" | "history" | "details";
   className?: string;
 }) => {
   return (
     <ul
       className={classNames(
-        "nav nav-tabs overflow-x-scroll flex-nowrap overflow-y-hidden",
+        "nav nav-tabs border-0 overflow-x-auto flex-nowrap overflow-y-hidden pb-1",
         className,
       )}
     >
       {Object.entries(tabs).map(([key, value]) => (
-        <li className={"nav-item"} key={key}>
+        <li className="nav-item" key={key}>
           {current == key ? (
-            <a className="nav-link active" aria-current="page" href="#">
+            <a
+              className="nav-link active rounded-top fw-medium"
+              aria-current="page"
+              href="#"
+            >
               {value}
             </a>
           ) : (
-            <Link href={`/actions/${id}/${key}`} className="nav-link">
+            <Link
+              href={`/actions/${id}/${key}`}
+              className="nav-link text-secondary rounded-top"
+              style={{ transition: "all 0.2s ease" }}
+            >
               {value}
             </Link>
           )}
