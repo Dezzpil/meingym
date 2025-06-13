@@ -2,9 +2,30 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/tools/db";
 import { writeFile, mkdir, chown } from "fs/promises";
 import path from "path";
-import { existsSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 
 const MAX_FILE_SIZE = 1024 * 1024 * 3;
+
+// Function to get group ID (GID) from group name
+function getGroupId(groupName: string): number | null {
+  try {
+    // Read /etc/group file which contains group information
+    const groupFile = readFileSync('/etc/group', 'utf8');
+
+    // Split the file by lines and find the line for the specified group
+    const lines = groupFile.split('\n');
+    for (const line of lines) {
+      const [name, , gid] = line.split(':');
+      if (name === groupName) {
+        return parseInt(gid, 10);
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error(`Error getting GID for group ${groupName}:`, error);
+    return null;
+  }
+}
 
 // Allowed file formats
 const ALLOWED_FORMATS = ["image/gif", "image/png"];
@@ -62,7 +83,15 @@ export async function POST(request: NextRequest) {
 
     // Change group ownership to www-data
     try {
-      await chown(filepath, -1, "www-data");
+      // Get the GID of www-data group
+      const wwwDataGid = getGroupId("www-data");
+
+      if (wwwDataGid !== null) {
+        // Use the numeric GID instead of the string name
+        await chown(filepath, -1, wwwDataGid);
+      } else {
+        console.warn("Could not find GID for www-data group, skipping chown");
+      }
     } catch (chownError) {
       console.error("Error changing file group ownership:", chownError);
       // Continue execution even if chown fails
