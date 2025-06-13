@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.16.0](https://github.com/Dezzpil/meingym/compare/v1.15.5...v1.16.0) (2025-06-13)
+
+
+### Features
+
+* добавить карточку упражнения и упростить вид списка упражнений ([0cac153](https://github.com/Dezzpil/meingym/commits/0cac153d5bfb34708351137bfaadb70f1715690b))
+* доработать отображение списка упражнений ([57c11d6](https://github.com/Dezzpil/meingym/commits/57c11d6ea5a5b1c3b65427733777dfa13270b4d9))
+
 ### [1.15.5](https://github.com/Dezzpil/meingym/compare/v1.15.4...v1.15.5) (2025-06-13)
 
 
