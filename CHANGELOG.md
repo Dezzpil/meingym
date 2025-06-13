@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.16.2](https://github.com/Dezzpil/meingym/compare/v1.16.1...v1.16.2) (2025-06-13)
+
+
+### Features
+
+* форматировать маркдаун в описании упражнения ([2b03282](https://github.com/Dezzpil/meingym/commits/2b032827a559e0ca82b3dd4fa3bf9344ccbea24e))
+
 ### [1.16.1](https://github.com/Dezzpil/meingym/compare/v1.16.0...v1.16.1) (2025-06-13)
 
 
