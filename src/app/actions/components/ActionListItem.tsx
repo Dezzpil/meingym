@@ -44,14 +44,14 @@ export function ActionListItem({ action }: Props) {
   }, [action.TrainingExerciseScore]);
 
   return (
-    <div className="card mb-3" key={action.id}>
+    <div className="card" key={action.id}>
       <div className="card-header">
         <Link href={`/actions/${action.id}`}>
           {truncateText(action.alias ? action.alias : action.title, 32)}
         </Link>
       </div>
       <div className="card-body">
-        <div className="d-flex flex-wrap gap-3">
+        <div className="mb-3">
           {action.ExerciseImages.length ? (
             <Image
               src={action.ExerciseImages[0].path}
@@ -63,7 +63,7 @@ export function ActionListItem({ action }: Props) {
             />
           ) : (
             <div
-              className="bg-light rounded d-flex align-items-center justify-content-center"
+              className="bg-light d-flex align-items-center justify-content-center"
               style={{ height: "200px", width: "200px" }}
             >
               <span className="text-muted">...</span>

@@ -105,9 +105,11 @@ export default async function ActionsPage({ searchParams }: PageParams) {
               <Link href={`/actions/create`}>Добавить</Link>
             )}
           </div>
-          {actions.map((a) => (
-            <ActionListItem action={a} key={a.id} />
-          ))}
+          <div className="d-flex flex-wrap gap-3 justify-content-center justify-content-md-start">
+            {actions.map((a) => (
+              <ActionListItem action={a} key={a.id} />
+            ))}
+          </div>
         </>
       ) : (
         <p className="text-muted">Список пуст</p>
