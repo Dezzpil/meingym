@@ -8,6 +8,7 @@ import type {
 import { ActionMuscles } from "./ActionMuscles";
 import { useMemo } from "react";
 import { ActionHistoryScoreChart } from "../[id]/history/components/ActionHistoryScoreChart";
+import ReactMarkdown from "react-markdown";
 
 type Props = {
   action: any & {
@@ -16,6 +17,7 @@ type Props = {
     ActionStrength?: { CurrentApproachGroup: ApproachesGroup }[];
     ActionLoss?: { CurrentApproachGroup: ApproachesGroup }[];
     rig: ActionRig;
+    isMarkDownInDesc?: boolean;
   };
 };
 
@@ -66,16 +68,6 @@ function printStats(
   );
 }
 
-function getRigName(rig: ActionRig): string {
-  const rigNames = {
-    BLOCKS: "Блоки",
-    BARBELL: "Штанга",
-    DUMBBELL: "Гантели",
-    OTHER: "Другое",
-  };
-  return rigNames[rig] || "Другое";
-}
-
 export function ActionCard({ action }: Props) {
   const scores = useMemo(() => {
     const map: Record<string, TrainingExerciseScore[]> = {};
@@ -124,7 +116,23 @@ export function ActionCard({ action }: Props) {
           </div>
 
           <div className="col-lg-6">
-            <p className="mb-3 text-secondary">{action.desc}</p>
+            <div className="mb-3 text-secondary">
+              {action.isMarkDownInDesc ? (
+                <ReactMarkdown
+                  components={{
+                    h1: "h4",
+                    h2: "h5",
+                    h3: "b",
+                    h4: "b",
+                    strong: "span",
+                  }}
+                >
+                  {action.desc}
+                </ReactMarkdown>
+              ) : (
+                <span>{action.desc}</span>
+              )}
+            </div>
 
             <div className="mb-3">
               <a

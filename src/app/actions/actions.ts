@@ -6,6 +6,27 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/tools/db";
 import { ActionRig } from "@prisma/client";
 
+// Function to detect if text contains Markdown
+function containsMarkdown(text: string): boolean {
+  // Check for common Markdown patterns
+  const markdownPatterns = [
+    /#{1,6}\s+.+/,          // Headers
+    /\*\*.+\*\*/,           // Bold
+    /\*.+\*/,               // Italic
+    /\[.+\]\(.+\)/,         // Links
+    /!\[.+\]\(.+\)/,        // Images
+    /```[\s\S]*?```/,       // Code blocks
+    /`[^`]+`/,              // Inline code
+    /^\s*[-*+]\s+.+/m,      // Unordered lists
+    /^\s*\d+\.\s+.+/m,      // Ordered lists
+    /^\s*>\s+.+/m,          // Blockquotes
+    /\|\s*[-:]+\s*\|/,      // Tables
+    /~~.+~~/,               // Strikethrough
+  ];
+
+  return markdownPatterns.some(pattern => pattern.test(text));
+}
+
 export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
   const title = data.title.trim();
   const existed = await prisma.action.findFirst({
@@ -33,11 +54,15 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
       `${muscle.title.toLowerCase()} ${muscle.Group.title.toLowerCase()}`,
   );
 
+  // Check if description contains Markdown
+  const isMarkDownInDesc = containsMarkdown(data.desc);
+
   await prisma.action.update({
     where: { id },
     data: {
       title,
       desc: data.desc,
+      isMarkDownInDesc,
       alias: data.alias,
       anotherTitles: data.anotherTitles,
       strengthAllowed: data.strengthAllowed,
@@ -103,10 +128,14 @@ export async function handleCreate(data: ActionsFormFieldsType) {
   }
 
   const desc = data.desc.trim();
+  // Check if description contains Markdown
+  const isMarkDownInDesc = containsMarkdown(desc);
+
   const newAction = await prisma.action.create({
     data: {
       title,
       desc,
+      isMarkDownInDesc,
     },
   });
 
@@ -122,6 +151,9 @@ export async function _handleCreate(data: ActionsFormFieldsType) {
     throw new Error(`Движение ${title} уже существует`);
   }
 
+  // Check if description contains Markdown
+  const isMarkDownInDesc = containsMarkdown(data.desc);
+
   // Create the action first
   const action = await prisma.$transaction(async (tx) => {
     const newAction = await tx.action.create({
@@ -129,6 +161,7 @@ export async function _handleCreate(data: ActionsFormFieldsType) {
         title,
         rig,
         desc: data.desc,
+        isMarkDownInDesc,
         search: title,
         alias: data.alias,
         strengthAllowed: data.strengthAllowed,
