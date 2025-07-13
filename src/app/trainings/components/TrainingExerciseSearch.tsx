@@ -58,6 +58,7 @@ export function TrainingExerciseSearch({ baseActions, onClick }: Props) {
         <Spinner size="sm" />
       ) : (
         <>
+          {error && <div className="alert alert-danger">{error}</div>}
           {actions.length ? (
             <ul className="list-group mb-2">
               {actions.map((a) => (
@@ -89,7 +90,6 @@ export function TrainingExerciseSearch({ baseActions, onClick }: Props) {
           ) : (
             <p className="text-muted mb-2">Движения не найдены</p>
           )}
-          {error && <div className="alert alert-danger">{error}</div>}
         </>
       )}
     </>

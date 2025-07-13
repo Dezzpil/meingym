@@ -12,6 +12,7 @@ import React from "react";
 import { TrainingExecuteTopPanel } from "@/app/trainings/[id]/execute/components/TrainingExecuteTopPanel";
 import { TrainingExecuteCard } from "@/app/trainings/[id]/execute/components/TrainingExecuteCard";
 import { TrainingExecuteCompletePanel } from "@/app/trainings/[id]/execute/components/TrainingExecuteCompletePanel";
+import { ActionWithMusclesType } from "@/app/actions/types";
 
 type TrainingExerciseType = TrainingExercise & {
   Action: Action;
@@ -64,6 +65,16 @@ async function createExecutions(training: TrainingType): Promise<boolean> {
   return false;
 }
 
+async function fetchAllActions(): Promise<ActionWithMusclesType[]> {
+  return prisma.action.findMany({
+    include: {
+      MusclesAgony: { include: { Muscle: { include: { Group: true } } } },
+      MusclesSynergy: { include: { Muscle: { include: { Group: true } } } },
+      MusclesStabilizer: { include: { Muscle: { include: { Group: true } } } },
+    },
+  }) as Promise<ActionWithMusclesType[]>;
+}
+
 export default async function TrainingExecutePage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
 
@@ -71,6 +82,9 @@ export default async function TrainingExecutePage({ params }: ItemPageParams) {
   if (await createExecutions(training)) {
     training = await findTraining(id);
   }
+
+  // Fetch all available actions for exercise replacement
+  const allActions = await fetchAllActions();
 
   return (
     <div>
@@ -80,6 +94,8 @@ export default async function TrainingExecutePage({ params }: ItemPageParams) {
           exercise={e}
           key={e.id}
           disabled={!training.startedAt || !!training.completedAt}
+          allActions={allActions}
+          allExercises={training.TrainingExercise}
         />
       ))}
       {training.startedAt && (

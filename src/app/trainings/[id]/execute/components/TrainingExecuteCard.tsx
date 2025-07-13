@@ -14,6 +14,8 @@ import type {
 import { TrainingExecuteForm } from "@/app/trainings/[id]/execute/components/TrainingExecuteForm";
 import { PurposeText } from "@/components/PurposeText";
 import classNames from "classnames";
+import { ActionWithMusclesType } from "@/app/actions/types";
+import { TrainingExerciseReplaceButton } from "@/app/trainings/[id]/execute/components/TrainingExerciseReplaceButton";
 
 type Props = {
   exercise: TrainingExercise & {
@@ -22,8 +24,10 @@ type Props = {
     TrainingExerciseExecution: TrainingExerciseExecution[];
   };
   disabled: boolean;
+  allActions: ActionWithMusclesType[];
+  allExercises: TrainingExercise[];
 };
-export function TrainingExecuteCard({ exercise, disabled }: Props) {
+export function TrainingExecuteCard({ exercise, disabled, allActions, allExercises }: Props) {
   const start = useCallback(async () => {
     await handleTrainingExerciseStart(exercise.id, exercise.trainingId);
   }, [exercise]);
@@ -52,14 +56,26 @@ export function TrainingExecuteCard({ exercise, disabled }: Props) {
         <div className="col-lg-6 col-md-12"></div>
       </div>
       <div className="card-body">
-        {!disabled && !exercise.startedAt && (
+        {!disabled && (
           <div className="d-flex justify-content-between mb-2">
-            <button className="btn btn-outline-warning" onClick={pass}>
-              Пропустить
-            </button>
-            <button className="btn btn-primary" onClick={start}>
-              Погнали!
-            </button>
+            <div>
+              {!exercise.startedAt && (
+                <button className="btn btn-outline-warning me-2" onClick={pass}>
+                  Пропустить
+                </button>
+              )}
+              <TrainingExerciseReplaceButton
+                exercise={exercise}
+                allExercises={allExercises}
+                actions={allActions}
+                disabled={disabled || exercise.completedAt !== null}
+              />
+            </div>
+            {!exercise.startedAt && (
+              <button className="btn btn-primary" onClick={start}>
+                Погнали!
+              </button>
+            )}
           </div>
         )}
         <TrainingExecuteForm

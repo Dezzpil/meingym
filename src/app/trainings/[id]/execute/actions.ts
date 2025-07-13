@@ -27,6 +27,7 @@ import { findUserInfo, getCurrentUserId } from "@/tools/auth";
 import { ProgressionStrategySimple } from "@/core/progression/strategy/simple";
 import { scheduleScoreCalculation } from "@/jobs";
 import { createTrainingPeriod, getCurrentTrainingPeriod } from "@/core/periods";
+import { createExercise } from "@/core/exercises";
 
 export async function handleTrainingStart(id: number, isCircuit: boolean) {
   const userId = await getCurrentUserId();
@@ -342,4 +343,55 @@ export async function handleCompleteTrainingManually(trainingId: number) {
   });
 
   revalidatePath(`/trainings/${trainingId}/execute`);
+}
+
+export async function handleReplaceExercise(
+  exerciseId: number,
+  newActionId: number,
+): Promise<ServerActionResult> {
+  try {
+    const userId = await getCurrentUserId();
+
+    // Get the exercise to be replaced
+    const exercise = await prisma.trainingExercise.findUniqueOrThrow({
+      where: { id: exerciseId },
+    });
+
+    // Check if the new action is already in the training
+    const existingExercise = await prisma.trainingExercise.findFirst({
+      where: { 
+        trainingId: exercise.trainingId,
+        actionId: newActionId 
+      },
+    });
+
+    if (existingExercise) {
+      return { 
+        ok: false, 
+        error: "Это упражнение уже присутствует в тренировке" 
+      };
+    }
+
+    // Create the new exercise with the same purpose as the old one
+    await prisma.$transaction(async (tx) => {
+      // Create the new exercise
+      await createExercise(
+        exercise.trainingId,
+        newActionId,
+        exercise.purpose,
+        userId,
+        tx
+      );
+
+      // Delete the old exercise
+      await tx.trainingExercise.delete({
+        where: { id: exerciseId },
+      });
+    });
+
+    revalidatePath(`/trainings/${exercise.trainingId}/execute`);
+    return { ok: true, error: null };
+  } catch (e: any) {
+    return { ok: false, error: e.message };
+  }
 }

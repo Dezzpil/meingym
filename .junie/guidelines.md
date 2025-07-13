@@ -2,11 +2,21 @@
 
 This document provides essential information for developers working on the MeinGym project.
 
+## Project Overview
+
+MeinGym is a comprehensive gym/fitness tracking application that allows users to:
+- Track workouts and exercises
+- Monitor progression over time
+- Score and evaluate training performance
+- Manage training periods and progression strategies
+
+Current version: 1.16.5
+
 ## Build/Configuration Instructions
 
 ### Prerequisites
 - Node.js (version compatible with Next.js 14.0.4)
-- PostgreSQL database
+- PostgreSQL 16 database
 - Redis (for background jobs)
 
 ### Environment Setup
