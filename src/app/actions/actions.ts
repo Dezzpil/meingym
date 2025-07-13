@@ -57,53 +57,73 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
   // Check if description contains Markdown
   const isMarkDownInDesc = containsMarkdown(data.desc);
 
-  await prisma.action.update({
-    where: { id },
-    data: {
-      title,
-      desc: data.desc,
-      isMarkDownInDesc,
-      alias: data.alias,
-      anotherTitles: data.anotherTitles,
-      strengthAllowed: data.strengthAllowed,
-      bigCount: data.bigCount,
-      allowCheating: data.allowCheating,
-      MusclesAgony: {
-        deleteMany: { actionId: id },
-        createMany: {
-          data: data.musclesAgonyIds.map((id) => {
-            return { muscleId: parseInt(id) };
-          }),
+  await prisma.$transaction(async (tx) => {
+    // Update the action
+    await tx.action.update({
+      where: { id },
+      data: {
+        title,
+        desc: data.desc,
+        isMarkDownInDesc,
+        alias: data.alias,
+        anotherTitles: data.anotherTitles,
+        strengthAllowed: data.strengthAllowed,
+        bigCount: data.bigCount,
+        allowCheating: data.allowCheating,
+        MusclesAgony: {
+          deleteMany: { actionId: id },
+          createMany: {
+            data: data.musclesAgonyIds.map((id) => {
+              return { muscleId: parseInt(id) };
+            }),
+          },
         },
-      },
-      MusclesSynergy: {
-        deleteMany: { actionId: id },
-        createMany: {
-          data: data.musclesSynergyIds.map((id) => {
-            return { muscleId: parseInt(id) };
-          }),
+        MusclesSynergy: {
+          deleteMany: { actionId: id },
+          createMany: {
+            data: data.musclesSynergyIds.map((id) => {
+              return { muscleId: parseInt(id) };
+            }),
+          },
         },
-      },
-      MusclesStabilizer: {
-        deleteMany: { actionId: id },
-        createMany: {
-          data: data.musclesStabilizerIds.map((id) => {
-            return { muscleId: parseInt(id) };
-          }),
+        MusclesStabilizer: {
+          deleteMany: { actionId: id },
+          createMany: {
+            data: data.musclesStabilizerIds.map((id) => {
+              return { muscleId: parseInt(id) };
+            }),
+          },
         },
+        rig: data.rig,
+        updatedAt: new Date(),
+        search: [
+          data.title.toLowerCase(),
+          data.alias?.toLowerCase(),
+          data.anotherTitles?.toLowerCase(),
+          ...muscleSearchTerms,
+        ]
+          .filter((s) => s && s.trim().length)
+          .join(" "),
       },
-      rig: data.rig,
-      updatedAt: new Date(),
-      search: [
-        data.title.toLowerCase(),
-        data.alias?.toLowerCase(),
-        data.anotherTitles?.toLowerCase(),
-        ...muscleSearchTerms,
-      ]
-        .filter((s) => s && s.trim().length)
-        .join(" "),
-    },
+    });
+
+    // Update similar exercises
+    // First, delete all existing similar exercises relationships for this action
+    await tx.similarExercises.deleteMany({
+      where: { actionId: id },
+    });
+
+    // Then create new relationships if there are any similar exercises selected
+    if (data.similarExerciseIds && data.similarExerciseIds.length > 0) {
+      await tx.similarExercises.createMany({
+        data: data.similarExerciseIds.map((similarId) => ({
+          actionId: id,
+          similarActionId: parseInt(similarId),
+        })),
+      });
+    }
   });
+
   revalidatePath(`/actions/${id}`);
 }
 

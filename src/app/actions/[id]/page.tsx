@@ -6,6 +6,7 @@ import { UserRole } from ".prisma/client";
 import { ItemPageParams } from "@/tools/types";
 import { ActionTabs } from "@/app/actions/[id]/ActionTabs";
 import { redirect } from "next/navigation";
+import { Prisma } from "@prisma/client";
 
 export default async function ActionPage({ params }: ItemPageParams) {
   const user = await getCurrentUser();
@@ -20,12 +21,28 @@ export default async function ActionPage({ params }: ItemPageParams) {
     where: { id },
     include: {
       MusclesSynergy: true,
-      MusclesAgony: true,
+      MusclesAgony: { include: { Muscle: true } },
       MusclesStabilizer: true,
       TrainingExercise: true,
       ExerciseImages: true,
+      SimilarFrom: true,
+      SimilarTo: true,
     },
   });
+  console.log(action.SimilarTo, action.SimilarFrom);
+  // Fetch all actions for similar exercises dropdown
+  const actionGroupIds = action.MusclesAgony.map((ma) => ma.Muscle.groupId);
+  const similarActionsDto =
+    (await prisma.$queryRaw`SELECT DISTINCT A.id, A.title from "Action" A
+      LEFT JOIN "ActionsOnMusclesAgony" AOMA on A.id = AOMA."actionId"
+      LEFT JOIN "Muscle" M on AOMA."muscleId" = M.id
+  WHERE m."groupId" IN (${Prisma.join(actionGroupIds)}) AND A."id" != ${
+    action.id
+  };`) as unknown as {
+      id: number;
+      title: string;
+    }[];
+
   const muscles = await prisma.muscle.findMany({
     include: { Group: true },
     orderBy: { groupId: "asc" },
@@ -46,6 +63,7 @@ export default async function ActionPage({ params }: ItemPageParams) {
       <ActionForm
         action={action}
         muscles={muscles}
+        allowedSimilarActions={similarActionsDto}
         control={user.role === UserRole.ADMIN}
       />
     </>

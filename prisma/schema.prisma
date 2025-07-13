@@ -209,6 +209,10 @@ model Action {
   TrainingExerciseScore TrainingExerciseScore[]
 
   ExerciseImages ExerciseImage[]
+
+  // Similar exercises relationships
+  SimilarTo     SimilarExercises[] @relation("SimilarToExercise")
+  SimilarFrom   SimilarExercises[] @relation("SimilarFromExercise")
 }
 
 model ActionMass {
@@ -537,4 +541,19 @@ model ExerciseImage {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model SimilarExercises {
+  id Int @id @default(autoincrement())
+
+  actionId Int
+  Action   Action @relation("SimilarFromExercise", fields: [actionId], references: [id], onDelete: Cascade)
+
+  similarActionId Int
+  SimilarAction   Action @relation("SimilarToExercise", fields: [similarActionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([actionId, similarActionId])
 }
