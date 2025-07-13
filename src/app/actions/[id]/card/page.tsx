@@ -37,8 +37,20 @@ export default async function ActionCardPage({ params }: ItemPageParams) {
       MusclesSynergy: { include: { Muscle: { include: { Group: true } } } },
       MusclesStabilizer: { include: { Muscle: { include: { Group: true } } } },
       TrainingExerciseScore: true,
+      SimilarTo: {
+        include: {
+          Action: true,
+        },
+      },
+      SimilarFrom: {
+        include: {
+          SimilarAction: true,
+        },
+      },
     },
   });
+
+  console.log(action.SimilarTo, action.SimilarFrom);
 
   return (
     <div className="container-fluid px-0">

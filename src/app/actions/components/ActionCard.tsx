@@ -9,6 +9,7 @@ import { ActionMuscles } from "./ActionMuscles";
 import { useMemo } from "react";
 import { ActionHistoryScoreChart } from "../[id]/history/components/ActionHistoryScoreChart";
 import ReactMarkdown from "react-markdown";
+import { SimilarExercises } from "./SimilarExercises";
 
 type Props = {
   action: any & {
@@ -18,6 +19,8 @@ type Props = {
     ActionLoss?: { CurrentApproachGroup: ApproachesGroup }[];
     rig: ActionRig;
     isMarkDownInDesc?: boolean;
+    SimilarTo?: { SimilarAction: any }[];
+    SimilarFrom?: { Action: any }[];
   };
 };
 
@@ -133,6 +136,8 @@ export function ActionCard({ action }: Props) {
                 <span>{action.desc}</span>
               )}
             </div>
+
+            <SimilarExercises action={action} className="mb-3" />
 
             <div className="mb-3">
               <a
