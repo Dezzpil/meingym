@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.17.0](https://github.com/Dezzpil/meingym/compare/v1.16.5...v1.17.0) (2025-07-13)
+
+
+### Features
+
+* добавить возможность заменить упражнение в начатой тренировке ([7f9df49](https://github.com/Dezzpil/meingym/commits/7f9df49c202862b5bb0db843d7a47783c55eb62b))
+
 ### [1.16.5](https://github.com/Dezzpil/meingym/compare/v1.16.4...v1.16.5) (2025-06-13)
 
 
