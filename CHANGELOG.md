@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.17.1](https://github.com/Dezzpil/meingym/compare/v1.17.0...v1.17.1) (2025-07-13)
+
+
+### Bug Fixes
+
+* исправить удаление орфанед файлов ([77caaac](https://github.com/Dezzpil/meingym/commits/77caaac6d8b0e292a96fdbdd6c983d2b028083d9))
+
 ## [1.17.0](https://github.com/Dezzpil/meingym/compare/v1.16.5...v1.17.0) (2025-07-13)
 
 
