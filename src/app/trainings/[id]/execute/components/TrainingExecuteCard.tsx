@@ -5,11 +5,13 @@ import {
   handleTrainingExercisePass,
   handleTrainingExerciseStart,
 } from "@/app/trainings/[id]/execute/actions";
-import type {
+import {
   TrainingExercise,
   Action,
   TrainingExerciseExecution,
   ApproachesGroup,
+  Purpose,
+  TrainingRating,
 } from "@prisma/client";
 import { TrainingExecuteForm } from "@/app/trainings/[id]/execute/components/TrainingExecuteForm";
 import { PurposeText } from "@/components/PurposeText";
@@ -18,7 +20,22 @@ import { ActionWithMusclesType } from "@/app/actions/types";
 import { TrainingExerciseReplaceButton } from "@/app/trainings/[id]/execute/components/TrainingExerciseReplaceButton";
 
 type Props = {
-  exercise: TrainingExercise & {
+  exercise: {
+    id: number;
+    trainingId: number;
+    actionId: number;
+    startedAt: Date | null;
+    completedAt: Date | null;
+    isPassed: boolean;
+    rating: TrainingRating;
+    comment: string | null;
+    liftedSum: number;
+    liftedMean: number;
+    liftedMax: number;
+    liftedCountTotal: number;
+    liftedCountMean: number;
+    purpose: Purpose;
+  } & {
     Action: Action;
     ApproachGroup: ApproachesGroup;
     TrainingExerciseExecution: TrainingExerciseExecution[];
@@ -27,7 +44,12 @@ type Props = {
   allActions: ActionWithMusclesType[];
   allExercises: TrainingExercise[];
 };
-export function TrainingExecuteCard({ exercise, disabled, allActions, allExercises }: Props) {
+export function TrainingExecuteCard({
+  exercise,
+  disabled,
+  allActions,
+  allExercises,
+}: Props) {
   const start = useCallback(async () => {
     await handleTrainingExerciseStart(exercise.id, exercise.trainingId);
   }, [exercise]);

@@ -1,12 +1,14 @@
 import { ItemPageParams } from "@/tools/types";
 import { prisma } from "@/tools/db";
-import type {
+import {
   TrainingExercise,
   Action,
   ApproachesGroup,
   Approach,
   TrainingExerciseExecution,
   Training,
+  TrainingRating,
+  Purpose,
 } from "@prisma/client";
 import React from "react";
 import { TrainingExecuteTopPanel } from "@/app/trainings/[id]/execute/components/TrainingExecuteTopPanel";
@@ -27,7 +29,21 @@ async function findTraining(id: number): Promise<TrainingType> {
     where: { id },
     include: {
       TrainingExercise: {
-        include: {
+        select: {
+          id: true,
+          trainingId: true,
+          actionId: true,
+          startedAt: true,
+          completedAt: true,
+          isPassed: true,
+          rating: true,
+          comment: true,
+          liftedSum: true,
+          liftedMean: true,
+          liftedMax: true,
+          liftedCountTotal: true,
+          liftedCountMean: true,
+          purpose: true,
           Action: true,
           ApproachGroup: {
             include: { Approaches: true },

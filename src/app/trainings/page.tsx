@@ -32,7 +32,9 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
     },
     include: {
       TrainingExercise: {
-        include: {
+        select: {
+          id: true,
+          purpose: true,
           Action: {
             include: {
               MusclesAgony: {

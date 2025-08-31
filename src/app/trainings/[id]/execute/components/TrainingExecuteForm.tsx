@@ -22,7 +22,21 @@ import { TrainingRatingEmoji } from "@/app/trainings/components/TrainingRatingEm
 import { SetsStatsForExercise } from "@/components/SetsStats";
 
 type Props = {
-  exercise: TrainingExercise & {
+  exercise: {
+    id: number;
+    trainingId: number;
+    actionId: number;
+    startedAt: Date | null;
+    completedAt: Date | null;
+    isPassed: boolean;
+    rating: TrainingRating;
+    comment: string | null;
+    liftedSum: number;
+    liftedMean: number;
+    liftedMax: number;
+    liftedCountTotal: number;
+    liftedCountMean: number;
+  } & {
     Action: Action;
     ApproachGroup: ApproachesGroup;
     TrainingExerciseExecution: TrainingExerciseExecution[];

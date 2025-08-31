@@ -11,7 +11,7 @@ import { TrainingExercise } from "@prisma/client";
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  exercise: TrainingExercise;
+  exercise: { id: number; actionId: number };
   actions: ActionWithMusclesType[];
   exercises: TrainingExercise[];
 };

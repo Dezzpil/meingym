@@ -7,7 +7,14 @@ import classNames from "classnames";
 type Props = { current: SetsStats; prev?: SetsStats; className?: string };
 type PropsForApproachGroup = { group: ApproachesGroup; className?: string };
 type PropsForExercise = {
-  exercise: TrainingExercise & {
+  exercise: {
+    id: number;
+    liftedSum: number;
+    liftedMean: number;
+    liftedMax: number;
+    liftedCountTotal: number;
+    liftedCountMean: number;
+  } & {
     ApproachGroup: ApproachesGroup;
     TrainingExerciseExecution: any[];
   };

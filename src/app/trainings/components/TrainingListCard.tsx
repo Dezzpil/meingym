@@ -30,7 +30,7 @@ function printPurposes(purposes?: string[]) {
 }
 
 type Props = {
-  training: Training & { TrainingExercise: TrainingExercise[] };
+  training: Training & { TrainingExercise: { id: number }[] };
   muscleGroupsCounts?: MuscleGroupTitleToExercisesCnt;
   purposeCounts?: ActionPurposeCnt;
 };

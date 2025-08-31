@@ -7,7 +7,7 @@ import { TrainingExerciseReplaceModal } from "@/app/trainings/components/Trainin
 import { FaExchangeAlt } from "react-icons/fa";
 
 type Props = {
-  exercise: TrainingExercise;
+  exercise: { id: number; actionId: number };
   allExercises: TrainingExercise[];
   actions: ActionWithMusclesType[];
   disabled?: boolean;
