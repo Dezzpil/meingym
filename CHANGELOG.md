@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.18.0](https://github.com/Dezzpil/meingym/compare/v1.17.3...v1.18.0) (2025-10-29)
+
+
+### Features
+
+* использовать средние для оценки времени тренировки ([3943e9f](https://github.com/Dezzpil/meingym/commits/3943e9fab76e6c61d6fb61c48ad52eb80e3a2205))
+* собирать данные о дл-ти выполнения подхода каждого упражнения тренировок ([4a1d3bd](https://github.com/Dezzpil/meingym/commits/4a1d3bd637fde66f28c1576503d1760856244367))
+
 ### [1.17.3](https://github.com/Dezzpil/meingym/compare/v1.17.2...v1.17.3) (2025-08-31)
 
 
