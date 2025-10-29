@@ -17,7 +17,8 @@
     "update-actions": "node --import tsx src/scripts/update-actions.ts",
     "update-training-exercises": "node --import tsx src/scripts/update-training-exercises.ts",
     "update-approaches-groups": "node --import tsx src/scripts/update-approaches-groups.ts",
-    "workers": "node --import tsx src/jobs/index.ts"
+    "workers": "node --import tsx src/jobs/index.ts",
+    "collect-exercise-time": "node --import tsx src/scripts/collect-exercise-time.ts"
   },
   "dependencies": {
     "@commitlint/cli": "^19.2.2",

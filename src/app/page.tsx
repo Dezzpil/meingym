@@ -10,6 +10,7 @@ import { WeightPanel } from "@/app/weights/panel";
 import { WeightsForm } from "@/app/weights/form";
 import { WeightsChart } from "@/app/profile/components/WeightsChart";
 import React from "react";
+import { TrainingTimeScore } from "@/app/trainings/components/TrainingTimeScore";
 
 export default async function HomePage() {
   const userId = await getCurrentUserId();
@@ -57,6 +58,7 @@ export default async function HomePage() {
                   Упражнения:{" "}
                   {t.TrainingExercise.map((e) => e.Action.title).join(", ")}
                 </div>
+                <TrainingTimeScore training={t} />
                 <div className="card-link d-flex gap-3">
                   <Link href={`/trainings/${t.id}/execute`}>Погнали</Link>
                 </div>

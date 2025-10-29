@@ -10,9 +10,9 @@ import { createExercise } from "@/core/exercises";
 import { redirect } from "next/navigation";
 import { ServerActionResult } from "@/tools/types";
 import moment from "moment";
-import { IntegrationTrainingTimeScorer } from "@/integrations/trainingTime/scorer";
 import { createTrainingPeriod, getCurrentTrainingPeriod } from "@/core/periods";
 import { findUserInfo } from "@/tools/auth";
+import { TrainingTimeAvgScorer } from "@/core/trainingTime/avgScorer";
 
 export async function handleRepeatTraining(
   id: number,
@@ -54,6 +54,7 @@ export async function handleRepeatTraining(
     return nextTraining;
   });
 
+  new TrainingTimeAvgScorer().score(training.id).catch((e) => console.log(e));
   redirect(`/trainings/${training.id}`);
 }
 
@@ -81,7 +82,7 @@ export async function handleTrainingUpdate(
         dateIsChanged ? { plannedTo: data.plannedTo } : {},
       ),
     });
-    new IntegrationTrainingTimeScorer().update(id).then();
+    new TrainingTimeAvgScorer().score(id).catch((e) => console.log(e));
     revalidatePath(`/training/${id}`);
   } catch (e: any) {
     return { ok: false, error: e.message };

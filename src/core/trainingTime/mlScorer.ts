@@ -1,5 +1,6 @@
 import { prisma } from "@/tools/db";
 import axios from "axios";
+import { TrainingTimeScorer } from "@/core/trainingTime/scorer";
 
 const sql = `SELECT
                  te.id,
@@ -38,10 +39,12 @@ const sql = `SELECT
     ;
 `;
 
-export class IntegrationTrainingTimeScorer {
-  constructor(private _port = 5001) {}
+export class TrainingTimeMLScorer extends TrainingTimeScorer {
+  constructor(private _port = 5001) {
+    super();
+  }
 
-  async predict(trainingId: number): Promise<number[]> {
+  private async _predict(trainingId: number): Promise<number[]> {
     const result = await prisma.$queryRawUnsafe<any>(sql, trainingId);
     let jsonl = "";
     for (const item of result) {
@@ -58,10 +61,10 @@ export class IntegrationTrainingTimeScorer {
     return response.status === 200 ? response.data.predictions : null;
   }
 
-  async update(trainingId: number) {
+  async score(trainingId: number) {
     let predictions: number[] = [];
     try {
-      predictions = await this.predict(trainingId);
+      predictions = await this._predict(trainingId);
       if (predictions && predictions.length > 0) {
         const timeScoreInMins = predictions.reduce((acc, p) => acc + p, 0) / 60;
         await prisma.training.update({

@@ -14,6 +14,7 @@ import classNames from "classnames";
 import { TrainingForm } from "@/app/trainings/components/TrainingForm";
 import { NameOfTheDay } from "@/components/NameOfTheDay";
 import { FaLongArrowAltRight } from "react-icons/fa";
+import { TrainingTimeScore } from "@/app/trainings/components/TrainingTimeScore";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
@@ -107,19 +108,8 @@ export default async function TrainingPage({ params }: ItemPageParams) {
               </li>
             ))}
           </ul>
-          <div className="alert alert-light d-inline-flex gap-3">
-            <b>Оценка времени выполнения упражнений:</b>
-            <span>
-              {training.timeScoreInMins
-                ? training.timeScoreInMins.toFixed(2)
-                : 0}{" "}
-              мин.
-            </span>
-            {training.timeScoreInSecs && (
-              <span className={"text-muted"}>
-                {training.timeScoreInSecs} в сек.
-              </span>
-            )}
+          <div className="alert alert-light">
+            <TrainingTimeScore training={training} />
           </div>
         </>
       ) : (

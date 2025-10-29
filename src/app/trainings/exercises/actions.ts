@@ -6,7 +6,7 @@ import { ExerciseAddFieldsType } from "@/app/trainings/exercises/types";
 import { getCurrentUserId } from "@/tools/auth";
 import { createExercise } from "@/core/exercises";
 import { ServerActionResult } from "@/tools/types";
-import { IntegrationTrainingTimeScorer } from "@/integrations/trainingTime/scorer";
+import { TrainingTimeAvgScorer } from "@/core/trainingTime/avgScorer";
 
 export async function handleAddExercise(
   trainingId: number,
@@ -24,7 +24,7 @@ export async function handleAddExercise(
       await createExercise(trainingId, data.actionId, data.purpose, userId, tx);
     });
 
-    new IntegrationTrainingTimeScorer().update(trainingId).then();
+    new TrainingTimeAvgScorer().score(trainingId).catch((e) => console.log(e));
   } catch (e: any) {
     return { ok: false, error: e.message };
   }
@@ -33,7 +33,7 @@ export async function handleAddExercise(
 
 export async function handleDeleteExercise(id: number) {
   const ex = await prisma.trainingExercise.delete({ where: { id } });
-  new IntegrationTrainingTimeScorer().update(id).then();
+  new TrainingTimeAvgScorer().score(id).catch((e) => console.log(e));
   revalidatePath(`/trainings/${ex.trainingId}`);
 }
 
@@ -63,7 +63,9 @@ export async function handleChangeExercisePriority(
       });
     }
 
-    new IntegrationTrainingTimeScorer().update(ex.trainingId).then();
+    new TrainingTimeAvgScorer()
+      .score(ex.trainingId)
+      .catch((e) => console.log(e));
   }
 
   revalidatePath(`/trainings/${ex.trainingId}`);

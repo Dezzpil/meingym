@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 
+// скрипт призван создать датасет для прогнозирования времени выполнения подхода
+// но я от этого подхода решил отказаться в сторону алгоритима с использованием
+// заданных оценок по цели упражнения
+
 import { prisma } from "@/tools/db";
 import dotenv from "dotenv";
 import { open } from "node:fs/promises";
-import { write } from "node:fs";
 import { Action, User, UserInfo } from "@prisma/client";
 
 dotenv.config({
@@ -47,9 +50,47 @@ async function _cacheUser(userId: string): Promise<void> {
   }
 }
 
+function toCsvValue(value: unknown): string {
+  if (value === null || value === undefined) return "";
+  // Dates -> ISO string
+  if (value instanceof Date) return value.toISOString();
+  // Booleans/numbers as string
+  const s = String(value);
+  // Escape quotes by doubling them, wrap in quotes if contains comma, quote or newline
+  if (/[",\n]/.test(s)) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+
+function toCsvRow(values: unknown[]): string {
+  return values.map(toCsvValue).join(";") + "\n";
+}
+
 async function collect() {
   const fd = await open(`./${Date.now()}-exercises-execution-time.csv`, "w");
-  // TODO создать заголовки для колонок исходя из того, что в row
+  // Заголовки колонок соответствуют полям row ниже
+  const header = [
+    "index",
+    "user_sex",
+    "user_height",
+    "user_global",
+    "user_weight",
+    "train_started",
+    "train_circuit",
+    "exer_purpose",
+    "exer_priority",
+    "action_rig",
+    "action_cheat",
+    "action_bigcount",
+    "action_str_allow",
+    "action_muscles_len",
+    "exec_length",
+    "exec_weight",
+    "exec_count",
+    "target",
+  ];
+  await fd.write(toCsvRow(header));
 
   const trainings = await prisma.training.findMany({
     where: {
@@ -116,7 +157,7 @@ async function collect() {
           execution.plannedCount, // exec_count
           duration, // target
         ];
-        // TODO пишем строчку в .csv-файл
+        await fd.write(toCsvRow(row));
       }
     }
   }

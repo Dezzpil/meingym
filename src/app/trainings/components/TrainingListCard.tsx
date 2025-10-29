@@ -11,6 +11,7 @@ import { useMemo } from "react";
 import { DateFormat, TimeFormat } from "@/tools/dates";
 import { LuCircleDashed } from "react-icons/lu";
 import { NameOfTheDay } from "@/components/NameOfTheDay";
+import { FaClock } from "react-icons/fa6";
 
 function printPurposes(purposes?: string[]) {
   if (purposes) {
@@ -75,9 +76,19 @@ export function TrainingListCard({
           {training.commonComment && training.commonComment.length && (
             <div className="mb-2 text-muted">{training.commonComment}</div>
           )}
-          <div className="mb-2">
-            <b>Количество упражнений: </b>
-            <span>{training.TrainingExercise.length}</span>
+          <div className="mb-2 d-inline-flex gap-3 align-items-baseline">
+            <div>
+              <b>Количество упражнений: </b>
+              <span>{training.TrainingExercise.length}</span>
+            </div>
+            {training.timeScoreInMins ? (
+              <small className="d-flex gap-2 align-items-center">
+                <span className={"text-muted"}>
+                  ~{training.timeScoreInMins} мин.
+                </span>
+                <FaClock className={"text-muted"} />
+              </small>
+            ) : null}
           </div>
           <ul className="list-inline mb-2">
             <li className="list-inline-item">

@@ -13,7 +13,7 @@ import {
   calculateStats,
   findInfoForCalculateStatsForApproach,
 } from "@/core/stats";
-import { IntegrationTrainingTimeScorer } from "@/integrations/trainingTime/scorer";
+import { TrainingTimeAvgScorer } from "@/core/trainingTime/avgScorer";
 
 export async function handleUpdateApproachGroup(
   groupId: number,
@@ -39,7 +39,7 @@ export async function handleUpdateApproachGroup(
     });
   });
   if (trainingId) {
-    new IntegrationTrainingTimeScorer().update(trainingId).then();
+    new TrainingTimeAvgScorer().score(trainingId).catch((e) => console.log(e));
     revalidatePath(`/trainings/${trainingId}`);
   }
 }
