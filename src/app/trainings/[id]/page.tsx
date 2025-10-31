@@ -15,6 +15,7 @@ import { TrainingForm } from "@/app/trainings/components/TrainingForm";
 import { NameOfTheDay } from "@/components/NameOfTheDay";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { TrainingTimeScore } from "@/app/trainings/components/TrainingTimeScore";
+import { TrainingExecTimeChart, ExecTimeItem } from "@/app/trainings/components/TrainingExecTimeChart";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
@@ -44,6 +45,32 @@ export default async function TrainingPage({ params }: ItemPageParams) {
     },
     orderBy: { priority: "asc" },
   });
+
+  // Соберем длительности подходов для диаграммы (только если тренировка завершена)
+  let execTimeItems: ExecTimeItem[] = [];
+  if (training.completedAt) {
+    const durations = await prisma.trainingExerciseExecutionDuration.findMany({
+      where: { trainingId: id },
+      orderBy: { sequence: "asc" },
+      include: {
+        TrainingExercise: { include: { Action: true } },
+      },
+    });
+    const perExerciseCounter: Record<number, number> = {};
+    execTimeItems = durations.map((d) => {
+      const exId = d.trainingExerciseId;
+      perExerciseCounter[exId] = (perExerciseCounter[exId] ?? 0) + 1;
+      const exerciseName =
+        (d.TrainingExercise.Action as any).alias ||
+        (d.TrainingExercise.Action as any).title;
+      return {
+        seconds: d.seconds,
+        exercise: exerciseName,
+        set: perExerciseCounter[exId],
+      } as ExecTimeItem;
+    });
+  }
+
   return (
     <>
       <header className="mb-3">
@@ -111,6 +138,11 @@ export default async function TrainingPage({ params }: ItemPageParams) {
           <div className="alert alert-light">
             <TrainingTimeScore training={training} />
           </div>
+          {training.completedAt && execTimeItems.length > 0 && (
+            <div className="mb-3">
+              <TrainingExecTimeChart items={execTimeItems} />
+            </div>
+          )}
         </>
       ) : (
         <div className="alert alert-warning">
