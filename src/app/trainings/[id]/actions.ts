@@ -37,6 +37,7 @@ export async function handleRepeatTraining(
           plannedTo: data.plannedTo,
           userId: curTraining.userId,
           periodId: currentPeriod.id,
+          repeatedFromId: curTraining.id,
         },
         userInfo.purpose === "LOSS" ? { isCircuit: true } : {},
       ),

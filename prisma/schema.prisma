@@ -321,6 +321,11 @@ model Training {
   periodId Int?
   Period   TrainingPeriod? @relation(fields: [periodId], references: [id])
 
+  // link to the original training if this one is a repeat
+  repeatedFromId Int?
+  RepeatedFrom   Training? @relation("TrainingRepeatedFrom", fields: [repeatedFromId], references: [id])
+  Repeats        Training[] @relation("TrainingRepeatedFrom")
+
   isCircuit       Boolean @default(false)
   commonComment   String?
   completeComment String?

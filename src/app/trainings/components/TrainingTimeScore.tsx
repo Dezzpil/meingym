@@ -8,8 +8,8 @@ type Props = {
 };
 export function TrainingTimeScore({ training }: Props) {
   return (
-    <>
-      <div className="d-inline-flex gap-3">
+    <div className="d-flex column-gap-3 flex-fill flex-wrap">
+      <div className="d-inline-flex gap-2">
         <b>Оценочное время:</b>
         <span>
           {training.timeScoreInMins ? training.timeScoreInMins.toFixed(2) : 0}{" "}
@@ -17,7 +17,7 @@ export function TrainingTimeScore({ training }: Props) {
         </span>
       </div>
       {training.completedAt && (
-        <div className="d-inline-flex gap-3">
+        <div className="d-inline-flex gap-2">
           <b>Реальное время:</b>
           <span>
             {moment(training.completedAt).diff(
@@ -28,6 +28,6 @@ export function TrainingTimeScore({ training }: Props) {
           </span>
         </div>
       )}
-    </>
+    </div>
   );
 }

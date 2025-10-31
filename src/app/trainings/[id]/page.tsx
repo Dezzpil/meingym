@@ -15,13 +15,22 @@ import { TrainingForm } from "@/app/trainings/components/TrainingForm";
 import { NameOfTheDay } from "@/components/NameOfTheDay";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { TrainingTimeScore } from "@/app/trainings/components/TrainingTimeScore";
-import { TrainingExecTimeChart, ExecTimeItem } from "@/app/trainings/components/TrainingExecTimeChart";
+import {
+  TrainingExecTimeChart,
+  ExecTimeItem,
+} from "@/app/trainings/components/TrainingExecTimeChart";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
   const training = (await prisma.training.findUniqueOrThrow({
     where: { id },
-  })) as Training;
+  })) as any;
+  const originalTraining = training.repeatedFromId
+    ? await prisma.training.findUnique({
+        where: { id: training.repeatedFromId },
+        select: { id: true, plannedTo: true },
+      })
+    : null;
   const userId = await getCurrentUserId();
   const userInfo = await findUserInfo(userId);
   const actions = await prisma.action.findMany({
@@ -88,6 +97,17 @@ export default async function TrainingPage({ params }: ItemPageParams) {
           </>
         )}
       </header>
+      {originalTraining && (
+        <div className="mb-2">
+          <Link
+            href={`/trainings/${originalTraining.id}`}
+            className="link-secondary custom-link"
+          >
+            Повтор тренировки от{" "}
+            {moment(originalTraining.plannedTo).format(DateFormat)}
+          </Link>
+        </div>
+      )}
       {training.startedAt && (
         <div
           className={classNames(
