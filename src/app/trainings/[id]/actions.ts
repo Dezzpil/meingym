@@ -90,3 +90,21 @@ export async function handleTrainingUpdate(
   }
   return { ok: true, error: null };
 }
+
+export async function handleTrainingDelete(
+  id: number,
+): Promise<ServerActionResult | void> {
+  try {
+    const training = await prisma.training.findUniqueOrThrow({
+      where: { id },
+      select: { startedAt: true },
+    });
+    if (training.startedAt) {
+      return { ok: false, error: "Нельзя удалить начатую тренировку" };
+    }
+    await prisma.training.delete({ where: { id } });
+  } catch (e: any) {
+    return { ok: false, error: e.message };
+  }
+  redirect("/trainings");
+}

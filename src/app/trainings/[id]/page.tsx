@@ -91,7 +91,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         </h3>
         {!training.startedAt && (
           <>
-            <div>
+            <div className="mb-2">
               <TrainingForm training={training} />
             </div>
           </>
