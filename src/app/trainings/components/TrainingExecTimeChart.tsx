@@ -25,7 +25,7 @@ function formatSeconds(sec: number): string {
 export function TrainingExecTimeChart({
   items,
   className,
-  height = 220,
+  height = 128,
 }: Props) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [popoverPos, setPopoverPos] = useState<{ x: number; y: number } | null>(
@@ -43,10 +43,9 @@ export function TrainingExecTimeChart({
 
   if (!items || items.length === 0) return null;
 
-  const onBarClick = (e: MouseEvent<SVGRectElement>, index: number) => {
+  const onBarClick = (e: any, index: number) => {
     setActiveIndex(index === activeIndex ? null : index);
-    // Save mouse position relative to viewport for simple popover placement
-    setPopoverPos({ x: (e as any).clientX ?? 0, y: (e as any).clientY ?? 0 });
+    setPopoverPos({ x: e.clientX ?? 0, y: e.clientY ?? 0 });
   };
 
   return (
@@ -55,7 +54,7 @@ export function TrainingExecTimeChart({
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
-            margin={{ top: 10, right: 10, left: 30, bottom: 0 }}
+            margin={{ top: 10, right: 10, left: 3, bottom: 0 }}
           >
             {/* Только ось Y для масштаба времени */}
             <YAxis
@@ -63,6 +62,7 @@ export function TrainingExecTimeChart({
               domain={[0, maxY]}
               tickFormatter={formatSeconds}
               width={40}
+              style={{ fontSize: 10, color: "gray" }}
             />
             <Bar dataKey="seconds" radius={[3, 3, 0, 0]}>
               {data.map((entry, index) => (
