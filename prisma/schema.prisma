@@ -328,6 +328,8 @@ model Training {
   timeScoreInMins Float     @default(0)
   timeScoreInSecs String?
   timeScoredAt    DateTime?
+
+  ExerciseExecutionDuration TrainingExerciseExecutionDuration[]
 }
 
 model TrainingExercise {
@@ -363,6 +365,8 @@ model TrainingExercise {
   comment String?
 
   Score TrainingExerciseScore[]
+
+  ExecutionDuration TrainingExerciseExecutionDuration[]
 }
 
 enum TrainingRating {
@@ -399,6 +403,9 @@ model TrainingExerciseExecution {
   comment String?
 
   techniqueUpgrade Boolean @default(false)
+
+  // durations
+  Duration TrainingExerciseExecutionDuration[]
 }
 
 // см. RatingOptions
@@ -556,4 +563,25 @@ model SimilarExercises {
   updatedAt DateTime @updatedAt
 
   @@unique([actionId, similarActionId])
+}
+
+
+model TrainingExerciseExecutionDuration {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  trainingId Int
+  Training   Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+
+  trainingExerciseId Int
+  TrainingExercise   TrainingExercise @relation(fields: [trainingExerciseId], references: [id], onDelete: Cascade)
+
+  executionId Int @unique
+  Execution   TrainingExerciseExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
+
+  sequence Int
+  seconds  Int
+
+  @@index([trainingId, sequence])
+  @@index([trainingId, trainingExerciseId])
 }

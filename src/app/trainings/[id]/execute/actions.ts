@@ -238,6 +238,42 @@ export async function handleProcessCompletedTraining(
   }
   if (training.processedAt) return;
 
+  // 1) Рассчитаем длительность выполнения каждого подхода по всей тренировке
+  // Получаем список выполнений по тренировки, отсортированный по executedAt
+  const executionsOrdered = await prisma.trainingExerciseExecution.findMany({
+    where: {
+      Exercise: { trainingId },
+      executedAt: { not: null },
+      isPassed: false,
+    },
+    orderBy: { executedAt: "asc" },
+    select: { id: true, exerciseId: true, executedAt: true },
+  });
+  if (training.startedAt && executionsOrdered.length > 0) {
+    let prev = training.startedAt as Date;
+    const rows = executionsOrdered.map((e, idx) => {
+      const diffMs = (e.executedAt as Date).getTime() - prev.getTime();
+      const seconds = Math.max(0, Math.round(diffMs / 1000));
+      prev = e.executedAt as Date;
+      return {
+        trainingId,
+        trainingExerciseId: e.exerciseId,
+        executionId: e.id,
+        sequence: idx + 1, // порядковый номер последовательности (1..n)
+        seconds,
+      };
+    });
+    await prisma.$transaction(async (tx) => {
+      // Удалим старые данные если они есть, чтобы не было дублей
+      await tx.trainingExerciseExecutionDuration.deleteMany({
+        where: { trainingId },
+      });
+      if (rows.length) {
+        await tx.trainingExerciseExecutionDuration.createMany({ data: rows });
+      }
+    });
+  }
+
   if (userInfo.trainingProgression !== TrainingProgression.NONE) {
     // пересоздадим подходы, из которых будет собираться следующая тренировка?
     for (const _exercise of training.TrainingExercise) {
