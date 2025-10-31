@@ -41,6 +41,35 @@ export function TrainingExecTimeChart({
     [items],
   );
 
+  // Фиксированная палитра для упражнений
+  const PALETTE = useMemo(
+    () => [
+      "#73B13C",
+      "#9CD469",
+      "#589621",
+      "#3D7709",
+      "#51A47E",
+      "#2F8960",
+      "#1A744B",
+      "#D3E672",
+      "#ABC041",
+    ],
+    [],
+  );
+
+  // Назначаем каждому упражнению свой цвет, циклично по палитре
+  const exerciseColorMap = useMemo(() => {
+    const map = new Map<string, string>();
+    let idx = 0;
+    for (const it of items) {
+      if (!map.has(it.exercise)) {
+        map.set(it.exercise, PALETTE[idx % PALETTE.length]);
+        idx += 1;
+      }
+    }
+    return map;
+  }, [items, PALETTE]);
+
   if (!items || items.length === 0) return null;
 
   const onBarClick = (e: any, index: number) => {
@@ -68,7 +97,7 @@ export function TrainingExecTimeChart({
               {data.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={activeIndex === index ? "#0d6efd" : "#6c757d"}
+                  fill={exerciseColorMap.get(entry.exercise) || "#6c757d"}
                   onClick={(e) => onBarClick(e, index)}
                   cursor="pointer"
                 />
