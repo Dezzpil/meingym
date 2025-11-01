@@ -52,6 +52,9 @@ export async function handleRepeatTraining(
         tx,
       );
     }
+    // recompute muscles stats for the new (not-started) training
+    const { recomputeTrainingMuscleStats } = await import("@/core/trainingMuscles");
+    await recomputeTrainingMuscleStats(nextTraining.id, tx);
     return nextTraining;
   });
 
