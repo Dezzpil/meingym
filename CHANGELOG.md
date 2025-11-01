@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.19.0](https://github.com/Dezzpil/meingym/compare/v1.18.0...v1.19.0) (2025-11-01)
+
+
+### Features
+
+* добавить визуальное сравнение метрик упражнения с предыдущим выполнением ([b324b27](https://github.com/Dezzpil/meingym/commits/b324b272dafab8f648501363197f6291be5e834b))
+* добавить возможность удалить не-начатую тренировку ([eda389d](https://github.com/Dezzpil/meingym/commits/eda389d738d4f2eb08271273b2976cf3c606897e))
+* доработать отображение информации о повторе тренировки ([29d235e](https://github.com/Dezzpil/meingym/commits/29d235e0bf9395d5e2283c39ce0e117e1ee8f3a6))
+* доработать отображение столбчатой диаграммы выполнения подходов ([bf5a143](https://github.com/Dezzpil/meingym/commits/bf5a143336be1d1c71dc3c3f4ffa5b91ebaa4195))
+* использовать палитру для упражнений в диаграмме ([7a6f745](https://github.com/Dezzpil/meingym/commits/7a6f745e6ba32cb7811f9cbabc986587bdefa0f6))
+* отображать список мышц по тренировке ([6043f2f](https://github.com/Dezzpil/meingym/commits/6043f2f526b9a2e480a54f61dbb81d514b373ee5))
+* отобразить столбчатую диаграмму выполнения подходов с поповерами ([a044102](https://github.com/Dezzpil/meingym/commits/a04410280267e0cc297c932f0239a4ab1b61cb88))
+* разминка! ([9f9743c](https://github.com/Dezzpil/meingym/commits/9f9743ca33457431be1efdceaaf821d9d87e2be8))
+* расчитывать и сохранять время выполнения подходов ([e1a15d2](https://github.com/Dezzpil/meingym/commits/e1a15d25488c2d132a201ba680ddc22f675fffce))
+* сохранять ссылку на тренировку-прототип при повторении ([8ddb005](https://github.com/Dezzpil/meingym/commits/8ddb005cdbb59affa2a0f8e5c8d5ce3ac4ee3131))
+* сохранять статистику по мышцам для тренировки ([08d112e](https://github.com/Dezzpil/meingym/commits/08d112e17cae0a78882ff5a30cf53ef70cd0a920))
+
 ## [1.18.0](https://github.com/Dezzpil/meingym/compare/v1.17.3...v1.18.0) (2025-10-29)
 
 
