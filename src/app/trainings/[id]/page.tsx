@@ -138,13 +138,17 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         )}
       </header>
       {originalTraining && (
-        <div className="mb-2">
-          <Link
-            href={`/trainings/${originalTraining.id}`}
-            className="link-secondary custom-link"
-          >
+        <div className="alert alert-light mb-3 d-flex align-items-center justify-content-between">
+          <span>
             Повтор тренировки от{" "}
             {moment(originalTraining.plannedTo).format(DateFormat)}
+          </span>
+          <Link
+            href={`/trainings/${originalTraining.id}`}
+            className="link-secondary custom-link small"
+            target="_blank"
+          >
+            Перейти
           </Link>
         </div>
       )}
