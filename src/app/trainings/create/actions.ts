@@ -26,5 +26,13 @@ export async function handleCreateTraining(data: TrainingDateFormFieldType) {
     ),
   });
 
+  // ensure warm-up exists for this training
+  try {
+    // @ts-ignore - model may not be in generated types until prisma generate
+    await prisma.trainingWarmUp.create({ data: { trainingId: training.id } });
+  } catch (e) {
+    // ignore if already exists (unique constraint)
+  }
+
   redirect(`/trainings/${training.id}`);
 }

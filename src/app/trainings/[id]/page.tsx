@@ -3,7 +3,6 @@ import { prisma } from "@/tools/db";
 import { TrainingAddExerciseForm } from "@/app/trainings/components/TrainingAddExerciseForm";
 import React from "react";
 import TrainingExerciseItemControl from "@/app/trainings/components/TrainingExerciseItemControl";
-import type { Training } from "@prisma/client";
 import moment from "moment";
 import { TrainingRepeatForm } from "@/app/trainings/[id]/execute/components/TrainingRepeatForm";
 import { TrainingProcessPanel } from "@/app/trainings/[id]/execute/components/TrainingProcessPanel";
@@ -21,12 +20,17 @@ import {
   ExecTimeItem,
 } from "@/app/trainings/components/TrainingExecTimeChart";
 import { fetchTrainingMuscleStats } from "@/core/trainingMuscles";
+import { Training, TrainingWarmUp } from "@prisma/client";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
   const training = (await prisma.training.findUniqueOrThrow({
     where: { id },
-  })) as any;
+    include: {
+      WarmUp: true,
+    },
+  })) as Training & { WarmUp: TrainingWarmUp };
+
   const originalTraining = training.repeatedFromId
     ? await prisma.training.findUnique({
         where: { id: training.repeatedFromId },
@@ -189,9 +193,16 @@ export default async function TrainingPage({ params }: ItemPageParams) {
       )}
       {exercises.length ? (
         <>
-          <ul className="list-group">
+          <ul className="list-group mb-3">
+            {training.WarmUp && (
+              <li className="list-group-item">
+                <div className="row">
+                  <div className="col-md-3 col-sm-12">Разминка</div>
+                </div>
+              </li>
+            )}
             {exercises.map((e) => (
-              <li className="list-group-item mb-3" data-id={e.id} key={e.id}>
+              <li className="list-group-item" data-id={e.id} key={e.id}>
                 <TrainingExerciseItemControl
                   exercise={e}
                   canControl={!training.startedAt}

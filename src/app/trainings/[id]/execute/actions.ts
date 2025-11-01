@@ -29,6 +29,30 @@ import { scheduleScoreCalculation } from "@/jobs";
 import { createTrainingPeriod, getCurrentTrainingPeriod } from "@/core/periods";
 import { createExercise } from "@/core/exercises";
 
+export async function handleTrainingWarmUpSkip(trainingId: number) {
+  await prisma.trainingWarmUp.upsert({
+    where: { trainingId },
+    update: { isSkipped: true },
+    create: { trainingId, isSkipped: true },
+  });
+  revalidatePath(`/trainings/${trainingId}/execute`);
+}
+
+export async function handleTrainingWarmUpComplete(
+  trainingId: number,
+  trainingStartedAt: Date,
+) {
+  const duration = Math.max(
+    0,
+    Math.floor((Date.now() - trainingStartedAt.getTime()) / 1000),
+  );
+  await prisma.trainingWarmUp.update({
+    where: { trainingId },
+    data: { completedAt: new Date(), durationSec: duration, isSkipped: false },
+  });
+  revalidatePath(`/trainings/${trainingId}/execute`);
+}
+
 export async function handleTrainingStart(id: number, isCircuit: boolean) {
   const userId = await getCurrentUserId();
 
@@ -44,14 +68,13 @@ export async function handleTrainingStart(id: number, isCircuit: boolean) {
       periodId: currentPeriod.id,
     },
   });
-  if (isCircuit) {
-    await prisma.trainingExercise.updateMany({
-      where: { trainingId: id },
-      data: {
-        startedAt: new Date(),
-      },
-    });
-  }
+
+  await prisma.trainingWarmUp.update({
+    where: { trainingId: id },
+    data: { startedAt: new Date() },
+  });
+
+  // do not auto-start exercises even for circuit until warm-up done
   revalidatePath(`/trainings/${id}/execute`);
 }
 
@@ -59,6 +82,17 @@ export async function handleTrainingExerciseStart(
   id: number,
   trainingId: number,
 ) {
+  // block if warm-up is not finished
+  // @ts-ignore
+  const warm = await prisma.trainingWarmUp.findUnique({
+    where: { trainingId },
+  });
+  if (!warm || (!warm.isSkipped && !warm.completedAt)) {
+    throw new Error(
+      "Нельзя начать упражнения, пока разминка не завершена или не пропущена",
+    );
+  }
+
   await prisma.trainingExercise.update({
     where: { id },
     data: { startedAt: new Date() },
@@ -70,6 +104,17 @@ export async function handleTrainingExercisePass(
   id: number,
   trainingId: number,
 ) {
+  // block if warm-up is not finished
+  // @ts-ignore
+  const warm = await prisma.trainingWarmUp.findUnique({
+    where: { trainingId },
+  });
+  if (!warm || (!warm.isSkipped && !warm.completedAt)) {
+    throw new Error(
+      "Нельзя пропустить упражнение, пока разминка не завершена или не пропущена",
+    );
+  }
+
   await prisma.$transaction(async (tx) => {
     await tx.trainingExercise.update({
       where: { id },
@@ -395,16 +440,16 @@ export async function handleReplaceExercise(
 
     // Check if the new action is already in the training
     const existingExercise = await prisma.trainingExercise.findFirst({
-      where: { 
+      where: {
         trainingId: exercise.trainingId,
-        actionId: newActionId 
+        actionId: newActionId,
       },
     });
 
     if (existingExercise) {
-      return { 
-        ok: false, 
-        error: "Это упражнение уже присутствует в тренировке" 
+      return {
+        ok: false,
+        error: "Это упражнение уже присутствует в тренировке",
       };
     }
 
@@ -416,7 +461,7 @@ export async function handleReplaceExercise(
         newActionId,
         exercise.purpose,
         userId,
-        tx
+        tx,
       );
 
       // Delete the old exercise

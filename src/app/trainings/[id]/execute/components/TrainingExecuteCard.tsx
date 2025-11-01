@@ -86,12 +86,14 @@ export function TrainingExecuteCard({
                   Пропустить
                 </button>
               )}
-              <TrainingExerciseReplaceButton
-                exercise={exercise}
-                allExercises={allExercises}
-                actions={allActions}
-                disabled={disabled || exercise.completedAt !== null}
-              />
+              {!exercise.completedAt && (
+                <TrainingExerciseReplaceButton
+                  exercise={exercise}
+                  allExercises={allExercises}
+                  actions={allActions}
+                  disabled={disabled || exercise.completedAt !== null}
+                />
+              )}
             </div>
             {!exercise.startedAt && (
               <button className="btn btn-primary" onClick={start}>

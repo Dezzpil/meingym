@@ -9,25 +9,33 @@ import {
   Training,
   TrainingRating,
   Purpose,
+  TrainingWarmUp,
 } from "@prisma/client";
 import React from "react";
 import { TrainingExecuteTopPanel } from "@/app/trainings/[id]/execute/components/TrainingExecuteTopPanel";
 import { TrainingExecuteCard } from "@/app/trainings/[id]/execute/components/TrainingExecuteCard";
 import { TrainingExecuteCompletePanel } from "@/app/trainings/[id]/execute/components/TrainingExecuteCompletePanel";
 import { ActionWithMusclesType } from "@/app/actions/types";
+import { TrainingWarmUpCard } from "@/app/trainings/[id]/execute/components/TrainingWarmUpCard";
 
 type TrainingExerciseType = TrainingExercise & {
   Action: Action;
   ApproachGroup: ApproachesGroup & { Approaches: Approach[] };
   TrainingExerciseExecution: TrainingExerciseExecution[];
 };
-type TrainingType = Training & { TrainingExercise: TrainingExerciseType[] };
+
+type TrainingType = Training & {
+  TrainingExercise: TrainingExerciseType[];
+  WarmUp: TrainingWarmUp;
+};
 
 async function findTraining(id: number): Promise<TrainingType> {
   // @ts-ignore
   return prisma.training.findUniqueOrThrow({
     where: { id },
     include: {
+      // @ts-ignore
+      WarmUp: true,
       TrainingExercise: {
         select: {
           id: true,
@@ -102,14 +110,26 @@ export default async function TrainingExecutePage({ params }: ItemPageParams) {
   // Fetch all available actions for exercise replacement
   const allActions = await fetchAllActions();
 
+  const warmUpDone = !!(
+    training.WarmUp &&
+    (training.WarmUp.isSkipped || training.WarmUp.completedAt)
+  );
+  const globalDisabled = !training.startedAt || !!training.completedAt;
+
   return (
     <div>
       <TrainingExecuteTopPanel training={training} />
+      {training.WarmUp && (
+        <TrainingWarmUpCard
+          warmUp={training.WarmUp}
+          disabled={globalDisabled}
+        />
+      )}
       {training.TrainingExercise.map((e: TrainingExerciseType) => (
         <TrainingExecuteCard
           exercise={e}
           key={e.id}
-          disabled={!training.startedAt || !!training.completedAt}
+          disabled={globalDisabled || !warmUpDone}
           allActions={allActions}
           allExercises={training.TrainingExercise}
         />

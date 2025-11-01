@@ -53,12 +53,19 @@ export async function handleRepeatTraining(
       );
     }
     // recompute muscles stats for the new (not-started) training
-    const { recomputeTrainingMuscleStats } = await import("@/core/trainingMuscles");
+    const { recomputeTrainingMuscleStats } = await import(
+      "@/core/trainingMuscles"
+    );
     await recomputeTrainingMuscleStats(nextTraining.id, tx);
     return nextTraining;
   });
 
   new TrainingTimeAvgScorer().score(training.id).catch((e) => console.log(e));
+  await prisma.trainingWarmUp.create({
+    data: {
+      trainingId: training.id,
+    },
+  });
   redirect(`/trainings/${training.id}`);
 }
 
