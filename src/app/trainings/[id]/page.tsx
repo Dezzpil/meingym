@@ -41,7 +41,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
       MusclesStabilizer: { include: { Muscle: { include: { Group: true } } } },
     },
   });
-  const exercises = await prisma.trainingExercise.findMany({
+  const exercisesRaw = await prisma.trainingExercise.findMany({
     where: { trainingId: id },
     include: {
       Action: true,
@@ -51,9 +51,45 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         },
       },
       TrainingExerciseExecution: true,
+      Training: { select: { plannedTo: true, userId: true } },
     },
     orderBy: { priority: "asc" },
   });
+
+  // Подгрузим предыдущие метрики по каждому действию для этого пользователя
+  const exercises = await Promise.all(
+    exercisesRaw.map(async (e: any) => {
+      const prev = await prisma.trainingExercise.findFirst({
+        where: {
+          actionId: e.actionId,
+          completedAt: { not: null },
+          Training: {
+            userId: training.userId,
+            plannedTo: { lt: e.Training.plannedTo },
+          },
+        },
+        orderBy: { Training: { plannedTo: "desc" } },
+        select: {
+          liftedSum: true,
+          liftedMean: true,
+          liftedMax: true,
+          liftedCountTotal: true,
+          liftedCountMean: true,
+        },
+      });
+      const prevSetsStats = prev
+        ? {
+            len: 0,
+            weightSum: prev.liftedSum,
+            weightMean: prev.liftedMean,
+            weightMax: prev.liftedMax,
+            countSum: prev.liftedCountTotal,
+            countMean: prev.liftedCountMean,
+          }
+        : null;
+      return { ...e, prevSetsStats };
+    })
+  );
 
   // Соберем длительности подходов для диаграммы (только если тренировка завершена)
   let execTimeItems: ExecTimeItem[] = [];

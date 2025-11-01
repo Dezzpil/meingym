@@ -5,23 +5,28 @@ import { NumberDiffViz } from "@/components/NumberDiffViz";
 import classNames from "classnames";
 
 type Props = { current: SetsStats; prev?: SetsStats; className?: string };
-type PropsForApproachGroup = { group: ApproachesGroup; className?: string };
+type PropsForApproachGroup = {
+  group: ApproachesGroup;
+  prev?: SetsStats;
+  className?: string;
+};
+type ExerciseForStats = {
+  id: number;
+  liftedSum: number;
+  liftedMean: number;
+  liftedMax: number;
+  liftedCountTotal: number;
+  liftedCountMean: number;
+};
 type PropsForExercise = {
-  exercise: {
-    id: number;
-    liftedSum: number;
-    liftedMean: number;
-    liftedMax: number;
-    liftedCountTotal: number;
-    liftedCountMean: number;
-  } & {
+  exercise: ExerciseForStats & {
     ApproachGroup: ApproachesGroup;
     TrainingExerciseExecution: any[];
   };
   className?: string;
 };
 
-export function SetsStats({ current, prev, className }: Props) {
+export function SetsStatsBase({ current, prev, className }: Props) {
   return (
     <ul className={classNames("text-muted small list-inline", className)}>
       <li className="list-inline-item d-inline-flex gap-1">
@@ -66,6 +71,7 @@ export function SetsStats({ current, prev, className }: Props) {
 
 export function SetsStatsForApproachGroup({
   group,
+  prev,
   className,
 }: PropsForApproachGroup) {
   const current: SetsStats = {
@@ -76,10 +82,10 @@ export function SetsStatsForApproachGroup({
     countSum: group.countTotal,
     countMean: group.countMean,
   };
-  return <SetsStats current={current} className={className} />;
+  return <SetsStatsBase current={current} prev={prev} className={className} />;
 }
 
-export function SetsStatsForExercise({
+export function SetsStatsForExecutedExercise({
   exercise,
   className,
 }: PropsForExercise) {
@@ -99,5 +105,5 @@ export function SetsStatsForExercise({
     countSum: exercise.liftedCountTotal,
     countMean: exercise.liftedCountMean,
   };
-  return <SetsStats current={current} prev={prev} className={className} />;
+  return <SetsStatsBase current={current} prev={prev} className={className} />;
 }

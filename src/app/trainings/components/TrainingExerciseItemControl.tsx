@@ -6,12 +6,12 @@ import type {
   TrainingExercise,
   Approach,
   TrainingExerciseExecution,
-  TrainingExerciseScore,
 } from "@prisma/client";
 import Link from "next/link";
 import { ApproachesManagement } from "@/components/approaches/Managment";
 import React, { useCallback, useState } from "react";
 import { FaX } from "react-icons/fa6";
+import { GrCompare } from "react-icons/gr";
 import {
   handleChangeExercisePriority,
   handleDeleteExercise,
@@ -21,18 +21,20 @@ import { NumberDiffViz } from "@/components/NumberDiffViz";
 import moment from "moment/moment";
 import { PurposeText } from "@/components/PurposeText";
 import {
+  SetsStatsBase,
   SetsStatsForApproachGroup,
-  SetsStatsForExercise,
+  SetsStatsForExecutedExercise,
 } from "@/components/SetsStats";
 import { TrainingRatingEmoji } from "@/app/trainings/components/TrainingRatingEmoji";
 import { ActionLastScores } from "@/app/actions/components/ActionLastScores";
+import { SetsStats } from "@/core/types";
 
 type Props = {
-  exercise: TrainingExercise & {
+  exercise: (TrainingExercise & {
     Action: Action;
     ApproachGroup: ApproachesGroup & { Approaches: Approach[] };
     TrainingExerciseExecution: TrainingExerciseExecution[];
-  };
+  }) & { prevSetsStats?: SetsStats | null };
   canControl: boolean;
 };
 
@@ -41,6 +43,8 @@ export default function TrainingExerciseItemControl({
   canControl,
 }: Props) {
   const [hidden, setHidden] = useState<boolean>(true);
+  const [showCompare, setShowCompare] = useState<boolean>(false);
+  const toggleCompare = useCallback(() => setShowCompare((v) => !v), []);
   const show = useCallback(() => {
     setHidden(false);
   }, []);
@@ -82,10 +86,29 @@ export default function TrainingExerciseItemControl({
         </div>
         <SetsStatsForApproachGroup
           group={exercise.ApproachGroup}
+          prev={exercise.prevSetsStats ?? undefined}
           className="mb-2"
         />
+        {showCompare && (
+          <div className="mb-2">
+            {exercise.prevSetsStats ? (
+              <SetsStatsBase current={exercise.prevSetsStats} className="mb-2" />
+            ) : (
+              <div className="text-muted small">Нет данных для сравнения</div>
+            )}
+          </div>
+        )}
         {canControl && (
           <div className="d-flex gap-2">
+            <button
+              className={`btn btn-sm ${
+                showCompare ? "btn-primary" : "btn-default"
+              }`}
+              onClick={toggleCompare}
+              title="Сравнить с предыдущими"
+            >
+              <GrCompare />
+            </button>
             {hidden ? (
               <button className="btn btn-sm btn-secondary" onClick={show}>
                 Редактировать
@@ -138,7 +161,10 @@ export default function TrainingExerciseItemControl({
                 </div>
               ))}
             </div>
-            <SetsStatsForExercise exercise={exercise} className="mb-2" />
+            <SetsStatsForExecutedExercise
+              exercise={exercise as any}
+              className="mb-2"
+            />
             {exercise.comment && (
               <div className="text-muted small mb-2">
                 <span>{exercise.comment}</span>

@@ -19,7 +19,7 @@ import Modal from "react-bootstrap/Modal";
 import { TrainingRating } from "@prisma/client";
 import classNames from "classnames";
 import { TrainingRatingEmoji } from "@/app/trainings/components/TrainingRatingEmoji";
-import { SetsStatsForExercise } from "@/components/SetsStats";
+import { SetsStatsForExecutedExercise } from "@/components/SetsStats";
 
 type Props = {
   exercise: {
@@ -133,7 +133,7 @@ export function TrainingExecuteForm({ exercise, disabled }: Props) {
                   </div>
                 )}
               </div>
-              <SetsStatsForExercise exercise={exercise} className="mb-1" />
+              <SetsStatsForExecutedExercise exercise={exercise} className="mb-1" />
               {exercise.comment && (
                 <div className="text-muted">
                   Комментарий: {exercise.comment}
