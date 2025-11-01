@@ -15,10 +15,12 @@ import { TrainingForm } from "@/app/trainings/components/TrainingForm";
 import { NameOfTheDay } from "@/components/NameOfTheDay";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { TrainingTimeScore } from "@/app/trainings/components/TrainingTimeScore";
+import { TrainingMuscleStats } from "@/app/trainings/components/TrainingMuscleStats";
 import {
   TrainingExecTimeChart,
   ExecTimeItem,
 } from "@/app/trainings/components/TrainingExecTimeChart";
+import { fetchTrainingMuscleStats } from "@/core/trainingMuscles";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
@@ -56,6 +58,8 @@ export default async function TrainingPage({ params }: ItemPageParams) {
     orderBy: { priority: "asc" },
   });
 
+  const muscleStats = await fetchTrainingMuscleStats(training.id);
+
   // Подгрузим предыдущие метрики по каждому действию для этого пользователя
   const exercises = await Promise.all(
     exercisesRaw.map(async (e: any) => {
@@ -88,7 +92,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
           }
         : null;
       return { ...e, prevSetsStats };
-    })
+    }),
   );
 
   // Соберем длительности подходов для диаграммы (только если тренировка завершена)
@@ -181,7 +185,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
       )}
       {exercises.length ? (
         <>
-          <ul className="list-group mb-3">
+          <ul className="list-group">
             {exercises.map((e) => (
               <li className="list-group-item mb-3" data-id={e.id} key={e.id}>
                 <TrainingExerciseItemControl
@@ -191,6 +195,15 @@ export default async function TrainingPage({ params }: ItemPageParams) {
               </li>
             ))}
           </ul>
+
+          {/* Список мышц по тренировке */}
+          <div className="mb-3">
+            <TrainingMuscleStats
+              stats={muscleStats as any}
+              className={"alert alert-light"}
+            />
+          </div>
+
           <div className="alert alert-light">
             <TrainingTimeScore training={training} />
           </div>

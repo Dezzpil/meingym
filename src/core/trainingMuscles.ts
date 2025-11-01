@@ -107,3 +107,38 @@ export async function recomputeTrainingMuscleStats(
     });
   }
 }
+
+export async function fetchTrainingMuscleStats(trainingId: number) {
+  // Мышцы тренировки (агонсты/синергисты/стабилизаторы) и их количество
+  const muscleStatsRaw = (await prisma.$queryRaw<any[]>`
+    SELECT
+      tms."muscleId",
+      tms."asAgonyCnt",
+      tms."asSynerCnt",
+      tms."asStableCnt",
+      m."title"       AS "muscleTitle",
+      mg."title"      AS "groupTitle",
+      -- вычислим флаги ролей и общее кол-во для сортировки
+      (tms."asAgonyCnt" + tms."asSynerCnt" + tms."asStableCnt") AS total_uses,
+      CASE WHEN tms."asAgonyCnt" > 0 THEN 2 WHEN tms."asSynerCnt" > 0 THEN 1 ELSE 0 END AS role_rank
+    FROM "TrainingMuscleStat" tms
+    JOIN "Muscle" m ON m."id" = tms."muscleId"
+    JOIN "MuscleGroup" mg ON mg."id" = tms."muscleGroupId"
+    WHERE tms."trainingId" = ${trainingId}
+    ORDER BY
+      total_uses DESC,
+      role_rank DESC,
+      tms."asAgonyCnt" DESC,
+      tms."asSynerCnt" DESC,
+      tms."asStableCnt" DESC,
+      m."title" ASC
+  `) as any[];
+
+  return muscleStatsRaw.map((row) => ({
+    muscleId: row.muscleId,
+    asAgonyCnt: row.asAgonyCnt,
+    asSynerCnt: row.asSynerCnt,
+    asStableCnt: row.asStableCnt,
+    Muscle: { title: row.muscleTitle, Group: { title: row.groupTitle } },
+  }));
+}
