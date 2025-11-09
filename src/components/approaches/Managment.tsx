@@ -117,7 +117,7 @@ export function ApproachesManagement({
         <form onSubmit={submit}>
           <div>
             {data.map((d) => (
-              <div key={d.priority} className="col-12 mb-3">
+              <div key={d.priority} className="col-12 mb-2">
                 <ApproachesManagementElement
                   elem={d}
                   onChange={() => {}}
@@ -126,10 +126,10 @@ export function ApproachesManagement({
               </div>
             ))}
           </div>
-          <div className="row mb-2">
+          <div className="row">
             <SetsStatsForApproachGroup
               group={approachGroup}
-              className="col-lg-6 col-md-12"
+              className="col-lg-6 col-md-12 mb-3"
             />
             <div className="col-lg-6 col-md-12 d-flex gap-3 justify-content-end">
               <button className="btn btn-primary" disabled={handling}>

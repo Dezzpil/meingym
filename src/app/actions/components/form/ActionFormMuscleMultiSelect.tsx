@@ -15,22 +15,27 @@ type Props<Name extends FieldPath<ActionsFormFieldsType>> = {
   control: Control<ActionsFormFieldsType>;
   isDisabled?: boolean;
   placeholder?: string;
+  muscleClassBorderColor?: string;
 };
 
-export const MuscleMultiSelect: React.FC<Props<any>> = ({
+export const ActionFormMuscleMultiSelect: React.FC<Props<any>> = ({
   name,
   label,
   muscles,
   control,
   isDisabled,
   placeholder,
+  muscleClassBorderColor,
 }) => {
   const groupedOptions = useMemo(() => {
     const groups: Record<string, { value: string; label: string }[]> = {};
     for (const m of muscles) {
       const key = m.Group?.title ?? "";
       if (!groups[key]) groups[key] = [];
-      groups[key].push({ value: String(m.id), label: `${m.title}` });
+      groups[key].push({
+        value: String(m.id),
+        label: `${m.Group.title}: ${m.title}`,
+      });
     }
 
     return Object.entries(groups)
@@ -75,6 +80,21 @@ export const MuscleMultiSelect: React.FC<Props<any>> = ({
               onBlur={field.onBlur}
               placeholder={placeholder ?? "Имя мышцы..."}
               isDisabled={isDisabled}
+              styles={{
+                multiValue: (baseStyles, state) => ({
+                  ...baseStyles,
+                  color: "black",
+                  backgroundColor: "white",
+                  borderRadius: "4px",
+                }),
+                multiValueLabel: (baseStyles, state) => ({
+                  ...baseStyles,
+                  backgroundColor: muscleClassBorderColor,
+                  color: "white",
+                  borderRadius: "4px",
+                  paddingRight: "8px",
+                }),
+              }}
               classNamePrefix="react-select"
             />
           );

@@ -8,7 +8,6 @@ import type {
 import { useMemo } from "react";
 import { truncateText } from "@/tools/func";
 import Image from "next/image";
-import { ActionMusclesInLine } from "@/app/actions/components/ActionMusclesInLine";
 
 type Props = {
   action: any & {

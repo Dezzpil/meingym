@@ -165,7 +165,7 @@ export function TrainingExerciseAddSearch({
                       <div className="text-muted small">{a.search}</div>
                     )}
                   </div>
-                  <div className="small">
+                  <div>
                     <ActionMuscles action={a} />
                   </div>
                 </li>

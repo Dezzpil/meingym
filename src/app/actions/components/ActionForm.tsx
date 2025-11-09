@@ -14,9 +14,15 @@ import { useState, useMemo } from "react";
 import { handleUpdate } from "@/app/actions/actions";
 import { ActionRig } from "@prisma/client";
 import { Toaster } from "react-hot-toast";
-import { MuscleMultiSelect } from "@/components/form/MuscleMultiSelect";
+import { ActionFormMuscleMultiSelect } from "@/app/actions/components/form/ActionFormMuscleMultiSelect";
 import { ActionImagesSection } from "@/app/actions/components/ActionImagesSection";
-import { SimilarActionsMultiSelect } from "@/components/form/SimilarActionsMultiSelect";
+import { ActionFormSimilarActionsMultiSelect } from "@/app/actions/components/form/ActionFormSimilarActionsMultiSelect";
+import styles from "@/app/actions/muscles.module.css";
+import {
+  MuscleAgonyBackground,
+  MuscleStabilizerBackground,
+  MuscleSynergyBackground,
+} from "@/app/actions/colors";
 
 type Props = {
   muscles: Array<Muscle & { Group: { title: string } }>;
@@ -130,27 +136,30 @@ export default function ActionForm({
             </div>
           </div>
 
-          <div className="col-sm-12 col-lg-6">
-            <MuscleMultiSelect
+          <div className="col-sm-12 col-lg-6 muscles-container">
+            <ActionFormMuscleMultiSelect
               name={"musclesAgonyIds"}
               label={"Мышцы-агонисты"}
               muscles={muscles as any}
               control={form.control}
               isDisabled={!control}
+              muscleClassBorderColor={MuscleAgonyBackground}
             />
-            <MuscleMultiSelect
+            <ActionFormMuscleMultiSelect
               name={"musclesSynergyIds"}
               label={"Мышцы-синергисты"}
               muscles={muscles as any}
               control={form.control}
               isDisabled={!control}
+              muscleClassBorderColor={MuscleSynergyBackground}
             />
-            <MuscleMultiSelect
+            <ActionFormMuscleMultiSelect
               name={"musclesStabilizerIds"}
               label={"Мышцы-стабилизаторы"}
               muscles={muscles as any}
               control={form.control}
               isDisabled={!control}
+              muscleClassBorderColor={MuscleStabilizerBackground}
             />
           </div>
 
@@ -211,7 +220,7 @@ export default function ActionForm({
               />
             </div>
 
-            <SimilarActionsMultiSelect
+            <ActionFormSimilarActionsMultiSelect
               name={"similarExerciseIds"}
               label={"Аналогичные упражнения"}
               options={allowedSimilarActions as any}

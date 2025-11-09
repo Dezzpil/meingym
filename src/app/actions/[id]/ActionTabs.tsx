@@ -21,12 +21,7 @@ export const ActionTabs = ({
   className?: string;
 }) => {
   return (
-    <ul
-      className={classNames(
-        "nav nav-tabs border-0 overflow-x-auto flex-nowrap overflow-y-hidden pb-1",
-        className,
-      )}
-    >
+    <ul className={classNames("nav nav-pills", className)}>
       {Object.entries(tabs).map(([key, value]) => (
         <li className="nav-item" key={key}>
           {current == key ? (

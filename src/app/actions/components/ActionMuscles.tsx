@@ -1,5 +1,10 @@
 "use client";
 import { ActionWithMusclesType } from "@/app/actions/types";
+import {
+  MuscleAgonyBackground,
+  MuscleStabilizerBackground,
+  MuscleSynergyBackground,
+} from "@/app/actions/colors";
 
 type Props = {
   action: ActionWithMusclesType;
@@ -12,7 +17,8 @@ export function ActionMuscles({ action }: Props) {
           <div className="d-flex flex-wrap gap-1">
             {action.MusclesAgony.map((l) => (
               <span
-                className="badge bg-success bg-opacity-75 text-white"
+                className="badge bg-opacity-75 text-white"
+                style={{ backgroundColor: MuscleAgonyBackground }}
                 key={l.muscleId}
               >
                 <small className="fw-medium">{l.Muscle.Group.title}:</small>{" "}
@@ -30,7 +36,8 @@ export function ActionMuscles({ action }: Props) {
           <div className="d-flex flex-wrap gap-1">
             {action.MusclesSynergy.map((l) => (
               <span
-                className="badge bg-primary bg-opacity-75 text-white"
+                className="badge bg-opacity-75 text-white"
+                style={{ backgroundColor: MuscleSynergyBackground }}
                 key={l.muscleId}
               >
                 <small className="fw-medium">{l.Muscle.Group.title}:</small>{" "}
@@ -46,7 +53,8 @@ export function ActionMuscles({ action }: Props) {
           <div className="d-flex flex-wrap gap-1">
             {action.MusclesStabilizer.map((l) => (
               <span
-                className="badge bg-warning bg-opacity-75 text-secondary"
+                className="badge bg-opacity-75 white"
+                style={{ backgroundColor: MuscleStabilizerBackground }}
                 key={l.muscleId}
               >
                 <small className="fw-medium">{l.Muscle.Group.title}:</small>{" "}

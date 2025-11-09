@@ -16,7 +16,7 @@ type Props<Name extends FieldPath<ActionsFormFieldsType>> = {
   placeholder?: string;
 };
 
-export const SimilarActionsMultiSelect: React.FC<Props<any>> = ({
+export const ActionFormSimilarActionsMultiSelect: React.FC<Props<any>> = ({
   name,
   label,
   options,
@@ -42,7 +42,9 @@ export const SimilarActionsMultiSelect: React.FC<Props<any>> = ({
 
           const selected = valueArray
             .map((v) => ({ value: v, label: v }))
-            .map((opt) => selectOptions.find((o) => o.value === opt.value) || opt);
+            .map(
+              (opt) => selectOptions.find((o) => o.value === opt.value) || opt,
+            );
 
           return (
             <Select
@@ -65,9 +67,9 @@ export const SimilarActionsMultiSelect: React.FC<Props<any>> = ({
         }}
       />
       <small className="form-text text-muted">
-        Выберите упражнения, которые являются аналогами данного упражнения (те же
-        движения, но с другим оборудованием). Показаны только упражнения с общими
-        мышечными группами.
+        Выберите упражнения, которые являются аналогами данного упражнения (те
+        же движения, но с другим оборудованием). Показаны только упражнения с
+        общими мышечными группами.
       </small>
     </div>
   );

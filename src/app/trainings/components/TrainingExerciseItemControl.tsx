@@ -62,7 +62,7 @@ export default function TrainingExerciseItemControl({
   }, [exercise.id]);
   return (
     <div className="row">
-      <div className="mb-3 col-md-3 col-sm-12">
+      <div className="mb-1 col-md-3 col-sm-12">
         <div className="mb-2">
           <Link href={`/actions/${exercise.Action.id}/history`}>
             {exercise.Action.alias
@@ -92,7 +92,10 @@ export default function TrainingExerciseItemControl({
         {showCompare && (
           <div className="mb-2">
             {exercise.prevSetsStats ? (
-              <SetsStatsBase current={exercise.prevSetsStats} className="mb-2" />
+              <SetsStatsBase
+                current={exercise.prevSetsStats}
+                className="mb-2"
+              />
             ) : (
               <div className="text-muted small">Нет данных для сравнения</div>
             )}
@@ -115,7 +118,7 @@ export default function TrainingExerciseItemControl({
               </button>
             ) : (
               <button className="btn btn-sm btn-dark" onClick={hide}>
-                Скрыть редактирование
+                Скрыть
               </button>
             )}
             <button className="btn btn-sm btn-default" onClick={up}>
