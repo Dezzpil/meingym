@@ -35,3 +35,7 @@
 .pointer:hover {
     cursor: pointer;
 }
+
+.form-label {
+    font-weight: 800;
+}

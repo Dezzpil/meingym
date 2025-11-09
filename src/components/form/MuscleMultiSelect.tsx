@@ -39,7 +39,7 @@ export const MuscleMultiSelect: React.FC<Props<any>> = ({
   }, [muscles]);
 
   return (
-    <div className="mb-2">
+    <div className="mb-3">
       <label className="form-label">{label}</label>
       <Controller
         name={name}
