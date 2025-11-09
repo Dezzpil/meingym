@@ -30,18 +30,22 @@ export default async function ActionPage({ params }: ItemPageParams) {
     },
   });
   console.log(action.SimilarTo, action.SimilarFrom);
+
   // Fetch all actions for similar exercises dropdown
   const actionGroupIds = action.MusclesAgony.map((ma) => ma.Muscle.groupId);
-  const similarActionsDto =
-    (await prisma.$queryRaw`SELECT DISTINCT A.id, A.title from "Action" A
+  let similarActionsDto: {
+    id: number;
+    title: string;
+  }[] = [];
+  if (actionGroupIds.length) {
+    similarActionsDto =
+      await prisma.$queryRaw`SELECT DISTINCT A.id, A.title from "Action" A
       LEFT JOIN "ActionsOnMusclesAgony" AOMA on A.id = AOMA."actionId"
       LEFT JOIN "Muscle" M on AOMA."muscleId" = M.id
-  WHERE m."groupId" IN (${Prisma.join(actionGroupIds)}) AND A."id" != ${
-    action.id
-  };`) as unknown as {
-      id: number;
-      title: string;
-    }[];
+        WHERE m."groupId" IN (${Prisma.join(actionGroupIds)}) AND A."id" != ${
+          action.id
+        };`;
+  }
 
   const muscles = await prisma.muscle.findMany({
     include: { Group: true },
