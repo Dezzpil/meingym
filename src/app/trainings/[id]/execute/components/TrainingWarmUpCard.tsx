@@ -40,8 +40,8 @@ export function TrainingWarmUpCard({ warmUp, disabled }: Props) {
       </div>
       <div className="card-body">
         {!disabled && !isDone && (
-          <div className="d-flex justify-content-between mb-2">
-            <button className="btn btn-outline-warning me-2" onClick={skip}>
+          <div className="d-flex justify-content-between">
+            <button className="btn btn-outline-warning" onClick={skip}>
               Пропустить
             </button>
             <button className="btn btn-outline-success" onClick={complete}>

@@ -1,6 +1,6 @@
 import { ItemPageParams } from "@/tools/types";
 import { prisma } from "@/tools/db";
-import { TrainingAddExerciseForm } from "@/app/trainings/components/TrainingAddExerciseForm";
+import { TrainingExerciseFloatingAdd } from "@/app/trainings/components/TrainingExerciseFloatingAdd";
 import React from "react";
 import TrainingExerciseItemControl from "@/app/trainings/components/TrainingExerciseItemControl";
 import moment from "moment";
@@ -234,10 +234,10 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         </div>
       )}
       {!training.completedAt && (
-        <TrainingAddExerciseForm
+        <TrainingExerciseFloatingAdd
           training={training}
-          actions={actions}
-          exercises={exercises}
+          actions={actions as any}
+          exercises={exercises as any}
           defaultPurpose={userInfo.purpose}
         />
       )}
