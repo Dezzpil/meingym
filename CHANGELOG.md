@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.22.0](https://github.com/Dezzpil/meingym/compare/v1.21.0...v1.22.0) (2025-11-09)
+
+
+### Features
+
+* привести цвета мышц к палитре + поправить мелочи ([e85eadb](https://github.com/Dezzpil/meingym/commits/e85eadb3c51246109d70d3279759ce78127ff406))
+
 ## [1.21.0](https://github.com/Dezzpil/meingym/compare/v1.20.0...v1.21.0) (2025-11-09)
 
 
