@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.21.0](https://github.com/Dezzpil/meingym/compare/v1.20.0...v1.21.0) (2025-11-09)
+
+
+### Features
+
+* доработать отображение и строение формы упражнения ([de20517](https://github.com/Dezzpil/meingym/commits/de20517c3867b7382f40dcc14399a2e418ebe508))
+* доработать форму упражнения ([edc688f](https://github.com/Dezzpil/meingym/commits/edc688f3fffba19fd5f1ceb04af4cce640de27d7))
+* перейти от мультиселекта к чип-выбору мышц для упражнения ([7062c08](https://github.com/Dezzpil/meingym/commits/7062c086bffd3bf81e9f37bcd4179fd278c4c8b1))
+
+
+### Bug Fixes
+
+* исправить поиск похожих упражнений в карточке ([562b5a2](https://github.com/Dezzpil/meingym/commits/562b5a285a16190bb009ea1d392d6687030b3d72))
+
 ## [1.20.0](https://github.com/Dezzpil/meingym/compare/v1.19.0...v1.20.0) (2025-11-09)
 
 
