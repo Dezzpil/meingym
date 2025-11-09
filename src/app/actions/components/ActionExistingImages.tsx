@@ -10,20 +10,24 @@ type Props = {
   onDelete?: (imageId: number) => void;
 };
 
-export function ActionExistingImages({ images, control, onSetMain, onDelete }: Props) {
+export function ActionExistingImages({
+  images,
+  control,
+  onSetMain,
+  onDelete,
+}: Props) {
   if (!images || images.length === 0) return null;
 
   return (
-    <div className="mt-3 mb-3">
-      <label className="form-label">Изображения упражнения</label>
+    <div>
       <div className="row g-2">
         {images.map((image) => (
           <div key={image.id} className="col-md-4 col-sm-6">
             <div className="card h-100">
               <Image
                 src={image.path}
+                alt={""}
                 className="card-img-top"
-                alt="Изображение упражнения"
                 style={{ maxHeight: "150px", objectFit: "contain" }}
                 width={150}
                 height={150}

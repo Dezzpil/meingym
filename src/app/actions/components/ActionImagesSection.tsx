@@ -12,7 +12,11 @@ type Props = {
   initialImages?: ExerciseImage[];
 };
 
-export function ActionImagesSection({ actionId, control, initialImages }: Props) {
+export function ActionImagesSection({
+  actionId,
+  control,
+  initialImages,
+}: Props) {
   const [images, setImages] = useState<ExerciseImage[]>(initialImages || []);
   const [isLoadingImages, setIsLoadingImages] = useState<boolean>(false);
   const imgTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -97,6 +101,12 @@ export function ActionImagesSection({ actionId, control, initialImages }: Props)
         id={"images"}
         ref={imgTextareaRef}
       />
+      {control && (
+        <ActionImagePasteArea
+          actionId={actionId}
+          onImageUploaded={handleImageUploaded}
+        />
+      )}
 
       <ActionExistingImages
         images={images}
@@ -106,15 +116,11 @@ export function ActionImagesSection({ actionId, control, initialImages }: Props)
       />
 
       {isLoadingImages && (
-        <div className="d-flex justify-content-center my-3">
+        <div className="d-flex justify-content-center">
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Загрузка...</span>
           </div>
         </div>
-      )}
-
-      {control && (
-        <ActionImagePasteArea actionId={actionId} onImageUploaded={handleImageUploaded} />
       )}
     </div>
   );

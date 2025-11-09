@@ -91,25 +91,23 @@ export function ActionImagePasteArea({
   }, [handlePaste]);
 
   return (
-    <div className="image-paste-area mb-2">
-      <div className="alert alert-info">
-        <small>
-          Вы можете вставить GIF или PNG изображение из буфера обмена (Ctrl+V).
-          Максимальный размер: 3MB.
-        </small>
-        {isPasting && (
-          <div className="mt-2">
-            <div
-              className="spinner-border spinner-border-sm text-primary"
-              role="status"
-            >
-              <span className="visually-hidden">Загрузка...</span>
-            </div>
-            <span className="ms-2">Загрузка изображения...</span>
+    <div className="image-paste-area text-muted mb-2">
+      <small>
+        Вы можете вставить GIF или PNG изображение из буфера обмена (Ctrl+V).
+        Максимальный размер: 3MB.
+      </small>
+      {isPasting && (
+        <div className="mt-2">
+          <div
+            className="spinner-border spinner-border-sm text-primary"
+            role="status"
+          >
+            <span className="visually-hidden">Загрузка...</span>
           </div>
-        )}
-        {error && <div className="text-danger mt-2">{error}</div>}
-      </div>
+          <span className="ms-2">Загрузка изображения...</span>
+        </div>
+      )}
+      {error && <div className="text-danger mt-2">{error}</div>}
     </div>
   );
 }
