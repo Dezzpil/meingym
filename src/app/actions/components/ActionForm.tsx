@@ -17,6 +17,7 @@ import { ActionImagePasteArea } from "@/app/actions/components/ActionImagePasteA
 import { Toaster } from "react-hot-toast";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import { MuscleMultiSelect } from "@/components/form/MuscleMultiSelect";
 
 type Props = {
   muscles: Array<Muscle & { Group: { title: string } }>;
@@ -88,8 +89,21 @@ export default function ActionForm({
         similarExerciseIds.add(s.similarActionId + ""),
       );
 
-    return Object.assign(action, {
+    const musclesAgonyIds = (action.MusclesAgony || []).map((m: any) =>
+      String(m.muscleId),
+    );
+    const musclesSynergyIds = (action.MusclesSynergy || []).map((m: any) =>
+      String(m.muscleId),
+    );
+    const musclesStabilizerIds = (action.MusclesStabilizer || []).map(
+      (m: any) => String(m.muscleId),
+    );
+
+    return Object.assign({}, action, {
       similarExerciseIds: Array.from(similarExerciseIds.values()),
+      musclesAgonyIds,
+      musclesSynergyIds,
+      musclesStabilizerIds,
     });
   }, [action]);
 
@@ -212,77 +226,27 @@ export default function ActionForm({
               </div>
             </div>
           </div>
-          <div className="mb-2">
-            <label className="form-label">Мышцы-агонисты</label>
-            <select
-              multiple
-              className="form-control"
-              {...form.register("musclesAgonyIds", { valueAsNumber: true })}
-            >
-              {muscles.map((m) => (
-                <option
-                  key={m.id}
-                  value={m.id}
-                  selected={
-                    action &&
-                    action.MusclesAgony.reduce((prev, curr) => {
-                      return prev || curr.muscleId === m.id;
-                    }, false)
-                  }
-                >
-                  {m.Group.title}: {m.title}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-2">
-            <label className="form-label">Мышцы-синергисты</label>
-            <select
-              multiple
-              className="form-control"
-              {...form.register("musclesSynergyIds", { valueAsNumber: true })}
-            >
-              {muscles.map((m) => (
-                <option
-                  key={m.id}
-                  value={m.id}
-                  selected={
-                    action &&
-                    action.MusclesSynergy.reduce((prev, curr) => {
-                      return prev || curr.muscleId === m.id;
-                    }, false)
-                  }
-                >
-                  {m.Group.title}: {m.title}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-2">
-            <label className="form-label">Мышцы-стабилизаторы</label>
-            <select
-              multiple
-              className="form-control"
-              {...form.register("musclesStabilizerIds", {
-                valueAsNumber: true,
-              })}
-            >
-              {muscles.map((m) => (
-                <option
-                  key={m.id}
-                  value={m.id}
-                  selected={
-                    action &&
-                    action.MusclesStabilizer.reduce((prev, curr) => {
-                      return prev || curr.muscleId === m.id;
-                    }, false)
-                  }
-                >
-                  {m.Group.title}: {m.title}
-                </option>
-              ))}
-            </select>
-          </div>
+          <MuscleMultiSelect
+            name={"musclesAgonyIds"}
+            label={"Мышцы-агонисты"}
+            muscles={muscles as any}
+            control={form.control}
+            isDisabled={!control}
+          />
+          <MuscleMultiSelect
+            name={"musclesSynergyIds"}
+            label={"Мышцы-синергисты"}
+            muscles={muscles as any}
+            control={form.control}
+            isDisabled={!control}
+          />
+          <MuscleMultiSelect
+            name={"musclesStabilizerIds"}
+            label={"Мышцы-стабилизаторы"}
+            muscles={muscles as any}
+            control={form.control}
+            isDisabled={!control}
+          />
           <div className="mb-2">
             <label className="form-label">Отягощение</label>
             <select className="form-control" {...form.register("rig")}>
