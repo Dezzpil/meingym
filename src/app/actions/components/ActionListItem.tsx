@@ -9,7 +9,7 @@ type Props = {
 
 export function ActionListItem({ action }: Props) {
   return (
-    <div className="card h-100" key={action.id}>
+    <div className="card h-100 mb-2" key={action.id}>
       <div className="card-header">
         <Link href={`/actions/${action.id}`}>
           {truncateText(action.alias ? action.alias : action.title, 32)}

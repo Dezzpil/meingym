@@ -15,6 +15,8 @@ import { UserRole } from ".prisma/client";
 import { ActionHistoryScoreChart } from "@/app/actions/[id]/history/components/ActionHistoryScoreChart";
 import { ActionListItem } from "@/app/actions/components/ActionListItem";
 import { ActionFilterForm } from "@/app/actions/components/ActionFilterForm";
+import { BiPlus } from "react-icons/bi";
+import React from "react";
 
 export default async function ActionsPage({ searchParams }: PageParams) {
   const user = await getCurrentUser();
@@ -99,13 +101,25 @@ export default async function ActionsPage({ searchParams }: PageParams) {
       </div>
       {actions.length ? (
         <>
-          <div className="mb-2 d-flex gap-3 align-items-baseline">
-            <p className="text-muted">Упражнений: {actions.length}</p>
-            {user.role === UserRole.ADMIN && (
-              <Link href={`/actions/create`}>Добавить</Link>
-            )}
-          </div>
-          <div className="d-flex flex-wrap gap-3 justify-content-center justify-content-md-start">
+          {user.role === UserRole.ADMIN && (
+            <Link
+              href={`/actions/create`}
+              className="btn btn-primary rounded-circle position-fixed d-inline-flex align-items-center justify-content-center"
+              title="Добавить упражнение"
+              aria-label="Добавить упражнение"
+              style={{
+                width: 56,
+                height: 56,
+                right: 16,
+                bottom: 16,
+                zIndex: 1050,
+                boxShadow: "0 0.5rem 1rem rgba(0,0,0,.15)",
+              }}
+            >
+              <BiPlus size={28} />
+            </Link>
+          )}
+          <div className="">
             {actions.map((a) => (
               <ActionListItem action={a} key={a.id} />
             ))}
