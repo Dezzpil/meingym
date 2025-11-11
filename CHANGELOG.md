@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.23.0](https://github.com/Dezzpil/meingym/compare/v1.22.0...v1.23.0) (2025-11-11)
+
+
+### Features
+
+* доработать логику кол-ва повторений в подходе для упражнений с одной гантелей ([f53393f](https://github.com/Dezzpil/meingym/commits/f53393fae5a3c9a80afcd8a4877c00e592dfdebc))
+* переделать отображение упражнений в списке ([119af5c](https://github.com/Dezzpil/meingym/commits/119af5c94b4afd7e012c48420b44e239e59287d8))
+* переделать отображение упражнений в списке и кнопку добавления ([204b15f](https://github.com/Dezzpil/meingym/commits/204b15fbd34ce2b968fa7bc5d289c16d6aa37d02))
+* поправить расположение кнопок на моб для блока упр-ия ([83ec3c9](https://github.com/Dezzpil/meingym/commits/83ec3c9169f81b46e7203d3858787089ecb3c7b0))
+
 ## [1.22.0](https://github.com/Dezzpil/meingym/compare/v1.21.0...v1.22.0) (2025-11-09)
 
 
