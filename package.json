@@ -13,7 +13,7 @@
     "release:feature": "standard-version -r minor",
     "release:breaking": "standard-version -r major",
     "test": "node --import tsx src/tests/**/**/**/*.test.ts",
-    "test:only": "node --import tsx --test-only src/tests/**/**/**/*.test.ts",
+    "test:core": "node --import tsx --test src/tests/core/**/*.test.ts",
     "update-actions": "node --import tsx src/scripts/update-actions.ts",
     "update-training-exercises": "node --import tsx src/scripts/update-training-exercises.ts",
     "update-approaches-groups": "node --import tsx src/scripts/update-approaches-groups.ts",

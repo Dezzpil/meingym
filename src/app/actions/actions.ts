@@ -10,21 +10,21 @@ import { ActionRig } from "@prisma/client";
 function containsMarkdown(text: string): boolean {
   // Check for common Markdown patterns
   const markdownPatterns = [
-    /#{1,6}\s+.+/,          // Headers
-    /\*\*.+\*\*/,           // Bold
-    /\*.+\*/,               // Italic
-    /\[.+\]\(.+\)/,         // Links
-    /!\[.+\]\(.+\)/,        // Images
-    /```[\s\S]*?```/,       // Code blocks
-    /`[^`]+`/,              // Inline code
-    /^\s*[-*+]\s+.+/m,      // Unordered lists
-    /^\s*\d+\.\s+.+/m,      // Ordered lists
-    /^\s*>\s+.+/m,          // Blockquotes
-    /\|\s*[-:]+\s*\|/,      // Tables
-    /~~.+~~/,               // Strikethrough
+    /#{1,6}\s+.+/, // Headers
+    /\*\*.+\*\*/, // Bold
+    /\*.+\*/, // Italic
+    /\[.+\]\(.+\)/, // Links
+    /!\[.+\]\(.+\)/, // Images
+    /```[\s\S]*?```/, // Code blocks
+    /`[^`]+`/, // Inline code
+    /^\s*[-*+]\s+.+/m, // Unordered lists
+    /^\s*\d+\.\s+.+/m, // Ordered lists
+    /^\s*>\s+.+/m, // Blockquotes
+    /\|\s*[-:]+\s*\|/, // Tables
+    /~~.+~~/, // Strikethrough
   ];
 
-  return markdownPatterns.some(pattern => pattern.test(text));
+  return markdownPatterns.some((pattern) => pattern.test(text));
 }
 
 export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
@@ -70,6 +70,7 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
         strengthAllowed: data.strengthAllowed,
         bigCount: data.bigCount,
         allowCheating: data.allowCheating,
+        oneDumbbell: data.oneDumbbell,
         MusclesAgony: {
           deleteMany: { actionId: id },
           createMany: {
@@ -160,102 +161,4 @@ export async function handleCreate(data: ActionsFormFieldsType) {
   });
 
   redirect(`/actions/${newAction.id}`);
-}
-
-export async function _handleCreate(data: ActionsFormFieldsType) {
-  const title = data.title.trim();
-  const rig = autoDefineRig(data.title, data.rig);
-
-  const existed = await prisma.action.findFirst({ where: { title } });
-  if (existed) {
-    throw new Error(`Движение ${title} уже существует`);
-  }
-
-  // Check if description contains Markdown
-  const isMarkDownInDesc = containsMarkdown(data.desc);
-
-  // Create the action first
-  const action = await prisma.$transaction(async (tx) => {
-    const newAction = await tx.action.create({
-      data: {
-        title,
-        rig,
-        desc: data.desc,
-        isMarkDownInDesc,
-        search: title,
-        alias: data.alias,
-        strengthAllowed: data.strengthAllowed,
-        bigCount: data.bigCount,
-        allowCheating: data.allowCheating,
-        anotherTitles: data.anotherTitles,
-      },
-    });
-
-    // Create muscle relationships
-    if (data.musclesAgonyIds.length > 0) {
-      await tx.actionsOnMusclesAgony.createMany({
-        data: data.musclesAgonyIds.map((id) => ({
-          actionId: newAction.id,
-          muscleId: parseInt(id),
-        })),
-      });
-    }
-
-    if (data.musclesSynergyIds.length > 0) {
-      await tx.actionsOnMusclesSynergy.createMany({
-        data: data.musclesSynergyIds.map((id) => ({
-          actionId: newAction.id,
-          muscleId: parseInt(id),
-        })),
-      });
-    }
-
-    if (data.musclesStabilizerIds.length > 0) {
-      await tx.actionsOnMusclesStabilizer.createMany({
-        data: data.musclesStabilizerIds.map((id) => ({
-          actionId: newAction.id,
-          muscleId: parseInt(id),
-        })),
-      });
-    }
-
-    // Fetch muscle data for search field
-    const muscleIds = [
-      ...data.musclesAgonyIds.map((id) => parseInt(id)),
-      ...data.musclesSynergyIds.map((id) => parseInt(id)),
-      ...data.musclesStabilizerIds.map((id) => parseInt(id)),
-    ];
-
-    if (muscleIds.length > 0) {
-      const muscles = await tx.muscle.findMany({
-        where: { id: { in: muscleIds } },
-        include: { Group: true },
-      });
-
-      // Create search terms from muscles and their groups
-      const muscleSearchTerms = muscles.map(
-        (muscle) =>
-          `${muscle.title.toLowerCase()} ${muscle.Group.title.toLowerCase()}`,
-      );
-
-      // Update the search field with all terms
-      const searchTerms = [
-        title.toLowerCase(),
-        data.alias?.toLowerCase(),
-        data.anotherTitles?.toLowerCase(),
-        ...muscleSearchTerms,
-      ]
-        .filter((s) => s && s.trim().length)
-        .join(" ");
-
-      await tx.action.update({
-        where: { id: newAction.id },
-        data: { search: searchTerms },
-      });
-    }
-
-    return newAction;
-  });
-
-  redirect(`/actions/${action.id}`);
 }

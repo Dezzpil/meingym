@@ -196,6 +196,7 @@ model Action {
   strengthAllowed Boolean @default(false)
   bigCount        Boolean @default(false)
   allowCheating   Boolean @default(false)
+  oneDumbbell     Boolean @default(false)
 
   MusclesAgony      ActionsOnMusclesAgony[]
   MusclesSynergy    ActionsOnMusclesSynergy[]

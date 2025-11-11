@@ -12,6 +12,7 @@ const strategy = new ProgressionStrategySimple(
     rig: "BARBELL",
     strengthAllowed: true,
     bigCount: false,
+    oneDumbbell: false,
   },
   {
     strengthWorkingSetsCount: 4,

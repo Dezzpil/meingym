@@ -52,7 +52,7 @@ export const ProgressionStrategySimpleOptsDefaults: ProgressionStrategySimpleOpt
 export class ProgressionStrategySimple {
   public readonly _opts: ProgressionStrategySimpleOptsType;
   constructor(
-    private _action: Pick<Action, "rig" | "strengthAllowed" | "bigCount">,
+    private _action: Pick<Action, "rig" | "strengthAllowed" | "bigCount" | "oneDumbbell">,
     opts?: ProgressionStrategySimpleOptsType | null,
   ) {
     this._opts = opts
@@ -144,7 +144,14 @@ export class ProgressionStrategySimple {
       working,
       this._opts.strengthWeightDelta * 2,
     );
-    return preparing.concat(working);
+    let sets = preparing.concat(working);
+    if (this._action.oneDumbbell) {
+      sets = sets.map((s) => ({
+        weight: s.weight,
+        count: s.count % 2 === 0 ? s.count : s.count + 1,
+      }));
+    }
+    return sets;
   }
 
   mass(planned: SetData[], executed: SetDataExecuted[]): SetData[] {
@@ -195,6 +202,9 @@ export class ProgressionStrategySimple {
       } else {
         sets[i].count += 1;
       }
+      if (this._action.oneDumbbell) {
+        sets[i].count = sets[i].count % 2 === 0 ? sets[i].count : sets[i].count + 1;
+      }
     }
 
     if (this._opts.massAddDropSet) {
@@ -222,6 +232,10 @@ export class ProgressionStrategySimple {
       addSet = true;
     } else {
       mean += this._opts.lossCountStep;
+    }
+
+    if (this._action.oneDumbbell) {
+      mean = mean % 2 === 0 ? mean : mean + 1;
     }
 
     let sets: SetData[] = [];

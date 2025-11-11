@@ -209,6 +209,19 @@ export default function ActionForm({
                     </label>
                   </div>
                 </div>
+                <div className="col-12">
+                  <div className="form-check col-auto">
+                    <input
+                      type="checkbox"
+                      id="oneDumbbell"
+                      className="form-check-input"
+                      {...form.register("oneDumbbell", {})}
+                    />
+                    <label htmlFor="oneDumbbell" className="form-check-label">
+                      Одна гантеля
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
 
