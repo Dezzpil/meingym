@@ -18,6 +18,8 @@ import { PurposeText } from "@/components/PurposeText";
 import classNames from "classnames";
 import { ActionWithMusclesType } from "@/app/actions/types";
 import { TrainingExerciseReplaceButton } from "@/app/trainings/[id]/execute/components/TrainingExerciseReplaceButton";
+import { FaExchangeAlt } from "react-icons/fa";
+import { TiCancel } from "react-icons/ti";
 
 type Props = {
   exercise: {
@@ -80,12 +82,18 @@ export function TrainingExecuteCard({
       <div className="card-body">
         {!disabled && (
           <div className="d-flex justify-content-between mb-2">
-            <div>
+            <div className="d-flex gap-2">
               {!exercise.startedAt && (
-                <button className="btn btn-outline-warning me-2" onClick={pass}>
+                <button
+                  className="btn btn-outline-warning d-inline-flex align-items-center"
+                  onClick={pass}
+                  title="Пропустить упражнение"
+                >
                   Пропустить
                 </button>
               )}
+            </div>
+            <div className="d-flex gap-2">
               {!exercise.completedAt && (
                 <TrainingExerciseReplaceButton
                   exercise={exercise}
@@ -94,12 +102,12 @@ export function TrainingExecuteCard({
                   disabled={disabled || exercise.completedAt !== null}
                 />
               )}
+              {!exercise.startedAt && (
+                <button className="btn btn-primary" onClick={start}>
+                  Погнали!
+                </button>
+              )}
             </div>
-            {!exercise.startedAt && (
-              <button className="btn btn-primary" onClick={start}>
-                Погнали!
-              </button>
-            )}
           </div>
         )}
         <TrainingExecuteForm

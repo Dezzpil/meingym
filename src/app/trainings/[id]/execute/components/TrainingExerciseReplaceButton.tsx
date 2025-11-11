@@ -32,12 +32,12 @@ export function TrainingExerciseReplaceButton({
   return (
     <>
       <button
-        className="btn btn-outline-secondary"
+        className="btn btn-outline-secondary d-inline-flex align-items-center"
         onClick={openModal}
         disabled={disabled}
         title="Заменить упражнение"
       >
-        <FaExchangeAlt /> Заменить
+        <FaExchangeAlt />
       </button>
 
       <TrainingExerciseReplaceModal
