@@ -60,6 +60,22 @@ export function ProfileForm({ userInfo }: Props) {
           <option value={Purpose.LOSS}>Снижение веса</option>
         </select>
       </div>
+
+      <div className="form-check mb-2">
+        <input
+          id="collectExerciseExecutionFeedback"
+          className="form-check-input"
+          type="checkbox"
+          {...form.register("collectExerciseExecutionFeedback")}
+        />
+        <label
+          className="form-check-label"
+          htmlFor="collectExerciseExecutionFeedback"
+        >
+          Собирать обратную связь о выполнении (упражнения)
+        </label>
+      </div>
+
       <div className="mb-2 d-flex justify-content-end">
         <button className="btn btn-primary" disabled={handling}>
           Сохранить

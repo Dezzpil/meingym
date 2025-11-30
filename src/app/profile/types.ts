@@ -7,6 +7,7 @@ export const ProfileFormFields = z.object({
   purpose: z.nativeEnum(Purpose),
   trainingProgression: z.nativeEnum(TrainingProgression),
   trainingProgressionParams: z.any(),
+  collectExerciseExecutionFeedback: z.boolean().default(false),
 });
 
 export type ProfileFormFieldsType = z.infer<typeof ProfileFormFields>;

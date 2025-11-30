@@ -63,6 +63,9 @@ model UserInfo {
   purpose                   Purpose             @default(STRENGTH)
   trainingProgression       TrainingProgression @default(NONE)
   trainingProgressionParams Json                @default("{}")
+
+  // Settings
+  collectExerciseExecutionFeedback Boolean @default(false)
 }
 
 model Account {

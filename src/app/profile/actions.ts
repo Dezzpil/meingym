@@ -15,6 +15,7 @@ export async function handleProfileUpdate(data: ProfileFormFieldsType) {
       purpose: data.purpose,
       trainingProgression: data.trainingProgression,
       trainingProgressionParams: JSON.stringify(data.trainingProgressionParams),
+      collectExerciseExecutionFeedback: data.collectExerciseExecutionFeedback ?? false,
     },
   });
   // return { ok: true, error: null };
