@@ -56,6 +56,7 @@ export async function handleTrainingWarmUpComplete(
 export async function handleTrainingStart(id: number, isCircuit: boolean) {
   const userId = await getCurrentUserId();
 
+  const userInfo = await findUserInfo(userId);
   let currentPeriod = await getCurrentTrainingPeriod(userId);
   if (!currentPeriod) {
     currentPeriod = await createTrainingPeriod(userId);
@@ -66,6 +67,7 @@ export async function handleTrainingStart(id: number, isCircuit: boolean) {
     data: {
       startedAt: new Date(),
       periodId: currentPeriod.id,
+      noFeedback: !userInfo.collectExerciseExecutionFeedback,
     },
   });
 

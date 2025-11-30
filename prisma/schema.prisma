@@ -338,6 +338,9 @@ model Training {
   commonComment   String?
   completeComment String?
 
+  // Feedback control: when true, user won't be asked for execution feedback
+  noFeedback Boolean @default(false)
+
   timeScoreInMins Float     @default(0)
   timeScoreInSecs String?
   timeScoredAt    DateTime?

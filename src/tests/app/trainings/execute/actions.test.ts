@@ -19,6 +19,7 @@ mock.method(prisma.training, "update", async () => ({
   isCircuit: false,
   commonComment: null,
   completeComment: null,
+  noFeedback: true,
   timeScoreInMins: 0,
   timeScoreInSecs: null,
   timeScoredAt: null,
