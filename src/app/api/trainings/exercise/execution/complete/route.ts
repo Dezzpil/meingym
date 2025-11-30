@@ -12,13 +12,13 @@ export type TrainingsExerciseCompleteDTO = {
   id: number;
   liftedWeight: number;
   liftedCount: number;
-  rating?: ExecutionRating | null;
-  technique?: ExecutionTechnique | null;
-  techniqueUpgrade?: boolean | null;
-  cheating?: ExecutionCheating | null;
-  refusing?: ExecutionRefusing | null;
-  burning?: ExecutionBurning | null;
-  comment?: string | null;
+  rating?: ExecutionRating;
+  technique?: ExecutionTechnique;
+  techniqueUpgrade?: boolean;
+  cheating?: ExecutionCheating;
+  refusing?: ExecutionRefusing;
+  burning?: ExecutionBurning;
+  comment?: string;
 };
 
 export async function POST(request: NextRequest) {
