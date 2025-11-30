@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.24.0](https://github.com/Dezzpil/meingym/compare/v1.23.0...v1.24.0) (2025-11-30)
+
+
+### Features
+
+* выключать сбор фидбека по тренировке из настроек пользователя ([060ddc6](https://github.com/Dezzpil/meingym/commits/060ddc68e891b41458589da0ea6412a1baaf5305))
+* добавить параметр сбора фидбека о выполнении ([62207a5](https://github.com/Dezzpil/meingym/commits/62207a50a6a09d07497c12912321f1de25cfc8f4))
+* не просить ввода обратной связи если тренировка без фидбека ([b54cc31](https://github.com/Dezzpil/meingym/commits/b54cc315fbf98e53b0c0955810e8140f2019d305))
+* отказаться от гугл.фонтс ([52661cd](https://github.com/Dezzpil/meingym/commits/52661cd1851af7e9079aa735c0d2cf3be7a3f8d8))
+
 ## [1.23.0](https://github.com/Dezzpil/meingym/compare/v1.22.0...v1.23.0) (2025-11-11)
 
 
