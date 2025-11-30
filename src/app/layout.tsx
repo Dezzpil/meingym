@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
 import React from "react";
 import BootstrapJS from "@/components/BootstrapJS";
 import AuthProvider from "@/components/AuthProvider";
 import { Layout } from "@/components/Layout";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <AuthProvider>
           <Layout>{children}</Layout>
         </AuthProvider>
