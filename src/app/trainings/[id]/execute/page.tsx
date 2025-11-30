@@ -132,6 +132,7 @@ export default async function TrainingExecutePage({ params }: ItemPageParams) {
           disabled={globalDisabled || !warmUpDone}
           allActions={allActions}
           allExercises={training.TrainingExercise}
+          noFeedback={training.noFeedback}
         />
       ))}
       {training.startedAt && (

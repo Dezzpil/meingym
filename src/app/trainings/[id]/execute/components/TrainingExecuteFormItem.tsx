@@ -31,12 +31,14 @@ type Props = {
   exec: TrainingExerciseExecution;
   action: Action;
   disabled: boolean;
+  noFeedback: boolean;
 };
 
 export default function TrainingExecuteFormItem({
   action,
   exec,
   disabled,
+  noFeedback,
 }: Props) {
   const [isCompleted, setCompleted] = useState<boolean>(!!exec.executedAt);
   const [waitForCompleted, setWaitForCompleted] = useState<boolean>(false);
@@ -94,7 +96,25 @@ export default function TrainingExecuteFormItem({
     setWaitForCompleted(true);
 
     if (!isCompleted) {
-      setModalShowed(true);
+      if (noFeedback) {
+        // Skip feedback modal and send minimal payload
+        postApi<TrainingsExerciseCompleteDTO>(
+          `/api/trainings/exercise/execution/complete?id=${exec.id}`,
+          {
+            id: exec.id,
+            liftedWeight,
+            liftedCount,
+          },
+        )
+          .then(() => {
+            setCompleted(true);
+          })
+          .finally(() => {
+            setWaitForCompleted(false);
+          });
+      } else {
+        setModalShowed(true);
+      }
     } else {
       postApi(`/api/trainings/exercise/execution/uncomplete?id=${exec.id}`, {
         id: exec.id,
@@ -106,7 +126,7 @@ export default function TrainingExecuteFormItem({
           setWaitForCompleted(false);
         });
     }
-  }, [exec.id, isCompleted]);
+  }, [exec.id, isCompleted, liftedCount, liftedWeight, noFeedback]);
 
   const updateLiftedCount = useCallback((e: any) => {
     e.preventDefault();

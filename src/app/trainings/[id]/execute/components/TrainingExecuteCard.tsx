@@ -45,12 +45,14 @@ type Props = {
   disabled: boolean;
   allActions: ActionWithMusclesType[];
   allExercises: TrainingExercise[];
+  noFeedback: boolean;
 };
 export function TrainingExecuteCard({
   exercise,
   disabled,
   allActions,
   allExercises,
+  noFeedback,
 }: Props) {
   const start = useCallback(async () => {
     await handleTrainingExerciseStart(exercise.id, exercise.trainingId);
@@ -113,6 +115,7 @@ export function TrainingExecuteCard({
         <TrainingExecuteForm
           exercise={exercise}
           disabled={!exercise.startedAt || !!exercise.completedAt || disabled}
+          noFeedback={noFeedback}
         />
       </div>
     </div>

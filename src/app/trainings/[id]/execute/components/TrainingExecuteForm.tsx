@@ -42,9 +42,10 @@ type Props = {
     TrainingExerciseExecution: TrainingExerciseExecution[];
   };
   disabled: boolean;
+  noFeedback: boolean;
 };
 
-export function TrainingExecuteForm({ exercise, disabled }: Props) {
+export function TrainingExecuteForm({ exercise, disabled, noFeedback }: Props) {
   const [modalShowed, setModalShowed] = useState(false);
 
   const showModal = useCallback(async () => {
@@ -53,10 +54,14 @@ export function TrainingExecuteForm({ exercise, disabled }: Props) {
     if (result) {
       force = confirm("Не все подходы выполнены, завершить упражнение?");
     }
-    if (force) {
-      setModalShowed(true);
+    if (!force) return;
+    if (noFeedback) {
+      // Skip modal and complete immediately without feedback
+      await handleTrainingExerciseExecuted(exercise, null, null);
+      return;
     }
-  }, [exercise.id]);
+    setModalShowed(true);
+  }, [exercise, noFeedback]);
 
   const [completeError, setCompleteError] = useState<string | null>(null);
   const [completeHandling, setCompleteHandling] = useState<boolean>(false);
@@ -107,6 +112,7 @@ export function TrainingExecuteForm({ exercise, disabled }: Props) {
               action={exercise.Action}
               exec={exec}
               disabled={disabled}
+              noFeedback={noFeedback}
             />
           ))}
         </div>
@@ -133,7 +139,10 @@ export function TrainingExecuteForm({ exercise, disabled }: Props) {
                   </div>
                 )}
               </div>
-              <SetsStatsForExecutedExercise exercise={exercise} className="mb-1" />
+              <SetsStatsForExecutedExercise
+                exercise={exercise}
+                className="mb-1"
+              />
               {exercise.comment && (
                 <div className="text-muted">
                   Комментарий: {exercise.comment}
