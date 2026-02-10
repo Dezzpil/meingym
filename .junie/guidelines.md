@@ -10,22 +10,33 @@ MeinGym is a comprehensive gym/fitness tracking application that allows users to
 - Score and evaluate training performance
 - Manage training periods and progression strategies
 
-Current version: 1.16.5
+Current version: 1.24.1
 
 ## Build/Configuration Instructions
 
 ### Prerequisites
-- Node.js (version compatible with Next.js 14.0.4)
+- Node.js (version compatible with Next.js 14.2.30)
 - PostgreSQL 16 database
 - Redis (for background jobs)
 
 ### Environment Setup
 1. Create a `.env.local` file in the project root with the following variables:
    ```
-   DATABASE_PRISMA_URL=postgresql://username:password@localhost:5432/meingym
-   DATABASE_URL_NON_POOLING=postgresql://username:password@localhost:5432/meingym
+   DATABASE_PRISMA_URL="postgresql://username:password@localhost:5432/meingym?schema=public"
+   DATABASE_URL_NON_POOLING="postgresql://username:password@localhost:5432/meingym?schema=public"
    REDIS_HOST=localhost
    REDIS_PORT=6379
+
+   # Authentication Providers
+   GOOGLE_CLIENT_ID=your_google_id
+   GOOGLE_CLIENT_SECRET=your_google_secret
+   GITHUB_APP_ID=your_github_app_id
+   GITHUB_SECRET=your_github_secret
+   NEXTAUTH_SECRET=your_secret
+   NEXTAUTH_URL=http://localhost:3004
+
+   # Other
+   NEXT_TELEMETRY_DISABLED=1
    ```
 
 2. Install dependencies:
@@ -45,7 +56,7 @@ npm run dev
 ```
 
 ### Background Workers
-Start the background job workers:
+Start the background job workers (uses Bull with Redis):
 ```bash
 npm run workers
 ```
@@ -73,11 +84,17 @@ docker-compose up -d
 The project uses:
 - Node.js built-in test module (`node:test`)
 - Chai for assertions
+- `tsx` for running TypeScript tests
 
 ### Running Tests
 Run all tests:
 ```bash
 npm test
+```
+
+Run core logic tests:
+```bash
+npm run test:core
 ```
 
 Run specific tests:
@@ -136,43 +153,52 @@ node --import tsx src/tests/tools/math.test.ts
 
 ### Project Structure
 - `src/app`: Next.js application routes and pages
+- `src/app/admin`: Admin dashboard and management
 - `src/components`: React components
-- `src/core`: Core business logic and domain models
+- `src/core`: Core business logic, domain models, and progression strategies
 - `src/tools`: Utility functions and helpers
-- `src/jobs`: Background job processing system
+- `src/jobs`: Background job processing system (queues and processors)
+- `src/scripts`: Maintenance and data update scripts
 - `prisma`: Database schema and migrations
+
+### Core Features & Logic
+- **Progression System**: Logic for calculating the next workout's loads based on performance.
+- **Training Periods**: Support for organizing workouts into periods with specific goals.
+- **Feedback & Scoring**: Performance evaluation after each workout and set.
+- **Warm-up Sets**: Support for warm-up logic in workouts.
+- **Similar Exercises**: Ability to suggest or replace exercises with similar ones.
+- **Exercise Media**: Support for images (PNG/JPG) and Markdown descriptions for exercises.
 
 ### Database ORM
 The project uses Prisma ORM for database access:
 - Schema is defined in `prisma/schema.prisma`
-- Database models include User, Action, Training, TrainingPeriod, etc.
 - Run migrations with `npm run prisma:migrate`
+- Use `npx prisma studio` to explore data visually.
 
 ### Background Jobs System
-The project uses Bull with Redis for background job processing:
+The project uses Bull with Redis:
 - Job queues are defined in `src/jobs/queues.ts`
 - Job processors are in `src/jobs/processors/`
-- Configuration is in `src/jobs/config.ts`
-- Start workers with `npm run workers`
-- Schedule jobs using helper functions in `src/jobs/index.ts`
+- Workers are started via `src/jobs/index.ts` (run `npm run workers`).
 
-### Code Style
-- TypeScript is used throughout the project
-- React components use functional style with hooks
-- Next.js App Router pattern is used for routing
-- JSDoc comments are used for documenting functions
-
-### Versioning
-The project uses standard-version for release management:
-- `npm run release:patch`: Patch release (bug fixes)
-- `npm run release:feature`: Minor release (new features)
-- `npm run release:breaking`: Major release (breaking changes)
+### Code Style & Commits
+- **TypeScript**: Used throughout the project.
+- **React**: Functional components with hooks.
+- **Commits**: Follow [Conventional Commits](https://www.conventionalcommits.org/). The project uses `standard-version` for release management.
+- **Versioning**:
+  - `npm run release:patch`: Patch release (bug fixes)
+  - `npm run release:feature`: Minor release (new features)
+  - `npm run release:breaking`: Major release (breaking changes)
 
 ### Authentication
-The project uses NextAuth.js for authentication with Prisma adapter.
+The project uses NextAuth.js with Prisma adapter. Supported providers:
+- Google
+- GitHub
+- VK (Check configuration as it might have limitations)
 
 ### Utility Scripts
 The project includes several utility scripts:
 - `npm run update-actions`: Update action data
 - `npm run update-training-exercises`: Update training exercises
 - `npm run update-approaches-groups`: Update approach groups
+- `npm run collect-exercise-time`: Collect statistics for exercise execution time
