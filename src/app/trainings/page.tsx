@@ -16,9 +16,20 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
       ? searchParams.q.trim()
       : null;
   const groupId = searchParams.group ? parseInt(searchParams.group) : null;
+
+  const month = parseInt(searchParams.month) || new Date().getMonth() + 1;
+  const year = parseInt(searchParams.year) || new Date().getFullYear();
+
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 1);
+
   const groups = await prisma.muscleGroup.findMany({});
   const trainings = await prisma.training.findMany({
     where: {
+      plannedTo: {
+        gte: startDate,
+        lt: endDate,
+      },
       commonComment: q ? { contains: q } : {},
       TrainingExercise:
         groupId !== null
@@ -93,6 +104,8 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
           method="GET"
           className="row row-cols-lg-auto g-3 align-items-center"
         >
+          <input type="hidden" name="month" value={month} />
+          <input type="hidden" name="year" value={year} />
           <div className="col-12">
             <select
               name="group"
@@ -137,7 +150,7 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
           />
         ))
       ) : (
-        <p>Список пуст</p>
+        <p>Тренировок в данном месяце нет</p>
       )}
     </>
   );
