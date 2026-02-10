@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.25.0](https://github.com/Dezzpil/meingym/compare/v1.24.3...v1.25.0) (2026-02-10)
+
+
+### Features
+
+* доработать отображение календаря и разные версии текста для пустого списка ([e8843b3](https://github.com/Dezzpil/meingym/commits/e8843b3310820193dc689e2ce2b0c2da96495acd))
+* доработать пустую страницу тренировок ([71939bf](https://github.com/Dezzpil/meingym/commits/71939bfa0bb921dd41f15665b7c5b91c09511c92))
+* загружать тренировки по месяцам ([45a1880](https://github.com/Dezzpil/meingym/commits/45a1880fc67f5adc5e2b18af7f5de1102194ae79))
+
 ### [1.24.3](https://github.com/Dezzpil/meingym/compare/v1.24.2...v1.24.3) (2026-02-10)
 
 ### [1.24.2](https://github.com/Dezzpil/meingym/compare/v1.24.1...v1.24.2) (2026-02-10)
