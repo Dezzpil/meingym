@@ -31,27 +31,22 @@ MeinGym is a web app designed to help in plan, execution, and tracking gym worko
 ### Setup
 
 1. Clone the repository
-2. Set up environment variables:
+2. Create apps in GitHub or Google, to auth with NextAuth.js
+3. Copy .env.dist to .env.local 
+4. Set the environment variables in .env.local
+5. Install dependencies:
    ```bash
-   # Create .env.local file with:
-   DATABASE_PRISMA_URL=postgresql://username:password@localhost:5432/meingym
-   DATABASE_URL_NON_POOLING=postgresql://username:password@localhost:5432/meingym
-   REDIS_HOST=localhost
-   REDIS_PORT=6379
+   npm ci
    ```
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-4. Run database migrations:
+6. Run database migrations:
    ```bash
    npm run prisma:migrate
    ```
-5. Start the development server:
+7. Start the development server:
    ```bash
    npm run dev
    ```
-6. Start the background workers (optional):
+8. Start the background workers (optional):
    ```bash
    npm run workers
    ```
@@ -77,6 +72,15 @@ npm run release:feature        # Create a minor release
 npm run release:breaking       # Create a major release
 ```
 
+### Import dumps 
+
+1. Copy the dump file to the project `PROJECT_DIR/dumps`
+2. Use psql from docker-container to import the dump from `/dumps` directory inside the container:
+   ```bash
+   /usr/bin/docker exec -i -t /meingym-db-1 /bin/bash
+   psql --file="/dumps/meingym-2025_10_28_17_34_03.sql" --single-transaction --username=postgres --host=localhost --port=5432 meingym
+   ```
+
 ## Version
 
-Current version: 1.12.0
+Current version: 1.21.4
