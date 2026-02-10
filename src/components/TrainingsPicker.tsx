@@ -8,6 +8,8 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { DateFormat } from "@/tools/dates";
 import { handleCreateTraining } from "@/app/trainings/create/actions";
 
+import { ru } from "date-fns/locale";
+
 function getHashKey(date: Date) {
   return moment(date).format("YYYYMMDD");
 }
@@ -91,6 +93,7 @@ export function TrainingsPicker({ trainings }: Props) {
   return (
     <div className={isPending ? "opacity-50" : ""}>
       <DayPicker
+        locale={ru}
         numberOfMonths={1}
         mode="single"
         selected={selected}

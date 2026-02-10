@@ -30,6 +30,8 @@ body {
 
 .rdp {
     margin: 0 !important;
+    min-width: calc(var(--rdp-cell-size) * 7);
+    max-width: calc(var(--rdp-cell-size) * 7 * 3) !important;
 }
 .rdp-months {
     display: flex;
@@ -38,6 +40,18 @@ body {
 }
 .rdp-month {
     margin: 0 !important;
+}
+.rdp-table {
+    width: 100% !important;
+    min-width: auto !important;
+    max-width: 100% !important;
+}
+.rdp-caption {
+    text-transform: capitalize;
+    justify-content: right !important;
+}
+.rdp-cell > button {
+    display: inline-block;
 }
 
 .pointer:hover {

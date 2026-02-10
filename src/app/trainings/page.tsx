@@ -22,6 +22,15 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
   const month = parseInt(searchParams.month) || new Date().getMonth() + 1;
   const year = parseInt(searchParams.year) || new Date().getFullYear();
 
+  const now = new Date();
+  const currentMonth = now.getMonth() + 1;
+  const currentYear = now.getFullYear();
+
+  const isPastMonth =
+    year < currentYear || (year === currentYear && month < currentMonth);
+  const isCurrentMonth = year === currentYear && month === currentMonth;
+  const isFiltered = q !== null || groupId !== null;
+
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 1);
 
@@ -137,7 +146,7 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
           </div>
         </form>
       </div>
-      <div className="mb-3">
+      <div className="mb-5">
         <TrainingsPicker trainings={trainings} />
       </div>
       {trainings.length ? (
@@ -151,7 +160,15 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
             purposeCounts={purposeToTrainingMap.get(t.id)}
           />
         ))
-      ) : (
+      ) : isFiltered ? (
+        <p className="mb-3 text-muted text-center">
+          В этом месяце тренировки по указанному фильтру не найдены
+        </p>
+      ) : isPastMonth ? (
+        <p className="mb-3 text-muted text-center">
+          К сожалению, в этом месяце Вы совсем не тренировались :(
+        </p>
+      ) : isCurrentMonth ? (
         <div className="text-center py-5 bg-light rounded-3 border">
           <div className="mb-3 text-secondary opacity-50">
             <BiCalendarPlus size={48} />
@@ -164,6 +181,12 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
             <TrainingCreateForm />
           </div>
         </div>
+      ) : (
+        <p className="mb-3 text-muted text-center">
+          <span className="fw-bold">В здором теле - здоровый дух!</span>
+          <br />
+          <span>С надеждой смотрим в будущее!</span>
+        </p>
       )}
     </>
   );
