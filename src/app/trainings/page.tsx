@@ -4,6 +4,8 @@ import { getCurrentUserId } from "@/tools/auth";
 import { TrainingListCard } from "@/app/trainings/components/TrainingListCard";
 import { PageParams } from "@/tools/types";
 import { TrainingsPicker } from "@/components/TrainingsPicker";
+import TrainingCreateForm from "@/app/trainings/components/TrainingCreateForm";
+import { BiCalendarPlus } from "react-icons/bi";
 
 type TrainingId = number;
 export type MuscleGroupTitleToExercisesCnt = Record<string, number>;
@@ -150,7 +152,18 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
           />
         ))
       ) : (
-        <p>Тренировок в данном месяце нет</p>
+        <div className="text-center py-5 bg-light rounded-3 border">
+          <div className="mb-3 text-secondary opacity-50">
+            <BiCalendarPlus size={48} />
+          </div>
+          <h4 className="fw-bold">В этом месяце пока затишье</h4>
+          <p className="text-muted mb-4">
+            Лучшее время для тренировки — сейчас!
+          </p>
+          <div className="d-flex justify-content-center">
+            <TrainingCreateForm />
+          </div>
+        </div>
       )}
     </>
   );
