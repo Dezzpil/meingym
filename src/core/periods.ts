@@ -38,7 +38,7 @@ export function pickOnlyOptsFromItem(
 export async function createTrainingPeriod(
   userId: string,
   progressionOpts?: ProgressionStrategySimpleOptsType,
-): Promise<TrainingPeriod> {
+) {
   // First, find any current training period for the user and mark it as not current
   await prisma.trainingPeriod.updateMany({
     where: {
@@ -72,6 +72,9 @@ export async function createTrainingPeriod(
       ProgressionStrategySimpleOpts: {
         create: Object.assign({ userId }, opts),
       },
+    },
+    include: {
+      ProgressionStrategySimpleOpts: true,
     },
   });
 }

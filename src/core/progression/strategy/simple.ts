@@ -52,7 +52,10 @@ export const ProgressionStrategySimpleOptsDefaults: ProgressionStrategySimpleOpt
 export class ProgressionStrategySimple {
   public readonly _opts: ProgressionStrategySimpleOptsType;
   constructor(
-    private _action: Pick<Action, "rig" | "strengthAllowed" | "bigCount" | "oneDumbbell">,
+    private _action: Pick<
+      Action,
+      "rig" | "strengthAllowed" | "bigCount" | "oneDumbbell"
+    >,
     opts?: ProgressionStrategySimpleOptsType | null,
   ) {
     this._opts = opts
@@ -203,7 +206,8 @@ export class ProgressionStrategySimple {
         sets[i].count += 1;
       }
       if (this._action.oneDumbbell) {
-        sets[i].count = sets[i].count % 2 === 0 ? sets[i].count : sets[i].count + 1;
+        sets[i].count =
+          sets[i].count % 2 === 0 ? sets[i].count : sets[i].count + 1;
       }
     }
 
@@ -228,6 +232,7 @@ export class ProgressionStrategySimple {
     let addSet = false;
     let mean = Math.floor(cnt / executed.length);
     if (mean >= this._opts.lossCountMax) {
+      // TODO надо вынести это 2 в параметры нагрузки!
       mean = this._opts.lossCountMax - 2 * this._opts.lossCountStep;
       addSet = true;
     } else {

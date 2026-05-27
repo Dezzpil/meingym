@@ -30,7 +30,7 @@ export async function scheduleCheckInactivePeriods() {
     {
       ...defaultJobOptions,
       repeat: {
-        cron: '0 0 * * *', // Run once a day at midnight
+        cron: "0 0 * * *", // Run once a day at midnight
       },
     },
   );
@@ -46,7 +46,7 @@ export async function scheduleCleanupOrphanedImages() {
     {
       ...defaultJobOptions,
       repeat: {
-        cron: '0 3 * * *', // Run once a day at 3 AM
+        cron: "0 3 * * *", // Run once a day at 3 AM
       },
     },
   );

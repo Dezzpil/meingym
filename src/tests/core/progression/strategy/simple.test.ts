@@ -181,22 +181,38 @@ test("loss", async (context) => {
       { weight: 10, count: 8 },
     ];
     const upgraded = strategy.loss(sets, sets as unknown as SetDataExecuted[]);
-    assert.equal(upgraded[0].count, 12);
+    assert.equal(upgraded[0].count, 10);
     assert.equal(upgraded[0].weight, 10);
 
     const upgraded2 = strategy.loss(
       sets,
       upgraded as unknown as SetDataExecuted[],
     );
-    assert.equal(upgraded2[0].count, 16);
+    assert.equal(upgraded2[0].count, 12);
     assert.equal(upgraded2[0].weight, 10);
 
     const upgraded3 = strategy.loss(
       sets,
       upgraded2 as unknown as SetDataExecuted[],
     );
-    assert.equal(upgraded3[0].count, 8);
+    assert.equal(upgraded3[0].count, 14);
     assert.equal(upgraded3[0].weight, 10);
-    assert.notEqual(upgraded2.length, upgraded3.length);
+    assert.equal(upgraded2.length, upgraded3.length);
+
+    const upgraded4 = strategy.loss(
+      sets,
+      upgraded3 as unknown as SetDataExecuted[],
+    );
+    assert.equal(upgraded4[0].count, 16);
+    assert.equal(upgraded4[0].weight, 10);
+    assert.equal(upgraded3.length, upgraded4.length);
+
+    const upgraded5 = strategy.loss(
+      sets,
+      upgraded4 as unknown as SetDataExecuted[],
+    );
+    assert.equal(upgraded5[0].count, 12); // стартовое число будет считаться как lossCountMax - 2*lossCountStep
+    assert.equal(upgraded5[0].weight, 10);
+    assert.equal(upgraded5.length - 1, upgraded4.length); // число подходов выросло
   });
 });
