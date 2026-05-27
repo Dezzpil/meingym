@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.26.1](https://github.com/Dezzpil/meingym/compare/v1.26.0...v1.26.1) (2026-05-27)
+
+
+### Bug Fixes
+
+* исправить расположение чекбокса и текста на "Использовался ремень" ([fc3bcd9](https://github.com/Dezzpil/meingym/commits/fc3bcd96f94a210f107a0d01be1c48e9b0e3a87e))
+
 ## [1.26.0](https://github.com/Dezzpil/meingym/compare/v1.25.0...v1.26.0) (2026-05-27)
 
 
