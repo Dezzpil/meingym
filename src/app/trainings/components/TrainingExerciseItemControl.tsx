@@ -173,6 +173,11 @@ export default function TrainingExerciseItemControl({
                 <span>{exercise.comment}</span>
               </div>
             )}
+            {exercise.TrainingExerciseExecution.some((e) => e.useBelts) && (
+              <div className="text-muted small mb-2">
+                <span>Использовались ремни</span>
+              </div>
+            )}
             <ActionLastScores exerciseId={exercise.id} />
           </>
         )}

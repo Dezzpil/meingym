@@ -143,8 +143,14 @@ export async function handleTrainingExerciseExecuted(
   exercise: Pick<TrainingExercise, "id" | "trainingId" | "actionId">,
   rating?: TrainingRating | null,
   comment?: string | null,
+  useBelts?: boolean,
 ): Promise<ServerActionResult> {
   try {
+    await prisma.trainingExerciseExecution.updateMany({
+      where: { exerciseId: exercise.id },
+      data: { useBelts: !!useBelts },
+    });
+
     await prisma.trainingExerciseExecution.updateMany({
       where: {
         exerciseId: exercise.id,

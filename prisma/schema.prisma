@@ -424,6 +424,8 @@ model TrainingExerciseExecution {
 
   techniqueUpgrade Boolean @default(false)
 
+  useBelts Boolean @default(false)
+
   // durations
   Duration TrainingExerciseExecutionDuration[]
 }

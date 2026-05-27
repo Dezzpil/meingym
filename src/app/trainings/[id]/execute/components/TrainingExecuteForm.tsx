@@ -67,16 +67,19 @@ export function TrainingExecuteForm({ exercise, disabled, noFeedback }: Props) {
   const [completeHandling, setCompleteHandling] = useState<boolean>(false);
   const commentTextAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const ratingSelectRef = useRef<HTMLSelectElement | null>(null);
+  const useBeltsRef = useRef<HTMLInputElement | null>(null);
 
   const submit = useCallback(async () => {
     setCompleteError(null);
     setCompleteHandling(true);
     const rating = ratingSelectRef.current?.value as TrainingRating | null;
     const comment = commentTextAreaRef.current?.value;
+    const useBelts = useBeltsRef.current?.checked || false;
     const result = await handleTrainingExerciseExecuted(
       exercise,
       rating,
       comment,
+      useBelts,
     );
     if (result.error) {
       setCompleteError(result.error);
@@ -148,6 +151,9 @@ export function TrainingExecuteForm({ exercise, disabled, noFeedback }: Props) {
                   Комментарий: {exercise.comment}
                 </div>
               )}
+              {exercise.TrainingExerciseExecution.some((e) => e.useBelts) && (
+                <div className="text-muted">Использовались ремни</div>
+              )}
             </div>
           )}
           {exercise.startedAt && !exercise.completedAt && (
@@ -205,6 +211,17 @@ export function TrainingExecuteForm({ exercise, disabled, noFeedback }: Props) {
               placeholder="Комментарий ..."
               ref={commentTextAreaRef}
             ></textarea>
+            <div className="form-check mb-2">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="useBelts"
+                ref={useBeltsRef}
+              />
+              <label className="form-check-label" htmlFor="useBelts">
+                Ремни
+              </label>
+            </div>
           </Modal.Body>
           <Modal.Footer>
             <button
