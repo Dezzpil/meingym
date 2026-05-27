@@ -18,6 +18,7 @@ export type TrainingsExerciseCompleteDTO = {
   cheating?: ExecutionCheating;
   refusing?: ExecutionRefusing;
   burning?: ExecutionBurning;
+  useBelt?: boolean;
   comment?: string;
 };
 
@@ -33,6 +34,7 @@ export async function POST(request: NextRequest) {
     refusing,
     burning,
     comment,
+    useBelt,
   } = (await request.json()) as TrainingsExerciseCompleteDTO;
 
   let isPassed = false;
@@ -54,6 +56,7 @@ export async function POST(request: NextRequest) {
       technique,
       techniqueUpgrade,
       isPassed,
+      useBelt,
     },
   });
   return NextResponse.json(exec, { status: 200 });

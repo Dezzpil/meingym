@@ -53,6 +53,7 @@ export default function TrainingExecuteFormItem({
   const refusingSelectRef = useRef<HTMLSelectElement | null>(null);
   const burningSelectRef = useRef<HTMLSelectElement | null>(null);
   const commentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const useBeltRef = useRef<HTMLInputElement | null>(null);
 
   const [modalShowed, setModalShowed] = useState(false);
 
@@ -74,6 +75,7 @@ export default function TrainingExecuteFormItem({
           ? (burningSelectRef.current?.value as ExecutionBurning)
           : ExecutionBurning.NO,
         comment: commentTextareaRef.current?.value,
+        useBelt: useBeltRef.current?.checked || false,
       },
     )
       .then((data) => {
@@ -245,6 +247,17 @@ export default function TrainingExecuteFormItem({
                 ))}
               </select>
             )}
+            <div className="form-check mb-2">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="useBelt"
+                ref={useBeltRef}
+              />
+              <label className="form-check-label" htmlFor="useBelt">
+                Использовался ремень
+              </label>
+            </div>
             <textarea
               rows={2}
               className="form-control"

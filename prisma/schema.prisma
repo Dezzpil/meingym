@@ -7,8 +7,8 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_PRISMA_URL") // for vercel
-  directUrl = env("DATABASE_URL_NON_POOLING") // for vercel
+  url       = env("DATABASE_PRISMA_URL")
+  directUrl = env("DATABASE_URL_NON_POOLING")
 }
 
 enum UserRole {
@@ -186,11 +186,11 @@ model ActionsOnMusclesStabilizer {
 model Action {
   id Int @id @default(autoincrement())
 
-  title         String
-  desc          String
-  alias         String?
-  anotherTitles String?
-  search        String?
+  title            String
+  desc             String
+  alias            String?
+  anotherTitles    String?
+  search           String?
   isMarkDownInDesc Boolean @default(false)
 
   createdAt DateTime @default(now())
@@ -219,8 +219,8 @@ model Action {
   ExerciseImages ExerciseImage[]
 
   // Similar exercises relationships
-  SimilarTo     SimilarExercises[] @relation("SimilarToExercise")
-  SimilarFrom   SimilarExercises[] @relation("SimilarFromExercise")
+  SimilarTo   SimilarExercises[] @relation("SimilarToExercise")
+  SimilarFrom SimilarExercises[] @relation("SimilarFromExercise")
 }
 
 model ActionMass {
@@ -331,7 +331,7 @@ model Training {
 
   // link to the original training if this one is a repeat
   repeatedFromId Int?
-  RepeatedFrom   Training? @relation("TrainingRepeatedFrom", fields: [repeatedFromId], references: [id])
+  RepeatedFrom   Training?  @relation("TrainingRepeatedFrom", fields: [repeatedFromId], references: [id])
   Repeats        Training[] @relation("TrainingRepeatedFrom")
 
   isCircuit       Boolean @default(false)
@@ -424,7 +424,7 @@ model TrainingExerciseExecution {
 
   techniqueUpgrade Boolean @default(false)
 
-  useBelts Boolean @default(false)
+  useBelt Boolean @default(false)
 
   // durations
   Duration TrainingExerciseExecutionDuration[]
@@ -584,9 +584,9 @@ model TrainingMuscleStat {
   muscleGroupId Int
   MuscleGroup   MuscleGroup @relation(fields: [muscleGroupId], references: [id])
 
-  asAgonyCnt   Int @default(0)
-  asSynerCnt   Int @default(0)
-  asStableCnt  Int @default(0)
+  asAgonyCnt  Int @default(0)
+  asSynerCnt  Int @default(0)
+  asStableCnt Int @default(0)
 
   @@index([trainingId])
   @@unique([trainingId, muscleId])
@@ -607,7 +607,6 @@ model SimilarExercises {
   @@unique([actionId, similarActionId])
 }
 
-
 model TrainingExerciseExecutionDuration {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -618,7 +617,7 @@ model TrainingExerciseExecutionDuration {
   trainingExerciseId Int
   TrainingExercise   TrainingExercise @relation(fields: [trainingExerciseId], references: [id], onDelete: Cascade)
 
-  executionId Int @unique
+  executionId Int                       @unique
   Execution   TrainingExerciseExecution @relation(fields: [executionId], references: [id], onDelete: Cascade)
 
   sequence Int
@@ -631,13 +630,13 @@ model TrainingExerciseExecutionDuration {
 model TrainingWarmUp {
   id Int @id @default(autoincrement())
 
-  trainingId Int @unique
+  trainingId Int      @unique
   Training   Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
 
-  estimatedTimeSec Int  @default(300)
+  estimatedTimeSec Int @default(300)
 
-  startedAt    DateTime?
-  isSkipped    Boolean @default(false)
-  completedAt  DateTime?
-  durationSec  Int?
+  startedAt   DateTime?
+  isSkipped   Boolean   @default(false)
+  completedAt DateTime?
+  durationSec Int?
 }
