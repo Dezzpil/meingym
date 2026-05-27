@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.26.0](https://github.com/Dezzpil/meingym/compare/v1.25.0...v1.26.0) (2026-05-27)
+
+
+### Features
+
+* добавить чекбокс "Использовались ремни" в оценку выполнения ([c96e024](https://github.com/Dezzpil/meingym/commits/c96e024e259d530834048a9b3b457f612fb342b7))
+
 ## [1.25.0](https://github.com/Dezzpil/meingym/compare/v1.24.3...v1.25.0) (2026-02-10)
 
 
