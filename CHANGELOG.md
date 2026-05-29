@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.27.0](https://github.com/Dezzpil/meingym/compare/v1.26.1...v1.27.0) (2026-05-29)
+
+
+### Features
+
+* доб. учет доп. повторений в подходе ([4a35ba7](https://github.com/Dezzpil/meingym/commits/4a35ba7ac19803039797106eb28e5c0125ec526e))
+
 ### [1.26.1](https://github.com/Dezzpil/meingym/compare/v1.26.0...v1.26.1) (2026-05-27)
 
 
