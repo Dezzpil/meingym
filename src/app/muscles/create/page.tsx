@@ -15,7 +15,7 @@ export default async function MusclesCreatePage() {
   return (
     <>
       <header className="mb-3">Добавление описания мышц</header>
-      <MuscleForm groups={groups} />
+      <MuscleForm groups={groups} control={user.role === UserRole.ADMIN} />
     </>
   );
 }

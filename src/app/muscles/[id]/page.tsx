@@ -35,7 +35,12 @@ export default async function MusclePage({ params }: ItemPageParams) {
           control={user.role === UserRole.ADMIN}
         />
       ))}
-      {user.role === UserRole.ADMIN && <MuscleDescForm muscle={muscle} />}
+      {user.role === UserRole.ADMIN && (
+        <MuscleDescForm
+          muscle={muscle}
+          control={user.role === UserRole.ADMIN}
+        />
+      )}
     </>
   );
 }
