@@ -6,10 +6,10 @@ type Props = {
   rating: TrainingRating;
 };
 const map = {
-  [TrainingRating.EASY]: "🤓 🟡",
-  [TrainingRating.OK]: "🙂 🟢",
-  [TrainingRating.HARD]: "😬 🟡",
-  [TrainingRating.IMPOSSIBLE]: "😵‍💫 🔴",
+  [TrainingRating.EASY]: "🤓",
+  [TrainingRating.OK]: "🙂",
+  [TrainingRating.HARD]: "😬",
+  [TrainingRating.IMPOSSIBLE]: "😵‍💫",
 };
 
 export function TrainingRatingEmoji({ rating }: Props) {

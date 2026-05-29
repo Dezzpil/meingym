@@ -3,7 +3,6 @@
 import TrainingExecuteFormItem from "@/app/trainings/[id]/execute/components/TrainingExecuteFormItem";
 import React, { useCallback, useRef, useState } from "react";
 import type {
-  TrainingExercise,
   TrainingExerciseExecution,
   Action,
   ApproachesGroup,
@@ -14,7 +13,7 @@ import {
   handleTrainingExerciseExecuted,
 } from "@/app/trainings/[id]/execute/actions";
 import moment from "moment";
-import { FaSpinner } from "react-icons/fa6";
+import { FaSpinner, FaTape } from "react-icons/fa6";
 import Modal from "react-bootstrap/Modal";
 import { TrainingRating } from "@prisma/client";
 import classNames from "classnames";
@@ -129,13 +128,32 @@ export function TrainingExecuteForm({ exercise, disabled, noFeedback }: Props) {
                 {exercise.isPassed ? (
                   <span>Упражнение пропущено</span>
                 ) : (
-                  <div className="">
-                    Выполнено в {moment(exercise.completedAt).format("H:mm")} (+
-                    {moment(exercise.completedAt).diff(
-                      moment(exercise.startedAt),
-                      "minute",
-                    )}{" "}
-                    мин.) <TrainingRatingEmoji rating={exercise.rating} />
+                  <div className="d-flex align-items-baseline column-gap-2 flex-wrap mb-1">
+                    <span>
+                      Выполнено в {moment(exercise.completedAt).format("H:mm")}
+                    </span>
+                    <TrainingRatingEmoji rating={exercise.rating} />
+                    <small>
+                      {moment(exercise.completedAt).diff(
+                        moment(exercise.startedAt),
+                        "minute",
+                      )}{" "}
+                      мин.
+                    </small>
+                    <div className="d-flex align-items-center column-gap-1">
+                      <small>
+                        +
+                        {exercise.TrainingExerciseExecution.reduce(
+                          (acc, ex) => {
+                            return acc + ex.extraCount;
+                          },
+                          0,
+                        )}
+                      </small>
+                      {exercise.TrainingExerciseExecution.some(
+                        (e) => e.useBelt,
+                      ) && <FaTape title="Использовался ремень" />}
+                    </div>
                   </div>
                 )}
               </div>
@@ -147,9 +165,6 @@ export function TrainingExecuteForm({ exercise, disabled, noFeedback }: Props) {
                 <div className="text-muted">
                   Комментарий: {exercise.comment}
                 </div>
-              )}
-              {exercise.TrainingExerciseExecution.some((e) => e.useBelt) && (
-                <div className="text-muted">Использовался ремень</div>
               )}
             </div>
           )}

@@ -25,7 +25,7 @@ export function TrainingMuscleStats({ stats, className }: Props) {
   return !stats || stats.length === 0 ? null : (
     <div className={className}>
       <div className="d-flex align-items-center justify-content-between">
-        <div className="d-inline-flex gap-2 align-items-center">
+        <div className="d-inline-flex gap-2 align-items-center mb-1">
           <b>Мышцы-агонисты:</b>{" "}
           <span>
             {totalAgonists} / {totalMuscles}
@@ -45,14 +45,15 @@ export function TrainingMuscleStats({ stats, className }: Props) {
       {open && (
         <ul id="training-muscles-list" className="list-inline m-0 mt-1">
           {stats.map((s) => (
-            <li key={s.muscleId} className="list-inline-item me-3 mb-1">
-              <span className="text-muted small">
-                <span className="fw-medium">{s.Muscle.Group.title}:</span>{" "}
-                {s.Muscle.title}
+            <li key={s.muscleId} className="list-inline-item me-4 mb-1">
+              <span className="text-muted small d-inline-flex align-items-center column-gap-1">
+                <span className="fw-bold">{s.Muscle.Group.title}</span>
+                <span> : </span>
+                <span>{s.Muscle.title}</span>
               </span>
               {s.asAgonyCnt > 0 && (
                 <span
-                  className="badge rounded-pill bg-success bg-opacity-50 text-white ms-1"
+                  className="badge rounded-pill bg-success text-white ms-2"
                   title="Агонист"
                 >
                   {s.asAgonyCnt}
@@ -60,7 +61,7 @@ export function TrainingMuscleStats({ stats, className }: Props) {
               )}
               {s.asSynerCnt > 0 && (
                 <span
-                  className="badge rounded-pill bg-primary bg-opacity-50 text-white ms-1"
+                  className="badge rounded-pill bg-primary bg-opacity-50 text-white ms-2"
                   title="Синергист"
                 >
                   {s.asSynerCnt}
@@ -68,7 +69,7 @@ export function TrainingMuscleStats({ stats, className }: Props) {
               )}
               {s.asStableCnt > 0 && (
                 <span
-                  className="badge rounded-pill bg-warning bg-opacity-50 text-secondary ms-1"
+                  className="badge rounded-pill bg-warning bg-opacity-75 text-secondary ms-2"
                   title="Стабилизатор"
                 >
                   {s.asStableCnt}

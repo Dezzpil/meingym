@@ -10,7 +10,7 @@ import type {
 import Link from "next/link";
 import { ApproachesManagement } from "@/components/approaches/Managment";
 import React, { useCallback, useState } from "react";
-import { FaX } from "react-icons/fa6";
+import { FaTape, FaX } from "react-icons/fa6";
 import { GrCompare } from "react-icons/gr";
 import {
   handleChangeExercisePriority,
@@ -90,7 +90,7 @@ export default function TrainingExerciseItemControl({
           className="mb-2"
         />
         {showCompare && (
-          <div className="mb-2">
+          <div className="mb-2 opacity-75">
             {exercise.prevSetsStats ? (
               <SetsStatsBase
                 current={exercise.prevSetsStats}
@@ -136,15 +136,25 @@ export default function TrainingExerciseItemControl({
           <>
             <div className="hstack gap-2 mb-2">
               <span>Исполнение</span>
-              <span className="text-muted">
-                (+
+              <TrainingRatingEmoji rating={exercise.rating} />
+              <small>
                 {moment(exercise.completedAt).diff(
                   moment(exercise.startedAt),
                   "minute",
                 )}{" "}
-                мин.)
-              </span>
-              <TrainingRatingEmoji rating={exercise.rating} />
+                мин.
+              </small>
+              <div className="d-flex align-items-center column-gap-1">
+                <small>
+                  +
+                  {exercise.TrainingExerciseExecution.reduce((acc, ex) => {
+                    return acc + ex.extraCount;
+                  }, 0)}
+                </small>
+                {exercise.TrainingExerciseExecution.some((e) => e.useBelt) && (
+                  <FaTape title="Использовался ремень" />
+                )}
+              </div>
             </div>
             <div className="d-flex column-gap-2 flex-wrap mb-1">
               {exercise.TrainingExerciseExecution.map((execution) => (
@@ -171,11 +181,6 @@ export default function TrainingExerciseItemControl({
             {exercise.comment && (
               <div className="text-muted small mb-2">
                 <span>{exercise.comment}</span>
-              </div>
-            )}
-            {exercise.TrainingExerciseExecution.some((e) => e.useBelt) && (
-              <div className="text-muted small mb-2">
-                <span>Использовался ремень</span>
               </div>
             )}
             <ActionLastScores exerciseId={exercise.id} />
