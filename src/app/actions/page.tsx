@@ -2,17 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/tools/db";
 import { getCurrentUser } from "@/tools/auth";
 import { PageParams } from "@/tools/types";
-import { DateFormat } from "@/tools/dates";
-import moment from "moment";
-import {
-  Purpose,
-  type ApproachesGroup,
-  type TrainingExerciseScore,
-} from "@prisma/client";
-import { ActionWithMusclesType } from "@/app/actions/types";
-import { ActionMuscles } from "@/app/actions/components/ActionMuscles";
 import { UserRole } from ".prisma/client";
-import { ActionHistoryScoreChart } from "@/app/actions/[id]/history/components/ActionHistoryScoreChart";
 import { ActionListItem } from "@/app/actions/components/ActionListItem";
 import { ActionFilterForm } from "@/app/actions/components/ActionFilterForm";
 import { BiPlus } from "react-icons/bi";
@@ -36,10 +26,8 @@ export default async function ActionsPage({ searchParams }: PageParams) {
 
   const groups = await prisma.muscleGroup.findMany({});
 
-  // Calculate counts for each filter option
   const allActionsCount = await prisma.action.count();
 
-  // Calculate counts for each muscle group
   const groupCounts: Record<number, number> = {};
   for (const group of groups) {
     const count = await prisma.action.count({
@@ -119,7 +107,7 @@ export default async function ActionsPage({ searchParams }: PageParams) {
               <BiPlus size={28} />
             </Link>
           )}
-          <div className="">
+          <div className="d-flex flex-wrap gap-3">
             {actions.map((a) => (
               <ActionListItem action={a} key={a.id} />
             ))}
