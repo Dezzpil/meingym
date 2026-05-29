@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.27.3](https://github.com/Dezzpil/meingym/compare/v1.27.2...v1.27.3) (2026-05-29)
+
+
+### Features
+
+* добавить загрузку и отображение изображений мышц ([90ec361](https://github.com/Dezzpil/meingym/commits/90ec36119bd7bbeeb89bead2ad0891b5129f7112))
+* доработки в списке упражнений ([ad16a56](https://github.com/Dezzpil/meingym/commits/ad16a56dbd08577c703ae858776005bc1fbb76b7))
+* переработать список упражнений с картинками ([a4f292e](https://github.com/Dezzpil/meingym/commits/a4f292e00ebd126e98f65b91d68f2c420c258226))
+
 ### [1.27.2](https://github.com/Dezzpil/meingym/compare/v1.27.1...v1.27.2) (2026-05-29)
 
 
