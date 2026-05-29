@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.27.1](https://github.com/Dezzpil/meingym/compare/v1.27.0...v1.27.1) (2026-05-29)
+
+
+### Bug Fixes
+
+* нельзя добавить мышцу ([5279f89](https://github.com/Dezzpil/meingym/commits/5279f89c2852851c8750a87859d7846ebca77509))
+
 ## [1.27.0](https://github.com/Dezzpil/meingym/compare/v1.26.1...v1.27.0) (2026-05-29)
 
 
