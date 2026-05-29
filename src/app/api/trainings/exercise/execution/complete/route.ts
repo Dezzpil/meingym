@@ -20,6 +20,7 @@ export type TrainingsExerciseCompleteDTO = {
   burning?: ExecutionBurning;
   useBelt?: boolean;
   comment?: string;
+  extraCount?: number;
 };
 
 export async function POST(request: NextRequest) {
@@ -35,6 +36,7 @@ export async function POST(request: NextRequest) {
     burning,
     comment,
     useBelt,
+    extraCount,
   } = (await request.json()) as TrainingsExerciseCompleteDTO;
 
   let isPassed = false;
@@ -57,6 +59,7 @@ export async function POST(request: NextRequest) {
       techniqueUpgrade,
       isPassed,
       useBelt,
+      extraCount: extraCount ?? 0,
     },
   });
   return NextResponse.json(exec, { status: 200 });

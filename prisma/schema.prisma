@@ -426,6 +426,8 @@ model TrainingExerciseExecution {
 
   useBelt Boolean @default(false)
 
+  extraCount Int @default(0)
+
   // durations
   Duration TrainingExerciseExecutionDuration[]
 }

@@ -12,6 +12,9 @@ import classNames from "classnames";
 import { FaSpinner } from "react-icons/fa6";
 import { postApi } from "@/tools/fetch";
 import Modal from "react-bootstrap/Modal";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Popover from "react-bootstrap/Popover";
+import { FaCircleQuestion } from "react-icons/fa6";
 import {
   BurningOptions,
   CheatingOptions,
@@ -54,6 +57,7 @@ export default function TrainingExecuteFormItem({
   const burningSelectRef = useRef<HTMLSelectElement | null>(null);
   const commentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   const useBeltRef = useRef<HTMLInputElement | null>(null);
+  const extraCountRef = useRef<HTMLInputElement | null>(null);
 
   const [modalShowed, setModalShowed] = useState(false);
 
@@ -76,6 +80,9 @@ export default function TrainingExecuteFormItem({
           : ExecutionBurning.NO,
         comment: commentTextareaRef.current?.value,
         useBelt: useBeltRef.current?.checked || false,
+        extraCount: extraCountRef.current?.value
+          ? parseInt(extraCountRef.current.value)
+          : 0,
       },
     )
       .then((data) => {
@@ -204,6 +211,38 @@ export default function TrainingExecuteFormItem({
                 </option>
               ))}
             </select>
+            <div className="input-group mb-2">
+              <span className="input-group-text">Доп. повторений</span>
+              <input
+                type="number"
+                min={0}
+                max={8}
+                step={1}
+                defaultValue={exec.extraCount ?? 0}
+                className="form-control"
+                ref={extraCountRef}
+              />
+              <OverlayTrigger
+                trigger="click"
+                rootClose
+                placement="top"
+                overlay={
+                  <Popover id="extraCountPopover">
+                    <Popover.Body>
+                      Если удалось выполнить чуть больше заявленного количества
+                    </Popover.Body>
+                  </Popover>
+                }
+              >
+                <button
+                  type="button"
+                  className="input-group-text"
+                  aria-label="Подсказка"
+                >
+                  <FaCircleQuestion />
+                </button>
+              </OverlayTrigger>
+            </div>
             <select className="form-control mb-2" ref={techSelectRef}>
               {Object.entries(TechniqueOptions).map((entry) => (
                 <option key={entry[0]} value={entry[0]}>
