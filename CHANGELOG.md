@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.27.2](https://github.com/Dezzpil/meingym/compare/v1.27.1...v1.27.2) (2026-05-29)
+
+
+### Features
+
+* отображение ремня и доп.повторов в блоке упражнения ([c4ff660](https://github.com/Dezzpil/meingym/commits/c4ff6604bc1b44893b823dd8086dc90719bf75f9))
+
 ### [1.27.1](https://github.com/Dezzpil/meingym/compare/v1.27.0...v1.27.1) (2026-05-29)
 
 
