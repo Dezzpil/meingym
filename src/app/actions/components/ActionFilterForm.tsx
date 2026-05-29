@@ -2,7 +2,6 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
-import Link from "next/link";
 
 type Props = {
   groups: Array<{ id: number; title: string }>;
@@ -19,7 +18,6 @@ export function ActionFilterForm({
   initialStrengthAllowed,
   groupCounts = {},
   allGroupsCount = 0,
-  strengthAllowedCount = 0,
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -27,7 +25,7 @@ export function ActionFilterForm({
     initialStrengthAllowed === true,
   );
 
-  const createQueryString = useCallback(
+  const buildQueryString = useCallback(
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams.toString());
       if (value) {
@@ -45,64 +43,48 @@ export function ActionFilterForm({
   ) => {
     const checked = e.target.checked;
     setStrengthAllowed(checked);
-
-    // Update URL with the new strengthAllowed value
-    const newQuery = createQueryString("strengthAllowed", checked ? "on" : "");
+    const newQuery = buildQueryString("strengthAllowed", checked ? "on" : "");
     router.push(`/actions?${newQuery}`);
   };
 
-  // Create query string for group links
-  const getGroupQueryString = (groupId: number | null) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (groupId) {
-      params.set("group", groupId.toString());
-    } else {
-      params.delete("group");
-    }
-    return params.toString();
+  const handleGroupChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    const newQuery = buildQueryString("group", value);
+    router.push(`/actions?${newQuery}`);
   };
 
   return (
-    <div className="row g-3">
-      <div className="col-12">
-        <div className="d-flex flex-wrap gap-2">
-          <Link
-            href={`/actions?${getGroupQueryString(null)}`}
-            className={`btn btn-sm ${
-              initialGroupId === null ? "btn-primary" : "btn-outline-secondary"
-            }`}
-          >
-            Все группы {allGroupsCount > 0 && `(${allGroupsCount})`}
-          </Link>
+    <div className="d-flex flex-wrap align-items-center gap-3">
+      <div className="d-flex align-items-center gap-2">
+        <select
+          id="groupFilter"
+          className="form-select"
+          value={initialGroupId ?? ""}
+          onChange={handleGroupChange}
+        >
+          <option value="">
+            Все группы{allGroupsCount > 0 ? ` (${allGroupsCount})` : ""}
+          </option>
           {groups.map((g) => (
-            <Link
-              href={`/actions?${getGroupQueryString(g.id)}`}
-              className={`btn btn-sm ${
-                initialGroupId === g.id
-                  ? "btn-primary"
-                  : "btn-outline-secondary"
-              }`}
-              key={g.id}
-            >
-              {g.title} {groupCounts[g.id] > 0 && `(${groupCounts[g.id]})`}
-            </Link>
+            <option key={g.id} value={g.id}>
+              {g.title}
+              {groupCounts[g.id] > 0 ? ` (${groupCounts[g.id]})` : ""}
+            </option>
           ))}
-        </div>
+        </select>
       </div>
-      <div className="col-auto">
-        <div className="form-check form-check-inline">
-          <input
-            type="checkbox"
-            name="strengthAllowed"
-            id="strengthAllowed"
-            className="form-check-input"
-            checked={strengthAllowed}
-            onChange={handleStrengthAllowedChange}
-          />
-          <label className="form-check-label" htmlFor="strengthAllowed">
-            Подходит для силовых?
-          </label>
-        </div>
+      <div className="form-check form-check-inline mb-0">
+        <input
+          type="checkbox"
+          name="strengthAllowed"
+          id="strengthAllowed"
+          className="form-check-input"
+          checked={strengthAllowed}
+          onChange={handleStrengthAllowedChange}
+        />
+        <label className="form-check-label" htmlFor="strengthAllowed">
+          Силовые?
+        </label>
       </div>
     </div>
   );

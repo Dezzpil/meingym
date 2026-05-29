@@ -14,7 +14,7 @@ export function Layout({ children }: Props) {
   return (
     <div className="container-fluid">
       <nav className="navbar navbar-expand-lg bg-body-tertiary mb-3">
-        <div className="container-fluid gap-2">
+        <div className="container-fluid gap-2 d-flex justify-content-between align-items-baseline">
           <div>
             <a className="navbar-brand" href="/">
               💪 Ты в зале
@@ -35,7 +35,7 @@ export function Layout({ children }: Props) {
             )}
           </div>
 
-          <ul className="list-inline d-inline-flex flex-wrap column-gap-3 row-gap-1 mb-2 mb-lg-0">
+          <ul className="list-inline d-inline-flex flex-wrap column-gap-3 row-gap-1 mb-0">
             <li className="list-inline-item">
               <Link href={`/trainings`} className="">
                 Тренировки

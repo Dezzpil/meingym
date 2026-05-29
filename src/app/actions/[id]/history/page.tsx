@@ -39,7 +39,7 @@ export default async function ActionHistoryPage({ params }: ItemPageParams) {
 
   return (
     <>
-      <h2 className="mb-3">{action.alias ? action.alias : action.title}</h2>
+      <h3 className="mb-3">{action.alias ? action.alias : action.title}</h3>
       {user.role === UserRole.ADMIN && (
         <ActionTabs id={id} current={"history"} className={"mb-2"} />
       )}

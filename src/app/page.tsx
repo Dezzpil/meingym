@@ -4,8 +4,6 @@ import moment from "moment";
 import { getCurrentUserId } from "@/tools/auth";
 import { DateFormat, getCurrentDayBorders } from "@/tools/dates";
 import TrainingCreateForm from "@/app/trainings/components/TrainingCreateForm";
-import TrainingPeriodManager from "@/app/trainings/components/TrainingPeriodManager";
-import { getCurrentTrainingPeriod, pickOnlyOptsFromItem } from "@/core/periods";
 import { WeightPanel } from "@/app/weights/panel";
 import { WeightsForm } from "@/app/weights/form";
 import { WeightsChart } from "@/app/profile/components/WeightsChart";

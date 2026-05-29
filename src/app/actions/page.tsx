@@ -26,12 +26,18 @@ export default async function ActionsPage({ searchParams }: PageParams) {
 
   const groups = await prisma.muscleGroup.findMany({});
 
-  const allActionsCount = await prisma.action.count();
+  const countBaseWhere: Record<string, any> =
+    strengthAllowed !== null ? { strengthAllowed } : {};
+
+  const allActionsCount = await prisma.action.count({
+    where: countBaseWhere,
+  });
 
   const groupCounts: Record<number, number> = {};
   for (const group of groups) {
     const count = await prisma.action.count({
       where: {
+        ...countBaseWhere,
         MusclesAgony: { some: { Muscle: { groupId: group.id } } },
       },
     });
@@ -78,7 +84,7 @@ export default async function ActionsPage({ searchParams }: PageParams) {
 
   return (
     <>
-      <div className="mb-2">
+      <div className="mb-3">
         <ActionFilterForm
           groups={groups}
           initialGroupId={groupId}

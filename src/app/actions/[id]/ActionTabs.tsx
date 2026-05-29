@@ -21,7 +21,7 @@ export const ActionTabs = ({
   className?: string;
 }) => {
   return (
-    <ul className={classNames("nav nav-pills", className)}>
+    <ul className={classNames("nav nav-tabs", className, "mb-3")}>
       {Object.entries(tabs).map(([key, value]) => (
         <li className="nav-item" key={key}>
           {current == key ? (
