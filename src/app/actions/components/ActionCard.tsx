@@ -84,7 +84,6 @@ export function ActionCard({ action }: Props) {
   return (
     <div className="card shadow-sm border-0 overflow-hidden">
       <div className="card-body p-0">
-        {/* Image section - full width on mobile, half width on desktop */}
         <div className="row g-0">
           <div className="col-lg-6 position-relative">
             {action.ExerciseImages && action.ExerciseImages.length > 0 ? (
@@ -119,7 +118,7 @@ export function ActionCard({ action }: Props) {
           </div>
 
           <div className="col-lg-6">
-            <div className="mb-3 text-secondary">
+            <div className="mb-4 fw-light">
               {action.isMarkDownInDesc ? (
                 <ReactMarkdown
                   components={{
@@ -127,7 +126,7 @@ export function ActionCard({ action }: Props) {
                     h2: "h5",
                     h3: "b",
                     h4: "b",
-                    strong: "span",
+                    strong: "b",
                   }}
                 >
                   {action.desc}

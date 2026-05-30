@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ActionRig } from "@prisma/client";
+import { ActionRequire, ActionRig } from "@prisma/client";
 import type { Action, Muscle, MuscleGroup } from "@prisma/client";
 
 export const ActionsFormFields = z.object({
@@ -11,6 +11,7 @@ export const ActionsFormFields = z.object({
   alias: z.string().nullable(),
   desc: z.string().min(2),
   rig: z.nativeEnum(ActionRig),
+  require: z.nativeEnum(ActionRequire),
   strengthAllowed: z.boolean().default(false),
   bigCount: z.boolean().default(false),
   allowCheating: z.boolean().default(false),

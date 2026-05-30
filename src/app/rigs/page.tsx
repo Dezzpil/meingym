@@ -2,6 +2,7 @@ import { prisma } from "@/tools/db";
 import { getCurrentUserId } from "@/tools/auth";
 import { WeightsForm } from "@/app/rigs/form";
 import { WeightsFieldsType } from "@/app/rigs/types";
+
 export default async function WeightsPage() {
   const userId = await getCurrentUserId();
   const weights = await prisma.rig.findMany({ where: { userId } });

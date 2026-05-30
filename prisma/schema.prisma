@@ -208,6 +208,7 @@ model Action {
   MusclesStabilizer ActionsOnMusclesStabilizer[]
 
   rig ActionRig @default(OTHER)
+  require ActionRequire @default(NONE)
 
   ActionMass     ActionMass[]
   ActionLoss     ActionLoss[]
@@ -469,11 +470,19 @@ enum ExecutionBurning {
   YES
 }
 
-enum ActionRig {
-  BLOCKS
-  BARBELL
-  DUMBBELL
-  OTHER
+enum ActionRig { // Отягощение
+  BLOCKS // блоки/блины в тренажерах
+  BARBELL // штанга
+  DUMBBELL // гантели
+  KETTLEBELL // гиря
+  OTHER // с собственным весом
+}
+
+enum ActionRequire { // Оборудование
+  NONE // ничего
+  UPBAR // турник, брусья
+  BENCH // какая-то скамья, todo разнести на разные
+  SIMULATOR // какой-то тренажер, todo разнести на разные
 }
 
 model Rig {

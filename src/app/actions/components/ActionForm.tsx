@@ -1,12 +1,13 @@
 "use client";
 
-import type {
+import {
   Action,
   Muscle,
   ActionsOnMusclesAgony,
   ActionsOnMusclesSynergy,
   ActionsOnMusclesStabilizer,
   ExerciseImage,
+  ActionRequire,
 } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { ActionsFormFieldsType } from "@/app/actions/types";
@@ -116,10 +117,26 @@ export default function ActionForm({
               <label className="form-label">Отягощение</label>
               <select className="form-control" {...form.register("rig")}>
                 {[
-                  { value: ActionRig.BLOCKS, label: "Блочное" },
+                  { value: ActionRig.OTHER, label: "С собственным весом" },
                   { value: ActionRig.BARBELL, label: "Со штангой" },
                   { value: ActionRig.DUMBBELL, label: "С гантелей" },
-                  { value: ActionRig.OTHER, label: "С собственным весом" },
+                  { value: ActionRig.KETTLEBELL, label: "С гирей" },
+                  { value: ActionRig.BLOCKS, label: "Блочное" },
+                ].map((opt) => (
+                  <option value={opt.value} key={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Оборудование</label>
+              <select className="form-control" {...form.register("require")}>
+                {[
+                  { value: ActionRequire.NONE, label: "Не требуется" },
+                  { value: ActionRequire.BENCH, label: "Скамья" },
+                  { value: ActionRequire.UPBAR, label: "Турник/брусья" },
+                  { value: ActionRequire.SIMULATOR, label: "Тренажер" },
                 ].map((opt) => (
                   <option value={opt.value} key={opt.value}>
                     {opt.label}

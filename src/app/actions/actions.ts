@@ -4,7 +4,7 @@ import { ActionsFormFieldsType } from "@/app/actions/types";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/tools/db";
-import { ActionRig } from "@prisma/client";
+import { ActionRequire, ActionRig } from "@prisma/client";
 
 // Function to detect if text contains Markdown
 function containsMarkdown(text: string): boolean {
@@ -96,6 +96,7 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
           },
         },
         rig: data.rig,
+        require: data.require,
         updatedAt: new Date(),
         search: [
           data.title.toLowerCase(),
@@ -128,17 +129,34 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
   revalidatePath(`/actions/${id}`);
 }
 
-function autoDefineRig(title: string, def: ActionRig): ActionRig {
-  const blocks = title.match(/тренаж|блок/iu);
-  if (blocks && blocks.length > 0) return ActionRig.BLOCKS;
+function autoDefineRigAndRequire(
+  title: string,
+  def: { rig: ActionRig; require: ActionRequire } = {
+    rig: ActionRig.OTHER,
+    require: ActionRequire.NONE,
+  },
+): { rig: ActionRig; require: ActionRequire } {
+  const result: { rig: ActionRig; require: ActionRequire } = {
+    rig: def.rig,
+    require: def.require,
+  };
 
-  const barbell = title.match(/штанг|жим/iu);
-  if (barbell && barbell.length > 0) return ActionRig.BARBELL;
+  const barbell = title.match(/штанг/iu);
+  if (barbell && barbell.length > 0) result.rig = ActionRig.BARBELL;
 
   const dumbbell = title.match(/гантел/iu);
-  if (dumbbell && dumbbell.length > 0) return ActionRig.DUMBBELL;
+  if (dumbbell && dumbbell.length > 0) result.rig = ActionRig.DUMBBELL;
 
-  return def;
+  const kettlebell = title.match(/гир/iu);
+  if (kettlebell && kettlebell.length > 0) result.rig = ActionRig.KETTLEBELL;
+
+  const blocks = title.match(/тренаж|блок/iu);
+  if (blocks && blocks.length > 0) {
+    result.rig = ActionRig.BLOCKS;
+    result.require = ActionRequire.SIMULATOR;
+  }
+
+  return result;
 }
 
 export async function handleCreate(data: ActionsFormFieldsType) {
@@ -148,13 +166,16 @@ export async function handleCreate(data: ActionsFormFieldsType) {
     throw new Error(`Движение ${title} уже существует`);
   }
 
+  const r = autoDefineRigAndRequire(title);
+
   const desc = data.desc.trim();
-  // Check if description contains Markdown
   const isMarkDownInDesc = containsMarkdown(desc);
 
   const newAction = await prisma.action.create({
     data: {
       title,
+      rig: r.rig,
+      require: r.require,
       desc,
       isMarkDownInDesc,
     },
