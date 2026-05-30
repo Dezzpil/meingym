@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.28.1](https://github.com/Dezzpil/meingym/compare/v1.28.0...v1.28.1) (2026-05-30)
+
+
+### Features
+
+* удалить старый подход к оборудованию ([9cb24a3](https://github.com/Dezzpil/meingym/commits/9cb24a3d3e1cc0431d8e550b767da3d6e23c7cee))
+
 ## [1.28.0](https://github.com/Dezzpil/meingym/compare/v1.27.3...v1.28.0) (2026-05-30)
 
 
