@@ -30,7 +30,6 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Rig             Rig[]
   ActionMass      ActionMass[]
   ActionLoss      ActionLoss[]
   ActionStrength  ActionStrength[]
@@ -483,14 +482,6 @@ enum ActionRequire { // Оборудование
   UPBAR // турник, брусья
   BENCH // какая-то скамья, todo разнести на разные
   SIMULATOR // какой-то тренажер, todo разнести на разные
-}
-
-model Rig {
-  code   String @id
-  title  String
-  value  Float
-  userId String
-  user   User   @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
 
 model Weight {

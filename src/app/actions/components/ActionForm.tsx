@@ -18,7 +18,7 @@ import { Toaster } from "react-hot-toast";
 import { ActionFormMuscleMultiSelect } from "@/app/actions/components/form/ActionFormMuscleMultiSelect";
 import { ActionImagesSection } from "@/app/actions/components/ActionImagesSection";
 import { ActionFormSimilarActionsMultiSelect } from "@/app/actions/components/form/ActionFormSimilarActionsMultiSelect";
-import styles from "@/app/actions/muscles.module.css";
+
 import {
   MuscleAgonyBackground,
   MuscleStabilizerBackground,
