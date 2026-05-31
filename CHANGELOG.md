@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.28.2](https://github.com/Dezzpil/meingym/compare/v1.28.1...v1.28.2) (2026-05-31)
+
+
+### Features
+
+* учитывать выбранный набор оборудования при выборе упражнений для тренировки ([5eaf401](https://github.com/Dezzpil/meingym/commits/5eaf401a821aca46f413b4a3b8bd6933526644d6))
+
 ### [1.28.1](https://github.com/Dezzpil/meingym/compare/v1.28.0...v1.28.1) (2026-05-30)
 
 
