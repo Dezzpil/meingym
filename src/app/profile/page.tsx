@@ -30,13 +30,12 @@ export default async function ProfilePage() {
     where: { userId },
   })) as UserInfo;
 
-  let progressionOpts = null;
   const currentPeriod = await getCurrentTrainingPeriod(userId);
-  if (currentPeriod) {
-    progressionOpts = await prisma.progressionStrategySimpleOpts.findUnique({
-      where: { trainingPeriodId: currentPeriod.id },
-    });
-  }
+  const progressionOpts = currentPeriod
+    ? await prisma.progressionStrategySimpleOpts.findUnique({
+        where: { trainingPeriodId: currentPeriod.id },
+      })
+    : null;
 
   return (
     <>

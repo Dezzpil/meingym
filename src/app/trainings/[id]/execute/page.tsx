@@ -10,6 +10,7 @@ import {
   TrainingRating,
   Purpose,
   TrainingWarmUp,
+  Prisma,
 } from "@prisma/client";
 import React from "react";
 import { TrainingExecuteTopPanel } from "@/app/trainings/[id]/execute/components/TrainingExecuteTopPanel";
@@ -65,7 +66,7 @@ async function findTraining(id: number): Promise<TrainingType> {
   });
 }
 async function createExecutions(training: TrainingType): Promise<boolean> {
-  const data = [];
+  const data: Prisma.TrainingExerciseExecutionCreateManyInput[] = [];
   for (const e of training.TrainingExercise) {
     if (e.TrainingExerciseExecution.length === 0) {
       for (const a of e.ApproachGroup.Approaches) {

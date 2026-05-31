@@ -109,7 +109,7 @@ export async function createMassInitial(
   tx: PrismaTransactionClient,
 ): Promise<ActionMass> {
   let i = 0;
-  const defaults = [];
+  const defaults: ApproachData[] = [];
   for (const item of ApproachesMassDefault) {
     const copy: ApproachData = {
       count: item.count,
@@ -165,7 +165,7 @@ export async function createLossInitial(
   tx: PrismaTransactionClient,
 ): Promise<ActionMass> {
   let i = 0;
-  const defaults = [];
+  const defaults: ApproachData[] = [];
   for (const item of ApproachesLossDefault) {
     const copy: ApproachData = {
       count: item.count,

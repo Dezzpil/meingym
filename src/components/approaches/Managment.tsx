@@ -10,6 +10,7 @@ import {
 import type { Approach, ApproachesGroup, Purpose } from "@prisma/client";
 import { ApproachData } from "@/core/approaches";
 import { SetsStatsForApproachGroup } from "@/components/SetsStats";
+import App from "next/app";
 
 type Props = {
   create?: {
@@ -55,7 +56,7 @@ export function ApproachesManagement({
       };
     }
     data.push(newOne);
-    const newData = [];
+    const newData: ApproachData[] = [];
     for (const item of data) {
       newData.push(item);
     }
@@ -106,7 +107,7 @@ export function ApproachesManagement({
       }
       setHandling(false);
     },
-    [create, data, update],
+    [actionId, create, data, update],
   );
 
   return !data ? (

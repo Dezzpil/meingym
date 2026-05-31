@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const actions: Action[] = [];
   const map = new Map();
   if (!params.has("term")) {
-    return actions;
+    return NextResponse.json(actions, { status: 200 });
   }
 
   const rigsDefault = [

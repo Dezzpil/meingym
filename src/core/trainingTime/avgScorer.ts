@@ -10,7 +10,7 @@ const PurposesToMinsMap = {
 
 export class TrainingTimeAvgScorer extends TrainingTimeScorer {
   async score(trainingId: number): Promise<number[]> {
-    const scores = [];
+    const scores: number[] = [];
     let timeScoreInMins = 0;
     let timeScoreInSecs = 0;
 

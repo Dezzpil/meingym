@@ -50,7 +50,7 @@ export function TrainingListCard({
   }, [muscleGroupsCounts]);
 
   const purposes = useMemo(() => {
-    const result = [];
+    const result: string[] = [];
     if (purposeCounts) {
       const len = training.TrainingExercise.length;
       const str = ((purposeCounts.STRENGTH / len) * 100).toFixed(1);
