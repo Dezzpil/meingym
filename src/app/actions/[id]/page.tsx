@@ -21,6 +21,7 @@ export default async function ActionPage({ params }: ItemPageParams) {
       MusclesSynergy: true,
       MusclesAgony: { include: { Muscle: true } },
       MusclesStabilizer: true,
+      MusclesAntagonist: true,
       TrainingExercise: true,
       ExerciseImages: true,
       SimilarFrom: true,

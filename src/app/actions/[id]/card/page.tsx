@@ -36,6 +36,7 @@ export default async function ActionCardPage({ params }: ItemPageParams) {
       MusclesAgony: { include: { Muscle: { include: { Group: true } } } },
       MusclesSynergy: { include: { Muscle: { include: { Group: true } } } },
       MusclesStabilizer: { include: { Muscle: { include: { Group: true } } } },
+      MusclesAntagonist: { include: { Muscle: { include: { Group: true } } } },
       TrainingExerciseScore: true,
       SimilarTo: {
         include: {

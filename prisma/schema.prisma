@@ -183,6 +183,7 @@ model Muscle {
   AgonyInActions      ActionsOnMusclesAgony[]
   SynergyInActions    ActionsOnMusclesSynergy[]
   StabilizerInActions ActionsOnMusclesStabilizer[]
+  AntagonistInActions ActionsOnMusclesAntagonist[]
 
   TrainingMuscleStat TrainingMuscleStat[]
 
@@ -230,6 +231,16 @@ model ActionsOnMusclesStabilizer {
   @@id([actionId, muscleId])
 }
 
+model ActionsOnMusclesAntagonist {
+  muscleId Int
+  Muscle   Muscle @relation(fields: [muscleId], references: [id])
+
+  actionId Int
+  Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+
+  @@id([actionId, muscleId])
+}
+
 model Action {
   id Int @id @default(autoincrement())
 
@@ -251,6 +262,7 @@ model Action {
   MusclesAgony      ActionsOnMusclesAgony[]
   MusclesSynergy    ActionsOnMusclesSynergy[]
   MusclesStabilizer ActionsOnMusclesStabilizer[]
+  MusclesAntagonist ActionsOnMusclesAntagonist[]
 
   rig     ActionRig     @default(OTHER)
   require ActionRequire @default(NONE)

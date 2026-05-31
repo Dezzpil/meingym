@@ -52,6 +52,9 @@ export async function GET(request: NextRequest) {
         MusclesStabilizer: {
           include: { Muscle: { include: { Group: true } } },
         },
+        MusclesAntagonist: {
+          include: { Muscle: { include: { Group: true } } },
+        },
       },
     });
     found.forEach((f) => map.set(f.id, f));

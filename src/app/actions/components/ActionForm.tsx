@@ -6,6 +6,7 @@ import {
   ActionsOnMusclesAgony,
   ActionsOnMusclesSynergy,
   ActionsOnMusclesStabilizer,
+  ActionsOnMusclesAntagonist,
   ExerciseImage,
   ActionRequire,
 } from "@prisma/client";
@@ -21,6 +22,7 @@ import { ActionFormSimilarActionsMultiSelect } from "@/app/actions/components/fo
 
 import {
   MuscleAgonyBackground,
+  MuscleAntagonistBackground,
   MuscleStabilizerBackground,
   MuscleSynergyBackground,
 } from "@/app/actions/colors";
@@ -31,6 +33,7 @@ type Props = {
     MusclesSynergy: ActionsOnMusclesAgony[];
     MusclesAgony: ActionsOnMusclesSynergy[];
     MusclesStabilizer: ActionsOnMusclesStabilizer[];
+    MusclesAntagonist: ActionsOnMusclesAntagonist[];
     ExerciseImages?: ExerciseImage[];
     SimilarTo?: {
       actionId: number;
@@ -73,12 +76,16 @@ export default function ActionForm({
     const musclesStabilizerIds = (action.MusclesStabilizer || []).map(
       (m: any) => String(m.muscleId),
     );
+    const musclesAntagonistIds = (action.MusclesAntagonist || []).map(
+      (m: any) => String(m.muscleId),
+    );
 
     return Object.assign({}, action, {
       similarExerciseIds: Array.from(similarExerciseIds.values()),
       musclesAgonyIds,
       musclesSynergyIds,
       musclesStabilizerIds,
+      musclesAntagonistIds,
     });
   }, [action]);
 
@@ -177,6 +184,14 @@ export default function ActionForm({
               control={form.control}
               isDisabled={!control}
               muscleClassBorderColor={MuscleStabilizerBackground}
+            />
+            <ActionFormMuscleMultiSelect
+              name={"musclesAntagonistIds"}
+              label={"Мышцы-антагонисты"}
+              muscles={muscles as any}
+              control={form.control}
+              isDisabled={!control}
+              muscleClassBorderColor={MuscleAntagonistBackground}
             />
           </div>
 

@@ -95,6 +95,14 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
             }),
           },
         },
+        MusclesAntagonist: {
+          deleteMany: { actionId: id },
+          createMany: {
+            data: data.musclesAntagonistIds.map((id) => {
+              return { muscleId: parseInt(id) };
+            }),
+          },
+        },
         rig: data.rig,
         require: data.require,
         updatedAt: new Date(),

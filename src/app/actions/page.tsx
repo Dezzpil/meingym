@@ -74,6 +74,7 @@ export default async function ActionsPage({ searchParams }: PageParams) {
       MusclesAgony: { include: { Muscle: { include: { Group: true } } } },
       MusclesSynergy: { include: { Muscle: { include: { Group: true } } } },
       MusclesStabilizer: { include: { Muscle: { include: { Group: true } } } },
+      MusclesAntagonist: { include: { Muscle: { include: { Group: true } } } },
       TrainingExerciseScore: {
         where: { userId },
         orderBy: { createdAt: "desc" },

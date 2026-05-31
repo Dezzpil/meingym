@@ -2,6 +2,7 @@
 import { ActionMusclesType, ActionWithMusclesType } from "@/app/actions/types";
 import {
   MuscleAgonyBackground,
+  MuscleAntagonistBackground,
   MuscleStabilizerBackground,
   MuscleSynergyBackground,
 } from "@/app/actions/colors";
@@ -45,6 +46,7 @@ export function ActionMuscles({ action, short }: Props) {
       MusclesAgony: action.MusclesAgony,
       MusclesSynergy: action.MusclesSynergy,
       MusclesStabilizer: action.MusclesStabilizer,
+      MusclesAntagonist: action.MusclesAntagonist,
     })) {
       const [key, value] = entry;
       if (short) {
@@ -61,6 +63,7 @@ export function ActionMuscles({ action, short }: Props) {
     action.MusclesAgony,
     action.MusclesStabilizer,
     action.MusclesSynergy,
+    action.MusclesAntagonist,
     short,
   ]);
 
@@ -80,6 +83,11 @@ export function ActionMuscles({ action, short }: Props) {
         muscles,
         "MusclesStabilizer",
         MuscleStabilizerBackground,
+      )}
+      {renderActionMusclesGroupBlock(
+        muscles,
+        "MusclesAntagonist",
+        MuscleAntagonistBackground,
       )}
     </div>
   ) : null;

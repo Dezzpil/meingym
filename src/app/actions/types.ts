@@ -7,6 +7,7 @@ export const ActionsFormFields = z.object({
   musclesAgonyIds: z.array(z.string()).nonempty(),
   musclesSynergyIds: z.array(z.string()),
   musclesStabilizerIds: z.array(z.string()),
+  musclesAntagonistIds: z.array(z.string()),
   similarExerciseIds: z.array(z.string()),
   alias: z.string().nullable(),
   desc: z.string().min(2),
@@ -37,6 +38,7 @@ export type ActionWithMusclesType = Action & {
   MusclesAgony: ActionMusclesType[];
   MusclesSynergy: ActionMusclesType[];
   MusclesStabilizer: ActionMusclesType[];
+  MusclesAntagonist: ActionMusclesType[];
   SimilarTo?: SimilarExerciseType[];
   SimilarFrom?: SimilarExerciseType[];
 };
