@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.29.0](https://github.com/Dezzpil/meingym/compare/v1.28.2...v1.29.0) (2026-05-31)
+
+
+### Features
+
+* добавить выбор мышц-антагонистов для упражнений ([b02c62d](https://github.com/Dezzpil/meingym/commits/b02c62d395abf41351bee93276904ebe78238397))
+
 ### [1.28.2](https://github.com/Dezzpil/meingym/compare/v1.28.1...v1.28.2) (2026-05-31)
 
 
