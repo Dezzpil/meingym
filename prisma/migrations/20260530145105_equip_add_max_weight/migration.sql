@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "EquipmentRig" ADD COLUMN     "maxWeight" DECIMAL(5,2) NOT NULL DEFAULT 200,
+ALTER COLUMN "minWeight" SET DEFAULT 5,
+ALTER COLUMN "step" SET DEFAULT 2.5;

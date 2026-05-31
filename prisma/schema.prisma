@@ -39,6 +39,52 @@ model User {
   TrainingExerciseScore         TrainingExerciseScore[]
   TrainingPeriod                TrainingPeriod[]
   ProgressionStrategySimpleOpts ProgressionStrategySimpleOpts[]
+
+  Equipment Equipment[]
+}
+
+model Equipment {
+  id Int @id @default(autoincrement())
+
+  userId String
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name      String
+  isDefault Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Requires EquipmentRequire[]
+  Rigs     EquipmentRig[]
+
+  Trainings Training[]
+
+  // У пользователя не более одного дефолтного набора — проверка в сервисном слое (см. handleEquipmentSave)
+  @@index([userId])
+}
+
+model EquipmentRequire {
+  id          Int       @id @default(autoincrement())
+  equipmentId Int
+  Equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  type ActionRequire
+
+  @@unique([equipmentId, type])
+}
+
+model EquipmentRig {
+  id          Int       @id @default(autoincrement())
+  equipmentId Int
+  Equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  type      ActionRig
+  minWeight Decimal   @default(5) @db.Decimal(5, 2)
+  step      Decimal   @default(2.5) @db.Decimal(4, 2)
+  maxWeight Decimal   @default(200) @db.Decimal(5, 2)
+
+  @@unique([equipmentId, type])
 }
 
 enum TrainingProgression {
@@ -206,7 +252,7 @@ model Action {
   MusclesSynergy    ActionsOnMusclesSynergy[]
   MusclesStabilizer ActionsOnMusclesStabilizer[]
 
-  rig ActionRig @default(OTHER)
+  rig     ActionRig     @default(OTHER)
   require ActionRequire @default(NONE)
 
   ActionMass     ActionMass[]
@@ -336,8 +382,12 @@ model Training {
   RepeatedFrom   Training?  @relation("TrainingRepeatedFrom", fields: [repeatedFromId], references: [id])
   Repeats        Training[] @relation("TrainingRepeatedFrom")
 
-  isCircuit       Boolean @default(false)
-  commonComment   String?
+  isCircuit     Boolean @default(false)
+  commonComment String?
+
+  equipmentId Int?
+  Equipment   Equipment? @relation(fields: [equipmentId], references: [id])
+
   completeComment String?
 
   // Feedback control: when true, user won't be asked for execution feedback
@@ -469,7 +519,7 @@ enum ExecutionBurning {
   YES
 }
 
-enum ActionRig { // Отягощение
+enum ActionRig {
   BLOCKS // блоки/блины в тренажерах
   BARBELL // штанга
   DUMBBELL // гантели
@@ -477,7 +527,7 @@ enum ActionRig { // Отягощение
   OTHER // с собственным весом
 }
 
-enum ActionRequire { // Оборудование
+enum ActionRequire {
   NONE // ничего
   UPBAR // турник, брусья
   BENCH // какая-то скамья, todo разнести на разные
@@ -608,8 +658,8 @@ model TrainingMuscleStat {
   asSynerCnt  Int @default(0)
   asStableCnt Int @default(0)
 
-  @@index([trainingId])
   @@unique([trainingId, muscleId])
+  @@index([trainingId])
 }
 
 model SimilarExercises {

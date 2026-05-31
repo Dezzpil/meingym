@@ -18,7 +18,9 @@ export type TrainingRepeatDateFormFieldsType = z.infer<
 export const TrainingFormFields = z.object({
   commonComment: z.string().nullish(),
   isCircuit: z.boolean(),
+  equipmentId: z.number().nullish(),
   plannedTo: z.date(),
+  noWarmUp: z.boolean(),
 });
 
 export type TrainingFormFieldsType = z.infer<typeof TrainingFormFields>;

@@ -17,7 +17,7 @@ export default async function MusclesPage() {
       {user.role === UserRole.ADMIN && (
         <div className="mb-3">
           <Link className="btn btn-primary" href={`/muscles/create`}>
-            Добавить
+            Добавить мышцу
           </Link>
         </div>
       )}

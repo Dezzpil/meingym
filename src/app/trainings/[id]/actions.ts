@@ -35,6 +35,7 @@ export async function handleRepeatTraining(
       data: Object.assign(
         {
           plannedTo: data.plannedTo,
+          equipmentId: curTraining.equipmentId,
           userId: curTraining.userId,
           periodId: currentPeriod.id,
           repeatedFromId: curTraining.id,
@@ -89,6 +90,7 @@ export async function handleTrainingUpdate(
         {
           isCircuit: data.isCircuit,
           commonComment: data.commonComment,
+          equipmentId: data.equipmentId,
         },
         dateIsChanged ? { plannedTo: data.plannedTo } : {},
       ),

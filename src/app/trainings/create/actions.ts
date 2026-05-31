@@ -15,12 +15,17 @@ export async function handleCreateTraining(data: TrainingDateFormFieldType) {
     currentPeriod = await createTrainingPeriod(userId);
   }
 
+  const defaultEquipment = await prisma.equipment.findFirstOrThrow({
+    where: { userId, isDefault: true },
+  });
+
   const training = await prisma.training.create({
     data: Object.assign(
       {
         plannedTo: data.plannedTo,
         userId,
         periodId: currentPeriod.id,
+        equipmentId: defaultEquipment.id,
       },
       userInfo.purpose === "LOSS" ? { isCircuit: true } : {},
     ),

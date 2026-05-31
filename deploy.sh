@@ -12,5 +12,6 @@ npm run build
 #npm run update-actions
 #npm run update-training-exercises
 #npm run update-approaches-groups
+npm run create-equip-for-users
 
 pm2 start meingym

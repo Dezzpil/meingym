@@ -20,7 +20,15 @@ import {
   ExecTimeItem,
 } from "@/app/trainings/components/TrainingExecTimeChart";
 import { fetchTrainingMuscleStats } from "@/core/trainingMuscles";
-import { Training, TrainingWarmUp } from "@prisma/client";
+import {
+  ActionRequire,
+  ActionRig,
+  Equipment,
+  EquipmentRequire,
+  EquipmentRig,
+  Training,
+  TrainingWarmUp,
+} from "@prisma/client";
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
@@ -39,14 +47,6 @@ export default async function TrainingPage({ params }: ItemPageParams) {
     : null;
   const userId = await getCurrentUserId();
   const userInfo = await findUserInfo(userId);
-  const actions = await prisma.action.findMany({
-    orderBy: { updatedAt: "desc" },
-    include: {
-      MusclesAgony: { include: { Muscle: { include: { Group: true } } } },
-      MusclesSynergy: { include: { Muscle: { include: { Group: true } } } },
-      MusclesStabilizer: { include: { Muscle: { include: { Group: true } } } },
-    },
-  });
   const exercisesRaw = await prisma.trainingExercise.findMany({
     where: { trainingId: id },
     include: {
@@ -124,10 +124,40 @@ export default async function TrainingPage({ params }: ItemPageParams) {
     });
   }
 
+  // Нужны наборы оборудования пользователя
+  const equipments = await prisma.equipment.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    include: {
+      Rigs: true,
+      Requires: true,
+    },
+  });
+  let currentEquipment:
+    | (Equipment & { Rigs: EquipmentRig[]; Requires: EquipmentRequire[] })
+    | null = null;
+  if (training.equipmentId) {
+    for (const q of equipments) {
+      if (q.id === training.equipmentId) {
+        currentEquipment = q;
+        break;
+      }
+    }
+  }
+
+  const equipmentRigs = currentEquipment
+    ? currentEquipment!.Rigs.map((r) => r.type).concat(ActionRig.OTHER)
+    : [];
+  const equipmentRequires = currentEquipment
+    ? currentEquipment!.Requires.map((r) => r.type).concat(ActionRequire.NONE)
+    : [];
+
+  console.log(equipmentRigs, equipmentRequires);
+
   return (
     <>
       <header className="mb-3">
-        <h3 className="hstack gap-2">
+        <h3 className="d-flex flex-wrap column-gap-2 mb-3">
           <span>
             Тренировка {moment(training.plannedTo).format(DateFormat)}
           </span>
@@ -136,7 +166,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         {!training.startedAt && (
           <>
             <div className="mb-2">
-              <TrainingForm training={training} />
+              <TrainingForm training={training} equipments={equipments} />
             </div>
           </>
         )}
@@ -236,9 +266,11 @@ export default async function TrainingPage({ params }: ItemPageParams) {
       {!training.completedAt && (
         <TrainingExerciseFloatingAdd
           training={training}
-          actions={actions as any}
+          actions={[]}
           exercises={exercises as any}
           defaultPurpose={userInfo.purpose}
+          equipmentRigs={equipmentRigs}
+          equipmentRequires={equipmentRequires}
         />
       )}
       <div className="mb-3">

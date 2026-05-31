@@ -5,7 +5,14 @@ import { Form, Spinner } from "react-bootstrap";
 import { debounce } from "@/tools/func";
 import { ActionMuscles } from "@/app/actions/components/ActionMuscles";
 import { ActionWithMusclesType } from "@/app/actions/types";
-import { Purpose } from "@prisma/client";
+import {
+  Action,
+  ActionRequire,
+  ActionRig,
+  EquipmentRequire,
+  EquipmentRig,
+  Purpose,
+} from "@prisma/client";
 import { CurrentPurpose } from "@/core/types";
 import { handleAddExercise } from "@/app/trainings/exercises/actions";
 
@@ -13,6 +20,8 @@ type Props = {
   trainingId: number;
   baseActions: ActionWithMusclesType[];
   defaultPurpose: CurrentPurpose;
+  equipmentRigs: ActionRig[];
+  equipmentRequires: ActionRequire[];
   onAdded?: () => void;
   excludeActionIds?: number[]; // optionally exclude some actions
 };
@@ -21,6 +30,8 @@ export function TrainingExerciseAddSearch({
   trainingId,
   baseActions,
   defaultPurpose,
+  equipmentRigs = [],
+  equipmentRequires = [],
   onAdded,
   excludeActionIds = [],
 }: Props) {
@@ -43,7 +54,14 @@ export function TrainingExerciseAddSearch({
     setSearching(true);
     const term = encodeURIComponent(e.target.value);
     if (term) {
-      const result = await fetch(`/api/actions/search?term=${term}`);
+      const url = `/api/actions/search?term=${term}`;
+      const result = await fetch(
+        [
+          url,
+          `rigs=${equipmentRigs.join(",")}`,
+          `requires=${equipmentRequires.join(",")}`,
+        ].join("&"),
+      );
       if (result.ok) {
         const items =
           (await result.json()) as unknown as ActionWithMusclesType[];
@@ -172,7 +190,7 @@ export function TrainingExerciseAddSearch({
               ))}
             </ul>
           ) : (
-            <p className="text-muted mb-2">Движения не найдены</p>
+            <p className="text-muted mb-2"></p>
           )}
         </>
       )}

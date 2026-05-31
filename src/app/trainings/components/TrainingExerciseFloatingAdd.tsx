@@ -3,7 +3,14 @@
 import React, { useCallback, useMemo, useState } from "react";
 import Modal from "react-bootstrap/Modal";
 import { BiPlus } from "react-icons/bi";
-import type { Training, TrainingExercise } from "@prisma/client";
+import {
+  ActionRequire,
+  ActionRig,
+  EquipmentRequire,
+  EquipmentRig,
+  Training,
+  TrainingExercise,
+} from "@prisma/client";
 import { CurrentPurpose } from "@/core/types";
 import { ActionWithMusclesType } from "@/app/actions/types";
 import { TrainingExerciseAddSearch } from "@/app/trainings/components/TrainingExerciseAddSearch";
@@ -13,6 +20,8 @@ type Props = {
   actions: ActionWithMusclesType[];
   exercises: { actionId: number }[]; // enough to exclude existing
   defaultPurpose: CurrentPurpose;
+  equipmentRigs: ActionRig[];
+  equipmentRequires: ActionRequire[];
 };
 
 export function TrainingExerciseFloatingAdd({
@@ -20,6 +29,8 @@ export function TrainingExerciseFloatingAdd({
   actions,
   exercises,
   defaultPurpose,
+  equipmentRigs,
+  equipmentRequires,
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -60,6 +71,8 @@ export function TrainingExerciseFloatingAdd({
             trainingId={training.id}
             baseActions={actions}
             defaultPurpose={defaultPurpose}
+            equipmentRigs={equipmentRigs}
+            equipmentRequires={equipmentRequires}
             onAdded={close}
             excludeActionIds={excludeIds}
           />

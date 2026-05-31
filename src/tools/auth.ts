@@ -11,7 +11,7 @@ import GoogleProvider from "next-auth/providers/google";
 import VkProvider from "next-auth/providers/vk";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { redirect } from "next/navigation";
-import { User, UserInfo } from "@prisma/client";
+import { ActionRequire, ActionRig, User, UserInfo } from "@prisma/client";
 
 // You'll need to import and pass this
 // to `NextAuth` in `app/api/auth/[...nextauth]/route.ts`
@@ -47,6 +47,53 @@ export const authOptions = {
       // For example, sending a welcome email or integrating with third-party services
       await prisma.userInfo.create({
         data: { userId: user.id },
+      });
+
+      await prisma.equipment.create({
+        data: {
+          userId: user.id,
+          name: "Тренажерный зал",
+          isDefault: true,
+          Rigs: {
+            createMany: {
+              data: [
+                {
+                  type: ActionRig.BARBELL,
+                  minWeight: 10,
+                  step: 5,
+                  maxWeight: 200,
+                },
+                {
+                  type: ActionRig.BLOCKS,
+                  minWeight: 5,
+                  step: 1,
+                  maxWeight: 200,
+                },
+                {
+                  type: ActionRig.DUMBBELL,
+                  minWeight: 5,
+                  step: 2.5,
+                  maxWeight: 50,
+                },
+                {
+                  type: ActionRig.KETTLEBELL,
+                  minWeight: 6,
+                  step: 2,
+                  maxWeight: 30,
+                },
+              ],
+            },
+          },
+          Requires: {
+            createMany: {
+              data: [
+                { type: ActionRequire.BENCH },
+                { type: ActionRequire.UPBAR },
+                { type: ActionRequire.SIMULATOR },
+              ],
+            },
+          },
+        },
       });
     },
     // You can define handlers for other events as well

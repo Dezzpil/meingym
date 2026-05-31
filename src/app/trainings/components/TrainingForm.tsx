@@ -1,6 +1,6 @@
 "use client";
 
-import { Training } from "@prisma/client";
+import { Equipment, Training } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { TrainingFormFieldsType } from "@/app/trainings/types";
 import { useState } from "react";
@@ -11,9 +11,10 @@ import { BsThreeDots } from "react-icons/bs";
 
 type Props = {
   training: Training;
+  equipments: Equipment[];
 };
 
-export function TrainingForm({ training }: Props) {
+export function TrainingForm({ training, equipments }: Props) {
   const form = useForm<TrainingFormFieldsType>({
     defaultValues: Object.assign(training, {
       plannedTo: moment(training.plannedTo).format("YYYY-MM-DD"),
@@ -37,7 +38,7 @@ export function TrainingForm({ training }: Props) {
 
   return (
     <>
-      <form id={formId} onSubmit={submit}>
+      <form id={formId} onSubmit={submit} className="mb-3">
         <div className="mb-2">
           <label className="form-label visually-hidden">Дата занятия</label>
           <input
@@ -53,13 +54,34 @@ export function TrainingForm({ training }: Props) {
           />
         </div>
         <div className="mb-2">
+          <label className="form-label visually-hidden">
+            Набор оборудования
+          </label>
+          <select
+            className="form-select"
+            defaultValue={
+              training.equipmentId ? training.equipmentId : undefined
+            }
+            {...form.register("equipmentId", {
+              required: true,
+              valueAsNumber: true,
+            })}
+          >
+            {equipments.map((g) => (
+              <option value={g.id} key={g.id}>
+                {g.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-2">
           <textarea
             className="form-control"
             placeholder={"Комментарий..."}
             {...form.register("commonComment")}
           ></textarea>
         </div>
-        <div className="d-flex justify-content-end">
+        <div className="d-flex justify-content-end align-items-baseline column-gap-5 flex-wrap">
           <div className="form-check mb-2">
             <input
               type="checkbox"
@@ -68,7 +90,18 @@ export function TrainingForm({ training }: Props) {
               {...form.register("isCircuit")}
             />
             <label htmlFor="isCircuit" className="form-check-label">
-              Круговая тренировка?
+              Свободная тренировка?
+            </label>
+          </div>
+          <div className="form-check mb-2">
+            <input
+              type="checkbox"
+              id="noWarmUp"
+              className="form-check-input"
+              {...form.register("noWarmUp")}
+            />
+            <label htmlFor="noWarmUp" className="form-check-label">
+              Без разминки?
             </label>
           </div>
         </div>
