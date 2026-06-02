@@ -413,7 +413,8 @@ model Training {
 
   TrainingMuscleStat TrainingMuscleStat[]
 
-  WarmUp TrainingWarmUp?
+  noWarmUp Boolean         @default(false)
+  WarmUp   TrainingWarmUp?
 }
 
 model TrainingExercise {

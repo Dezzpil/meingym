@@ -123,6 +123,7 @@ export default async function TrainingExecutePage({ params }: ItemPageParams) {
         <TrainingWarmUpCard
           warmUp={training.WarmUp}
           disabled={globalDisabled}
+          isCircuit={training.isCircuit}
         />
       )}
       {training.TrainingExercise.map((e: TrainingExerciseType) => (

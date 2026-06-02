@@ -29,18 +29,32 @@ import { scheduleScoreCalculation } from "@/jobs";
 import { createTrainingPeriod, getCurrentTrainingPeriod } from "@/core/periods";
 import { createExercise } from "@/core/exercises";
 
-export async function handleTrainingWarmUpSkip(trainingId: number) {
+export async function handleTrainingWarmUpSkip(
+  trainingId: number,
+  isCircuit: boolean,
+) {
   await prisma.trainingWarmUp.upsert({
     where: { trainingId },
     update: { isSkipped: true },
     create: { trainingId, isSkipped: true },
   });
+
+  if (isCircuit) {
+    await prisma.trainingExercise.updateMany({
+      where: { trainingId },
+      data: {
+        startedAt: new Date(),
+      },
+    });
+  }
+
   revalidatePath(`/trainings/${trainingId}/execute`);
 }
 
 export async function handleTrainingWarmUpComplete(
   trainingId: number,
   trainingStartedAt: Date,
+  isCircuit: boolean,
 ) {
   const duration = Math.max(
     0,
@@ -50,6 +64,16 @@ export async function handleTrainingWarmUpComplete(
     where: { trainingId },
     data: { completedAt: new Date(), durationSec: duration, isSkipped: false },
   });
+
+  if (isCircuit) {
+    await prisma.trainingExercise.updateMany({
+      where: { trainingId },
+      data: {
+        startedAt: new Date(),
+      },
+    });
+  }
+
   revalidatePath(`/trainings/${trainingId}/execute`);
 }
 
@@ -62,7 +86,7 @@ export async function handleTrainingStart(id: number, isCircuit: boolean) {
     currentPeriod = await createTrainingPeriod(userId);
   }
 
-  await prisma.training.update({
+  const training = await prisma.training.update({
     where: { id },
     data: {
       startedAt: new Date(),
@@ -71,10 +95,22 @@ export async function handleTrainingStart(id: number, isCircuit: boolean) {
     },
   });
 
+  const warmUpData = training.noWarmUp
+    ? { isSkipped: true }
+    : { startedAt: new Date() };
   await prisma.trainingWarmUp.update({
     where: { trainingId: id },
-    data: { startedAt: new Date() },
+    data: warmUpData,
   });
+
+  if (training.noWarmUp && isCircuit) {
+    await prisma.trainingExercise.updateMany({
+      where: { trainingId: id },
+      data: {
+        startedAt: new Date(),
+      },
+    });
+  }
 
   // do not auto-start exercises even for circuit until warm-up done
   revalidatePath(`/trainings/${id}/execute`);

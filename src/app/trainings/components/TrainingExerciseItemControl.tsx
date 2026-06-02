@@ -137,24 +137,29 @@ export default function TrainingExerciseItemControl({
             <div className="hstack gap-2 mb-2">
               <span>Исполнение</span>
               <TrainingRatingEmoji rating={exercise.rating} />
-              <small>
-                {moment(exercise.completedAt).diff(
-                  moment(exercise.startedAt),
-                  "minute",
-                )}{" "}
-                мин.
-              </small>
-              <div className="d-flex align-items-center column-gap-1">
-                <small>
-                  +
-                  {exercise.TrainingExerciseExecution.reduce((acc, ex) => {
-                    return acc + ex.extraCount;
-                  }, 0)}
-                </small>
-                {exercise.TrainingExerciseExecution.some((e) => e.useBelt) && (
-                  <FaTape title="Использовался ремень" />
-                )}
-              </div>
+              {exercise.startedAt && (
+                <>
+                  <small>
+                    {moment(exercise.completedAt).diff(
+                      moment(exercise.startedAt),
+                      "minute",
+                    )}{" "}
+                    мин.
+                  </small>
+
+                  <div className="d-flex align-items-center column-gap-1">
+                    <small>
+                      +
+                      {exercise.TrainingExerciseExecution.reduce((acc, ex) => {
+                        return acc + ex.extraCount;
+                      }, 0)}
+                    </small>
+                    {exercise.TrainingExerciseExecution.some(
+                      (e) => e.useBelt,
+                    ) && <FaTape title="Использовался ремень" />}
+                  </div>
+                </>
+              )}
             </div>
             <div className="d-flex column-gap-2 flex-wrap mb-1">
               {exercise.TrainingExerciseExecution.map((execution) => (

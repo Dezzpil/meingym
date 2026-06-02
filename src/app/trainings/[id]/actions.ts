@@ -91,6 +91,7 @@ export async function handleTrainingUpdate(
           isCircuit: data.isCircuit,
           commonComment: data.commonComment,
           equipmentId: data.equipmentId,
+          noWarmUp: data.noWarmUp,
         },
         dateIsChanged ? { plannedTo: data.plannedTo } : {},
       ),

@@ -12,16 +12,21 @@ import moment from "moment";
 type Props = {
   warmUp: TrainingWarmUp;
   disabled: boolean; // global disabled (not started or completed)
+  isCircuit: boolean;
 };
 
-export function TrainingWarmUpCard({ warmUp, disabled }: Props) {
+export function TrainingWarmUpCard({ warmUp, disabled, isCircuit }: Props) {
   const skip = useCallback(async () => {
-    await handleTrainingWarmUpSkip(warmUp.trainingId);
-  }, [warmUp]);
+    await handleTrainingWarmUpSkip(warmUp.trainingId, isCircuit);
+  }, [warmUp, isCircuit]);
 
   const complete = useCallback(async () => {
-    await handleTrainingWarmUpComplete(warmUp.trainingId, warmUp.startedAt!);
-  }, [warmUp]);
+    await handleTrainingWarmUpComplete(
+      warmUp.trainingId,
+      warmUp.startedAt!,
+      isCircuit,
+    );
+  }, [warmUp, isCircuit]);
 
   const isDone = useMemo(() => {
     if (warmUp.isSkipped || warmUp.completedAt) return true;
