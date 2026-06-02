@@ -18,6 +18,10 @@ function renderActionMusclesGroupBlock(
   key: string,
   backgroundColor: string,
 ) {
+  if (!muscles[key] || !muscles[key].items) {
+    return null;
+  }
+
   return muscles[key].items.length ? (
     <div className="d-flex flex-wrap gap-1">
       {muscles[key].items.map((l) => (
