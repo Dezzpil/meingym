@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.29.2](https://github.com/Dezzpil/meingym/compare/v1.29.1...v1.29.2) (2026-06-02)
+
+
+### Features
+
+* возможность изменить порядок упражнений при выполнении тренировки ([a93ca34](https://github.com/Dezzpil/meingym/commits/a93ca348933bba57c9cd1223b8f419c60c68bf10))
+
 ### [1.29.1](https://github.com/Dezzpil/meingym/compare/v1.29.0...v1.29.1) (2026-05-31)
 
 ## [1.29.0](https://github.com/Dezzpil/meingym/compare/v1.28.2...v1.29.0) (2026-05-31)
