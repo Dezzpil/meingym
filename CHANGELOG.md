@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.29.3](https://github.com/Dezzpil/meingym/compare/v1.29.2...v1.29.3) (2026-06-02)
+
+
+### Bug Fixes
+
+* исправить ошибку замены упражнения, у которого не указаны мышцы ([aa7ca73](https://github.com/Dezzpil/meingym/commits/aa7ca7305ba66a61b6853b32aa2d8a1101a3c8f6))
+
 ### [1.29.2](https://github.com/Dezzpil/meingym/compare/v1.29.1...v1.29.2) (2026-06-02)
 
 
