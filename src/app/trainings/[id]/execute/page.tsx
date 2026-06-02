@@ -7,8 +7,6 @@ import {
   Approach,
   TrainingExerciseExecution,
   Training,
-  TrainingRating,
-  Purpose,
   TrainingWarmUp,
   Prisma,
 } from "@prisma/client";
@@ -65,6 +63,7 @@ async function findTraining(id: number): Promise<TrainingType> {
     },
   });
 }
+
 async function createExecutions(training: TrainingType): Promise<boolean> {
   const data: Prisma.TrainingExerciseExecutionCreateManyInput[] = [];
   for (const e of training.TrainingExercise) {

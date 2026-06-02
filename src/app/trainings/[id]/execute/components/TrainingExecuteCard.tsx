@@ -18,8 +18,9 @@ import { PurposeText } from "@/components/PurposeText";
 import classNames from "classnames";
 import { ActionWithMusclesType } from "@/app/actions/types";
 import { TrainingExerciseReplaceButton } from "@/app/trainings/[id]/execute/components/TrainingExerciseReplaceButton";
-import { FaExchangeAlt } from "react-icons/fa";
+import { FaArrowDown, FaArrowUp, FaExchangeAlt } from "react-icons/fa";
 import { TiCancel } from "react-icons/ti";
+import { handleChangeExercisePriority } from "@/app/trainings/exercises/actions";
 
 type Props = {
   exercise: {
@@ -62,6 +63,14 @@ export function TrainingExecuteCard({
     await handleTrainingExercisePass(exercise.id, exercise.trainingId);
   }, [exercise]);
 
+  const up = useCallback(async () => {
+    await handleChangeExercisePriority(exercise.id, true);
+  }, [exercise.id]);
+
+  const down = useCallback(async () => {
+    await handleChangeExercisePriority(exercise.id, false);
+  }, [exercise.id]);
+
   return (
     <div className="card mb-3" key={exercise.id}>
       <div className="card-header">
@@ -96,6 +105,24 @@ export function TrainingExecuteCard({
               )}
             </div>
             <div className="d-flex gap-2">
+              {!exercise.startedAt && (
+                <>
+                  <button
+                    className="btn btn-default"
+                    onClick={up}
+                    title="Переместить вверх"
+                  >
+                    <FaArrowUp />
+                  </button>
+                  <button
+                    className="btn btn-default"
+                    onClick={down}
+                    title="Переместить вниз"
+                  >
+                    <FaArrowDown />
+                  </button>
+                </>
+              )}
               {!exercise.completedAt && (
                 <TrainingExerciseReplaceButton
                   exercise={exercise}
