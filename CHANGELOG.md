@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.29.4](https://github.com/Dezzpil/meingym/compare/v1.29.3...v1.29.4) (2026-06-02)
+
+
+### Features
+
+* пропускать разминку для тренировки если выбрано "Без разминки" ([5777ee7](https://github.com/Dezzpil/meingym/commits/5777ee776fcf5cbb658af8d337341bc669465a19))
+
 ### [1.29.3](https://github.com/Dezzpil/meingym/compare/v1.29.2...v1.29.3) (2026-06-02)
 
 
