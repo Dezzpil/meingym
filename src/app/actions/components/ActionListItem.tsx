@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ActionWithMusclesType } from "@/app/actions/types";
 import { truncateText } from "@/tools/func";
 import { ActionMuscles } from "@/app/actions/components/ActionMuscles";
-import Image from "next/image";
 import { ExerciseImage } from "@prisma/client";
 
 type Props = {
@@ -25,7 +24,7 @@ export function ActionListItem({ action }: Props) {
         style={{ position: "relative" }}
       >
         {action.ExerciseImages.length ? (
-          <Image
+          <img
             src={action.ExerciseImages[0].path}
             alt={action.search ? action.search : action.title}
             width={300}
