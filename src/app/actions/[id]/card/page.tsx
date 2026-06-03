@@ -51,8 +51,6 @@ export default async function ActionCardPage({ params }: ItemPageParams) {
     },
   });
 
-  console.log(action.SimilarTo, action.SimilarFrom);
-
   return (
     <div className="container-fluid px-0">
       <div className="col">

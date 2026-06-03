@@ -1,4 +1,5 @@
-import Image from "next/image";
+"use client";
+
 import type {
   ApproachesGroup,
   ExerciseImage,
@@ -89,13 +90,12 @@ export function ActionCard({ action }: Props) {
             {action.ExerciseImages && action.ExerciseImages.length > 0 ? (
               <div className="position-relative h-100 d-flex align-items-center justify-content-center p-3">
                 <div className="position-relative">
-                  <Image
+                  <img
                     src={action.ExerciseImages[0].path}
                     alt={action.title}
                     className="img-fluid rounded"
                     width={600}
                     height={600}
-                    priority
                     style={{
                       maxHeight: "500px",
                       objectFit: "contain",
