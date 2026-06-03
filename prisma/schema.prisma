@@ -8,7 +8,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_PRISMA_URL")
-  directUrl = env("DATABASE_URL_NON_POOLING")
+  // directUrl = env("DATABASE_URL_NON_POOLING")
 }
 
 enum UserRole {
@@ -248,7 +248,7 @@ model Action {
   desc             String
   alias            String?
   anotherTitles    String?
-  search           String?
+  search           String? @db.Text
   isMarkDownInDesc Boolean @default(false)
 
   createdAt DateTime @default(now())
@@ -281,6 +281,8 @@ model Action {
   // Similar exercises relationships
   SimilarTo   SimilarExercises[] @relation("SimilarToExercise")
   SimilarFrom SimilarExercises[] @relation("SimilarFromExercise")
+
+  @@index([search(ops: raw("gin_trgm_ops"))], type: Gin, map: "Action_search_trgm_idx")
 }
 
 model ActionMass {

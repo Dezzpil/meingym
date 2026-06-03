@@ -37,30 +37,28 @@ export async function GET(request: NextRequest) {
     : requiresDefault;
 
   const term = (params.get("term") as string).trim().toLowerCase();
-  const parts = term.split(" ");
-  while (parts.length) {
-    const contains = parts.join("%");
-    const found = await prisma.action.findMany({
-      where: {
-        search: { contains },
-        rig: { in: rigs as ActionRig[] },
-        require: { in: requires as ActionRequire[] },
+
+  // Первое слово — самый широкий подстрочный фильтр, покрывает все варианты "a%b%c", "a%b", "a".
+  // GIN trigram индекс по Action.search обслуживает LIKE '%...%' за один запрос.
+  const contains = term.split(" ")[0];
+  const found = await prisma.action.findMany({
+    where: {
+      search: { contains },
+      rig: { in: rigs as ActionRig[] },
+      require: { in: requires as ActionRequire[] },
+    },
+    include: {
+      MusclesAgony: { include: { Muscle: { include: { Group: true } } } },
+      MusclesSynergy: { include: { Muscle: { include: { Group: true } } } },
+      MusclesStabilizer: {
+        include: { Muscle: { include: { Group: true } } },
       },
-      include: {
-        MusclesAgony: { include: { Muscle: { include: { Group: true } } } },
-        MusclesSynergy: { include: { Muscle: { include: { Group: true } } } },
-        MusclesStabilizer: {
-          include: { Muscle: { include: { Group: true } } },
-        },
-        MusclesAntagonist: {
-          include: { Muscle: { include: { Group: true } } },
-        },
+      MusclesAntagonist: {
+        include: { Muscle: { include: { Group: true } } },
       },
-    });
-    found.forEach((f) => map.set(f.id, f));
-    parts.pop();
-  }
-  actions.push(...Array.from(map.values()));
+    },
+  });
+  actions.push(...found);
 
   return NextResponse.json(actions, { status: 200 });
 }
