@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.30.2](https://github.com/Dezzpil/meingym/compare/v1.30.1...v1.30.2) (2026-06-03)
+
+
+### Features
+
+* использовать обычный img для гифок упражнений на вкладке карточки ([6a7a768](https://github.com/Dezzpil/meingym/commits/6a7a768519cc073666ec076981fad637340e1c5f))
+
 ### [1.30.1](https://github.com/Dezzpil/meingym/compare/v1.30.0...v1.30.1) (2026-06-03)
 
 
