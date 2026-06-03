@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.30.0](https://github.com/Dezzpil/meingym/compare/v1.29.4...v1.30.0) (2026-06-03)
+
+
+### Features
+
+* поиск упражнений с помощью триграм в GIN ([fa51aa4](https://github.com/Dezzpil/meingym/commits/fa51aa409477fb6eb79132e9d24aad316736fc05))
+
 ### [1.29.4](https://github.com/Dezzpil/meingym/compare/v1.29.3...v1.29.4) (2026-06-02)
 
 
