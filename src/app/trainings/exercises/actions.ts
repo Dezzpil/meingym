@@ -23,9 +23,14 @@ export async function handleAddExercise(
     await prisma.$transaction(async (tx) => {
       await createExercise(trainingId, data.actionId, data.purpose, userId, tx);
       // Recompute muscles stats for not-started trainings
-      const t = await tx.training.findUniqueOrThrow({ where: { id: trainingId }, select: { startedAt: true } });
+      const t = await tx.training.findUniqueOrThrow({
+        where: { id: trainingId },
+        select: { startedAt: true },
+      });
       if (!t.startedAt) {
-        const { recomputeTrainingMuscleStats } = await import("@/core/trainingMuscles");
+        const { recomputeTrainingMuscleStats } = await import(
+          "@/core/trainingMuscles"
+        );
         await recomputeTrainingMuscleStats(trainingId, tx);
       }
     });
@@ -42,12 +47,18 @@ export async function handleDeleteExercise(id: number) {
   await prisma.$transaction(async (tx) => {
     const ex = await tx.trainingExercise.findUniqueOrThrow({
       where: { id },
-      select: { id: true, trainingId: true, Training: { select: { startedAt: true } } },
+      select: {
+        id: true,
+        trainingId: true,
+        Training: { select: { startedAt: true } },
+      },
     });
     trainingId = ex.trainingId;
     await tx.trainingExercise.delete({ where: { id } });
     if (!ex.Training?.startedAt) {
-      const { recomputeTrainingMuscleStats } = await import("@/core/trainingMuscles");
+      const { recomputeTrainingMuscleStats } = await import(
+        "@/core/trainingMuscles"
+      );
       await recomputeTrainingMuscleStats(trainingId, tx);
     }
   });
@@ -66,6 +77,7 @@ export async function handleChangeExercisePriority(
       where: {
         trainingId: ex.trainingId,
         priority: ex.priority + change,
+        id: { not: id },
       },
     });
     if (siblingEx) {

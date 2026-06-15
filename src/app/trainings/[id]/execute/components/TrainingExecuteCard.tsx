@@ -44,14 +44,12 @@ type Props = {
     TrainingExerciseExecution: TrainingExerciseExecution[];
   };
   disabled: boolean;
-  allActions: ActionWithMusclesType[];
   allExercises: TrainingExercise[];
   noFeedback: boolean;
 };
 export function TrainingExecuteCard({
   exercise,
   disabled,
-  allActions,
   allExercises,
   noFeedback,
 }: Props) {
@@ -105,29 +103,24 @@ export function TrainingExecuteCard({
               )}
             </div>
             <div className="d-flex gap-2">
-              {!exercise.startedAt && (
-                <>
-                  <button
-                    className="btn btn-default"
-                    onClick={up}
-                    title="Переместить вверх"
-                  >
-                    <FaArrowUp />
-                  </button>
-                  <button
-                    className="btn btn-default"
-                    onClick={down}
-                    title="Переместить вниз"
-                  >
-                    <FaArrowDown />
-                  </button>
-                </>
-              )}
+              <button
+                className="btn btn-default"
+                onClick={up}
+                title="Переместить вверх"
+              >
+                <FaArrowUp />
+              </button>
+              <button
+                className="btn btn-default"
+                onClick={down}
+                title="Переместить вниз"
+              >
+                <FaArrowDown />
+              </button>
               {!exercise.completedAt && (
                 <TrainingExerciseReplaceButton
                   exercise={exercise}
                   allExercises={allExercises}
-                  actions={allActions}
                   disabled={disabled || exercise.completedAt !== null}
                 />
               )}

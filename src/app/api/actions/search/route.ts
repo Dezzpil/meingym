@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ActionRequire, ActionRig, type Action } from "@prisma/client";
 import { prisma } from "@/tools/db";
+import { RequiresDefault, RigsDefault } from "../../../../core/exercises";
 
 export type Data = {
   term: string;
@@ -9,32 +10,16 @@ export type Data = {
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const actions: Action[] = [];
-  const map = new Map();
   if (!params.has("term")) {
     return NextResponse.json(actions, { status: 200 });
   }
 
-  const rigsDefault = [
-    ActionRig.OTHER,
-    ActionRig.BARBELL,
-    ActionRig.DUMBBELL,
-    ActionRig.BLOCKS,
-    ActionRig.KETTLEBELL,
-  ];
-
-  const requiresDefault = [
-    ActionRequire.UPBAR,
-    ActionRequire.BENCH,
-    ActionRequire.NONE,
-    ActionRequire.SIMULATOR,
-  ];
-
   const rigs = params.has("rigs")
     ? params.get("rigs")!.split(",")
-    : rigsDefault;
+    : RigsDefault;
   const requires = params.has("requires")
     ? params.get("requires")!.split(",")
-    : requiresDefault;
+    : RequiresDefault;
 
   const term = (params.get("term") as string).trim().toLowerCase();
 

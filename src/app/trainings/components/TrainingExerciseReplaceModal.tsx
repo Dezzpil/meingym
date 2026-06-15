@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import Modal from "react-bootstrap/Modal";
 import { TrainingExerciseSearch } from "@/app/trainings/components/TrainingExerciseSearch";
 import { ActionWithMusclesType } from "@/app/actions/types";
@@ -12,7 +12,6 @@ type Props = {
   isOpen: boolean;
   onClose: () => void;
   exercise: { id: number; actionId: number };
-  actions: ActionWithMusclesType[];
   exercises: TrainingExercise[];
 };
 
@@ -20,9 +19,29 @@ export function TrainingExerciseReplaceModal({
   isOpen,
   onClose,
   exercise,
-  actions,
   exercises,
 }: Props) {
+  // loading similar actions for action of this exercise
+  const [isLoadingSimActions, setIsLoadingSimActions] = useState(true);
+  const [simActions, setSimActions] = useState<ActionWithMusclesType[]>([]);
+
+  useMemo(async () => {
+    setIsLoadingSimActions(true);
+    const url = `/api/exercises/similar?id=${exercise.id}`;
+    try {
+      const result = await fetch(url);
+      const json = (await result.json()) as any as {
+        similarActions: ActionWithMusclesType[];
+      };
+      setSimActions(json.similarActions as unknown as ActionWithMusclesType[]);
+      console.log(json, json.similarActions);
+    } catch (error) {
+      // pass
+    }
+
+    setIsLoadingSimActions(false);
+  }, [exercise.id]);
+
   const [error, setError] = useState<string | null>(null);
   const [isReplacing, setIsReplacing] = useState(false);
 
@@ -32,7 +51,14 @@ export function TrainingExerciseReplaceModal({
   );
   // Make sure we don't filter out the current exercise's action
   delete exercisesMap[exercise.actionId];
-  const filteredActions = actions.filter((a) => !(a.id in exercisesMap));
+
+  const filteredActions = useMemo(() => {
+    if (!simActions) return [];
+    if (Object.keys(exercisesMap).length > 0) {
+      return simActions.filter((a) => !(a.id in exercisesMap));
+    }
+    return simActions;
+  }, [exercisesMap, simActions]);
 
   const handleSelectAction = useCallback(
     async (e: any) => {
@@ -76,23 +102,25 @@ export function TrainingExerciseReplaceModal({
         <Modal.Title>Выбор упражнения на замену</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {filteredActions.length > 0 ? (
-          <>
-            {error && <div className="alert alert-danger mb-3">{error}</div>}
-            <TrainingExerciseSearch
-              baseActions={filteredActions}
-              onClick={handleSelectAction}
-            />
-            {isReplacing && (
-              <div className="d-flex justify-content-center mt-3">
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Загрузка...</span>
-                </div>
-              </div>
-            )}
-          </>
+        {error && <div className="alert alert-danger mb-3">{error}</div>}
+        {isLoadingSimActions ? (
+          <div className="d-flex justify-content-center mt-3">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Загрузка...</span>
+            </div>
+          </div>
         ) : (
-          <p className="text-center">Нет доступных упражнений для замены</p>
+          <TrainingExerciseSearch
+            baseActions={filteredActions}
+            onClick={handleSelectAction}
+          />
+        )}
+        {isReplacing && (
+          <div className="d-flex justify-content-center mt-3">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Загрузка...</span>
+            </div>
+          </div>
         )}
       </Modal.Body>
     </Modal>

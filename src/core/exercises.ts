@@ -1,9 +1,11 @@
-import type {
+import {
   ActionLoss,
   Action,
   ActionMass,
   ActionStrength,
   TrainingExercise,
+  ActionRig,
+  ActionRequire,
 } from "@prisma/client";
 import { PrismaTransactionClient } from "@/tools/types";
 import { CurrentPurpose } from "@/core/types";
@@ -12,6 +14,21 @@ import {
   createMassInitial,
   createStrengthInitial,
 } from "@/core/approaches";
+
+export const RigsDefault = [
+  ActionRig.OTHER,
+  ActionRig.BARBELL,
+  ActionRig.DUMBBELL,
+  ActionRig.BLOCKS,
+  ActionRig.KETTLEBELL,
+];
+
+export const RequiresDefault = [
+  ActionRequire.UPBAR,
+  ActionRequire.BENCH,
+  ActionRequire.NONE,
+  ActionRequire.SIMULATOR,
+];
 
 export async function createExercise(
   trainingId: number,

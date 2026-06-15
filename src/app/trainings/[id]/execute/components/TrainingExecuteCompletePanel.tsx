@@ -10,6 +10,7 @@ import { TimeFormat } from "@/tools/dates";
 import Confetti from "react-dom-confetti";
 import { ConfettiConfig } from "dom-confetti";
 import { TrainingCompleteInfo } from "@/app/trainings/components/TrainingCompleteInfo";
+import { LuSettings2 } from "react-icons/lu";
 
 const ConfettiConfig1: ConfettiConfig = {
   elementCount: 75,
@@ -81,17 +82,18 @@ export function TrainingExecuteCompletePanel({ training }: Props) {
               <>
                 <div className="d-flex gap-2 justify-content-between">
                   <Link
-                    className="btn btn-outline-secondary"
+                    className="btn btn-outline-secondary d-flex align-items-center gap-2"
                     href={`/trainings/${training.id}`}
                   >
+                    <LuSettings2 />
                     Настроить
                   </Link>
                   <button
-                    className="btn btn-warning"
+                    className="btn btn-warning text-white"
                     disabled={handling}
                     onClick={handle}
                   >
-                    Завершить
+                    Завершить!
                   </button>
                 </div>
                 {error && <div className="alert alert-danger">{error}</div>}

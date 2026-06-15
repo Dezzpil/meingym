@@ -9,14 +9,12 @@ import { FaExchangeAlt } from "react-icons/fa";
 type Props = {
   exercise: { id: number; actionId: number };
   allExercises: TrainingExercise[];
-  actions: ActionWithMusclesType[];
   disabled?: boolean;
 };
 
 export function TrainingExerciseReplaceButton({
   exercise,
   allExercises,
-  actions,
   disabled = false,
 }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,7 +43,6 @@ export function TrainingExerciseReplaceButton({
         onClose={closeModal}
         exercise={exercise}
         exercises={allExercises}
-        actions={actions}
       />
     </>
   );

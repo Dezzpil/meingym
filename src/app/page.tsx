@@ -28,6 +28,7 @@ export default async function HomePage() {
         orderBy: { priority: "asc" },
         include: { Action: true },
       },
+      Equipment: true,
     },
   });
   const weight = await prisma.weight.findFirst({
@@ -49,8 +50,15 @@ export default async function HomePage() {
           {trainings.map((t) => (
             <div className="card" key={t.id}>
               <div className="card-body">
-                <h5 className="card-title">
-                  Тренировка на {moment(t.plannedTo).format(DateFormat)}
+                <h5 className="card-title d-flex justify-content-between align-items-center">
+                  <span>
+                    Тренировка на {moment(t.plannedTo).format(DateFormat)}
+                  </span>
+                  {t.Equipment && (
+                    <small className="fw-light text-muted">
+                      {t.Equipment!.name.toLowerCase()}
+                    </small>
+                  )}
                 </h5>
                 <div className="card-text">
                   Упражнения:{" "}

@@ -9,6 +9,7 @@ import { DateFormat, TimeFormat } from "@/tools/dates";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import Link from "next/link";
 import { TrainingCompleteInfo } from "@/app/trainings/components/TrainingCompleteInfo";
+import { LuSettings2 } from "react-icons/lu";
 
 type Props = {
   training: Training;
@@ -28,9 +29,10 @@ export function TrainingExecuteTopPanel({ training }: Props) {
             Начать тренировку
           </button>
           <Link
-            className="btn btn-outline-secondary"
+            className="btn btn-outline-secondary d-flex align-items-center gap-2"
             href={`/trainings/${training.id}`}
           >
+            <LuSettings2 />
             Настроить
           </Link>
         </div>

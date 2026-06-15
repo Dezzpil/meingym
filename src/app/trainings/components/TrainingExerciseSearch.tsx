@@ -10,6 +10,7 @@ type Props = {
   onClick: CallableFunction;
 };
 export function TrainingExerciseSearch({ baseActions, onClick }: Props) {
+  const [beforeSearch, setBeforeSearch] = useState<boolean>(true);
   const [searching, setSearching] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [actions, setActions] = useState<ActionWithMusclesType[]>(baseActions);
@@ -18,6 +19,7 @@ export function TrainingExerciseSearch({ baseActions, onClick }: Props) {
     setActions([]);
     setError(null);
     setSearching(true);
+    setBeforeSearch(false);
     const term = encodeURIComponent(e.target.value);
     if (term) {
       const result = await fetch(`/api/actions/search?term=${term}`);
@@ -52,7 +54,7 @@ export function TrainingExerciseSearch({ baseActions, onClick }: Props) {
         placeholder="Введите название ..."
         autoFocus
         onChange={onChange}
-        className="mb-2"
+        className="mb-3"
       />
       {searching ? (
         <Spinner size="sm" />
@@ -88,7 +90,13 @@ export function TrainingExerciseSearch({ baseActions, onClick }: Props) {
               ))}
             </ul>
           ) : (
-            <p className="text-muted mb-2">Движения не найдены</p>
+            <>
+              {beforeSearch ? (
+                <p className="text-muted mb-2"></p>
+              ) : (
+                <p className="text-muted mb-2">Движения не найдены</p>
+              )}
+            </>
           )}
         </>
       )}
