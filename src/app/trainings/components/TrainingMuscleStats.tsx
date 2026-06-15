@@ -1,5 +1,10 @@
 "use client";
 import { useMemo, useState } from "react";
+import {
+  MuscleAgonyBackground,
+  MuscleStabilizerBackground,
+  MuscleSynergyBackground,
+} from "@/app/actions/colors";
 
 type Stat = {
   muscleId: number;
@@ -53,7 +58,8 @@ export function TrainingMuscleStats({ stats, className }: Props) {
               </span>
               {s.asAgonyCnt > 0 && (
                 <span
-                  className="badge rounded-pill bg-success text-white ms-2"
+                  className="badge rounded-pill text-white ms-2"
+                  style={{ backgroundColor: MuscleAgonyBackground }}
                   title="Агонист"
                 >
                   {s.asAgonyCnt}
@@ -61,7 +67,8 @@ export function TrainingMuscleStats({ stats, className }: Props) {
               )}
               {s.asSynerCnt > 0 && (
                 <span
-                  className="badge rounded-pill bg-primary bg-opacity-50 text-white ms-2"
+                  className="badge rounded-pill text-white ms-2"
+                  style={{ backgroundColor: MuscleSynergyBackground }}
                   title="Синергист"
                 >
                   {s.asSynerCnt}
@@ -69,7 +76,8 @@ export function TrainingMuscleStats({ stats, className }: Props) {
               )}
               {s.asStableCnt > 0 && (
                 <span
-                  className="badge rounded-pill bg-warning bg-opacity-75 text-secondary ms-2"
+                  className="badge rounded-pill text-white ms-2"
+                  style={{ backgroundColor: MuscleStabilizerBackground }}
                   title="Стабилизатор"
                 >
                   {s.asStableCnt}
