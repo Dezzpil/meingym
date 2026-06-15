@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.32.0](https://github.com/Dezzpil/meingym/compare/v1.31.0...v1.32.0) (2026-06-15)
+
+
+### Features
+
+* cинхронизировать цвета мышц в отчете о тренировке и в упражнениях ([62fca83](https://github.com/Dezzpil/meingym/commits/62fca83710748fc8ad98c18ef177fc5ddd3f0a29))
+
 ## [1.31.0](https://github.com/Dezzpil/meingym/compare/v1.30.2...v1.31.0) (2026-06-15)
 
 
