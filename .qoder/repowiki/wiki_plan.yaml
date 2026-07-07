@@ -1,0 +1,98 @@
+version: 1
+
+scope:
+  include: []
+  exclude:
+    - "node_modules/**"
+    - ".next/**"
+    - "coverage/**"
+    - "*.local"
+    - "data/**"
+    - "dumps/**"
+
+repowiki:
+  template: "architecture"
+  
+  notes:
+    - text: "MeinGym is a Next.js 14 App Router application for workout planning, execution tracking, and progress visualization with periodization support."
+    - text: "The application uses PostgreSQL 16 with Prisma ORM for data persistence, and Redis + Bull for background job processing."
+    - text: "Authentication is handled by NextAuth.js with GitHub and Google OAuth providers."
+    - text: "The dev server runs on port 3004 (pnpm dev). Background workers are started separately with pnpm workers."
+    - text: "Path alias @/* maps to ./src/* as configured in tsconfig.json."
+    - text: "Docker Compose provides PostgreSQL on port 5435 and Redis on port 6379 for local development."
+    - text: "Server Actions are co-located in actions.ts files within each route directory, marked with 'use server' directive."
+    - text: "The core business logic in src/core/ is pure TypeScript with minimal external dependencies, focused on scoring, progression strategies, and statistics."
+  
+  documents:
+    - title: "Architecture Overview"
+      goal: "High-level system architecture showing how Next.js App Router, Prisma, Bull queues, and authentication integrate together."
+      parent: ""
+      hints: "Include data flow from user request through server actions to database, and background job processing flow. Show the monolithic structure with clear module boundaries."
+    
+    - title: "Data Model"
+      goal: "Comprehensive overview of the Prisma schema covering User, Action (exercises), Training lifecycle, Execution tracking, Scoring, Periods, and Equipment."
+      parent: ""
+      hints: "Focus on key relationships: Training → TrainingExercise → Execution, Action → ApproachesGroup → Approach, Action ↔ Muscle mappings (agony/synergy/stabilizer/antagonist). Explain the GIN trigram index on Action.search and the polymorphic purposeId pattern."
+    
+    - title: "Core Business Logic"
+      goal: "Document the pure business logic layer in src/core/ including scoring normalization, progression strategies, and statistics computation."
+      parent: ""
+      hints: "Explain ScoreCoefficients per purpose (MASS/STRENGTH/LOSS), ProgressionStrategySimple class with strength/mass/loss methods, and how periods track training cycles. Show how approaches.ts aggregates set statistics."
+    
+    - title: "Training Execution Flow"
+      goal: "End-to-end workflow of a training session from creation through execution to completion and score calculation."
+      parent: ""
+      hints: "Cover Training lifecycle states (plannedTo → startedAt → completedAt → processedAt), how executions link to approaches, warm-up tracking, and the feedback model (rating, technique, cheating, refusing, burning)."
+    
+    - title: "Background Job System"
+      goal: "Bull queue architecture for asynchronous processing of scores, period checks, and image cleanup."
+      parent: ""
+      hints: "Document the three queues (scores, periods, images), their processors, retry strategy (3 attempts, exponential backoff), and how they integrate with training completion events."
+    
+    - title: "Authentication and Authorization"
+      goal: "NextAuth.js integration with GitHub/Google OAuth, session management, and role-based access control."
+      parent: ""
+      hints: "Cover the auth flow, session retrieval in tools/auth.ts, and how server actions access user context. Note the UserRole enum (USER/ADMIN) and any protected routes."
+    
+    - title: "Progression Strategies"
+      goal: "Detailed documentation of the simple progression strategy for strength, mass, and loss training goals."
+      parent: "Core Business Logic"
+      hints: "Explain the pyramid approach for strength (working sets + prepare sets), tree-pattern reps for mass with optional drop sets, and increasing rep count for loss. Include the configurable options in ProgressionStrategySimpleOpts."
+    
+    - title: "Scoring and Analytics"
+      goal: "How exercise performance is normalized and scored using log-scaling and purpose-specific coefficients."
+      parent: "Core Business Logic"
+      hints: "Document normLogFn, the ScoreCoefficients matrix, and how TrainingExerciseScore records are created. Explain the five normalized metrics (liftedSum/Mean/Max, countTotal/countMean)."
+    
+    - title: "Exercise Catalog"
+      goal: "Action (exercise) model with muscle mappings, equipment requirements, rig types, and search capabilities."
+      parent: "Data Model"
+      hints: "Cover ActionRig enum (BARBELL/DUMBBELL/BLOCKS/KETTLEBELL/OTHER), ActionRequire enum, the four muscle junction tables, ExerciseImage handling, and the GIN trigram search index."
+    
+    - title: "Equipment Management"
+      goal: "Per-user equipment sets with rig capabilities and weight constraints."
+      parent: "Data Model"
+      hints: "Explain Equipment → EquipmentRig (minWeight, maxWeight, step) and EquipmentRequire relationships. Note the isDefault flag and cascade delete behavior."
+    
+    - title: "App Pages and Routes"
+      goal: "Complete route map covering all page routes, server actions, and API endpoints."
+      parent: "Architecture Overview"
+      hints: "List all routes: /actions (catalog), /trainings (workout management), /muscles, /equipment, /profile, /weights, /progression, /admin/jobs. Document the server actions pattern and API routes under /api/."
+    
+    - title: "Shared Components"
+      goal: "Reusable UI components in src/components/ including Layout, AuthProvider, and feature-specific components."
+      parent: "Architecture Overview"
+      hints: "Cover Layout wrapper, AuthProvider context, BootstrapJS loader, approaches management components, recharts customization, and common UI patterns like Loader and TrainingsPicker."
+
+knowledgecard:
+  notes:
+    - text: "Module boundaries: src/core (business logic), src/app (pages/actions/API), src/jobs (background workers), src/tools (utilities), src/components (shared UI), prisma (schema/migrations)."
+    - text: "The core module is dependency-light: only Prisma Client and Chai assertions. It should remain pure and testable without HTTP context."
+    - text: "Server Actions in src/app/*/actions.ts are the primary mutation pattern, replacing traditional API routes for form submissions."
+    - text: "Background jobs use Bull 4.12.2 with Redis. Three queues: scores (on training complete), periods (scheduled), images (scheduled cleanup)."
+    - text: "Prisma singleton pattern: tools/db.ts exports a single PrismaClient instance used throughout the application."
+    - text: "Path alias @/* is configured in tsconfig.json and used consistently across all imports."
+    - text: "Testing uses node:test runner with tsx for TypeScript execution. Core tests are in src/tests/core/."
+    - text: "The application supports three training purposes (MASS/STRENGTH/LOSS) which drive scoring coefficients and progression behavior."
+    - text: "Execution feedback model captures detailed per-set data: rating, technique, cheating, refusing, burning, belt usage, extra reps."
+    - text: "Docker services: PostgreSQL 16 on :5435, Redis Alpine on :6379. Both use persistent volumes under ./data/."
