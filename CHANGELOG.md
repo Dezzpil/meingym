@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.33.0](https://github.com/Dezzpil/meingym/compare/v1.32.0...v1.33.0) (2026-07-08)
+
+
+### Features
+
+* добавить механизм оценки сложности упражнения и тренировки ([e6eb6dd](https://github.com/Dezzpil/meingym/commits/e6eb6ddd4e47bc98f549d26a8e55210d2083dcfa))
+* добавить определение базы движения ([fb12dff](https://github.com/Dezzpil/meingym/commits/fb12dff8f7d54539d1becf71554c56dd8e7a4b2e))
+
 ## [1.32.0](https://github.com/Dezzpil/meingym/compare/v1.31.0...v1.32.0) (2026-06-15)
 
 
