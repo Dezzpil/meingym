@@ -7,6 +7,7 @@
 - [src/core/approaches.ts](file://src/core/approaches.ts)
 - [src/core/scores.ts](file://src/core/scores.ts)
 - [src/app/trainings/](file://src/app/trainings/)
+- [src/app/trainings/[id]/difficulty/actions.ts](file://src/app/trainings/%5Bid%5D/difficulty/actions.ts)
 - [src/jobs/index.ts](file://src/jobs/index.ts)
 </cite>
 
@@ -142,7 +143,7 @@ When all exercises are done:
 2. Time score is calculated (`timeScoreInMins`, `timeScoreInSecs`)
 3. Muscle stats are computed via `trainingMuscles.ts`
 4. Score calculation job is enqueued: `scheduleScoreCalculation(trainingId)`
-5. If progression is enabled, next approaches are generated
+5. If progression is enabled, next approaches are generated — **boost approaches (`isBoost=true`) are excluded** from both planned and executed sets used for progression calculation, ensuring difficulty-boost sets do not inflate future training loads
 
 ## Step 7: Post-Processing
 
@@ -153,6 +154,20 @@ The `scores` background job:
 4. Sets `Training.processedAt`
 
 **Sources**: [src/jobs/processors/scores.ts:1-37](file://src/jobs/processors/scores.ts#L1-L37) · [src/jobs/index.ts:15-23](file://src/jobs/index.ts#L15-L23)
+
+## Difficulty Boost
+
+Before a training starts, users can toggle a **difficulty boost** that adds extra approaches (`isBoost=true`) to each exercise. This increases the training's difficulty score without affecting long-term progression.
+
+- **Apply**: `handleApplyDifficultyBoost(trainingId)` — uses `ExtraApproachesBoostStrategy` to add one boost approach per exercise (duplicates the last/heaviest set), recalculates group stats and difficulty scores.
+- **Revert**: `handleRevertDifficultyBoost(trainingId)` — removes all boost approaches and recalculates scores.
+- Both actions are blocked once the training has started (`startedAt` is set).
+
+During training processing, boost approaches are filtered out:
+- Planned boost approaches are skipped when building `plannedSetsData` for progression.
+- Executions linked to boost approaches are excluded from `executedSetsData` via `isBoostExecution()`.
+
+**Sources**: [src/app/trainings/[id]/difficulty/actions.ts:17-100](file://src/app/trainings/%5Bid%5D/difficulty/actions.ts#L17-L100) · [src/app/trainings/[id]/execute/actions.ts:32-39](file://src/app/trainings/%5Bid%5D/execute/actions.ts#L32-L39)
 
 ## Training Repeat
 

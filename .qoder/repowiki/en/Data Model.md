@@ -83,8 +83,8 @@ See [Exercise Catalog](Exercise%20Catalog.md) for detailed Action model document
 
 | Model | Key Fields | Purpose |
 |-------|-----------|---------|
-| `Training` | plannedTo, startedAt, completedAt, processedAt | Workout session with lifecycle timestamps |
-| `TrainingExercise` | purpose, purposeId, liftedSum/Mean/Max | Exercise within a training |
+| `Training` | plannedTo, startedAt, completedAt, processedAt, **difficultyScore** | Workout session with lifecycle timestamps and difficulty |
+| `TrainingExercise` | purpose, purposeId, liftedSum/Mean/Max, **difficultyScore** | Exercise within a training with difficulty |
 | `TrainingExerciseExecution` | plannedWeigth/Count, liftedWeight/Count | Individual set execution with feedback |
 | `TrainingWarmUp` | estimatedTimeSec, durationSec, isSkipped | Warm-up tracking |
 | `TrainingMuscleStat` | asAgonyCnt, asSynerCnt, asStableCnt | Per-training muscle engagement |
@@ -97,7 +97,7 @@ The `Training` model tracks the full lifecycle:
 - `completedAt` — when all exercises finished
 - `processedAt` — when post-processing (scoring) completed
 
-Additional flags: `isCircuit` (circuit training mode), `noFeedback` (skip execution feedback), `noWarmUp` (skip warm-up), `repeatedFromId` (links to original training for repeats).
+Additional flags: `isCircuit` (circuit training mode), `noFeedback` (skip execution feedback), `noWarmUp` (skip warm-up), `repeatedFromId` (links to original training for repeats), `difficultyScore` (sum of all exercise difficulties, persisted for display and comparison).
 
 ### Progression and Scoring
 
@@ -106,7 +106,7 @@ Additional flags: `isCircuit` (circuit training mode), `noFeedback` (skip execut
 | `TrainingPeriod` | startDate, endDate, isCurrent | Training cycle with open/close dates |
 | `ProgressionStrategySimpleOpts` | strength/mass/loss params | Configurable progression parameters |
 | `ApproachesGroup` | count, sum, mean, max, countTotal | Aggregated planned set statistics |
-| `Approach` | weight, count, priority | Individual planned set |
+| `Approach` | weight, count, priority, **isBoost** | Individual planned set with optional boost flag |
 | `ActionMass` | currentApproachGroupId | User's current mass approaches |
 | `ActionStrength` | currentApproachGroupId | User's current strength approaches |
 | `ActionLoss` | currentApproachGroupId | User's current loss approaches |
@@ -115,6 +115,14 @@ The `ProgressionStrategySimpleOpts` model stores per-period configuration:
 - **Strength**: working sets count, prepare sets count, weight delta
 - **Mass**: sets count, big count coefficient, weight delta, drop set toggle
 - **Loss**: count step, count max, weight delta, max sets
+
+### Difficulty Fields
+
+| Model | Field | Type | Default | Purpose |
+|-------|-------|------|---------|--------|
+| `Approach` | `isBoost` | Boolean | `false` | Marks approach as a difficulty-boost extra set; excluded from progression |
+| `TrainingExercise` | `difficultyScore` | Float | `0` | Pre-execution difficulty = `action.base × previewScore(purpose, approachGroup)` |
+| `Training` | `difficultyScore` | Float | `0` | Sum of all exercise difficulty scores in the training |
 
 ### Equipment
 

@@ -3,6 +3,10 @@
 <cite>
 **Referenced Files**
 - [src/core/scores.ts](file://src/core/scores.ts)
+- [src/core/difficulty.ts](file://src/core/difficulty.ts)
+- [src/core/difficulty/boostStrategy.ts](file://src/core/difficulty/boostStrategy.ts)
+- [src/core/difficulty/extraApproachesBoost.ts](file://src/core/difficulty/extraApproachesBoost.ts)
+- [src/core/difficulty/recalculate.ts](file://src/core/difficulty/recalculate.ts)
 - [src/core/progression/strategy/simple.ts](file://src/core/progression/strategy/simple.ts)
 - [src/core/periods.ts](file://src/core/periods.ts)
 - [src/core/approaches.ts](file://src/core/approaches.ts)
@@ -21,6 +25,10 @@ The `src/core/` module contains pure business logic for workout management, scor
 ```mermaid
 graph TB
     scores[scores.ts] --> db[tools/db.ts]
+    difficulty[difficulty.ts] --> scores
+    difficulty --> boostStrategy[difficulty/boostStrategy.ts]
+    boostStrategy --> extraBoost[difficulty/extraApproachesBoost.ts]
+    recalculate[difficulty/recalculate.ts] --> difficulty
     periods[periods.ts] --> db
     approaches[approaches.ts] --> stats[stats.ts]
     exercises[exercises.ts] --> approaches
@@ -31,7 +39,11 @@ graph TB
 
 | File | Responsibility |
 |------|---------------|
-| `scores.ts` | Log-normalized scoring with purpose-specific coefficients |
+| `scores.ts` | Log-normalized scoring with purpose-specific coefficients; `previewScore()` for pre-execution estimation |
+| `difficulty.ts` | Exercise and training difficulty calculation (`action.base × previewScore`) |
+| `difficulty/boostStrategy.ts` | `TrainingDifficultyBoostStrategy` interface (strategy pattern) |
+| `difficulty/extraApproachesBoost.ts` | `ExtraApproachesBoostStrategy` — adds extra sets flagged `isBoost` |
+| `difficulty/recalculate.ts` | Persistence utilities for `difficultyScore` on exercises and trainings |
 | `progression/strategy/simple.ts` | Next-workout set generation for strength/mass/loss |
 | `periods.ts` | Training period lifecycle (create, end, query) |
 | `approaches.ts` | Approach group creation and statistics aggregation |
@@ -163,6 +175,51 @@ type CurrentPurpose = "MASS" | "STRENGTH" | "LOSS";
 ```
 
 **Sources**: [src/core/types.ts:1-20](file://src/core/types.ts#L1-L20)
+
+## Difficulty System
+
+The difficulty system provides a **pre-execution** estimate of how hard a workout will be, complementing the post-execution scoring system.
+
+### Difficulty Calculation
+
+- **Exercise difficulty** = `action.base × previewScore(purpose, approachGroup)` — where `previewScore` applies the same log-normalized scoring coefficients used for post-execution scores, but uses planned approach aggregates instead of actual lifted data.
+- **Training difficulty** = sum of all exercise difficulties within the training.
+
+The `previewScore()` function in `scores.ts` reuses `ScoreCoefficients` to produce a score from `ApproachesGroup` aggregates (`sum`, `mean`, `max`, `countTotal`, `countMean`), giving a comparable score before execution.
+
+**Sources**: [src/core/difficulty.ts:13-22](file://src/core/difficulty.ts#L13-L22) · [src/core/scores.ts:108-121](file://src/core/scores.ts#L108-L121)
+
+### Boost Mechanism (Strategy Pattern)
+
+The boost system allows users to increase training difficulty by adding extra approaches without affecting long-term progression.
+
+```mermaid
+graph TB
+    Toggle[Boost Toggle UI] --> ApplyApply[handleApplyDifficultyBoost]
+    Toggle --> ApplyRevert[handleRevertDifficultyBoost]
+    ApplyApply --> Strategy[ExtraApproachesBoostStrategy]
+    ApplyRevert --> Strategy
+    Strategy --> Prisma[prisma.approach.create/delete]
+    Strategy --> RecalcGroup[Recalculate ApproachesGroup stats]
+    RecalcGroup --> RecalcDiff[Recalculate difficulty scores]
+```
+
+- **`TrainingDifficultyBoostStrategy`** interface defines `apply()` and `revert()` methods.
+- **`ExtraApproachesBoostStrategy`** (the current implementation) duplicates the last/heaviest approach per exercise with `isBoost=true`. Reverting deletes all boost approaches.
+- After applying or reverting, `ApproachesGroup` aggregates are recalculated, and difficulty scores are persisted on both `TrainingExercise` and `Training`.
+- Boost can only be toggled **before** the training starts (`startedAt` must be null).
+
+**Sources**: [src/core/difficulty/boostStrategy.ts:9-12](file://src/core/difficulty/boostStrategy.ts#L9-L12) · [src/core/difficulty/extraApproachesBoost.ts:12-65](file://src/core/difficulty/extraApproachesBoost.ts#L12-L65)
+
+### Recalculation and Persistence
+
+`recalculateExerciseDifficulty(exerciseId)` and `recalculateTrainingDifficulty(trainingId)` compute and persist difficulty scores to the database. These are called:
+- After boost apply/revert
+- When approaches or weights change on the training edit page
+
+A convenience function `recalculateExerciseAndTrainingDifficulty(exerciseId, trainingId)` updates both in sequence.
+
+**Sources**: [src/core/difficulty/recalculate.ts:10-62](file://src/core/difficulty/recalculate.ts#L10-L62)
 
 ## Conclusion
 

@@ -76,7 +76,7 @@ The application is organized into six primary modules:
 
 1. **App Layer** (`src/app/`) — Next.js pages, server actions, API routes, and feature-specific React components. Each route directory is self-contained with its own `actions.ts`, `types.ts`, and `components/`.
 
-2. **Core Logic** (`src/core/`) — Pure TypeScript business logic with no HTTP awareness. Handles scoring normalization, progression strategies, period lifecycle, approach statistics, and muscle engagement tracking.
+2. **Core Logic** (`src/core/`) — Pure TypeScript business logic with no HTTP awareness. Handles scoring normalization, progression strategies, period lifecycle, approach statistics, muscle engagement tracking, and the training difficulty system (calculation and strategy-based boost mechanism).
 
 3. **Background Jobs** (`src/jobs/`) — Three Bull queues (scores, periods, images) backed by Redis. Workers run as a separate process via `pnpm workers`.
 
@@ -87,6 +87,12 @@ The application is organized into six primary modules:
 6. **Data Layer** (`prisma/`) — Prisma schema with 30+ models covering users, exercises, trainings, executions, scoring, equipment, and muscles.
 
 ## Architecture Overview
+
+### Design Patterns
+
+**Strategy Pattern** — Used in two places:
+- **Progression strategies** (`ProgressionStrategySimple`) generate next-workout sets based on purpose and execution results.
+- **Difficulty boost strategies** (`TrainingDifficultyBoostStrategy` interface with `ExtraApproachesBoostStrategy`) allow swappable implementations for increasing training difficulty. The interface defines `apply()` and `revert()` methods, keeping the boost mechanism open for extension.
 
 ### Technology Stack
 

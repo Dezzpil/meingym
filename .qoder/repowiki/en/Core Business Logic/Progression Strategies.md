@@ -118,11 +118,38 @@ All sets use the same weight (from the first executed set) and the same rep coun
 
 **Sources**: [src/core/progression/strategy/simple.ts:225-265](file://src/core/progression/strategy/simple.ts#L225-L265)
 
+## Boost Approach Filtering
+
+When a training is processed after completion (`handleProcessCompletedTraining()`), approaches flagged with `isBoost=true` are excluded from progression calculation to prevent difficulty-boost sets from inflating future training loads.
+
+The filtering happens in two places:
+
+1. **Planned sets** (`plannedSetsData`) — approaches where `approach.isBoost === true` are skipped during iteration (`if (approach.isBoost) continue`).
+2. **Executed sets** (`executedSetsData`) — executions linked to boost approaches are filtered out via the `isBoostExecution()` helper, which resolves the approach by `execution.approachId` and checks its `isBoost` flag.
+
+```typescript
+// Planned sets: skip boost approaches
+for (const approach of exercise.ApproachGroup.Approaches) {
+  if (approach.isBoost) continue;
+  plannedSetsData.push({ count, weight, priority });
+}
+
+// Executed sets: filter out executions linked to boost approaches
+exercise.TrainingExerciseExecution.filter(
+  (e) => !e.isPassed && e.liftedCount > 0 && !isBoostExecution(e, approaches)
+);
+```
+
+The `isBoostExecution()` helper returns `false` (treated as non-boost) when `approachId` is null or the referenced approach is not found, ensuring robustness against missing data.
+
+**Sources**: [src/app/trainings/[id]/execute/actions.ts:377-401](file://src/app/trainings/%5Bid%5D/execute/actions.ts#L377-L401)
+
 ## Testing
 
 Progression strategies are tested in `src/tests/core/progression/strategy/simple.test.ts` using `node:test` and Chai assertions. Tests verify:
 - Correct set generation for each purpose
 - Edge cases (failed sets, max thresholds)
+- Boost approach filtering is tested in `src/tests/core/difficulty.test.ts`, verifying `isBoostExecution()` correctly identifies boost executions and handles edge cases (null `approachId`, missing approach).
 - One-dumbbell even-rep enforcement
 - Big-count threshold scaling
 

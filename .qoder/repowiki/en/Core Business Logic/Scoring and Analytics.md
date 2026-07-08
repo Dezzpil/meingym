@@ -115,6 +115,31 @@ Scores are calculated asynchronously via the Bull `scores` queue:
 
 **Sources**: [src/jobs/processors/scores.ts:1-37](file://src/jobs/processors/scores.ts#L1-L37) · [src/jobs/index.ts:15-23](file://src/jobs/index.ts#L15-L23)
 
+## Preview Score (Pre-Execution Estimation)
+
+The `previewScore()` function in `scores.ts` provides a **pre-execution** estimate of exercise difficulty, using the same scoring pipeline as post-execution scoring but operating on planned approach aggregates instead of actual lifted data.
+
+```typescript
+previewScore(purpose, approachGroup): number
+// approachGroup: { sum, mean, max, countTotal, countMean }
+```
+
+The function reuses `ScoreCoefficients` and the same log-normalization (`normLogFn`) applied to `ApproachesGroup` aggregates:
+
+| Aggregate | Source | Equivalent Post-Execution Metric |
+|-----------|--------|----------------------------------|
+| `sum` | `ApproachesGroup.sum` | `liftedSum` (total weight × reps) |
+| `mean` | `ApproachesGroup.mean` | `liftedMean` (avg weight per set) |
+| `max` | `ApproachesGroup.max` | `liftedMax` (heaviest set) |
+| `countTotal` | `ApproachesGroup.countTotal` | `liftedCountTotal` (total reps) |
+| `countMean` | `ApproachesGroup.countMean` | `liftedCountMean` (avg reps per set) |
+
+Because the same coefficients are used, `previewScore` produces a score directly comparable to post-execution `scoreNormalized()`, enabling the difficulty system to express planned load in the same units as actual performance.
+
+This function is the foundation of the difficulty calculation: `exerciseDifficulty = action.base × previewScore(purpose, approachGroup)`.
+
+**Sources**: [src/core/scores.ts:108-121](file://src/core/scores.ts#L108-L121) · [src/core/difficulty.ts:13-22](file://src/core/difficulty.ts#L13-L22)
+
 ## Score Indexing
 
 The `TrainingExerciseScore` table is indexed for efficient historical queries:
@@ -129,4 +154,4 @@ This supports the exercise history page which shows score trends over time for a
 
 ## Conclusion
 
-The scoring system provides a single comparable metric per exercise execution, enabling progress tracking across sessions. The log normalization handles the non-linear nature of strength progression, while purpose-specific coefficients ensure that improvements are measured against the right goals. The coefficient audit trail in each score record allows future coefficient tuning without losing historical context.
+The scoring system provides two complementary metrics: a **post-execution** score (`scoreNormalized`) capturing actual performance, and a **pre-execution** preview score (`previewScore`) estimating planned difficulty. Both share the same normalization and coefficient pipeline, making them directly comparable. The log normalization handles the non-linear nature of strength progression, while purpose-specific coefficients ensure that improvements are measured against the right goals. The coefficient audit trail in each score record allows future coefficient tuning without losing historical context.
