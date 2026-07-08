@@ -1,6 +1,6 @@
 "use client";
 
-import type { Weight } from ".prisma/client";
+import type { Weight } from "@prisma/client";
 import { handleWeightDelete } from "@/app/weights/actions";
 import { useForm } from "react-hook-form";
 

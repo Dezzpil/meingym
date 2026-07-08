@@ -7,7 +7,7 @@ import {
   EquipmentFormFields,
   EquipmentFormFieldsType,
 } from "@/app/equipment/types";
-import { ActionRig } from ".prisma/client";
+import { ActionRig } from "@prisma/client";
 
 async function assertOwner(equipmentId: number, userId: string) {
   const eq = await prisma.equipment.findFirst({

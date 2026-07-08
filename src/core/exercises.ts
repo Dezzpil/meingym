@@ -30,6 +30,16 @@ export const RequiresDefault = [
   ActionRequire.SIMULATOR,
 ];
 
+export const BASE_AGONY_COEF = 0.7;
+export const BASE_SYNERGY_COEF = 0.3;
+
+export function calcActionBase(
+  agonyCount: number,
+  synergyCount: number,
+): number {
+  return BASE_AGONY_COEF * agonyCount + BASE_SYNERGY_COEF * synergyCount;
+}
+
 export async function createExercise(
   trainingId: number,
   actionId: number,

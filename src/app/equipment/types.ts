@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ActionRequire, ActionRig } from ".prisma/client";
+import { ActionRequire, ActionRig } from "@prisma/client";
 
 export const EquipmentRigField = z.object({
   type: z.nativeEnum(ActionRig),

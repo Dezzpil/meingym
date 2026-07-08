@@ -11,7 +11,7 @@ import {
 } from "../types";
 import { handleEquipmentCreate, handleEquipmentUpdate } from "../actions";
 import { useRouter } from "next/navigation";
-import { ActionRequire, ActionRig } from ".prisma/client";
+import { ActionRequire, ActionRig } from "@prisma/client";
 
 type Props = {
   id?: number;

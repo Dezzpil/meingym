@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/tools/db";
 import { getCurrentUser } from "@/tools/auth";
 import { PageParams } from "@/tools/types";
-import { UserRole } from ".prisma/client";
+import { UserRole } from "@prisma/client";
 import { ActionListItem } from "@/app/actions/components/ActionListItem";
 import { ActionFilterForm } from "@/app/actions/components/ActionFilterForm";
 import { BiPlus } from "react-icons/bi";

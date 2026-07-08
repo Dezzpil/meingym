@@ -162,6 +162,10 @@ export function TrainingExerciseAddSearch({
                     <div className="d-flex justify-content-between align-items-center">
                       <span className="fw-bolder">
                         {a.alias ? a.alias : a.title}
+                        {" "}
+                        <span className="badge bg-secondary fw-normal">
+                          База: {a.base}
+                        </span>
                       </span>
                       <a
                         href="#"

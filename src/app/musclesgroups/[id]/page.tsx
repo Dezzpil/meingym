@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { MuscleGroupsDescForm } from "@/app/musclesgroups/[id]/components/MuscleGroupsDescForm";
 import MusclesGroupsButtons from "@/app/musclesgroups/[id]/components/MusclesGroupsButtons";
 import { getCurrentUser } from "@/tools/auth";
-import { UserRole } from ".prisma/client";
+import { UserRole } from "@prisma/client";
 
 type Props = {
   params: { id: string };

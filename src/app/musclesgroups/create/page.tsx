@@ -1,6 +1,6 @@
 import MusclesGroupsCreateForm from "@/app/musclesgroups/create/form";
 import { getCurrentUser } from "@/tools/auth";
-import { UserRole } from ".prisma/client";
+import { UserRole } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 export default async function MusclesGroupsCreatePage() {

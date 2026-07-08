@@ -1,7 +1,7 @@
 import MuscleForm from "@/app/muscles/components/MuscleForm";
 import { prisma } from "@/tools/db";
 import { getCurrentUser } from "@/tools/auth";
-import { UserRole } from ".prisma/client";
+import { UserRole } from "@prisma/client";
 import { redirect } from "next/navigation";
 
 export default async function MusclesCreatePage() {

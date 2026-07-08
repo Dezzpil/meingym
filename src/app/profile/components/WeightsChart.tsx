@@ -1,6 +1,6 @@
 "use client";
 
-import type { Weight } from ".prisma/client";
+import type { Weight } from "@prisma/client";
 import moment from "moment/moment";
 import { DateFormat } from "@/tools/dates";
 import {

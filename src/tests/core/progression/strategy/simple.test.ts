@@ -1,4 +1,4 @@
-import { ActionRig } from ".prisma/client";
+import { ActionRig } from "@prisma/client";
 import { SetData, SetDataExecuted } from "@/core/types";
 import { calculateStats } from "@/core/stats";
 import { assert } from "chai";

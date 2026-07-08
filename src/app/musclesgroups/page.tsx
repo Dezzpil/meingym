@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/tools/db";
 import { getCurrentUser } from "@/tools/auth";
-import { UserRole } from ".prisma/client";
+import { UserRole } from "@prisma/client";
 
 export default async function MusclesGroupsPage() {
   const user = await getCurrentUser();

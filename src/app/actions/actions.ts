@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/tools/db";
 import { ActionRequire, ActionRig } from "@prisma/client";
+import { calcActionBase } from "@/core/exercises";
 
 // Function to detect if text contains Markdown
 function containsMarkdown(text: string): boolean {
@@ -105,6 +106,10 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
         },
         rig: data.rig,
         require: data.require,
+        base: calcActionBase(
+          data.musclesAgonyIds.length,
+          data.musclesSynergyIds.length,
+        ),
         updatedAt: new Date(),
         search: [
           data.title.toLowerCase(),

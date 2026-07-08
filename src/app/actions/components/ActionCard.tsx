@@ -118,6 +118,11 @@ export function ActionCard({ action }: Props) {
           </div>
 
           <div className="col-lg-6">
+            <div className="mb-3">
+              <span className="badge bg-secondary">
+                База: {action.base}
+              </span>
+            </div>
             <div className="mb-4 fw-light">
               {action.isMarkDownInDesc ? (
                 <ReactMarkdown

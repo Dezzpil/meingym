@@ -121,6 +121,14 @@ export default function ActionForm({
               />
             </div>
             <div className="mb-3">
+              <label className="form-label">База</label>
+              <input
+                className="form-control"
+                value={action.base}
+                disabled
+              />
+            </div>
+            <div className="mb-3">
               <label className="form-label">Отягощение</label>
               <select className="form-control" {...form.register("rig")}>
                 {[

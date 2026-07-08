@@ -40,6 +40,11 @@ export function ActionListItem({ action }: Props) {
           <div style={{ width: "300px", height: "300px" }}>&nbsp;</div>
         )}
         <div style={{ position: "absolute", bottom: "16px" }}>
+          <div className="d-flex flex-wrap align-items-center gap-1 mb-1">
+            <span className="badge bg-secondary">
+              База: {action.base}
+            </span>
+          </div>
           <ActionMuscles action={action} short />
         </div>
       </div>

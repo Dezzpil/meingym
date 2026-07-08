@@ -20,7 +20,12 @@ export default function MuscleForm({ groups, muscle, control }: Props) {
   const [error, setError] = useState<null | string>(null);
   const [handling, setHandling] = useState<boolean>(false);
   const form = useForm<MusclesFormFieldsType>({
-    defaultValues: muscle,
+    defaultValues: muscle
+      ? {
+          ...muscle,
+          titleEn: muscle.titleEn ?? undefined,
+        }
+      : undefined,
     disabled: !control,
   });
   const onSubmit = form.handleSubmit(async (data) => {
@@ -66,6 +71,14 @@ export default function MuscleForm({ groups, muscle, control }: Props) {
           />
         </div>
         <div className="mb-3">
+          <label className="form-label">Название (англ.)</label>
+          <input
+            className="form-control"
+            placeholder="Anterior Deltoid"
+            {...form.register("titleEn")}
+          />
+        </div>
+        <div className="mb-3">
           <label className="form-label">Группа мышц</label>
           <select
             {...form.register("groupId", { valueAsNumber: true })}
@@ -77,6 +90,33 @@ export default function MuscleForm({ groups, muscle, control }: Props) {
               </option>
             ))}
           </select>
+        </div>
+        <div className="row mb-3">
+          <div className="col-sm-6">
+            <label className="form-label">Ранг приоритета в группе</label>
+            <select
+              className="form-control"
+              {...form.register("priorityRank", { valueAsNumber: true })}
+            >
+              <option value={3}>3 — главная цель</option>
+              <option value={2}>2 — вспомогательная, значимая</option>
+              <option value={1}>1 — вспомогательная, незначимая</option>
+            </select>
+          </div>
+          <div className="col-sm-6">
+            <label className="form-label">Коэффициент размера</label>
+            <input
+              type="number"
+              step="0.1"
+              min="0"
+              max="1"
+              className="form-control"
+              {...form.register("sizeFactor", { valueAsNumber: true })}
+            />
+            <small className="text-muted">
+              1.0 = большая, 0.1 = глубокая, мелкая
+            </small>
+          </div>
         </div>
         {control && (
           <>

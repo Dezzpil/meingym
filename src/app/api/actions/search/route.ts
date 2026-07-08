@@ -32,6 +32,7 @@ export async function GET(request: NextRequest) {
       rig: { in: rigs as ActionRig[] },
       require: { in: requires as ActionRequire[] },
     },
+    orderBy: { base: "desc" },
     include: {
       MusclesAgony: { include: { Muscle: { include: { Group: true } } } },
       MusclesSynergy: { include: { Muscle: { include: { Group: true } } } },

@@ -5,7 +5,7 @@ import { MuscleDescForm } from "@/app/muscles/[id]/components/MuscleDescForm";
 import { MuscleInActions } from "@/app/muscles/[id]/components/MuscleInActions";
 import { MuscleImagesSection } from "@/app/muscles/[id]/components/MuscleImagesSection";
 import { getCurrentUser } from "@/tools/auth";
-import { UserRole } from ".prisma/client";
+import { UserRole } from "@prisma/client";
 import Image from "next/image";
 
 export default async function MusclePage({ params }: ItemPageParams) {
@@ -23,9 +23,29 @@ export default async function MusclePage({ params }: ItemPageParams) {
   const mainImage =
     muscle.MuscleImages.find((img) => img.isMain) ?? muscle.MuscleImages[0];
 
+  const priorityLabel =
+    muscle.priorityRank === 3
+      ? "Главная цель"
+      : muscle.priorityRank === 2
+        ? "Вспомогательная"
+        : "Стабилизатор/добивка";
+
   return (
     <>
-      <h2 className="mb-3">{muscle.title} мышца</h2>
+      <h2 className="mb-3">
+        {muscle.title} мышца
+        {muscle.titleEn && (
+          <span className="text-muted fs-6 ms-2">{muscle.titleEn}</span>
+        )}
+      </h2>
+      <div className="mb-3 d-flex gap-2">
+        <span className="badge text-bg-primary">
+          Приоритет: {muscle.priorityRank} ({priorityLabel})
+        </span>
+        <span className="badge text-bg-secondary">
+          Размер: {muscle.sizeFactor}
+        </span>
+      </div>
       {mainImage && (
         <div className="mb-3">
           <Image

@@ -59,7 +59,10 @@ export async function handleMuscleCreate(
   const muscle = await prisma.muscle.create({
     data: {
       title,
+      titleEn: data.titleEn || null,
       groupId,
+      priorityRank: data.priorityRank,
+      sizeFactor: data.sizeFactor,
     },
   });
 
@@ -82,7 +85,10 @@ export async function handleMuscleUpdate(
     where: { id },
     data: {
       title,
+      titleEn: data.titleEn || null,
       groupId,
+      priorityRank: data.priorityRank,
+      sizeFactor: data.sizeFactor,
     },
   });
 

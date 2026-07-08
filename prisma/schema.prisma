@@ -175,7 +175,15 @@ model MuscleGroupDesc {
 model Muscle {
   id Int @id @default(autoincrement())
 
-  title String
+  title   String
+  titleEn String?
+
+  // Ценность мышцы как самостоятельной цели тренировки внутри её группы:
+  // 3 — крупная главная цель; 2 — значимая вспомогательная; 1 — мелкие/стабилизаторы/добивка
+  priorityRank Int @default(1)
+
+  // Относительный размер и системная нагрузка (1.0 = большая группа, 0.3 = глубокий мелкий стабилизатор)
+  sizeFactor Float @default(0.5)
 
   groupId Int
   Group   MuscleGroup @relation(fields: [groupId], references: [id])
@@ -258,6 +266,9 @@ model Action {
   bigCount        Boolean @default(false)
   allowCheating   Boolean @default(false)
   oneDumbbell     Boolean @default(false)
+
+  // Базовость упражнения: 0.7 * кол-во агонистов + 0.3 * кол-во синергистов
+  base Float @default(0)
 
   MusclesAgony      ActionsOnMusclesAgony[]
   MusclesSynergy    ActionsOnMusclesSynergy[]

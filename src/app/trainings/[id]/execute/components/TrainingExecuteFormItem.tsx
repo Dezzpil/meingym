@@ -22,7 +22,7 @@ import {
   RefusingOptions,
   TechniqueOptions,
 } from "@/app/trainings/[id]/execute/types";
-import { ExecutionBurning } from ".prisma/client";
+import { ExecutionBurning } from "@prisma/client";
 import {
   ExecutionCheating,
   ExecutionRating,

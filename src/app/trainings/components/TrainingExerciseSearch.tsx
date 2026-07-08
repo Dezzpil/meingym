@@ -69,6 +69,10 @@ export function TrainingExerciseSearch({ baseActions, onClick }: Props) {
                     <div className="d-flex justify-content-between">
                       <span className="fw-bolder">
                         {a.alias ? a.alias : a.title}
+                        {" "}
+                        <span className="badge bg-secondary fw-normal">
+                          База: {a.base}
+                        </span>
                       </span>
                       <a
                         href="#"

@@ -1,7 +1,7 @@
 import { prisma } from "@/tools/db";
 import ActionForm from "@/app/actions/components/ActionForm";
 import { getCurrentUser } from "@/tools/auth";
-import { UserRole } from ".prisma/client";
+import { UserRole } from "@prisma/client";
 import { ItemPageParams } from "@/tools/types";
 import { ActionTabs } from "@/app/actions/[id]/ActionTabs";
 import { redirect } from "next/navigation";
