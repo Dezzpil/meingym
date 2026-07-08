@@ -100,3 +100,22 @@ export async function createScore(
     },
   });
 }
+
+/**
+ * Предварительная оценка выполнения упражнения (до выполнения).
+ * Использует агрегаты из ApproachesGroup вместо фактических данных выполнения.
+ */
+export const previewScore = (
+  purpose: Purpose,
+  approachGroup: { sum: number; mean: number; max: number; countTotal: number; countMean: number },
+): number => {
+  const normalized: ActionHistoryDataNormalized = {
+    liftedSumNorm: normLogFn(approachGroup.sum),
+    liftedMeanNorm: normLogFn(approachGroup.mean),
+    liftedMaxNorm: normLogFn(approachGroup.max),
+    liftedCountTotalNorm: normLogFn(approachGroup.countTotal),
+    liftedCountMeanNorm: normLogFn(approachGroup.countMean),
+  };
+  const { score } = scoreNormalized(purpose, normalized);
+  return score;
+};

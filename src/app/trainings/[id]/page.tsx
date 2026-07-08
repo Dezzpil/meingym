@@ -20,6 +20,7 @@ import {
   ExecTimeItem,
 } from "@/app/trainings/components/TrainingExecTimeChart";
 import { fetchTrainingMuscleStats } from "@/core/trainingMuscles";
+import { TrainingDifficultyBoost } from "@/app/trainings/components/TrainingDifficultyBoost";
 import {
   ActionRequire,
   ActionRig,
@@ -47,7 +48,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
     : null;
   const userId = await getCurrentUserId();
   const userInfo = await findUserInfo(userId);
-  const exercisesRaw = await prisma.trainingExercise.findMany({
+  const exercises = await prisma.trainingExercise.findMany({
     where: { trainingId: id },
     include: {
       Action: true,
@@ -65,8 +66,8 @@ export default async function TrainingPage({ params }: ItemPageParams) {
   const muscleStats = await fetchTrainingMuscleStats(training.id);
 
   // Подгрузим предыдущие метрики по каждому действию для этого пользователя
-  const exercises = await Promise.all(
-    exercisesRaw.map(async (e: any) => {
+  const prevExercisesStats = await Promise.all(
+    exercises.map(async (e: any) => {
       const prev = await prisma.trainingExercise.findFirst({
         where: {
           actionId: e.actionId,
@@ -97,6 +98,11 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         : null;
       return { ...e, prevSetsStats };
     }),
+  );
+
+  // Определим, есть ли усложнённые подходы (isBoost=true)
+  const hasBoostedApproaches = prevExercisesStats.some((e: any) =>
+    e.ApproachGroup?.Approaches?.some((a: any) => a.isBoost),
   );
 
   // Соберем длительности подходов для диаграммы (только если тренировка завершена)
@@ -221,7 +227,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
           )}
         </div>
       )}
-      {exercises.length ? (
+      {prevExercisesStats.length ? (
         <>
           <ul className="list-group mb-3">
             {training.WarmUp && (
@@ -231,7 +237,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
                 </div>
               </li>
             )}
-            {exercises.map((e) => (
+            {prevExercisesStats.map((e) => (
               <li className="list-group-item" data-id={e.id} key={e.id}>
                 <TrainingExerciseItemControl
                   exercise={e}
@@ -248,10 +254,17 @@ export default async function TrainingPage({ params }: ItemPageParams) {
               className={"alert alert-light"}
             />
           </div>
-
-          <div className="alert alert-light">
+          <div className="alert alert-light d-flex align-items-center justify-content-between flex-wrap">
+            <TrainingDifficultyBoost
+              training={training}
+              isStarted={!!training.startedAt}
+              hasBoostedApproaches={hasBoostedApproaches}
+            />
+          </div>
+          <div className="alert alert-light d-flex align-items-center justify-content-between flex-wrap">
             <TrainingTimeScore training={training} />
           </div>
+          {/* TODO перенести эту логику внутрь компонента */}
           {training.completedAt && execTimeItems.length > 0 && (
             <div className="mb-3">
               <TrainingExecTimeChart items={execTimeItems} />
@@ -267,7 +280,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         <TrainingExerciseFloatingAdd
           training={training}
           actions={[]}
-          exercises={exercises as any}
+          exercises={prevExercisesStats as any}
           defaultPurpose={userInfo.purpose}
           equipmentRigs={equipmentRigs}
           equipmentRequires={equipmentRequires}

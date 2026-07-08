@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import Loader from "@/components/Loader";
 import { ApproachesManagementElement } from "@/components/approaches/ManagmentElement";
 import {
@@ -25,6 +25,15 @@ type Props = {
   approachGroup: ApproachesGroup & { Approaches: Approach[] };
 };
 
+function _pickApproachData(a: Approach) {
+  return {
+    count: a.count,
+    weight: a.weight,
+    priority: a.priority,
+    isBoost: a.isBoost,
+  };
+}
+
 export function ApproachesManagement({
   create,
   update,
@@ -34,16 +43,20 @@ export function ApproachesManagement({
   const currentData = useMemo(() => {
     const data: ApproachData[] = [];
     approachGroup.Approaches.map((a) => {
-      data.push({
-        count: a.count,
-        weight: a.weight,
-        priority: a.priority,
-      });
+      data.push(_pickApproachData(a));
     });
     return data;
   }, [approachGroup.Approaches]);
 
   const [data, setData] = useState<ApproachData[]>(currentData);
+
+  useEffect(() => {
+    const data: ApproachData[] = [];
+    approachGroup.Approaches.map((a) => {
+      data.push(_pickApproachData(a));
+    });
+    setData(data);
+  }, [approachGroup.Approaches]);
 
   const add = useCallback(() => {
     const last = data.length > 0 ? data[data.length - 1] : null;

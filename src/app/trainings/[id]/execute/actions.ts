@@ -29,6 +29,15 @@ import { scheduleScoreCalculation } from "@/jobs";
 import { createTrainingPeriod, getCurrentTrainingPeriod } from "@/core/periods";
 import { createExercise } from "@/core/exercises";
 
+function isBoostExecution(
+  execution: { approachId: number | null },
+  approaches: { id: number; isBoost: boolean }[],
+): boolean {
+  if (!execution.approachId) return false;
+  const approach = approaches.find((a) => a.id === execution.approachId);
+  return approach?.isBoost ?? false;
+}
+
 export async function handleTrainingWarmUpSkip(
   trainingId: number,
   isCircuit: boolean,
@@ -367,6 +376,7 @@ export async function handleProcessCompletedTraining(
       };
       const plannedSetsData: ApproachData[] = [];
       for (const approach of exercise.ApproachGroup.Approaches) {
+        if (approach.isBoost) continue; // Skip boost approaches from progression
         plannedSetsData.push({
           count: approach.count,
           weight: approach.weight,
@@ -377,7 +387,7 @@ export async function handleProcessCompletedTraining(
       // игнорируем пропущенные подходы или подходы с 0 нагрузкой
       const executedSetsData: ApproachExecutedData[] =
         exercise.TrainingExerciseExecution.filter(
-          (e) => !e.isPassed && e.liftedCount > 0,
+          (e) => !e.isPassed && e.liftedCount > 0 && !isBoostExecution(e, exercise.ApproachGroup.Approaches),
         ).map((e) => {
           return {
             priority: e.priority,

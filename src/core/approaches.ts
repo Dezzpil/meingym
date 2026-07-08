@@ -11,7 +11,7 @@ import {
 } from "@/core/stats";
 import { ActionRig } from "@prisma/client";
 
-export type ApproachData = SetData & { priority: number };
+export type ApproachData = SetData & { priority: number; isBoost?: boolean };
 export type ApproachExecutedData = SetDataExecuted & { priority: number };
 
 export const ApproachesStrengthDefault: ApproachData[] = [

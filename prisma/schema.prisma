@@ -374,6 +374,7 @@ model Approach {
   priority Int   @default(0)
   weight   Float
   count    Int
+  isBoost  Boolean @default(false)
 
   groupId                   Int
   Group                     ApproachesGroup             @relation(fields: [groupId], references: [id], onDelete: Cascade)
@@ -422,6 +423,8 @@ model Training {
   timeScoreInSecs String?
   timeScoredAt    DateTime?
 
+  difficultyScore Float @default(0)
+
   ExerciseExecutionDuration TrainingExerciseExecutionDuration[]
 
   TrainingMuscleStat TrainingMuscleStat[]
@@ -461,6 +464,8 @@ model TrainingExercise {
 
   rating  TrainingRating @default(OK)
   comment String?
+
+  difficultyScore Float @default(0)
 
   Score TrainingExerciseScore[]
 

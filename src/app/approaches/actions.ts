@@ -14,6 +14,10 @@ import {
   findInfoForCalculateStatsForApproach,
 } from "@/core/stats";
 import { TrainingTimeAvgScorer } from "@/core/trainingTime/avgScorer";
+import {
+  recalculateExerciseDifficulty,
+  recalculateTrainingDifficulty,
+} from "@/core/difficulty/recalculate";
 
 export async function handleUpdateApproachGroup(
   groupId: number,
@@ -40,6 +44,17 @@ export async function handleUpdateApproachGroup(
   });
   if (trainingId) {
     new TrainingTimeAvgScorer().score(trainingId).catch((e) => console.log(e));
+
+    // Recalculate difficulty for exercises using this approach group
+    const exercisesForGroup = await prisma.trainingExercise.findMany({
+      where: { approachGroupId: groupId, trainingId },
+      select: { id: true },
+    });
+    for (const exercise of exercisesForGroup) {
+      await recalculateExerciseDifficulty(exercise.id);
+    }
+    await recalculateTrainingDifficulty(trainingId);
+
     revalidatePath(`/trainings/${trainingId}`);
   }
 }

@@ -70,6 +70,12 @@ export default function TrainingExerciseItemControl({
               : exercise.Action.title}
           </Link>{" "}
           <PurposeText purpose={exercise.purpose} />
+          <span
+            className="badge bg-secondary text-light ms-2"
+            title="Оценка нагрузки"
+          >
+            {exercise.difficultyScore.toFixed(1)}
+          </span>
         </div>
         <div className="d-flex column-gap-2 flex-wrap mb-1">
           {exercise.ApproachGroup.Approaches.map((a) => (
@@ -127,7 +133,7 @@ export default function TrainingExerciseItemControl({
             <button className="btn btn-sm btn-default" onClick={down}>
               <FaArrowDown />
             </button>
-            <button className="btn btn-sm btn-danger" onClick={remove}>
+            <button className="btn btn-sm btn-default" onClick={remove}>
               <FaX />
             </button>
           </div>

@@ -49,6 +49,7 @@ export function ApproachesManagementElement({
             defaultValue={elem.weight}
             id={`weight${elem.priority}`}
             onChange={onChangeWeight}
+            disabled={elem.isBoost}
           />
           <span className="input-group-text">x</span>
           <input
@@ -58,16 +59,21 @@ export function ApproachesManagementElement({
             defaultValue={elem.count}
             id={`counts${elem.priority}`}
             onChange={onChangeCounts}
+            disabled={elem.isBoost}
           />
         </div>
-        <button
-          className="btn btn-dark"
-          type="button"
-          data-key={elem.priority}
-          onClick={remove}
-        >
-          <TiDeleteOutline />
-        </button>
+        {elem.isBoost ? (
+          <button className="btn btn-secondary">⚡</button>
+        ) : (
+          <button
+            className="btn btn-dark"
+            type="button"
+            data-key={elem.priority}
+            onClick={remove}
+          >
+            <TiDeleteOutline />
+          </button>
+        )}
       </div>
     </>
   );
