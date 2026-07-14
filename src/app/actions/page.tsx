@@ -47,7 +47,7 @@ export default async function ActionsPage({ searchParams }: PageParams) {
   const actions = await prisma.action.findMany({
     where,
     orderBy: {
-      TrainingExerciseScore: { _count: "desc" },
+      base: "desc",
     },
     include: {
       ExerciseImages: {
