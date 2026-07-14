@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.34.2](https://github.com/Dezzpil/meingym/compare/v1.34.1...v1.34.2) (2026-07-14)
+
+
+### Features
+
+* сортировать упражнения по base -1 ([f3903b6](https://github.com/Dezzpil/meingym/commits/f3903b61903689016bd664ec69c96fb6ae3aa90a))
+
 ### [1.34.1](https://github.com/Dezzpil/meingym/compare/v1.34.0...v1.34.1) (2026-07-14)
 
 
