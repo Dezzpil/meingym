@@ -5,7 +5,7 @@ import { execSync } from "node:child_process";
 import { inspect } from "node:util";
 
 dotenv.config({
-  path: [".env.local", ".env"],
+  path: ".env",
 });
 
 let host = "127.0.0.1";
