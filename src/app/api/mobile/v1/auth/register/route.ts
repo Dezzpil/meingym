@@ -5,7 +5,13 @@ import { MobileAuthError } from "@/mobile/exchange";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, timestamp, signature, name } = body;
+    const { email, timestamp, signature, name, appToken } = body;
+
+    const expectedAppToken = process.env.MOBILE_APP_TOKEN;
+    const providedAppToken = request.headers.get("x-app-token") || appToken;
+    if (!expectedAppToken || providedAppToken !== expectedAppToken) {
+      return NextResponse.json({ error: "INVALID_APP_TOKEN" }, { status: 403 });
+    }
 
     if (!email || typeof email !== "string") {
       return NextResponse.json({ error: "email is required" }, { status: 400 });

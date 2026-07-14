@@ -48,17 +48,23 @@ sequenceDiagram
 
 ### Регистрация (новый пользователь)
 
+Эндпоинт регистрации защищён дополнительным app-токеном, чтобы предотвратить спам и несанкционированные регистрации. Токен передаётся в заголовке `X-App-Token` или в поле `appToken` тела запроса (заголовок имеет приоритет). Этот токен предоставляется разработчикам мобильного приложения отдельно и не является общим секретом HMAC.
+
 ```
 POST /api/mobile/v1/auth/register
 Content-Type: application/json
+X-App-Token: <app_token>
 
 {
   "email": "user@example.com",
   "timestamp": 1752422400,
   "signature": "hmac_sha256_hex_string",
-  "name": "John"
+  "name": "John",
+  "appToken": "<app_token>"
 }
 ```
+
+Проверка app-токена выполняется до любой другой валидации. Если заголовок `X-App-Token` или поле `appToken` отсутствуют или не совпадают с `MOBILE_APP_TOKEN`, сервер возвращает `403` с ошибкой `INVALID_APP_TOKEN`.
 
 **Ответ 201:**
 
@@ -79,6 +85,7 @@ Content-Type: application/json
 ```bash
 curl -X POST https://example.com/api/mobile/v1/auth/register \
   -H "Content-Type: application/json" \
+  -H "X-App-Token: <app_token>" \
   -d '{
     "email": "user@example.com",
     "timestamp": 1752422400,
@@ -178,6 +185,7 @@ JWT-токены подписываются алгоритмом HS256 с пом
 | `MOBILE_JWT_EXPIRES_IN_SECONDS` | `3600` (1 час) | Время жизни токена |
 | `MOBILE_HMAC_SECRET` | — (обязательно) | Общий секрет для HMAC-подписи |
 | `MOBILE_TIMESTAMP_WINDOW_SECONDS` | `300` (5 минут) | Допустимое окно временной метки |
+| `MOBILE_APP_TOKEN` | — (обязательно) | App-токен для защиты эндпоинта регистрации от спама; передаётся мобильным клиентам разработчиками отдельно |
 
 **Sources**: [src/mobile/tools/jwt.ts:1-31](file://src/mobile/tools/jwt.ts#L1-L31) · [src/mobile/tools/hmac.ts:3-11](file://src/mobile/tools/hmac.ts#L3-L11)
 
@@ -318,6 +326,7 @@ flowchart TD
 | 401 | `TIMESTAMP_EXPIRED` | Временная метка вне допустимого окна (±5 минут) |
 | 401 | `USER_NOT_FOUND` | Пользователь не найден (при обмене токена) |
 | 401 | — | Неверный или истекший JWT, отсутствует заголовок Authorization |
+| 403 | `INVALID_APP_TOKEN` | Отсутствует или неверный app-токен регистрации (заголовок `X-App-Token` или поле `appToken`) |
 | 404 | — | Ресурс не найден |
 | 409 | `USER_ALREADY_EXISTS` | Пользователь уже существует (при регистрации) |
 | 500 | — | Внутренняя ошибка сервера |
