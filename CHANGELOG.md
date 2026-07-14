@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.34.1](https://github.com/Dezzpil/meingym/compare/v1.34.0...v1.34.1) (2026-07-14)
+
+
+### Bug Fixes
+
+* закрыть /auth/register от произвольного доступа ([f8cfba2](https://github.com/Dezzpil/meingym/commits/f8cfba20706d98e8883e6a1934094a1e198058cc))
+
 ## [1.34.0](https://github.com/Dezzpil/meingym/compare/v1.33.0...v1.34.0) (2026-07-14)
 
 
