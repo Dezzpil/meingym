@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.34.0](https://github.com/Dezzpil/meingym/compare/v1.33.0...v1.34.0) (2026-07-14)
+
+
+### Features
+
+* начать разработку мобильного API ([b322cb2](https://github.com/Dezzpil/meingym/commits/b322cb2aabe75a453e7d82bbd9d96674b7dc3f67))
+
 ## [1.33.0](https://github.com/Dezzpil/meingym/compare/v1.32.0...v1.33.0) (2026-07-08)
 
 
