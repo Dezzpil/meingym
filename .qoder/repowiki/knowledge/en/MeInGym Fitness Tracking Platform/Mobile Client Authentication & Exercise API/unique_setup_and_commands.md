@@ -1,0 +1,1 @@
+Requires `MOBILE_HMAC_SECRET` and `MOBILE_JWT_SECRET` environment variables; timestamp window defaults to 300 seconds and JWT expiry to 3600 seconds when not set. Uses the shared Prisma singleton from `@/tools/db` so database connectivity is inherited from the application root.

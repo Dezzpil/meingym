@@ -1,0 +1,5 @@
+- Server components perform all data fetching directly with Prisma and pass results as props to client components, never exposing raw DB queries to the client.
+- Client components are explicitly marked with `'use client'` at the top of the file and communicate with the server exclusively through imported functions from `actions.ts`.
+- Form schemas use Zod with `z.nativeEnum()` against Prisma-generated enum types (`Sex`, `Purpose`, `TrainingProgression`) so client and server share the same type constraints.
+- Mutations use `revalidatePath()` after successful Prisma writes instead of returning response objects, relying on Next.js incremental static regeneration for cache invalidation.
+- Authentication is enforced at the top of server components by calling `getServerSession(authOptions)` and redirecting unauthenticated users to `/404`.

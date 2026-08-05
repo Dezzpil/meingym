@@ -1,0 +1,6 @@
+- Server Actions are colocated next to their page routes in actions.ts files with 'use server' directive at the top, handling all mutations directly against Prisma.
+- Form validation uses Zod schemas defined alongside their usage, with z.infer<T> exported for TypeScript type inference passed to react-hook-form.
+- Admin-only UI sections are gated by checking user.role === UserRole.ADMIN from @prisma/client after calling getCurrentUser().
+- Client components use 'use client' directive and manage submission state with useState hooks for handling/error flags around async action calls.
+- Database queries use prisma.* include patterns to eagerly load related entities (Muscle, MuscleGroupDesc, AgonyInActions, SynergyInActions) on the server side.
+- After mutations, revalidatePath is called with the affected route path instead of using redirect or client-side refetching.

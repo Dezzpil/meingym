@@ -1,0 +1,5 @@
+- Server Actions are declared with the `"use server"` directive at the top of the file and handle both input parsing (via Zod `.parse()`) and ownership checks before mutating data.
+- All mutations that touch multiple related tables (`equipment`, `equipmentRequire`, `equipmentRig`) are wrapped in `prisma.$transaction` to guarantee atomicity.
+- Client components are marked with `"use client"` and invoke server actions directly from event handlers, keeping UI logic separate from persistence logic.
+- Prisma enum values are consumed through generated `@prisma/client` types and paired with human-readable label maps exported from `types.ts` rather than hardcoded strings.
+- Ownership is enforced by querying `userId` from `getCurrentUserId()` and filtering Prisma queries by `{ userId }`, with a dedicated `assertOwner` helper for mutation endpoints.

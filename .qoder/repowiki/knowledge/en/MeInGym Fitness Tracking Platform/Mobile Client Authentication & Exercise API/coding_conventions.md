@@ -1,0 +1,5 @@
+- Email addresses are normalized with `trim().toLowerCase()` before any lookup or creation to ensure case-insensitive matching.
+- All Prisma reads use explicit `select` projections (e.g. `USER_SELECT`) rather than returning full model objects.
+- Errors are thrown as typed subclasses of `Error` with string literal codes (`TIMESTAMP_EXPIRED`, `INVALID_SIGNATURE`, `USER_NOT_FOUND`, `USER_ALREADY_EXISTS`) consumed by callers.
+- Configuration is read from environment variables through small getter functions that throw descriptive errors when values are missing.
+- Database mutations that touch multiple tables wrap operations in `prisma.$transaction` to guarantee atomicity.

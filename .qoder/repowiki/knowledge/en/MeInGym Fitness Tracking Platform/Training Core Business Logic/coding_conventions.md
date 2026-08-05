@@ -1,0 +1,5 @@
+- Database operations accept an optional `PrismaTransactionClient` parameter so callers can pass a transaction client or fall back to the global `prisma` singleton.
+- Three training purposes (`MASS`, `STRENGTH`, `LOSS`) are modeled as a union type `CurrentPurpose` and drive branching via switch statements or purpose-keyed coefficient maps.
+- Pluggable algorithms are exposed through an interface plus a concrete class (e.g., `TrainingDifficultyBoostStrategy` / `ExtraApproachesBoostStrategy`, `TrainingTimeScorer` / `TrainingTimeAvgScorer` + `TrainingTimeMLScorer`).
+- Default configuration objects (`Approaches*Default`, `ProgressionStrategySimpleOptsDefaults`) are exported alongside their consumers and merged with user overrides via `Object.assign`.
+- Raw SQL queries are written through `prisma.$queryRawUnsafe` with explicit template literals and cast to typed arrays rather than using Prisma relations for complex aggregations.

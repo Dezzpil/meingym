@@ -1,0 +1,5 @@
+- Each processor is an async function exported from a dedicated file under `processors/`, accepting a Bull job object and returning a `{ success, message }` result.
+- Every processor wraps its body in try/catch/finally and calls `await prisma.$disconnect()` in the finally block to release the Prisma connection.
+- Job names and queue names are declared centrally in `config.ts` under `queueNames` and `jobNames` objects, never hardcoded at enqueue or process sites.
+- Default job options (attempts, exponential backoff, removeOnComplete) are composed via spread into per-job options wherever `queue.add()` is called.
+- Processors access data exclusively through the Prisma singleton from `@/tools/db` and delegate business logic to pure functions in `@/core/*` rather than implementing it inline.

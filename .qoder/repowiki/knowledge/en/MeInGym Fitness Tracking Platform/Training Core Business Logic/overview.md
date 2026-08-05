@@ -1,0 +1,1 @@
+Pure business logic for workout training: approach groups, exercise creation per purpose (MASS/STRENGTH/LOSS), scoring coefficients, difficulty calculation, progression strategies, and muscle/statistics recomputation.

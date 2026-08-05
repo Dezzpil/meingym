@@ -1,0 +1,1 @@
+Node.js with TypeScript executed by `tsx`; Prisma Client for all database access; dotenv for environment loading from `.env.local`; crypto and child_process for the mobile auth test harness.

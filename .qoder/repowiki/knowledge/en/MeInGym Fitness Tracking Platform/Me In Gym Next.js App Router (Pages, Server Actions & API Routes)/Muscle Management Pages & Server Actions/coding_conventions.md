@@ -1,0 +1,5 @@
+- Server mutation functions in `actions.ts` are exported async functions prefixed with `handle*` that take typed data, perform Prisma operations, and return either `{ ok: boolean, error: string | null }` or trigger `redirect`/`revalidatePath`.
+- Client components use `react-hook-form` with `useForm` and pass a `control?: boolean` prop to conditionally enable/disable form fields based on user role.
+- Route handlers fetch data server-side using Prisma with explicit `include` clauses for related entities, then pass the hydrated objects down to client components as props.
+- Zod schemas in `create/types.ts` are defined once and shared between client form types (`z.infer<typeof ...>`) and server action parameter types.
+- Admin-only UI sections are gated by checking `user.role === UserRole.ADMIN` before rendering controls, forms, or delete buttons.

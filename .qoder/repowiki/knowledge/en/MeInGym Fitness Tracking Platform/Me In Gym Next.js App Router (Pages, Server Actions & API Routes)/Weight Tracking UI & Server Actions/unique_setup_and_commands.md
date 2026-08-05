@@ -1,0 +1,1 @@
+No special setup beyond standard Next.js dev/build; the module relies on the global Prisma singleton from `@/tools/db` and Redis-backed auth session via `@/tools/auth`.

@@ -1,0 +1,1 @@
+Next.js App Router feature module that lets users record and delete their daily body weight via a client-side form backed by server actions and Prisma.

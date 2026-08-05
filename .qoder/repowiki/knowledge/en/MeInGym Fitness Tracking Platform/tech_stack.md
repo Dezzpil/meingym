@@ -1,0 +1,1 @@
+Next.js 14 with App Router, React 18, TypeScript, Prisma Client v5 with PostgreSQL 16, Bull 4.12.2 + Redis for background jobs, NextAuth v4 with Prisma adapter, Zod for validation, Chai + node:test for unit testing, tsx for running TypeScript without compilation, standard-version for release management.

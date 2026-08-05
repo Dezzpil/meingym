@@ -1,0 +1,1 @@
+Next.js App Router API routes with `NextRequest`/`NextResponse`, NextAuth v5 for web auth, Bull 4.12.2 queues for background jobs, Prisma Client singleton for all DB access, and Node's built-in `fs/promises` for local file uploads to `public/uploads`.

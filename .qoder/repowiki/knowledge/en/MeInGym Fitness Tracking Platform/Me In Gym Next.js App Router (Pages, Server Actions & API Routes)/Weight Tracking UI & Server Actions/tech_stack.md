@@ -1,0 +1,1 @@
+Next.js App Router Server Actions with Zod schema validation, react-hook-form for client-side form state, Prisma Client for persistence, and Bootstrap utility classes for styling.

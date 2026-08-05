@@ -1,0 +1,1 @@
+Next.js App Router with Server Actions (no API routes), Prisma Client singleton via `@/tools/db`, React Hook Form for client forms, Zod for schema validation, moment.js for date formatting, and Tailwind/Bootstrap CSS classes. Uses `@prisma/client` enums for Purpose (MASS/STRENGTH/LOSS) and ActionRig/EquipmentRequire types.

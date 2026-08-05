@@ -1,0 +1,1 @@
+No build or setup commands are required beyond the standard Next.js workflow; Bootstrap JavaScript must be loaded via the `BootstrapJS` component before any Bootstrap-dependent UI renders.

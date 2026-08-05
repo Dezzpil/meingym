@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: app/trainings
+title: Training Management & Execution Pages
+scope:
+    - src/app/trainings/
+source_files: []
+depends_on: []
+related_to: []

@@ -1,0 +1,1 @@
+HMAC-SHA256 signatures via Node's `crypto` module, JWTs via `jose` with HS256, Prisma Client for database access, and environment variables `MOBILE_HMAC_SECRET`, `MOBILE_TIMESTAMP_WINDOW_SECONDS`, `MOBILE_JWT_SECRET`, `MOBILE_JWT_EXPIRES_IN_SECONDS` for configuration.

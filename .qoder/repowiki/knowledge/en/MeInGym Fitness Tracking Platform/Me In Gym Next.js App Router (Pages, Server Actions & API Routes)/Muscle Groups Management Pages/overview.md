@@ -1,0 +1,1 @@
+Next.js App Router pages and Server Actions for listing, creating, viewing, and editing muscle groups with their descriptions and associated muscles.

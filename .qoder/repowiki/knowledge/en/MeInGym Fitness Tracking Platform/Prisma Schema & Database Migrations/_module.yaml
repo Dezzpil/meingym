@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: prisma
+title: Prisma Schema & Database Migrations
+scope:
+    - prisma/
+source_files: []
+depends_on: []
+related_to: []

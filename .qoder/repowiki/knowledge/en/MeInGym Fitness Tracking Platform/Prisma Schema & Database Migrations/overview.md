@@ -1,0 +1,1 @@
+Defines the PostgreSQL data model for the Meingym fitness tracking application, including users, training sessions, exercises, muscle groups, equipment, and progression strategies, with versioned migrations.

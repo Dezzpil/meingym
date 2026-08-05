@@ -1,0 +1,1 @@
+OAuth providers require environment variables: GITHUB_APP_ID/GITHUB_SECRET, GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET. The Prisma singleton in `db.ts` must be initialized before any auth or DB operations; Docker runs PostgreSQL on :5435 and Redis on :6379 as prerequisites.

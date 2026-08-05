@@ -1,0 +1,1 @@
+Next.js App Router with React Server Components, React Hook Form for form state, Zod for runtime validation against Prisma enum types, Recharts for the weight line chart, moment.js for date formatting, and Bootstrap classes for styling.

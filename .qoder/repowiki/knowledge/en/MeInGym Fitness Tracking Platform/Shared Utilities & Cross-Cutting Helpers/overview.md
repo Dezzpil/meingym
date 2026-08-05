@@ -1,0 +1,1 @@
+Collection of pure utility functions and shared infrastructure — Prisma singleton, NextAuth configuration, HTTP helpers, date/math/string helpers, and purpose/action name mappings used across the application.

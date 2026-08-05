@@ -1,0 +1,1 @@
+Server-side endpoints for mobile clients to authenticate via HMAC-signed email exchange and register new users, plus a paginated exercise catalog endpoint backed by Prisma.

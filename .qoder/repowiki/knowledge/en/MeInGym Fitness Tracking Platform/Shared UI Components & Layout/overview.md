@@ -1,0 +1,1 @@
+Reusable React client components for the Next.js app, including layout shell, authentication provider, Bootstrap integration, training calendar picker, approach management forms, and display helpers for stats, dates, and purposes.

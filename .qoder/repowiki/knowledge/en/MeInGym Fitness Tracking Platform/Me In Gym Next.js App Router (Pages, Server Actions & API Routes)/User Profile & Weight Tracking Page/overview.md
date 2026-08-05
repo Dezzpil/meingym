@@ -1,0 +1,1 @@
+Next.js App Router page that renders the user profile form, training period manager, progression options, and a Recharts-based weight history chart, with server actions handling profile updates.

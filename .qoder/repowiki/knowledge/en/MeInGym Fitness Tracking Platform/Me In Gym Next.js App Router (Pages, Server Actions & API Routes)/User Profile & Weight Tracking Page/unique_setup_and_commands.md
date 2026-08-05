@@ -1,0 +1,1 @@
+No special build or setup steps — this is a standard Next.js App Router route. Requires an authenticated session (redirects to `/404` if none) and a running PostgreSQL instance accessible via the Prisma singleton at `@/tools/db`.

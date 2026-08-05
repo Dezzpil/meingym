@@ -1,0 +1,5 @@
+- Pure utility modules export named functions without side effects, each file focused on one domain (dates, math, string manipulation, purposes).
+- Database access goes through the single `prisma` singleton exported from `tools/db.ts` rather than instantiating `PrismaClient` directly.
+- Shared TypeScript types are centralized in `types.ts` and re-exported to consumers via the `@/*` path alias.
+- Server-side helpers that need authentication use `getServerSession(authOptions)` from next-auth rather than manual cookie/session parsing.
+- Client-side API calls follow a consistent shape: `postApi<T>(url, data)` returns `Promise<Record<any, any> | null>` and `useApi<R>(url)` returns `{ loading, error, data }` state.

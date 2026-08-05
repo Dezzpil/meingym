@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: tests
+title: Application Test Suite
+scope:
+    - src/tests/
+source_files: []
+depends_on: []
+related_to: []

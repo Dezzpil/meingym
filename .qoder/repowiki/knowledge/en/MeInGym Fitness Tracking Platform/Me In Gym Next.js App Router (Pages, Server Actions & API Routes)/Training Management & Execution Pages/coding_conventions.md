@@ -1,0 +1,6 @@
+- All mutations are implemented as Server Actions in `actions.ts` files at the same route level, marked with the `"use server"` directive and returning either void or a `{ ok, error }` ServerActionResult shape.
+- Form data is validated with Zod schemas defined in `types.ts` and inferred as TypeScript types via `z.infer<typeof ...>`, shared between client components and server actions.
+- Database writes use `prisma.$transaction` for multi-step mutations, and side effects like muscle-stats recomputation and time scoring are triggered inside transactions or immediately after via lazy `import()` of core modules.
+- After every mutation, `revalidatePath(...)` is called to refresh the affected page rather than using client-side state updates, keeping UI in sync with the database.
+- User identity is obtained through `getCurrentUserId()` and user profile via `findUserInfo(userId)` at the start of each Server Action, enforcing ownership checks before DB operations.
+- Core business logic is kept out of the app layer: Server Actions delegate to functions in `@/core/*` (periods, exercises, difficulty, trainingMuscles, trainingTime) while the app layer only handles I/O, redirects, and path revalidation.

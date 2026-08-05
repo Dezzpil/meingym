@@ -1,0 +1,1 @@
+Tests run with Node's built-in `node:test` runner using `tsx` for TypeScript execution; core tests live under `src/tests/core/`. The ML scorer requires a local prediction service listening on port 5001 accepting NDJSON POST requests at `/predict`.

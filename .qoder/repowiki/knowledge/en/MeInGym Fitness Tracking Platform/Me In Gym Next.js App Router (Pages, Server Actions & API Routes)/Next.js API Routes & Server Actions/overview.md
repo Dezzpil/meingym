@@ -1,0 +1,1 @@
+Next.js App Router API endpoints and server actions exposing REST-style routes for authentication, exercise execution, image uploads, job monitoring, and mobile client access backed by Prisma.

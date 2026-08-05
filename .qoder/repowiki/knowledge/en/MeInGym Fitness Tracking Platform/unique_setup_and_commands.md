@@ -1,0 +1,1 @@
+Development uses `pnpm dev` on port 3004; database migrations via `pnpm prisma:migrate`; background workers started with `pnpm workers`; all Node scripts run through tsx (`--import tsx`); Docker Compose provisions PostgreSQL (:5435) and Redis (:6379) with persistent volumes under ./data/. Release workflow uses standard-version with patch/feature/breaking variants.

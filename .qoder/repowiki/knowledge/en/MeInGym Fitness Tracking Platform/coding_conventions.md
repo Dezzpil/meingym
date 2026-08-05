@@ -1,0 +1,6 @@
+- All imports use the @/* path alias resolving to src/* instead of relative paths.
+- Database access goes through a single PrismaClient singleton exported from tools/db.ts rather than instantiating per file.
+- Server-side mutations use Next.js Server Actions in src/app/*/actions.ts as the primary pattern instead of traditional API routes.
+- Background jobs are organized as Bull queues (scores, periods, images) with handlers in src/jobs and scheduled via cron patterns.
+- Testing uses node:test runner with tsx execution and Chai assertions against pure functions in core and tools modules.
+- Configuration files (.eslintrc.json, .commitlintrc.json, .versionrc.json) enforce consistent linting, commit messages, and semantic versioning across all modules.

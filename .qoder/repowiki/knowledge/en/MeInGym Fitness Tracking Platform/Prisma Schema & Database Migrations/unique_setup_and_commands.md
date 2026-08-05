@@ -1,0 +1,1 @@
+Database migrations are applied via Prisma Migrate using the `DATABASE_PRISMA_URL` environment variable; Docker runs PostgreSQL 16 on port 5435 with persistent volumes under `./data/`. New schema changes require running `npx prisma migrate dev` (or `deploy`) to generate timestamped migration SQL files under `migrations/`.

@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: app/weights
+title: Weight Tracking UI & Server Actions
+scope:
+    - src/app/weights/
+source_files: []
+depends_on: []
+related_to: []

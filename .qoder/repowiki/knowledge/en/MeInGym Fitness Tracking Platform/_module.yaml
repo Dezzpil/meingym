@@ -1,0 +1,23 @@
+schema_version: 1
+module_path: ""
+title: MeInGym Fitness Tracking Platform
+scope:
+    - README.md
+    - package.json
+    - next.config.js
+    - tsconfig.json
+    - docker-compose.yml
+    - deploy.sh
+    - .eslintrc.json
+    - .commitlintrc.json
+    - .versionrc.json
+    - .gitignore
+    - .qoderignore
+    - .env.dist
+    - CHANGELOG.md
+    - package-lock.json
+    - pnpm-lock.yaml
+    - tsconfig.tsbuildinfo
+source_files: []
+depends_on: []
+related_to: []

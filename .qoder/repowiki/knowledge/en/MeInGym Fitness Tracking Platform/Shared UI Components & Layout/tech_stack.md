@@ -1,0 +1,1 @@
+React client components with Next.js App Router, next-auth `SessionProvider`, Bootstrap 5 CSS + JS (loaded dynamically), recharts custom tick renderer, react-day-picker with Russian locale, moment.js for date formatting, classnames for conditional CSS classes, and Prisma-generated types imported directly.

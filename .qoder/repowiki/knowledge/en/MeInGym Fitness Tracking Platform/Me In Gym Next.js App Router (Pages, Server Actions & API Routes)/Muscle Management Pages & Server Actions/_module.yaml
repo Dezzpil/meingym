@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: app/muscles
+title: Muscle Management Pages & Server Actions
+scope:
+    - src/app/muscles/
+source_files: []
+depends_on: []
+related_to: []

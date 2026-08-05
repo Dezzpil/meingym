@@ -1,0 +1,1 @@
+Requires PostgreSQL 16 (:5435) and Redis Alpine (:6379) via Docker services. Uses the project-wide Prisma singleton from `@/tools/db` and path alias `@/*` configured in tsconfig.json. Admin-only routes check `UserRole.ADMIN` via `getCurrentUser()` before rendering.

@@ -1,0 +1,1 @@
+Tests run via the project's node:test runner with tsx — no separate test framework configuration needed. Mobile auth tests require `MOBILE_JWT_SECRET` and `MOBILE_JWT_EXPIRES_IN_SECONDS` environment variables set before import (as shown in jwt.test.ts). No database connection is required since all tested modules are pure functions.

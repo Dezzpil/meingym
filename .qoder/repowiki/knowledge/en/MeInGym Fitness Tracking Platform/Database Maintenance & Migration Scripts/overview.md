@@ -1,0 +1,1 @@
+Standalone Node/TypeScript utility scripts for seeding, backfilling, and recalculating MeinGym database records such as actions, training exercises, approach groups, user equipment, and CSV dataset extraction.

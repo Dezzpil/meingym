@@ -1,0 +1,1 @@
+Next.js App Router with React Server Components for data fetching, react-hook-form for client-side form state, Zod for schema validation, Prisma Client for database access, and Bootstrap classes for styling. Image operations use a separate REST API endpoint rather than server actions.

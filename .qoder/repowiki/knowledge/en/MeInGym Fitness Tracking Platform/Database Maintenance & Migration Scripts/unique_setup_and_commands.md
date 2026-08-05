@@ -1,0 +1,1 @@
+Run any script with `npx tsx src/scripts/<script>.ts`. Each script loads `.env.local` (mobile-auth-test uses `.env`). Database services must be running: PostgreSQL 16 on port 5435 and Redis Alpine on port 6379, both mounted under `./data/`. The mobile-auth-test requires `MOBILE_HMAC_SECRET` in the environment and targets either `127.0.0.1` or `meingym.online` based on `NODE_ENV`.

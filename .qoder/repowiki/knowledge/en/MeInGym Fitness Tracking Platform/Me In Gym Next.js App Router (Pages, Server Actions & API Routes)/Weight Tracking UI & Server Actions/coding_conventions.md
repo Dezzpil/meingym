@@ -1,0 +1,5 @@
+- Server mutations are defined in an `actions.ts` file with the `"use server"` directive and return void, performing redirects instead of responses.
+- Client components use `"use client"` at the top and call server actions directly through imported functions rather than fetch wrappers.
+- Form data is validated with a local Zod schema exported as a TypeScript type via `z.infer<typeof Schema>`.
+- User identity is resolved inside server actions via `getCurrentUserId()` rather than passed from the client.
+- Date-scoped deletions use `getCurrentDayBorders()` to compute `gte`/`lt` Prisma filters against `createdAt`.

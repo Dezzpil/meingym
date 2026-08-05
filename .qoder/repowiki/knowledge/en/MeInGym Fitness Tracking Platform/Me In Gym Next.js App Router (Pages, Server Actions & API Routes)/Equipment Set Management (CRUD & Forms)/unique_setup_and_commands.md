@@ -1,0 +1,1 @@
+No special build or setup steps — this is a standard Next.js App Router feature route. Requires PostgreSQL (Prisma) and an authenticated session via `@/tools/auth.getCurrentUserId()` at runtime.

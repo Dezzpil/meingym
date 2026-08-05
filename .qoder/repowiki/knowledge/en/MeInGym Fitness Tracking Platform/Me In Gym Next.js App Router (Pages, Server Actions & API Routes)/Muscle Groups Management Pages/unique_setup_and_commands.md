@@ -1,0 +1,1 @@
+No special build or setup steps — this is a standard Next.js App Router feature module that runs as part of the application. Requires PostgreSQL (Prisma schema includes MuscleGroup and MuscleGroupDesc models) and Redis is not needed for this module.

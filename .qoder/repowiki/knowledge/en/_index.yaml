@@ -1,0 +1,201 @@
+# 知识卡导出索引文件
+schema_version: 1
+locale: en-US
+branch: main
+nodes_managed: true
+exported_at: "2026-08-05T11:50:18Z"
+modules:
+    "":
+        dir_name: MeInGym Fitness Tracking Platform
+        title: MeInGym Fitness Tracking Platform
+        scope:
+            - README.md
+            - package.json
+            - next.config.js
+            - tsconfig.json
+            - docker-compose.yml
+            - deploy.sh
+            - .eslintrc.json
+            - .commitlintrc.json
+            - .versionrc.json
+            - .gitignore
+            - .qoderignore
+            - .env.dist
+            - CHANGELOG.md
+            - package-lock.json
+            - pnpm-lock.yaml
+            - tsconfig.tsbuildinfo
+        source_files: []
+        children:
+            - app
+            - components
+            - core
+            - jobs
+            - mobile
+            - prisma
+            - scripts
+            - tests
+            - tools
+        depends_on: []
+        related_to: []
+    app:
+        dir_name: Me In Gym Next.js App Router (Pages, Server Actions & API Routes)
+        title: Me In Gym Next.js App Router (Pages, Server Actions & API Routes)
+        scope:
+            - src/app/
+        source_files: []
+        children:
+            - app/actions
+            - app/api_routes
+            - app/equipment
+            - app/muscles
+            - app/muscles_groups
+            - app/profile
+            - app/trainings
+            - app/weights
+        depends_on: []
+        related_to: []
+    app/actions:
+        dir_name: Actions (Exercise) CRUD & Detail Pages
+        title: Actions (Exercise) CRUD & Detail Pages
+        scope:
+            - src/app/actions/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    app/api_routes:
+        dir_name: Next.js API Routes & Server Actions
+        title: Next.js API Routes & Server Actions
+        scope:
+            - src/app/api/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    app/equipment:
+        dir_name: Equipment Set Management (CRUD & Forms)
+        title: Equipment Set Management (CRUD & Forms)
+        scope:
+            - src/app/equipment/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    app/muscles:
+        dir_name: Muscle Management Pages & Server Actions
+        title: Muscle Management Pages & Server Actions
+        scope:
+            - src/app/muscles/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    app/muscles_groups:
+        dir_name: Muscle Groups Management Pages
+        title: Muscle Groups Management Pages
+        scope:
+            - src/app/musclesgroups/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    app/profile:
+        dir_name: User Profile & Weight Tracking Page
+        title: User Profile & Weight Tracking Page
+        scope:
+            - src/app/profile/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    app/trainings:
+        dir_name: Training Management & Execution Pages
+        title: Training Management & Execution Pages
+        scope:
+            - src/app/trainings/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    app/weights:
+        dir_name: Weight Tracking UI & Server Actions
+        title: Weight Tracking UI & Server Actions
+        scope:
+            - src/app/weights/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    components:
+        dir_name: Shared UI Components & Layout
+        title: Shared UI Components & Layout
+        scope:
+            - src/components/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    core:
+        dir_name: Training Core Business Logic
+        title: Training Core Business Logic
+        scope:
+            - src/core/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    jobs:
+        dir_name: Background Job Processing with Bull & Redis
+        title: Background Job Processing with Bull & Redis
+        scope:
+            - src/jobs/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    mobile:
+        dir_name: Mobile Client Authentication & Exercise API
+        title: Mobile Client Authentication & Exercise API
+        scope:
+            - src/mobile/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    prisma:
+        dir_name: Prisma Schema & Database Migrations
+        title: Prisma Schema & Database Migrations
+        scope:
+            - prisma/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    scripts:
+        dir_name: Database Maintenance & Migration Scripts
+        title: Database Maintenance & Migration Scripts
+        scope:
+            - src/scripts/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    tests:
+        dir_name: Application Test Suite
+        title: Application Test Suite
+        scope:
+            - src/tests/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []
+    tools:
+        dir_name: Shared Utilities & Cross-Cutting Helpers
+        title: Shared Utilities & Cross-Cutting Helpers
+        scope:
+            - src/tools/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to: []

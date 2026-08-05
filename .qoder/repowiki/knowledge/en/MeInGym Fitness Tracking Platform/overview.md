@@ -1,0 +1,1 @@
+Full-stack Next.js fitness tracking application that combines a React UI, Prisma-backed server actions and API routes, Bull-based background jobs, and shared business logic for workout training progression across web and mobile clients.

@@ -1,0 +1,1 @@
+Requires PostgreSQL 16 on :5435 and Redis Alpine on :6379 (Docker services). Prisma migrations must be applied before running. Server Actions are invoked directly from React components without a separate API layer; path revalidation uses `revalidatePath()` after mutations.

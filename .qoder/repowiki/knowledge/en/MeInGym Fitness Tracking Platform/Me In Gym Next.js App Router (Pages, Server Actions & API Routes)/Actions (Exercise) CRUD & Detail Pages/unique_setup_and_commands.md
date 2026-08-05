@@ -1,0 +1,1 @@
+Requires PostgreSQL 16 on :5435 and Redis Alpine on :6379 (Docker services defined at repo root). Admin-only pages check `UserRole.ADMIN` before rendering; non-admin users are redirected to read-only card/detail views. The `colors.ts` file holds multiple commented-out color palette variants for muscle-role backgrounds.

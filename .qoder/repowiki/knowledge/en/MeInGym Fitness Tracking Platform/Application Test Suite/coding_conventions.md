@@ -1,0 +1,5 @@
+- Test files use `node:test` with nested `context.test` blocks to group related assertions hierarchically within a single `test()` definition.
+- Pure business logic tests import production code via `@/*` path aliases and assert behavior with Chai's `assert` style (lengthOf, equal, approximately, isAbove, sameDeepMembers).
+- Mobile authentication tests use Chai's BDD `expect` style with `.to.have.property`, `.that.is.a`, and `.to.be.null` chains for readable assertions.
+- Environment-dependent tests set `process.env` variables synchronously before importing the module under test, restoring originals in `finally` blocks when needed.
+- Mock data is constructed inline as plain objects matching Prisma types (e.g., `SetData`, `ApproachGroup`) rather than using factories or fixtures.

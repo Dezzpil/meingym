@@ -1,0 +1,1 @@
+Next.js App Router with React Server Components for data fetching, react-hook-form + useFieldArray for dynamic form state, Zod for schema validation against Prisma-generated enums (`ActionRequire`, `ActionRig`), and Prisma Client for all database operations.

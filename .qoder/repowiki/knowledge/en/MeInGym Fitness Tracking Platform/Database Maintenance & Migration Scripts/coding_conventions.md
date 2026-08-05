@@ -1,0 +1,5 @@
+- Every script starts with a shebang `#!/usr/bin/env node`, imports `dotenv` and calls `dotenv.config({ path: ".env.local" })` before any other logic.
+- Database access goes exclusively through the singleton `prisma` exported from `@/tools/db`, and connections are explicitly closed via `prisma.$disconnect()` in a `finally` block.
+- Top-level async functions are invoked at module bottom with `.then(() => process.exit(0))` and `.catch((e) => { console.error(...); process.exit(1); })` for consistent CLI exit behavior.
+- Individual record updates are wrapped in try/catch so that processing continues even when a single entity fails, with errors logged via `console.error` rather than thrown.
+- Prisma queries use explicit `include` clauses to eagerly load related entities (e.g. `MusclesAgony`, `MusclesSynergy`, `MusclesStabilizer`) instead of separate lookups.

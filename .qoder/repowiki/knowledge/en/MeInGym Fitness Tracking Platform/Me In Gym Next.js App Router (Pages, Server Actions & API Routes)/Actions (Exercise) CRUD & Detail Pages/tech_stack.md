@@ -1,0 +1,1 @@
+Next.js App Router with `"use server"` server actions (no API routes), Prisma Client for data access, Zod for form schema validation, react-hook-form for client-side forms, and PostgreSQL 16 via Docker. Uses path alias `@/*` consistently across imports.

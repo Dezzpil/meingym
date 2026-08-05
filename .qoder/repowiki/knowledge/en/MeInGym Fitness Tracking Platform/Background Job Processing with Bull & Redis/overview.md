@@ -1,0 +1,1 @@
+Bull-based background job system that asynchronously calculates training scores, checks inactive training periods, and cleans up orphaned exercise images using Redis as the message broker.

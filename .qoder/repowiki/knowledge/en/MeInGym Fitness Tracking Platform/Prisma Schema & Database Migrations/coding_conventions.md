@@ -1,0 +1,6 @@
+- Every model includes `createdAt DateTime @default(now())` and `updatedAt DateTime @updatedAt` timestamp fields for auditability.
+- All foreign key relations use `onDelete: Cascade` to keep referential integrity without manual cleanup logic.
+- Polymorphic or purpose-specific variants are modeled as separate tables sharing a common parent (e.g., `ActionMass`/`ActionStrength`/`ActionLoss` all reference `ApproachesGroup` and `Action`), keeping the base `Action` table lean.
+- Many-to-many relationships between `Action` and `Muscle` are expressed through dedicated join models (`ActionsOnMusclesAgony`, `...Synergy`, `...Stabilizer`, `...Antagonist`) rather than implicit Prisma relations.
+- Searchable text fields use `@db.Text` combined with a GIN trigram index (e.g., `Action.search`) for fuzzy matching via `gin_trgm_ops`.
+- Decimal precision for weights and monetary-like values is enforced with `@db.Decimal(precision, scale)` instead of floating-point types.

@@ -1,0 +1,1 @@
+Prisma ORM with `prisma-client-js` generator against PostgreSQL 16; uses `@db.Decimal(5,2)` for precise weight fields, `@db.Text` for search text, GIN trigram indexes (`gin_trgm_ops`) for fuzzy exercise search, and JSON columns (`trainingProgressionParams`, `coefficients`) for flexible configuration.

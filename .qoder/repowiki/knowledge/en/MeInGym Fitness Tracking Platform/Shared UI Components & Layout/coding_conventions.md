@@ -1,0 +1,6 @@
+- Client-side components opt into interactivity by placing `"use client"` as the first line of the file.
+- Props are declared as TypeScript interfaces/types with explicit optional flags (e.g. `firstUp?: boolean`, `brackets?: boolean`) and default values are applied inline in destructuring.
+- Conditional styling uses the `classnames` library rather than template literals or inline style objects.
+- Server mutations are invoked by importing functions from `@/app/<feature>/actions` modules directly inside component event handlers, keeping components free of fetch/axios calls.
+- Prisma model types are imported directly from `@prisma/client` and used as prop types instead of being redefined locally.
+- Russian-language user-facing strings are embedded directly in components (day names, purpose labels, button text) rather than centralized in i18n files.

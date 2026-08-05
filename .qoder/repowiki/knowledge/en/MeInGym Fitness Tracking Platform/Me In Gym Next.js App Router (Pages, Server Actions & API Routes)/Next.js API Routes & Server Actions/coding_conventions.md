@@ -1,0 +1,5 @@
+- Each route file exports async handler functions named after HTTP verbs (GET, POST, PATCH, DELETE) that return `NextResponse.json(...)` with explicit status codes.
+- All database queries go through the single `prisma` instance imported from `@/tools/db` rather than instantiating PrismaClient locally.
+- Error handling follows a try/catch pattern that logs with `console.error` and returns a JSON `{ error: ... }` response with an appropriate HTTP status (400/401/404/500).
+- Query parameters are read via `request.nextUrl.searchParams` or `new URL(request.url).searchParams`, with required params validated before proceeding.
+- File uploads use `request.formData()`, validate size against a `MAX_FILE_SIZE` constant and MIME type against an `ALLOWED_FORMATS` list, then write buffers to `public/uploads` with timestamp-prefixed filenames.

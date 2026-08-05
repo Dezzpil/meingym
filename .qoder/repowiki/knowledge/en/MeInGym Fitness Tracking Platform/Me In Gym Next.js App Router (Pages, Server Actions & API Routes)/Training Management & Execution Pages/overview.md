@@ -1,0 +1,1 @@
+Next.js App Router pages and Server Actions for listing, creating, editing, repeating, and executing workouts, including exercise management, difficulty boosting, and per-set execution feedback.

@@ -1,0 +1,1 @@
+Node.js built-in `node:test` runner with `tsx` for TypeScript execution; Chai assertion library used in both TDD (`assert`) and BDD (`expect`) styles; environment variables (`MOBILE_JWT_SECRET`, `MOBILE_JWT_EXPIRES_IN_SECONDS`) injected at test startup for JWT testing.

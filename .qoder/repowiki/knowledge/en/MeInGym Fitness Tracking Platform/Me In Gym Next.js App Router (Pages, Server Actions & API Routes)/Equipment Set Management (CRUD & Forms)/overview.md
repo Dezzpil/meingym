@@ -1,0 +1,1 @@
+Next.js App Router feature module for creating, listing, editing, and deleting equipment sets that define required equipment and weight rig configurations for training actions.

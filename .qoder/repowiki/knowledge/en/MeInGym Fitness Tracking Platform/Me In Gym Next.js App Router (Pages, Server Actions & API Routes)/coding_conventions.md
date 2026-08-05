@@ -1,0 +1,6 @@
+- Each feature directory follows the Page + Server Actions pattern: page.tsx renders UI while actions.ts contains 'use server' mutation functions.
+- All database access goes through the shared prisma singleton from @/tools/db rather than creating new instances.
+- Server actions use revalidatePath() after mutations to invalidate Next.js cache instead of client-side refetching.
+- Prisma enum types from @prisma/client are imported directly and used for typed form fields and database operations.
+- Feature-specific TypeScript types are declared in a local types.ts file alongside the feature's actions and pages.
+- API endpoints under src/app/api/ follow Next.js Route Handler conventions with route.ts files per endpoint.

@@ -1,0 +1,1 @@
+Next.js App Router pages and server actions for CRUD operations on muscle entities, including listing, creating/editing muscles, managing descriptions, and handling muscle images.

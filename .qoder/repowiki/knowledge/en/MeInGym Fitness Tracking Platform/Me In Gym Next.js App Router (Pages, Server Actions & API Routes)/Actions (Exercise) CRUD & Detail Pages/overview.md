@@ -1,0 +1,1 @@
+Next.js App Router pages and server actions for managing exercises (actions): listing, creating, editing, deleting, and per-action history/state/initialization views with muscle-group filtering and similar-exercise relationships.

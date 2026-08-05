@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: app/actions
+title: Actions (Exercise) CRUD & Detail Pages
+scope:
+    - src/app/actions/
+source_files: []
+depends_on: []
+related_to: []

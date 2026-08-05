@@ -1,0 +1,1 @@
+NextAuth v4 with `@next-auth/prisma-adapter`, Prisma Client singleton, React hooks for client-side data fetching, and native Node.js timers for debounce. Environment variables drive OAuth provider credentials (GITHUB_APP_ID, GOOGLE_CLIENT_ID, etc.).

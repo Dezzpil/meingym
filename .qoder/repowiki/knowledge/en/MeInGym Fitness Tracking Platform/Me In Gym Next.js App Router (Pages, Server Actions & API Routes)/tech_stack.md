@@ -1,0 +1,1 @@
+Next.js App Router with React Server Components, Bootstrap CSS, Prisma Client via a shared singleton (@/tools/db), Bull queues for background jobs, and Recharts for charts. Path alias @/* is used consistently across all imports.

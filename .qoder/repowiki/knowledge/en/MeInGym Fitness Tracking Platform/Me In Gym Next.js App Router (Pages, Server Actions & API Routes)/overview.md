@@ -1,0 +1,1 @@
+Next.js App Router application layer that wires feature modules (actions, trainings, muscles, equipment, profile, weights) to Prisma-backed server actions and REST-style API routes, all wrapped by shared auth and layout providers.

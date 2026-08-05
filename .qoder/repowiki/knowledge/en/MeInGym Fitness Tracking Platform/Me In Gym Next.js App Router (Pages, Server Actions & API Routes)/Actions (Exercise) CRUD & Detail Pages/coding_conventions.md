@@ -1,0 +1,5 @@
+- Server mutations are declared in `actions.ts` files next to their route with the `"use server"` directive and use `prisma.$transaction` for multi-step writes followed by `revalidatePath` or `redirect`.
+- Form schemas are defined with Zod in `types.ts` and inferred as TypeScript types via `z.infer<typeof Schema>` for both client form state and server action parameters.
+- Admin-only pages gate access by checking `user.role !== UserRole.ADMIN` and redirect to a 404 or read-only view instead of rendering restricted content.
+- Related Prisma models are fetched eagerly with nested `include` clauses (e.g., `MusclesAgony` → `Muscle` → `Group`) rather than lazy loading, keeping page-level queries self-contained.
+- Client components use `react-hook-form` with `useForm<T>()` typed from the Zod-inferred type, and submit through async server action handlers that catch errors and surface them via local state.

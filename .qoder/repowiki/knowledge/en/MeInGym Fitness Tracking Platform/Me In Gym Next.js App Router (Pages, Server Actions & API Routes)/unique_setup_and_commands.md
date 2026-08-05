@@ -1,0 +1,1 @@
+Run the full stack with Docker services: PostgreSQL 16 on :5435 and Redis Alpine on :6379, both using persistent volumes under ./data/. The app itself starts via the standard Next.js dev/build commands.

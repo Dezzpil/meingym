@@ -1,0 +1,1 @@
+Bull 4.12.2 with Redis as the message broker; Prisma Client singleton via `@/tools/db`; TypeScript with path alias `@/*`. Docker services provide PostgreSQL 16 (:5435) and Redis Alpine (:6379) with persistent volumes under `./data/`.

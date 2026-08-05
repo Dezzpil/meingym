@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: app/equipment
+title: Equipment Set Management (CRUD & Forms)
+scope:
+    - src/app/equipment/
+source_files: []
+depends_on: []
+related_to: []
