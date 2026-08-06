@@ -6,34 +6,126 @@ import type {
 import type { AuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
 import { prisma } from "@/tools/db";
-import GitHubProvider from "next-auth/providers/github";
-import GoogleProvider from "next-auth/providers/google";
+// import GitHubProvider from "next-auth/providers/github";
+// import GoogleProvider from "next-auth/providers/google";
 import VkProvider from "next-auth/providers/vk";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
+// import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { verifyPassword } from "@/tools/password";
 import { redirect } from "next/navigation";
 import { ActionRequire, ActionRig, User, UserInfo } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
+
+type PrismaTransactionClient = Omit<
+  PrismaClient,
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+>;
+
+const ENABLE_OAUTH = false;
+
+export async function setupNewUser(
+  userId: string,
+  tx?: PrismaTransactionClient,
+) {
+  const client = tx || prisma;
+  await client.userInfo.create({
+    data: { userId },
+  });
+
+  await client.equipment.create({
+    data: {
+      userId,
+      name: "Тренажерный зал",
+      isDefault: true,
+      Rigs: {
+        createMany: {
+          data: [
+            { type: ActionRig.BARBELL, minWeight: 10, step: 5, maxWeight: 200 },
+            { type: ActionRig.BLOCKS, minWeight: 5, step: 1, maxWeight: 200 },
+            { type: ActionRig.DUMBBELL, minWeight: 5, step: 2.5, maxWeight: 50 },
+            { type: ActionRig.KETTLEBELL, minWeight: 6, step: 2, maxWeight: 30 },
+          ],
+        },
+      },
+      Requires: {
+        createMany: {
+          data: [
+            { type: ActionRequire.BENCH },
+            { type: ActionRequire.UPBAR },
+            { type: ActionRequire.SIMULATOR },
+          ],
+        },
+      },
+    },
+  });
+}
 
 // You'll need to import and pass this
 // to `NextAuth` in `app/api/auth/[...nextauth]/route.ts`
 export const authOptions = {
-  adapter: PrismaAdapter(prisma),
+  // adapter: PrismaAdapter(prisma),
+  session: { strategy: "jwt" as const, maxAge: 30 * 24 * 60 * 60 },
   providers: [
-    GitHubProvider({
-      clientId: process.env.GITHUB_APP_ID as string,
-      clientSecret: process.env.GITHUB_SECRET as string,
-    }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-      allowDangerousEmailAccountLinking: true,
+    ...(ENABLE_OAUTH
+      ? [
+          // GitHubProvider({
+          //   clientId: process.env.GITHUB_APP_ID as string,
+          //   clientSecret: process.env.GITHUB_SECRET as string,
+          // }),
+          // GoogleProvider({
+          //   clientId: process.env.GOOGLE_CLIENT_ID as string,
+          //   clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+          //   allowDangerousEmailAccountLinking: true,
+          // }),
+        ]
+      : []),
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+        });
+        if (!user || !user.password) return null;
+        const isValid = await verifyPassword(
+          credentials.password,
+          user.password,
+        );
+        if (!isValid) return null;
+        // Return user WITHOUT password field
+        const { password: _, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      },
     }),
   ],
   callbacks: {
-    session: async ({ session, user }) => {
-      // session.userId = user.id;
-      session.user = user;
-      return Promise.resolve(session);
+    jwt: async ({ token, user }) => {
+      if (user) {
+        token.sub = user.id;
+        token.role = (user as any).role;
+      }
+      return token;
     },
+    session: async ({ session, token }) => {
+      if (token.sub) {
+        const user = await prisma.user.findUnique({
+          where: { id: token.sub as string },
+        });
+        if (user) {
+          const { password, ...safeUser } = user;
+          // @ts-ignore
+          session.user = safeUser;
+        }
+      }
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/login",
   },
   events: {
     createUser: async ({ user }) => {
@@ -43,58 +135,7 @@ export const authOptions = {
         });
         if (existed) return;
       }
-      // Implement your custom logic here
-      // For example, sending a welcome email or integrating with third-party services
-      await prisma.userInfo.create({
-        data: { userId: user.id },
-      });
-
-      await prisma.equipment.create({
-        data: {
-          userId: user.id,
-          name: "Тренажерный зал",
-          isDefault: true,
-          Rigs: {
-            createMany: {
-              data: [
-                {
-                  type: ActionRig.BARBELL,
-                  minWeight: 10,
-                  step: 5,
-                  maxWeight: 200,
-                },
-                {
-                  type: ActionRig.BLOCKS,
-                  minWeight: 5,
-                  step: 1,
-                  maxWeight: 200,
-                },
-                {
-                  type: ActionRig.DUMBBELL,
-                  minWeight: 5,
-                  step: 2.5,
-                  maxWeight: 50,
-                },
-                {
-                  type: ActionRig.KETTLEBELL,
-                  minWeight: 6,
-                  step: 2,
-                  maxWeight: 30,
-                },
-              ],
-            },
-          },
-          Requires: {
-            createMany: {
-              data: [
-                { type: ActionRequire.BENCH },
-                { type: ActionRequire.UPBAR },
-                { type: ActionRequire.SIMULATOR },
-              ],
-            },
-          },
-        },
-      });
+      await setupNewUser(user.id);
     },
     // You can define handlers for other events as well
   },

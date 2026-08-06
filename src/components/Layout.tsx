@@ -1,6 +1,7 @@
 "use client";
 
 import React, { ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import PackageJson from "../../package.json";
@@ -10,6 +11,8 @@ type Props = {
 };
 export function Layout({ children }: Props) {
   const session = useSession();
+  const pathname = usePathname();
+  const isAuthPage = pathname === "/login" || pathname === "/register";
 
   return (
     <div className="container-fluid">
@@ -64,15 +67,16 @@ export function Layout({ children }: Props) {
           </ul>
         </div>
       </nav>
-      {session.status === "loading" && (
+      {session.status === "loading" && !isAuthPage && (
         <div className="spinner-border" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
       )}
-      {session.status === "authenticated" && children}
-      {session.status === "unauthenticated" && (
+      {isAuthPage && children}
+      {!isAuthPage && session.status === "authenticated" && children}
+      {!isAuthPage && session.status === "unauthenticated" && (
         <p>
-          Необходимо <Link href={"/api/auth/signin"}>войти в систему</Link>
+          Необходимо <Link href={"/login"}>войти в систему</Link> или <Link href={"/register"}>зарегистрироваться</Link>
         </p>
       )}
     </div>
