@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/Dezzpil/meingym/compare/v1.35.0...v2.0.0) (2026-08-06)
+
+
+### Features
+
+* перейти с oauth на email/pass аутентификацию (временно, до лучших времен) ([02b2c6d](https://github.com/Dezzpil/meingym/commits/02b2c6d20d10f861177a9419700d6c912d1dee41))
+
 ## [1.35.0](https://github.com/Dezzpil/meingym/compare/v1.34.3...v1.35.0) (2026-08-06)
 
 
