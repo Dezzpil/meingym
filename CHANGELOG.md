@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.35.0](https://github.com/Dezzpil/meingym/compare/v1.34.3...v1.35.0) (2026-08-06)
+
+
+### Features
+
+* добавить мобильный эндпоинт для синхронизации тренировок ([7249f56](https://github.com/Dezzpil/meingym/commits/7249f56517367305574c96a6654e6f5ee07fc957))
+
 ### [1.34.3](https://github.com/Dezzpil/meingym/compare/v1.34.2...v1.34.3) (2026-08-05)
 
 
