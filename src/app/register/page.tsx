@@ -16,7 +16,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetch("/api/auth/csrf")
+    fetch("/api/auth/csrf", { credentials: "include" })
       .then((res) => res.json())
       .then((data) => setCsrfToken(data.csrfToken))
       .catch(() => {});
@@ -55,6 +55,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ email, password, csrfToken }),
       });
 

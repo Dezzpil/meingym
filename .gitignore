@@ -46,3 +46,5 @@ meingym*.sql
 *.png
 *.jpg
 *.jpeg
+
+tsconfig.tsbuildinfo

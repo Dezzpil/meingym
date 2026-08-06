@@ -10,8 +10,16 @@ export async function POST(request: NextRequest) {
     const { email, password, csrfToken } = body;
 
     // 1. CSRF validation (double-submit cookie pattern)
+    // NextAuth prefixes the CSRF cookie with __Host- when secure cookies are
+    // enabled (HTTPS / production), while on HTTP (localhost) it is bare.
     const cookieStore = cookies();
-    const csrfCookie = cookieStore.get("next-auth.csrf-token");
+    const csrfCookieNames = [
+      "__Host-next-auth.csrf-token",
+      "next-auth.csrf-token",
+    ];
+    const csrfCookie = csrfCookieNames
+      .map((name) => cookieStore.get(name))
+      .find((cookie) => cookie?.value);
     const csrfTokenFromCookie = csrfCookie?.value?.split("|")[0];
     if (!csrfTokenFromCookie || csrfTokenFromCookie !== csrfToken) {
       return NextResponse.json({ error: "CSRF token mismatch" }, { status: 403 });
