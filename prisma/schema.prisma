@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_PRISMA_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_PRISMA_URL")
   // directUrl = env("DATABASE_URL_NON_POOLING")
 }
 
@@ -371,7 +371,7 @@ model ApproachesGroup {
 model Approach {
   id Int @id @default(autoincrement())
 
-  priority Int   @default(0)
+  priority Int     @default(0)
   weight   Float
   count    Int
   isBoost  Boolean @default(false)
@@ -431,6 +431,11 @@ model Training {
 
   noWarmUp Boolean         @default(false)
   WarmUp   TrainingWarmUp?
+
+  externalId       String?
+  syncedFromMobile Boolean @default(false)
+
+  @@unique([userId, externalId])
 }
 
 model TrainingExercise {

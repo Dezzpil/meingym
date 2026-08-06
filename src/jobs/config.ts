@@ -11,6 +11,7 @@ export const queueNames = {
   scores: "scores",
   periods: "periods",
   images: "images",
+  trainings: "trainings",
 };
 
 // Job names
@@ -23,6 +24,9 @@ export const jobNames = {
   },
   images: {
     cleanupOrphaned: "cleanup-orphaned-images",
+  },
+  trainings: {
+    processCompleted: "process-completed-training",
   },
 };
 

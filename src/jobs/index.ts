@@ -1,15 +1,16 @@
 import "./processors/scores";
 import "./processors/periods";
 import "./processors/images";
+import "./processors/trainings";
 
 // Import queues for direct access if needed
-import { scoresQueue, periodsQueue, imagesQueue } from "./queues";
+import { scoresQueue, periodsQueue, imagesQueue, trainingsQueue } from "./queues";
 import { jobNames, defaultJobOptions } from "./config";
 
 console.log("Job processors initialized");
 
 // Export queues for use in other parts of the application
-export { scoresQueue, periodsQueue, imagesQueue };
+export { scoresQueue, periodsQueue, imagesQueue, trainingsQueue };
 
 // Helper function to schedule score calculation for an action
 export async function scheduleScoreCalculation(trainingId: number) {
@@ -59,3 +60,14 @@ scheduleCheckInactivePeriods().catch(console.error);
 
 // Schedule the cleanup of orphaned images to run daily
 scheduleCleanupOrphanedImages().catch(console.error);
+
+// Helper function to schedule training processing after sync
+export async function scheduleTrainingProcessing(trainingId: number, userId: string) {
+  const job = await trainingsQueue.add(
+    jobNames.trainings.processCompleted,
+    { trainingId, userId },
+    defaultJobOptions,
+  );
+
+  return { jobId: job.id };
+}
