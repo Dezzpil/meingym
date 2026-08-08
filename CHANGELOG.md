@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.1](https://github.com/Dezzpil/meingym/compare/v2.1.0...v2.1.1) (2026-08-08)
+
+
+### Features
+
+* добавить эндпоинты для управления весом в mobile-API ([f3ab796](https://github.com/Dezzpil/meingym/commits/f3ab796dabb7ba8d7c47949b58d78e5c1d2a699e))
+
 ## [2.1.0](https://github.com/Dezzpil/meingym/compare/v2.0.0...v2.1.0) (2026-08-08)
 
 
