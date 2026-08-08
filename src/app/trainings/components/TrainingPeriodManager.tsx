@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { Button, Card } from "react-bootstrap";
 import moment from "moment";
 import { DateFormat } from "@/tools/dates";
 import { TrainingPeriod } from "@prisma/client";

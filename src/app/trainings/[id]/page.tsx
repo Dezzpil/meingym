@@ -33,37 +33,44 @@ import {
 
 export default async function TrainingPage({ params }: ItemPageParams) {
   const id = parseInt(params.id);
-  const training = (await prisma.training.findUniqueOrThrow({
-    where: { id },
-    include: {
-      WarmUp: true,
-    },
-  })) as Training & { WarmUp: TrainingWarmUp };
+  // Batch 1: независимые запросы
+  const [training, userId] = await Promise.all([
+    prisma.training.findUniqueOrThrow({
+      where: { id },
+      include: { WarmUp: true },
+    }) as Promise<Training & { WarmUp: TrainingWarmUp }>,
+    getCurrentUserId(),
+  ]);
 
-  const originalTraining = training.repeatedFromId
-    ? await prisma.training.findUnique({
-        where: { id: training.repeatedFromId },
-        select: { id: true, plannedTo: true },
-      })
-    : null;
-  const userId = await getCurrentUserId();
-  const userInfo = await findUserInfo(userId);
-  const exercises = await prisma.trainingExercise.findMany({
-    where: { trainingId: id },
-    include: {
-      Action: true,
-      ApproachGroup: {
+  // Batch 2: запросы, зависящие от training и userId
+  const [originalTraining, userInfo, exercises, muscleStats, equipments] =
+    await Promise.all([
+      training.repeatedFromId
+        ? prisma.training.findUnique({
+            where: { id: training.repeatedFromId },
+            select: { id: true, plannedTo: true },
+          })
+        : Promise.resolve(null),
+      findUserInfo(userId),
+      prisma.trainingExercise.findMany({
+        where: { trainingId: id },
         include: {
-          Approaches: { orderBy: { priority: "asc" } },
+          Action: true,
+          ApproachGroup: {
+            include: { Approaches: { orderBy: { priority: "asc" } } },
+          },
+          TrainingExerciseExecution: true,
+          Training: { select: { plannedTo: true, userId: true } },
         },
-      },
-      TrainingExerciseExecution: true,
-      Training: { select: { plannedTo: true, userId: true } },
-    },
-    orderBy: { priority: "asc" },
-  });
-
-  const muscleStats = await fetchTrainingMuscleStats(training.id);
+        orderBy: { priority: "asc" },
+      }),
+      fetchTrainingMuscleStats(training.id),
+      prisma.equipment.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+        include: { Rigs: true, Requires: true },
+      }),
+    ]);
 
   // Подгрузим предыдущие метрики по каждому действию для этого пользователя
   const prevExercisesStats = await Promise.all(
@@ -130,15 +137,6 @@ export default async function TrainingPage({ params }: ItemPageParams) {
     });
   }
 
-  // Нужны наборы оборудования пользователя
-  const equipments = await prisma.equipment.findMany({
-    where: { userId },
-    orderBy: { createdAt: "desc" },
-    include: {
-      Rigs: true,
-      Requires: true,
-    },
-  });
   let currentEquipment:
     | (Equipment & { Rigs: EquipmentRig[]; Requires: EquipmentRequire[] })
     | null = null;
@@ -157,8 +155,6 @@ export default async function TrainingPage({ params }: ItemPageParams) {
   const equipmentRequires = currentEquipment
     ? currentEquipment!.Requires.map((r) => r.type).concat(ActionRequire.NONE)
     : [];
-
-  console.log(equipmentRigs, equipmentRequires);
 
   return (
     <>

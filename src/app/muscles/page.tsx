@@ -32,12 +32,12 @@ function sortMuscles(
     let bv: number;
     switch (sort) {
       case "agonyCount":
-        av = a.AgonyInActions.length;
-        bv = b.AgonyInActions.length;
+        av = a._count.AgonyInActions;
+        bv = b._count.AgonyInActions;
         break;
       case "synergyCount":
-        av = a.SynergyInActions.length;
-        bv = b.SynergyInActions.length;
+        av = a._count.SynergyInActions;
+        bv = b._count.SynergyInActions;
         break;
       default:
         av = a[sort];
@@ -98,8 +98,12 @@ export default async function MusclesPage({ searchParams }: Props) {
   const muscles = await prisma.muscle.findMany({
     include: {
       Group: true,
-      AgonyInActions: true,
-      SynergyInActions: true,
+      _count: {
+        select: {
+          AgonyInActions: true,
+          SynergyInActions: true,
+        },
+      },
     },
   });
 
@@ -172,8 +176,8 @@ export default async function MusclesPage({ searchParams }: Props) {
                 <td>{m.Group.title}</td>
                 <td>{m.priorityRank}</td>
                 <td>{m.sizeFactor}</td>
-                <td>{m.AgonyInActions.length}</td>
-                <td>{m.SynergyInActions.length}</td>
+                <td>{m._count.AgonyInActions}</td>
+                <td>{m._count.SynergyInActions}</td>
               </tr>
             ))}
           </tbody>

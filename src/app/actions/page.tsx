@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { prisma } from "@/tools/db";
+import { getCachedMuscleGroups } from "@/tools/cachedQueries";
 import { getCurrentUser } from "@/tools/auth";
 import { PageParams } from "@/tools/types";
-import { UserRole } from "@prisma/client";
+import { Prisma, UserRole } from "@prisma/client";
 import { ActionListItem } from "@/app/actions/components/ActionListItem";
 import { ActionFilterForm } from "@/app/actions/components/ActionFilterForm";
 import { BiPlus } from "react-icons/bi";
@@ -10,7 +11,6 @@ import React from "react";
 
 export default async function ActionsPage({ searchParams }: PageParams) {
   const user = await getCurrentUser();
-  const userId = user.id;
 
   const groupId = searchParams.group ? parseInt(searchParams.group) : null;
   const where: Record<string, any> = {
@@ -24,25 +24,35 @@ export default async function ActionsPage({ searchParams }: PageParams) {
     where["strengthAllowed"] = strengthAllowed;
   }
 
-  const groups = await prisma.muscleGroup.findMany({});
+  const groups = await getCachedMuscleGroups();
 
-  const countBaseWhere: Record<string, any> =
-    strengthAllowed !== null ? { strengthAllowed } : {};
+  // Агрегирующие запросы выполняем параллельно
+  const strengthFilter =
+    strengthAllowed !== null
+      ? Prisma.sql`WHERE a."strengthAllowed" = ${strengthAllowed}`
+      : Prisma.empty;
 
-  const allActionsCount = await prisma.action.count({
-    where: countBaseWhere,
-  });
+  const [groupCountRows, allCountRows] = await Promise.all([
+    prisma.$queryRaw<{ groupId: number; cnt: bigint }[]>`
+      SELECT m."groupId", COUNT(DISTINCT a."id") as cnt
+      FROM "Action" a
+      JOIN "ActionsOnMusclesAgony" ama ON ama."actionId" = a."id"
+      JOIN "Muscle" m ON m."id" = ama."muscleId"
+      ${strengthFilter}
+      GROUP BY m."groupId"
+    `,
+    prisma.$queryRaw<{ cnt: bigint }[]>`
+      SELECT COUNT(DISTINCT a."id") as cnt
+      FROM "Action" a
+      ${strengthFilter}
+    `,
+  ]);
 
   const groupCounts: Record<number, number> = {};
-  for (const group of groups) {
-    const count = await prisma.action.count({
-      where: {
-        ...countBaseWhere,
-        MusclesAgony: { some: { Muscle: { groupId: group.id } } },
-      },
-    });
-    groupCounts[group.id] = count;
+  for (const row of groupCountRows) {
+    groupCounts[Number(row.groupId)] = Number(row.cnt);
   }
+  const allActionsCount = Number(allCountRows[0]?.cnt ?? 0);
 
   const actions = await prisma.action.findMany({
     where,
@@ -54,32 +64,10 @@ export default async function ActionsPage({ searchParams }: PageParams) {
         where: { isMain: true },
         take: 1,
       },
-      ActionMass: {
-        where: { userId },
-        take: 1,
-        include: {
-          CurrentApproachGroup: { include: { Approaches: true } },
-        },
-      },
-      ActionStrength: {
-        where: { userId },
-        take: 1,
-        include: { CurrentApproachGroup: { include: { Approaches: true } } },
-      },
-      ActionLoss: {
-        where: { userId },
-        take: 1,
-        include: { CurrentApproachGroup: { include: { Approaches: true } } },
-      },
       MusclesAgony: { include: { Muscle: { include: { Group: true } } } },
       MusclesSynergy: { include: { Muscle: { include: { Group: true } } } },
       MusclesStabilizer: { include: { Muscle: { include: { Group: true } } } },
       MusclesAntagonist: { include: { Muscle: { include: { Group: true } } } },
-      TrainingExerciseScore: {
-        where: { userId },
-        orderBy: { createdAt: "desc" },
-        include: { Exercise: true },
-      },
     },
   });
 

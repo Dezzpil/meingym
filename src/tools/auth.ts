@@ -5,6 +5,7 @@ import type {
 } from "next";
 import type { AuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
+import { cache } from "react";
 import { prisma } from "@/tools/db";
 // import GitHubProvider from "next-auth/providers/github";
 // import GoogleProvider from "next-auth/providers/google";
@@ -151,22 +152,22 @@ export function auth(
   return getServerSession(...args, authOptions);
 }
 
-export async function getCurrentUser(): Promise<User | never> {
+export const getCurrentUser = cache(async (): Promise<User | never> => {
   const session = await getServerSession(authOptions);
   if (!session) redirect(`/404`);
   // @ts-ignore
   return session?.user as User;
-}
+});
 
 export async function getCurrentUserId(): Promise<string | never> {
   return (await getCurrentUser()).id;
 }
 
-export async function findUserInfo(userId: string): Promise<UserInfo> {
+export const findUserInfo = cache(async (userId: string): Promise<UserInfo> => {
   const info = await prisma.userInfo.findFirst({ where: { userId } });
   if (!info)
     return prisma.userInfo.create({
       data: { userId },
     });
   return info;
-}
+});

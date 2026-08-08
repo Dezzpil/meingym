@@ -1,4 +1,5 @@
 import { prisma } from "@/tools/db";
+import { getCachedMuscleGroups } from "@/tools/cachedQueries";
 import { Purpose } from "@prisma/client";
 import { getCurrentUserId } from "@/tools/auth";
 import { TrainingListCard } from "@/app/trainings/components/TrainingListCard";
@@ -34,7 +35,7 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 1);
 
-  const groups = await prisma.muscleGroup.findMany({});
+  const groups = await getCachedMuscleGroups();
   const trainings = await prisma.training.findMany({
     where: {
       plannedTo: {

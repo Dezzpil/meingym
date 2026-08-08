@@ -6,8 +6,6 @@ import BootstrapJS from "@/components/BootstrapJS";
 import AuthProvider from "@/components/AuthProvider";
 import { Layout } from "@/components/Layout";
 
-export const dynamic = "force-dynamic";
-
 export const metadata: Metadata = {
   title: "Me In Gym",
   description:

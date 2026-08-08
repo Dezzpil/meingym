@@ -6,6 +6,7 @@ import type {
   ActionRig,
   TrainingExerciseScore,
 } from "@prisma/client";
+import Image from "next/image";
 import { ActionMuscles } from "./ActionMuscles";
 import { useMemo } from "react";
 import { ActionHistoryScoreChart } from "../[id]/history/components/ActionHistoryScoreChart";
@@ -90,12 +91,13 @@ export function ActionCard({ action }: Props) {
             {action.ExerciseImages && action.ExerciseImages.length > 0 ? (
               <div className="position-relative h-100 d-flex align-items-center justify-content-center p-3">
                 <div className="position-relative">
-                  <img
+                  <Image
                     src={action.ExerciseImages[0].path}
                     alt={action.title}
                     className="img-fluid rounded"
                     width={600}
                     height={600}
+                    unoptimized={true}
                     style={{
                       maxHeight: "500px",
                       objectFit: "contain",

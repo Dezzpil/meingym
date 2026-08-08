@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ActionWithMusclesType } from "@/app/actions/types";
 import { truncateText } from "@/tools/func";
 import { ActionMuscles } from "@/app/actions/components/ActionMuscles";
@@ -24,11 +25,12 @@ export function ActionListItem({ action }: Props) {
         style={{ position: "relative" }}
       >
         {action.ExerciseImages.length ? (
-          <img
+          <Image
             src={action.ExerciseImages[0].path}
             alt={action.search ? action.search : action.title}
             width={300}
             height={300}
+            unoptimized={true}
             style={{
               objectFit: "contain",
               maxHeight: "300px",
