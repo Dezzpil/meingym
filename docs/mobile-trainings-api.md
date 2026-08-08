@@ -430,6 +430,8 @@ POST /api/mobile/v1/trainings
 | `POST /api/mobile/v1/auth/register` | Регистрация нового пользователя            |
 | `GET /api/mobile/v1/me`          | Информация о текущем пользователе          |
 | `GET /api/mobile/v1/exercises`   | Справочник упражнений (`actionId`)         |
+| `GET /api/mobile/v1/weights`     | Список весов пользователя                  |
+| `POST /api/mobile/v1/weights`    | Пакетное добавление весов                   |
 
 ---
 
@@ -446,3 +448,137 @@ src/tests/mobile/trainings-route.test.ts
 ```bash
 node --experimental-test-module-mocks --import tsx --test src/tests/mobile/trainings-route.test.ts
 ```
+
+---
+
+## GET /weights
+
+Получение списка весов пользователя с пагинацией.
+
+```
+GET /api/mobile/v1/weights?cursor=<cursor>&since=<since>
+```
+
+### Query параметры
+
+| Параметр | Тип      | Обязательный | Описание                                                                 |
+|----------|----------|--------------|--------------------------------------------------------------------------|
+| `cursor` | integer  | Нет          | ID последней полученной записи. Следующая страница начнётся после него.   |
+| `since`  | ISO 8601 | Нет          | Нижняя граница по `createdAt`. По умолчанию — 31 день назад. Ограничения по давности нет. |
+
+### Пример запроса
+
+```bash
+curl -X GET "https://meingym.online/api/mobile/v1/weights?since=2026-07-01T00:00:00.000Z&cursor=10" \
+  -H "Authorization: Bearer <token>"
+```
+
+### Пример ответа (200 OK)
+
+```json
+{
+  "meta": {
+    "total": 15,
+    "nextCursor": 30
+  },
+  "items": [
+    {
+      "id": 11,
+      "value": 75.5,
+      "createdAt": "2026-07-15T08:00:00.000Z"
+    },
+    {
+      "id": 12,
+      "value": 75.2,
+      "createdAt": "2026-07-16T08:00:00.000Z"
+    }
+  ]
+}
+```
+
+### Описание полей
+
+| Поле        | Тип      | Описание                              |
+|-------------|----------|---------------------------------------|
+| `id`        | integer  | Внутренний ID записи веса на сервере  |
+| `value`     | number   | Вес в килограммах                     |
+| `createdAt`| ISO 8601 | Дата и время записи                   |
+
+### Ошибки
+
+| Статус | Тело ответа                                            | Причина                              |
+|--------|--------------------------------------------------------|--------------------------------------|
+| 401    | `{ "error": "Authorization header with Bearer token is required" }` | Отсутствует заголовок авторизации    |
+| 401    | `{ "error": "Invalid or expired token" }`              | Токен невалиден или истёк            |
+| 400    | `{ "error": "cursor must be a positive integer" }`     | `cursor` не положительное целое число |
+| 400    | `{ "error": "since must be a valid ISO 8601 datetime" }` | Невалидный формат даты               |
+| 500    | `{ "error": "Internal server error" }`                 | Внутренняя ошибка сервера            |
+
+---
+
+## POST /weights
+
+Пакетное добавление весов пользователя.
+
+```
+POST /api/mobile/v1/weights
+```
+
+### Ограничения
+
+- Массив `weights` обязателен и не может быть пустым.
+- Максимальный размер батча: **50 записей** за запрос.
+- Поле `createdAt` опционально; если не указано, используется текущее время сервера.
+- `value` должен быть положительным конечным числом.
+- `createdAt` не может быть в будущем.
+
+### Тело запроса
+
+```json
+{
+  "weights": [
+    {
+      "value": 75.5,
+      "createdAt": "2026-08-09T10:00:00.000Z"
+    },
+    {
+      "value": 75.2,
+      "createdAt": "2026-08-08T10:00:00.000Z"
+    },
+    {
+      "value": 74.8
+    }
+  ]
+}
+```
+
+### Поля Weight (input)
+
+| Поле        | Тип      | Обязательный | Описание                                      |
+|-------------|----------|--------------|-----------------------------------------------|
+| `value`     | number   | Да           | Вес в килограммах (положительное число)        |
+| `createdAt`| ISO 8601 | Нет          | Дата и время записи (по умолчанию текущее время) |
+
+### Пример ответа (200 OK)
+
+```json
+{
+  "created": 3
+}
+```
+
+> Метод возвращает только количество созданных записей. Полные записи можно получить через `GET /weights`.
+
+### Ошибки
+
+| Статус | Тело ответа                                              | Причина                              |
+|--------|----------------------------------------------------------|--------------------------------------|
+| 401    | `{ "error": "Authorization header with Bearer token is required" }` | Отсутствует заголовок авторизации    |
+| 401    | `{ "error": "Invalid or expired token" }`                | Токен невалиден или истёк            |
+| 400    | `{ "error": "Request body must contain a 'weights' array" }` | Тело запроса не содержит `weights` |
+| 400    | `{ "error": "weights array must not be empty" }`       | Массив `weights` пуст              |
+| 413    | `{ "error": "Maximum 50 weights per request" }`        | Превышен лимит батча                 |
+| 400    | `{ "error": "weights[i].value must be a positive finite number" }` | Невалидное значение веса |
+| 400    | `{ "error": "weights[i].createdAt must be a valid ISO 8601 datetime" }` | Невалидный формат даты |
+| 400    | `{ "error": "weights[i].createdAt must not be in the future" }` | Дата в будущем |
+| 500    | `{ "error": "Internal server error" }`                   | Внутренняя ошибка сервера            |

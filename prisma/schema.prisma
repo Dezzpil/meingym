@@ -576,6 +576,8 @@ model Weight {
   userId    String
   createdAt DateTime @default(now())
   value     Float
+
+  @@index([userId, createdAt])
 }
 
 model TrainingExerciseScore {
