@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/Dezzpil/meingym/compare/v2.0.0...v2.1.0) (2026-08-08)
+
+
+### Features
+
+* оптимизировать запросы к БД и передачу данных + добавить кэширование ([bdd37d6](https://github.com/Dezzpil/meingym/commits/bdd37d675a0c03943b92701d4743c284fb080d0e))
+
+
+### Bug Fixes
+
+* исправить CSRF token mismatch при https ([d5c55f1](https://github.com/Dezzpil/meingym/commits/d5c55f1f53c5f89acdb112118ea12f7e6dbd47fa))
+
 ## [2.0.0](https://github.com/Dezzpil/meingym/compare/v1.35.0...v2.0.0) (2026-08-06)
 
 
