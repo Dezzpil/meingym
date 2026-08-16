@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/Dezzpil/meingym/compare/v2.1.1...v2.2.0) (2026-08-16)
+
+
+### Features
+
+* добавить подсчет, хранение и отображение рекордов ([fa02b79](https://github.com/Dezzpil/meingym/commits/fa02b79c9e01e0635a871b8652ee613b7f5f7aa5))
+* добавить подсчет, хранение и отображение рекордов WIP ([64d2e00](https://github.com/Dezzpil/meingym/commits/64d2e000f4bf97b5f63551ec14f8b159cfc53e3c))
+
 ### [2.1.1](https://github.com/Dezzpil/meingym/compare/v2.1.0...v2.1.1) (2026-08-08)
 
 
