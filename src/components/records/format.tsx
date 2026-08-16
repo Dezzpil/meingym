@@ -1,8 +1,7 @@
 import { PersonalRecordType } from "@prisma/client";
-import type { PersonalRecord } from "@prisma/client";
+import type { PersonalRecord, Purpose } from "@prisma/client";
 import { FaTrophy } from "react-icons/fa";
 import { GiWeight } from "react-icons/gi";
-import { spans } from "next/dist/build/webpack/plugins/profiling-plugin";
 
 export type RecordValueLike = Pick<PersonalRecord, "type" | "value" | "reps">;
 
@@ -17,7 +16,11 @@ export function isShownRecord(
 }
 
 export function recordTypeTitle(type: PersonalRecordType): string {
-  return type === PersonalRecordType.MAX_WEIGHT ? "Вес" : "Тоннаж";
+  return type === PersonalRecordType.MAX_WEIGHT ? "Вес MAX" : "Тоннаж";
+}
+
+export function purposeShortTitle(purpose: Purpose): string {
+  return { STRENGTH: "сила", MASS: "масса", LOSS: "похудение" }[purpose];
 }
 
 export function recordIcon(type: PersonalRecordType) {

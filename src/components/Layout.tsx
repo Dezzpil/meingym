@@ -73,8 +73,10 @@ export function Layout({ children }: Props) {
         </div>
       </nav>
       {session.status === "loading" && !isAuthPage && (
-        <div className="spinner-border" role="status">
-          <span className="visually-hidden">Loading...</span>
+        <div className="p-4 py-2">
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
         </div>
       )}
       <div className="p-4 py-2">

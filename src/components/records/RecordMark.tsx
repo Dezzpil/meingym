@@ -11,9 +11,16 @@ type Props = {
   className?: string;
   withIcon?: boolean;
   withTitle?: boolean;
+  iconFirst?: boolean;
 };
 
-export function RecordMark({ record, withIcon, className }: Props) {
+export function RecordMark({
+  record,
+  withIcon,
+  withTitle,
+  iconFirst,
+  className,
+}: Props) {
   const title = record.isAllTime
     ? `Новый рекорд — ${recordTypeTitle(
         record.type,
@@ -28,12 +35,13 @@ export function RecordMark({ record, withIcon, className }: Props) {
         className,
       )}
     >
-      {withIcon && (
+      {iconFirst && withIcon && recordIcon(record.type)}
+      {withTitle && (
         <span className="badge bg-light text-dark" title={title}>
           {recordTypeTitle(record.type)}
         </span>
       )}
-      {withIcon && recordIcon(record.type)}
+      {!iconFirst && withIcon && recordIcon(record.type)}
     </div>
   );
 }
