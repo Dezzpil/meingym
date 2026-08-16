@@ -48,3 +48,5 @@ meingym*.sql
 *.jpeg
 
 tsconfig.tsbuildinfo
+
+.zcode/plans
