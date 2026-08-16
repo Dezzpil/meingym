@@ -15,8 +15,8 @@ export function Layout({ children }: Props) {
   const isAuthPage = pathname === "/login" || pathname === "/register";
 
   return (
-    <div className="container-fluid">
-      <nav className="navbar navbar-expand-lg bg-body-tertiary mb-3">
+    <div>
+      <nav className="navbar navbar-expand-lg bg-body-tertiary mb-3 p-4 py-2">
         <div className="container-fluid gap-2 d-flex justify-content-between align-items-baseline">
           <div>
             <a className="navbar-brand" href="/">
@@ -42,6 +42,11 @@ export function Layout({ children }: Props) {
             <li className="list-inline-item">
               <Link href={`/trainings`} className="">
                 Тренировки
+              </Link>
+            </li>
+            <li className="list-inline-item">
+              <Link href={`/records`} className="">
+                Рекорды
               </Link>
             </li>
             <li className="list-inline-item">
@@ -72,13 +77,16 @@ export function Layout({ children }: Props) {
           <span className="visually-hidden">Loading...</span>
         </div>
       )}
-      {isAuthPage && children}
-      {!isAuthPage && session.status === "authenticated" && children}
-      {!isAuthPage && session.status === "unauthenticated" && (
-        <p>
-          Необходимо <Link href={"/login"}>войти в систему</Link> или <Link href={"/register"}>зарегистрироваться</Link>
-        </p>
-      )}
+      <div className="p-4 py-2">
+        {isAuthPage && children}
+        {!isAuthPage && session.status === "authenticated" && children}
+        {!isAuthPage && session.status === "unauthenticated" && (
+          <p>
+            Необходимо <Link href={"/login"}>войти в систему</Link> или{" "}
+            <Link href={"/register"}>зарегистрироваться</Link>
+          </p>
+        )}
+      </div>
     </div>
   );
 }

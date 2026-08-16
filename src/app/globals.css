@@ -61,3 +61,62 @@ body {
 .form-label {
     font-weight: 800;
 }
+
+/***** Personal records *****/
+.record-mark {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* all-time рекорд: золотой акцент с короткой анимацией покачивания */
+.record-mark-alltime {
+    color: #f49f2a;
+    /*background-color: #f2ab11;*/
+    animation: record-wiggle 2.4s ease-in-out infinite;
+}
+
+/* рекорд периода: спокойный сигнал без праздничной анимации */
+.record-mark-period {
+    color: #6c757d;
+}
+
+.record-trophy-bounce {
+    animation: record-bounce 0.7s ease;
+}
+
+@keyframes record-wiggle {
+    0%, 55%, 100% { transform: rotate(0deg); }
+    60% { transform: rotate(-14deg); }
+    65% { transform: rotate(12deg); }
+    70% { transform: rotate(-8deg); }
+    75% { transform: rotate(5deg); }
+    80% { transform: rotate(0deg); }
+}
+
+@keyframes record-bounce {
+    0% { transform: translateY(0); }
+    30% { transform: translateY(-0.8em) scale(1.25); }
+    55% { transform: translateY(0) scale(0.95); }
+    75% { transform: translateY(-0.3em); }
+    100% { transform: translateY(0); }
+}
+
+.record-card-alltime {
+    border: 1px solid #d4a017;
+    /*background-color: #fffbe8;*/
+}
+
+.record-card-period {
+    border: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+
+.record-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.record-delta {
+    color: #198754;
+}

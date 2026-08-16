@@ -33,7 +33,6 @@ export function WeightsChart({ weights }: Props) {
   return (
     <ResponsiveContainer width="100%" height={300}>
       <LineChart width={500} height={300} data={data}>
-        <Line type="monotone" dataKey="val" stroke="#8884d8" name="Вес" />
         <XAxis dataKey="key" tick={<CustomizedAxisTick />} height={80} />
         <YAxis
           domain={[min, max]}
@@ -43,9 +42,37 @@ export function WeightsChart({ weights }: Props) {
           tickMargin={0}
           width={28}
           fontSize={12}
+          yAxisId={"right"}
+        />
+        <YAxis
+          domain={[min, max]}
+          tickCount={10}
+          height={300}
+          orientation={"left"}
+          tickMargin={0}
+          width={28}
+          fontSize={12}
+          yAxisId={"left"}
         />
         <Tooltip />
         <Legend />
+
+        <Line
+          type="monotone"
+          dataKey="val"
+          stroke="#8884d8"
+          name="Вес"
+          yAxisId={"left"}
+          legendType="none" // Hides this duplicate from the legend
+          tooltipType="none" // Prevents duplicate tooltip values
+        />
+        <Line
+          type="monotone"
+          dataKey="val"
+          stroke="#8884d8"
+          name="Вес"
+          yAxisId={"right"}
+        />
       </LineChart>
     </ResponsiveContainer>
   );

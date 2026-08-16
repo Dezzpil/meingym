@@ -40,6 +40,7 @@ model User {
   TrainingExerciseScore         TrainingExerciseScore[]
   TrainingPeriod                TrainingPeriod[]
   ProgressionStrategySimpleOpts ProgressionStrategySimpleOpts[]
+  PersonalRecords               PersonalRecord[]
 
   Equipment Equipment[]
 }
@@ -287,6 +288,7 @@ model Action {
 
   TrainingExercise      TrainingExercise[]
   TrainingExerciseScore TrainingExerciseScore[]
+  PersonalRecords       PersonalRecord[]
 
   ExerciseImages ExerciseImage[]
 
@@ -430,6 +432,8 @@ model Training {
 
   TrainingMuscleStat TrainingMuscleStat[]
 
+  PersonalRecords PersonalRecord[]
+
   noWarmUp Boolean         @default(false)
   WarmUp   TrainingWarmUp?
 
@@ -474,6 +478,8 @@ model TrainingExercise {
   difficultyScore Float @default(0)
 
   Score TrainingExerciseScore[]
+
+  PersonalRecords PersonalRecord[]
 
   ExecutionDuration TrainingExerciseExecutionDuration[]
 }
@@ -604,6 +610,60 @@ model TrainingExerciseScore {
   @@index([userId, actionId, purpose, createdAt])
 }
 
+enum PersonalRecordType {
+  MAX_WEIGHT // максимальный вес одного подхода
+  MAX_VOLUME // тоннаж: сумма вес × повторы за упражнение
+}
+
+// Персональный рекорд пользователя по упражнению в разрезе цели.
+// Производные данные: пересчитываются при обработке тренировки и скриптом бэкфилла.
+// Запись с previousValue = null — «база» (первый результат в истории или в периоде), на UI не показывается.
+model PersonalRecord {
+  id Int @id @default(autoincrement())
+
+  userId String
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  actionId Int
+  Action   Action @relation(fields: [actionId], references: [id], onDelete: Cascade)
+
+  purpose Purpose
+  type    PersonalRecordType
+
+  // абсолютный рекорд за всё время или лучший результат текущего периода
+  isAllTime Boolean
+
+  value Float
+  // повторы рекордного подхода — только для MAX_WEIGHT (показ «100 × 5»)
+  reps  Int?
+
+  trainingId Int
+  Training   Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+
+  trainingExerciseId Int
+  Exercise           TrainingExercise @relation(fields: [trainingExerciseId], references: [id], onDelete: Cascade)
+
+  // период, в рамках которого зафиксирован периодический рекорд; null для all-time записей тренировок без периода
+  periodId Int?
+  Period   TrainingPeriod? @relation(fields: [periodId], references: [id])
+
+  achievedAt DateTime // = Training.completedAt
+
+  // прежний лучший результат той же связки на момент фиксации (исторический снапшот)
+  previousValue      Float?
+  previousTrainingId Int?
+  previousAt         DateTime?
+
+  createdAt DateTime @default(now())
+
+  // поиск последнего рекорда пользователя по упражнению
+  @@index([userId, actionId, purpose, type, achievedAt(sort: Desc)])
+  // рекорды конкретной тренировки (страница тренировки, блок на главной)
+  @@index([userId, trainingId])
+  // списки рекордов (главная, страница «Рекорды»)
+  @@index([userId, achievedAt(sort: Desc)])
+}
+
 model TrainingPeriod {
   id        Int       @id @default(autoincrement())
   startDate DateTime  @default(now())
@@ -615,6 +675,7 @@ model TrainingPeriod {
 
   Trainings                     Training[]
   ProgressionStrategySimpleOpts ProgressionStrategySimpleOpts?
+  PersonalRecords               PersonalRecord[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -10,7 +10,7 @@ MeinGym — веб-приложение для планирования, вып�
 
 - `src/app/` — страницы App Router (trainings, approaches, equipment, weights, admin и др.) и серверные экшены; `src/app/api/` — HTTP-роуты
 - `src/app/api/mobile/v1/` — мобильный API (собственная JWT-аутентификация)
-- `src/core/` — бизнес-логика (progression, difficulty, scores, trainingProcessing, periods)
+- `src/core/` — бизнес-логика (progression, difficulty, scores, trainingProcessing, periods, records)
 - `src/jobs/` — очереди Bull и процессоры фоновых задач
 - `src/mobile/` — логика мобильного API (exchange, register, syncTrainings, trainings, weights)
 - `src/components/` — общие React-компоненты

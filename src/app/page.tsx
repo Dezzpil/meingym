@@ -7,6 +7,7 @@ import TrainingCreateForm from "@/app/trainings/components/TrainingCreateForm";
 import { WeightPanel } from "@/app/weights/panel";
 import { WeightsForm } from "@/app/weights/form";
 import { WeightsChart } from "@/app/profile/components/WeightsChart";
+import { RecordsPanel } from "@/components/records/RecordsPanel";
 import React from "react";
 import { TrainingTimeScore } from "@/app/trainings/components/TrainingTimeScore";
 
@@ -42,6 +43,32 @@ export default async function HomePage() {
     orderBy: { createdAt: "desc" },
     take: 20,
   });
+
+  // Рекорды последних 3 завершённых тренировок (базы не показываем).
+  // Если в них рекордов нет — показываем последние рекорды, чтобы блок не пропадал
+  const lastTrainings = await prisma.training.findMany({
+    where: { userId, completedAt: { not: null } },
+    orderBy: { completedAt: "desc" },
+    take: 3,
+    select: { id: true },
+  });
+  let records = await prisma.personalRecord.findMany({
+    where: {
+      userId,
+      trainingId: { in: lastTrainings.map((t) => t.id) },
+      previousValue: { not: null },
+    },
+    orderBy: [{ achievedAt: "desc" }, { id: "desc" }],
+    include: { Action: { select: { id: true, title: true, alias: true } } },
+  });
+  if (!records.length) {
+    records = await prisma.personalRecord.findMany({
+      where: { userId, previousValue: { not: null } },
+      orderBy: [{ achievedAt: "desc" }, { id: "desc" }],
+      take: 5,
+      include: { Action: { select: { id: true, title: true, alias: true } } },
+    });
+  }
 
   return (
     <div>
@@ -79,6 +106,7 @@ export default async function HomePage() {
       )}
       {weight ? <WeightPanel weight={weight} /> : <WeightsForm />}
       {weights && <WeightsChart weights={weights} />}
+      <RecordsPanel records={records} />
     </div>
   );
 }

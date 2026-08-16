@@ -16,6 +16,7 @@ import {
 import type { TrainingExercise } from "@prisma/client";
 import { findUserInfo } from "@/tools/auth";
 import { ProgressionStrategySimple } from "@/core/progression/strategy/simple";
+import { detectPersonalRecordsForTraining } from "@/core/records";
 import { scheduleScoreCalculation } from "@/jobs";
 
 function isBoostExecution(
@@ -177,6 +178,9 @@ export async function processCompletedTrainingCore(
     // Schedule score calculation job for this action
     await scheduleScoreCalculation(trainingId);
   }
+
+  // 2) Зафиксируем персональные рекорды (не зависит от настройки прогрессии)
+  await detectPersonalRecordsForTraining(trainingId, userId);
 
   await prisma.training.update({
     where: { id: trainingId },

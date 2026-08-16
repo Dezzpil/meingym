@@ -27,6 +27,7 @@ import {
   Equipment,
   EquipmentRequire,
   EquipmentRig,
+  PersonalRecord,
   Training,
   TrainingWarmUp,
 } from "@prisma/client";
@@ -111,6 +112,24 @@ export default async function TrainingPage({ params }: ItemPageParams) {
   const hasBoostedApproaches = prevExercisesStats.some((e: any) =>
     e.ApproachGroup?.Approaches?.some((a: any) => a.isBoost),
   );
+
+  // Персональные рекорды, зафиксированные в этой тренировке (базы не показываем)
+  const personalRecords: PersonalRecord[] = training.completedAt
+    ? await prisma.personalRecord.findMany({
+        where: {
+          userId: training.userId,
+          trainingId: id,
+          previousValue: { not: null },
+        },
+        orderBy: [{ achievedAt: "asc" }, { id: "asc" }],
+      })
+    : [];
+  const recordsByExerciseId = new Map<number, PersonalRecord[]>();
+  for (const record of personalRecords) {
+    const list = recordsByExerciseId.get(record.trainingExerciseId) ?? [];
+    list.push(record);
+    recordsByExerciseId.set(record.trainingExerciseId, list);
+  }
 
   // Соберем длительности подходов для диаграммы (только если тренировка завершена)
   let execTimeItems: ExecTimeItem[] = [];
@@ -238,6 +257,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
                 <TrainingExerciseItemControl
                   exercise={e}
                   canControl={!training.startedAt}
+                  records={recordsByExerciseId.get(e.id)}
                 />
               </li>
             ))}

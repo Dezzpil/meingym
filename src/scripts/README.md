@@ -54,6 +54,22 @@ npx tsx src/scripts/update-training-exercises.ts
 npx tsx src/scripts/update-approaches-groups.ts
 ```
 
+### update-personal-records.ts
+
+**Purpose**: Полный пересчёт персональных рекордов (PersonalRecord) всех пользователей.
+
+**Functionality**:
+- For every user, fully rebuilds their personal records from the history of completed trainings
+  (trainings are walked from earliest to latest by completion date)
+- Computes all-time records and records within training periods
+- Idempotent: existing records are deleted and recreated, so the script is safe to re-run
+  to fix inconsistencies after editing or deleting past trainings
+
+**Usage**:
+```bash
+npm run update-personal-records
+```
+
 ## Running Scripts
 
 All scripts in this directory can be executed using the Node.js runtime with the TypeScript executor:

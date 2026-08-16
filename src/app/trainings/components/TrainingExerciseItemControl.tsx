@@ -3,6 +3,7 @@
 import type {
   ApproachesGroup,
   Action,
+  PersonalRecord,
   TrainingExercise,
   Approach,
   TrainingExerciseExecution,
@@ -27,6 +28,7 @@ import {
 } from "@/components/SetsStats";
 import { TrainingRatingEmoji } from "@/app/trainings/components/TrainingRatingEmoji";
 import { ActionLastScores } from "@/app/actions/components/ActionLastScores";
+import { RecordMark } from "@/components/records/RecordMark";
 import { SetsStats } from "@/core/types";
 
 type Props = {
@@ -36,11 +38,13 @@ type Props = {
     TrainingExerciseExecution: TrainingExerciseExecution[];
   }) & { prevSetsStats?: SetsStats | null };
   canControl: boolean;
+  records?: PersonalRecord[];
 };
 
 export default function TrainingExerciseItemControl({
   exercise,
   canControl,
+  records,
 }: Props) {
   const [hidden, setHidden] = useState<boolean>(true);
   const [showCompare, setShowCompare] = useState<boolean>(false);
@@ -63,7 +67,7 @@ export default function TrainingExerciseItemControl({
   return (
     <div className="row">
       <div className="mb-1 col-md-3 col-sm-12">
-        <div className="mb-2">
+        <div className="mb-2 d-flex align-items-center flex-wrap gap-1 column-gap-2">
           <Link href={`/actions/${exercise.Action.id}/history`}>
             {exercise.Action.alias
               ? exercise.Action.alias
@@ -76,6 +80,14 @@ export default function TrainingExerciseItemControl({
           >
             {exercise.difficultyScore.toFixed(1)}
           </span>
+          {records?.map((record) => (
+            <RecordMark
+              key={record.id}
+              record={record}
+              withIcon
+              className="ms-2"
+            />
+          ))}
         </div>
         <div className="d-flex column-gap-2 flex-wrap mb-1">
           {exercise.ApproachGroup.Approaches.map((a) => (
