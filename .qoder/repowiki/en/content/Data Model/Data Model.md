@@ -3,15 +3,28 @@
 <cite>
 **Referenced Files in This Document**
 - [schema.prisma](file://prisma/schema.prisma)
-- [20250430075034_training_period/migration.sql](file://prisma/migrations/20250430075034_training_period/migration.sql)
-- [20260530132935_equipment/migration.sql](file://prisma/migrations/20260530132935_equipment/migration.sql)
-- [20260530153317_add_equipment_id_to_training/migration.sql](file://prisma/migrations/20260530153317_add_equipment_id_to_training/migration.sql)
+- [syncTrainings.ts](file://src/mobile/syncTrainings.ts)
+- [route.ts (mobile trainings)](file://src/app/api/mobile/v1/trainings/route.ts)
+- [trainingProcessing.ts](file://src/core/trainingProcessing.ts)
+- [config.ts](file://src/jobs/config.ts)
+- [queues.ts](file://src/jobs/queues.ts)
+- [trainings processor](file://src/jobs/processors/trainings.ts)
+- [weights.ts](file://src/mobile/weights.ts)
+- [weight_user_date_index migration](file://prisma/migrations/20260808225012_weight_user_date_index/migration.sql)
 - [scores.ts](file://src/core/scores.ts)
 - [periods.ts](file://src/core/periods.ts)
 - [avgScorer.ts](file://src/core/trainingTime/avgScorer.ts)
 - [page.tsx (training execute)](file://src/app/trainings/[id]/execute/page.tsx)
 - [actions page.tsx](file://src/app/actions/page.tsx)
 </cite>
+
+## Update Summary
+**Changes Made**
+- Added comprehensive mobile synchronization support with externalId and syncedFromMobile fields
+- Implemented batch training sync API with JWT authentication and background processing
+- Enhanced weight query performance with optimized indexes
+- Added compound unique constraints for mobile sync integrity
+- Integrated Bull/Redis job system for asynchronous training processing
 
 ## Table of Contents
 1. Introduction
@@ -25,7 +38,7 @@
 9. Conclusion
 
 ## Introduction
-This document provides a comprehensive overview of the Prisma data model used by MeinGym, focusing on User, Action (exercises), Training lifecycle, Execution tracking, Scoring, Periods, and Equipment. It explains key relationships, enums, indexes, and how core business logic interacts with the schema.
+This document provides a comprehensive overview of the Prisma data model used by MeinGym, focusing on User, Action (exercises), Training lifecycle, Execution tracking, Scoring, Periods, Equipment, and the new Mobile Synchronization system. It explains key relationships, enums, indexes, and how core business logic interacts with the schema, including enhanced mobile sync capabilities and performance optimizations.
 
 ## Project Structure
 The data model is defined in a single Prisma schema file and evolved through numerous migrations. The most relevant entities for this document are:
@@ -37,6 +50,7 @@ The data model is defined in a single Prisma schema file and evolved through num
 - Equipment: Equipment, EquipmentRequire, EquipmentRig
 - Supporting assets: ExerciseImage, MuscleImage
 - Time tracking: TrainingExerciseExecutionDuration, TrainingWarmUp
+- **Mobile synchronization**: External ID tracking and sync status flags
 
 ```mermaid
 erDiagram
@@ -154,6 +168,8 @@ string timeScoreInSecs
 datetime timeScoredAt
 float difficultyScore
 boolean noWarmUp
+string externalId
+boolean syncedFromMobile
 }
 TRAINING_EXERCISE {
 int id PK
@@ -315,6 +331,12 @@ boolean isSkipped
 datetime completedAt
 int durationSec
 }
+WEIGHT {
+int id PK
+string userId FK
+datetime createdAt
+float value
+}
 USER ||--o{ USER_INFO : "has"
 USER ||--o{ ACCOUNT : "has"
 USER ||--o{ SESSION : "has"
@@ -322,6 +344,7 @@ USER ||--o{ TRAINING : "owns"
 USER ||--o{ TRAINING_PERIOD : "owns"
 USER ||--o{ EQUIPMENT : "owns"
 USER ||--o{ TRAINING_EXERCISE_SCORE : "creates"
+USER ||--o{ WEIGHT : "tracks"
 MUSCLE_GROUP ||--o{ MUSCLE : "contains"
 MUSCLE ||--o{ TRAINING_MUSCLE_STAT : "aggregated_in"
 ACTION ||--o{ APPROACHES_GROUP : "has"
@@ -358,15 +381,17 @@ MUSCLE ||--o{ EXERCISE_IMAGE : "has"
 - Scoring: TrainingExerciseScore captures normalized metrics and computed scores per exercise and purpose.
 - Periods: TrainingPeriod segments user history with optional progression strategy options.
 - Equipment: Per-user equipment sets with required types and rig configurations; linked to Training.
+- **Mobile synchronization**: External ID tracking and sync status flags for mobile app integration.
 
 **Section sources**
 - [schema.prisma](file://prisma/schema.prisma)
 
 ## Architecture Overview
-The data model supports planning, execution, and analytics:
+The data model supports planning, execution, analytics, and mobile synchronization:
 - Planning: Actions define exercises; ApproachesGroup and Approach define planned sets; TrainingExercise ties an Action into a Training with purpose context and aggregates.
-- Execution: TrainingExerciseExecution records each set’s planned vs. actual values and qualitative flags; durations are tracked separately.
+- Execution: TrainingExerciseExecution records each set's planned vs. actual values and qualitative flags; durations are tracked separately.
 - Analytics: Scores are computed from TrainingExercise aggregates and persisted in TrainingExerciseScore; time scoring uses ApproachesGroup counts.
+- **Mobile Sync**: External IDs enable upsert operations; syncedFromMobile flags track data origin; batch processing with background jobs ensures reliable synchronization.
 
 ```mermaid
 graph TB
@@ -385,6 +410,11 @@ end
 subgraph "Analytics"
 TE --> SCORE["TrainingExerciseScore"]
 T --> TIME["timeScoreInMins / timeScoreInSecs"]
+end
+subgraph "Mobile Sync"
+EXT["externalId"] --> T
+SYNC["syncedFromMobile"] --> T
+JOB["Background Processing"] --> T
 end
 U["User"] --> T
 U --> P["TrainingPeriod"]
@@ -432,38 +462,54 @@ Usage:
 **Section sources**
 - [schema.prisma](file://prisma/schema.prisma)
 
-### Training Lifecycle
+### Training Lifecycle and Mobile Synchronization
 - Training encapsulates a workout with timestamps (plannedTo, startedAt, completedAt, processedAt), comments, circuit mode, and optional repeat linkage.
 - TrainingExercise binds an Action to a Training with purpose context and aggregates for lifted metrics and ratings.
 - Execution: TrainingExerciseExecution records per-set details, including planned vs. actual, quality flags (rating, technique, cheating, refusing, burning), belt usage, and extra reps.
 - Duration: TrainingExerciseExecutionDuration tracks per-execution timing sequences.
 - Warm-up: Optional TrainingWarmUp associated with Training.
 
+**Updated** Added mobile synchronization capabilities:
+- **externalId**: Unique identifier for mobile sync upsert operations
+- **syncedFromMobile**: Boolean flag indicating if training originated from mobile app
+- **Compound unique constraint**: Ensures uniqueness of (userId, externalId) pairs
+- **Batch sync API**: Supports up to 20 trainings per request with background processing
+
 Execution creation flow:
 - When starting execution, missing executions are created per Approach for each exercise.
+- Mobile sync validates existing completed trainings and skips updates to prevent data corruption.
 
 ```mermaid
 sequenceDiagram
-participant UI as "Execute Page"
+participant Mobile as "Mobile App"
+participant API as "Sync API"
 participant DB as "Prisma Client"
 participant CORE as "Core Logic"
-UI->>DB : Load Training + Exercises
-UI->>DB : Create missing TrainingExerciseExecution per Approach
-UI->>UI : Render execution form
-UI->>DB : Update execution fields (lifted, rating, etc.)
-UI->>CORE : Trigger scoring/time calculation jobs
-CORE->>DB : Persist TrainingExerciseScore
-CORE->>DB : Update Training.timeScoreInMins/Secs
+participant JOB as "Background Job"
+Mobile->>API : POST /api/mobile/v1/trainings
+API->>DB : Find training by (userId, externalId)
+alt Training exists and completed
+API->>Mobile : Skip (already_completed)
+else Training not found or incomplete
+API->>DB : Upsert training with externalId
+API->>DB : Create/update exercises and executions
+alt Completed without processing
+API->>JOB : Schedule processing job
+JOB->>CORE : Process completed training
+CORE->>DB : Update progressions and scores
+end
+end
 ```
 
 **Diagram sources**
-- [page.tsx (training execute)](file://src/app/trainings/[id]/execute/page.tsx)
-- [avgScorer.ts](file://src/core/trainingTime/avgScorer.ts)
-- [scores.ts](file://src/core/scores.ts)
+- [syncTrainings.ts](file://src/mobile/syncTrainings.ts)
+- [route.ts (mobile trainings)](file://src/app/api/mobile/v1/trainings/route.ts)
+- [trainingProcessing.ts](file://src/core/trainingProcessing.ts)
 
 **Section sources**
 - [schema.prisma](file://prisma/schema.prisma)
-- [page.tsx (training execute)](file://src/app/trainings/[id]/execute/page.tsx)
+- [syncTrainings.ts](file://src/mobile/syncTrainings.ts)
+- [route.ts (mobile trainings)](file://src/app/api/mobile/v1/trainings/route.ts)
 
 ### Scoring
 - TrainingExerciseScore stores normalized metrics and a composite score per exercise and purpose.
@@ -504,7 +550,6 @@ Ended --> [*]
 **Section sources**
 - [schema.prisma](file://prisma/schema.prisma)
 - [periods.ts](file://src/core/periods.ts)
-- [20250430075034_training_period/migration.sql](file://prisma/migrations/20250430075034_training_period/migration.sql)
 
 ### Equipment
 - Equipment belongs to a user and can be marked default; it lists required types (via EquipmentRequire) and configured rigs (via EquipmentRig) with weight ranges and steps.
@@ -540,13 +585,31 @@ Training "0..1" --> "1" Equipment : "uses"
 
 **Diagram sources**
 - [schema.prisma](file://prisma/schema.prisma)
-- [20260530132935_equipment/migration.sql](file://prisma/migrations/20260530132935_equipment/migration.sql)
-- [20260530153317_add_equipment_id_to_training/migration.sql](file://prisma/migrations/20260530153317_add_equipment_id_to_training/migration.sql)
 
 **Section sources**
 - [schema.prisma](file://prisma/schema.prisma)
-- [20260530132935_equipment/migration.sql](file://prisma/migrations/20260530132935_equipment/migration.sql)
-- [20260530153317_add_equipment_id_to_training/migration.sql](file://prisma/migrations/20260530153317_add_equipment_id_to_training/migration.sql)
+
+### Mobile Synchronization System
+**New** Comprehensive mobile sync infrastructure:
+- **JWT Authentication**: Secure token-based authentication for mobile clients
+- **Batch Processing**: Up to 20 trainings per request with atomic transactions
+- **Upsert Logic**: Creates new trainings or updates existing ones based on externalId
+- **Conflict Resolution**: Skips updates to already completed trainings to prevent data corruption
+- **Background Processing**: Uses Bull/Redis queue system for asynchronous training processing
+- **Validation**: Input validation and error handling for robust sync operations
+
+Key components:
+- `syncTrainingsBatch`: Core sync logic with transactional safety
+- `processCompletedTrainingCore`: Extracted processing logic for background jobs
+- `scheduleTrainingProcessing`: Queue management for async processing
+- Mobile API routes with proper authentication and validation
+
+**Section sources**
+- [syncTrainings.ts](file://src/mobile/syncTrainings.ts)
+- [trainingProcessing.ts](file://src/core/trainingProcessing.ts)
+- [config.ts](file://src/jobs/config.ts)
+- [queues.ts](file://src/jobs/queues.ts)
+- [trainings processor](file://src/jobs/processors/trainings.ts)
 
 ## Dependency Analysis
 Key dependency chains:
@@ -555,11 +618,14 @@ Key dependency chains:
 - Action → Muscle role joins (Agony/Synergy/Stabilizer/Antagonist)
 - Training → TrainingPeriod (progression segmentation)
 - Training → Equipment (contextual setup)
+- **Mobile Sync**: externalId → Training (upsert operations)
+- **Background Jobs**: Training completion → Job queue → Processing → Score calculation
 
 Indexes and search:
 - Action.search uses a GIN trigram index for efficient fuzzy matching.
 - TrainingPeriod has a composite index on (userId, isCurrent) for quick current-period queries.
 - TrainingExerciseScore has an index on (userId, actionId, purpose, createdAt) for history queries.
+- **Weight queries**: Optimized index on (userId, createdAt) for mobile weight sync performance.
 
 ```mermaid
 graph LR
@@ -572,6 +638,9 @@ TrainingExercise --> Execution["TrainingExerciseExecution"]
 TrainingExercise --> Score["TrainingExerciseScore"]
 Training --> Period["TrainingPeriod"]
 Training --> Equipment["Equipment"]
+ExternalID["externalId"] --> Training
+MobileSync["syncedFromMobile"] --> Training
+JobQueue["Background Jobs"] --> Training
 ```
 
 **Diagram sources**
@@ -585,15 +654,23 @@ Training --> Equipment["Equipment"]
 - Leverage existing indexes on TrainingPeriod (userId, isCurrent) and TrainingExerciseScore (userId, actionId, purpose, createdAt) for efficient queries.
 - Avoid N+1 queries when loading actions with related muscles and images; prefer include/select patterns demonstrated in the actions page.
 - For execution creation, batch insertions reduce round-trips.
+- **Mobile sync performance**: Batch processing limits (20 trainings per request) prevent overwhelming the server.
+- **Weight query optimization**: New index on Weight(userId, createdAt) improves mobile weight list performance.
+- **Background processing**: Asynchronous job processing prevents blocking API responses.
 
-[No sources needed since this section provides general guidance]
+**Section sources**
+- [weights.ts](file://src/mobile/weights.ts)
+- [weight_user_date_index migration](file://prisma/migrations/20260808225012_weight_user_date_index/migration.sql)
 
 ## Troubleshooting Guide
 Common issues and checks:
 - Missing executions: Ensure createExecutions runs when entering execution mode; verify that each TrainingExercise has corresponding TrainingExerciseExecution entries per Approach.
 - Score computation: Confirm that TrainingExercise aggregates (liftedSum, liftedMean, liftedMax, counts) are updated before scoring; check job queues for background processing.
-- Current period management: Verify that creating a new period updates the previous period’s isCurrent flag and sets endDate.
+- Current period management: Verify that creating a new period updates the previous period's isCurrent flag and sets endDate.
 - Equipment constraints: Validate that EquipmentRequire and EquipmentRig entries match allowed ActionRequire and ActionRig enums.
+- **Mobile sync issues**: Check externalId uniqueness and ensure completed trainings are not being overwritten.
+- **Background job failures**: Monitor Redis/Bull queue health and check job processing logs.
+- **Weight sync performance**: Verify the new Weight(userId, createdAt) index is properly utilized.
 
 **Section sources**
 - [page.tsx (training execute)](file://src/app/trainings/[id]/execute/page.tsx)
@@ -601,6 +678,4 @@ Common issues and checks:
 - [periods.ts](file://src/core/periods.ts)
 
 ## Conclusion
-The Prisma schema models a robust fitness application with clear separation between planning (Actions, Approaches), execution (Training, TrainingExercise, TrainingExerciseExecution), and analytics (TrainingExerciseScore). Periodization and equipment configuration provide flexibility for personalized training programs. Indexes and normalization strategies support efficient search and scoring workflows.
-
-[No sources needed since this section summarizes without analyzing specific files]
+The Prisma schema models a robust fitness application with clear separation between planning (Actions, Approaches), execution (Training, TrainingExercise, TrainingExerciseExecution), and analytics (TrainingExerciseScore). The new mobile synchronization system provides secure, efficient data exchange between mobile apps and the backend, while maintaining data integrity through externalId-based upserts and background processing. Periodization and equipment configuration provide flexibility for personalized training programs. Indexes and normalization strategies support efficient search and scoring workflows, with recent performance optimizations for weight queries enhancing mobile app responsiveness.
