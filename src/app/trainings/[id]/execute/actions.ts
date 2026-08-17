@@ -239,7 +239,6 @@ async function checkAllExercisesCompletedAndCompleteTraining(
       where: { id },
       data: { completedAt: new Date() },
     });
-    console.log(`training ${id} completed`);
     return true;
   }
   return false;

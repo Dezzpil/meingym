@@ -31,15 +31,15 @@ export function RecordMark({
   return (
     <div
       className={classNames(
-        "d-inline-flex column-gap-3 align-items-center",
+        "d-inline-flex column-gap-1 align-items-center",
         className,
       )}
     >
       {iconFirst && withIcon && recordIcon(record.type)}
       {withTitle && (
-        <span className="badge bg-light text-dark" title={title}>
+        <small className="text-dark" title={title}>
           {recordTypeTitle(record.type)}
-        </span>
+        </small>
       )}
       {!iconFirst && withIcon && recordIcon(record.type)}
     </div>

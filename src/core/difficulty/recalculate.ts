@@ -2,12 +2,15 @@
 
 import { prisma } from "@/tools/db";
 import { calculateExerciseDifficulty } from "@/core/difficulty";
+import type { PrismaTransactionClient } from "@/tools/types";
 
 /**
  * Пересчитать сложность одного упражнения и обновить в БД.
  * Возвращает новое значение difficultyScore.
  */
-export async function recalculateExerciseDifficulty(exerciseId: number): Promise<number> {
+export async function recalculateExerciseDifficulty(
+  exerciseId: number,
+): Promise<number> {
   const exercise = await prisma.trainingExercise.findUniqueOrThrow({
     where: { id: exerciseId },
     include: {
@@ -33,15 +36,22 @@ export async function recalculateExerciseDifficulty(exerciseId: number): Promise
 /**
  * Пересчитать сложность всей тренировки (сумма сложностей упражнений) и обновить в БД.
  */
-export async function recalculateTrainingDifficulty(trainingId: number): Promise<number> {
-  const exercises = await prisma.trainingExercise.findMany({
+export async function recalculateTrainingDifficulty(
+  trainingId: number,
+  tx?: PrismaTransactionClient,
+): Promise<number> {
+  const db = tx ?? prisma;
+  const exercises = await db.trainingExercise.findMany({
     where: { trainingId },
     select: { difficultyScore: true },
   });
 
-  const totalDifficulty = exercises.reduce((sum, ex) => sum + ex.difficultyScore, 0);
+  const totalDifficulty = exercises.reduce(
+    (sum, ex) => sum + ex.difficultyScore,
+    0,
+  );
 
-  await prisma.training.update({
+  await db.training.update({
     where: { id: trainingId },
     data: { difficultyScore: totalDifficulty },
   });

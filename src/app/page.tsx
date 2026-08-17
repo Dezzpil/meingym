@@ -52,18 +52,22 @@ export default async function HomePage() {
     take: 3,
     select: { id: true },
   });
+
   let records = await prisma.personalRecord.findMany({
     where: {
       userId,
       trainingId: { in: lastTrainings.map((t) => t.id) },
-      previousValue: { not: null },
+      // previousValue: { not: null },
     },
     orderBy: [{ achievedAt: "desc" }, { id: "desc" }],
     include: { Action: { select: { id: true, title: true, alias: true } } },
   });
   if (!records.length) {
     records = await prisma.personalRecord.findMany({
-      where: { userId, previousValue: { not: null } },
+      where: {
+        userId,
+        // previousValue: { not: null }
+      },
       orderBy: [{ achievedAt: "desc" }, { id: "desc" }],
       take: 5,
       include: { Action: { select: { id: true, title: true, alias: true } } },
@@ -101,7 +105,7 @@ export default async function HomePage() {
         </div>
       ) : (
         <div className="mb-3 d-flex justify-content-end">
-          <TrainingCreateForm btnTitle="Назначить тренировку" />
+          <TrainingCreateForm btnTitle="Назначить" />
         </div>
       )}
       {weight ? <WeightPanel weight={weight} /> : <WeightsForm />}

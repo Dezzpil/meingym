@@ -104,29 +104,31 @@ export function TrainingExecuteForm({ exercise, disabled, noFeedback }: Props) {
   return (
     <>
       <div>
-        <div className="row mb-2">
-          {exercise.TrainingExerciseExecution.map((exec) => (
-            <TrainingExecuteFormItem
-              key={exec.id}
-              action={exercise.Action}
-              exec={exec}
-              disabled={disabled}
-              noFeedback={noFeedback}
-            />
-          ))}
-        </div>
+        {!exercise.isPassed && (
+          <div className="row mb-2">
+            {exercise.TrainingExerciseExecution.map((exec) => (
+              <TrainingExecuteFormItem
+                key={exec.id}
+                action={exercise.Action}
+                exec={exec}
+                disabled={disabled}
+                noFeedback={noFeedback}
+              />
+            ))}
+          </div>
+        )}
 
         <div>
           {exercise.completedAt && (
             <div
               className={classNames(
                 "alert mb-0",
-                exercise.isPassed ? "alert-warning" : "alert-success",
+                exercise.isPassed ? "alert-secondary" : "alert-success",
               )}
             >
               <div>
                 {exercise.isPassed ? (
-                  <span>Упражнение пропущено</span>
+                  <p>Упражнение пропущено</p>
                 ) : (
                   <div className="d-flex align-items-baseline column-gap-2 flex-wrap mb-1">
                     <span>

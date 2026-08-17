@@ -179,7 +179,7 @@ export default function TrainingExerciseItemControl({
                 </>
               )}
             </div>
-            <div className="d-flex column-gap-2 flex-wrap mb-1">
+            <div className="d-flex column-gap-2 flex-wrap mb-1 fw-semibold">
               {exercise.TrainingExerciseExecution.map((execution) => (
                 <div key={execution.id}>
                   <NumberDiffViz

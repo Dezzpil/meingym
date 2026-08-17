@@ -1,3 +1,5 @@
+const MAX_WEIGHT_MAX_COUNT_FOR_RECORD = 3;
+
 // Минимальный интерфейс выполнения, необходимый для расчёта рекордов
 export type RecordableExecution = {
   liftedWeight: number;
@@ -30,14 +32,20 @@ export function valuateMaxWeight(
   if (!executions.length) return null;
   let best = executions[0];
   for (const e of executions) {
+    if (e.liftedCount > MAX_WEIGHT_MAX_COUNT_FOR_RECORD) {
+      console.log(
+        `skip execution for max weight because > ${MAX_WEIGHT_MAX_COUNT_FOR_RECORD}: ${e.liftedCount}`,
+      );
+      continue;
+    }
     if (
       e.liftedWeight > best.liftedWeight ||
-      (e.liftedWeight === best.liftedWeight &&
-        e.liftedCount > best.liftedCount)
+      (e.liftedWeight === best.liftedWeight && e.liftedCount > best.liftedCount)
     ) {
       best = e;
     }
   }
+  if (best.liftedCount > MAX_WEIGHT_MAX_COUNT_FOR_RECORD) return null;
   return { value: best.liftedWeight, reps: best.liftedCount };
 }
 

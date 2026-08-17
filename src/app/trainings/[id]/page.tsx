@@ -109,8 +109,8 @@ export default async function TrainingPage({ params }: ItemPageParams) {
   );
 
   // Определим, есть ли усложнённые подходы (isBoost=true)
-  const hasBoostedApproaches = prevExercisesStats.some((e: any) =>
-    e.ApproachGroup?.Approaches?.some((a: any) => a.isBoost),
+  const hasBoostedApproaches = prevExercisesStats.some(
+    (e: any) => e.ApproachGroup?.Approaches?.some((a: any) => a.isBoost),
   );
 
   // Персональные рекорды, зафиксированные в этой тренировке (базы не показываем)

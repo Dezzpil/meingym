@@ -16,11 +16,11 @@ import {
 import { TrainingExecuteForm } from "@/app/trainings/[id]/execute/components/TrainingExecuteForm";
 import { PurposeText } from "@/components/PurposeText";
 import classNames from "classnames";
-import { ActionWithMusclesType } from "@/app/actions/types";
 import { TrainingExerciseReplaceButton } from "@/app/trainings/[id]/execute/components/TrainingExerciseReplaceButton";
-import { FaArrowDown, FaArrowUp, FaExchangeAlt } from "react-icons/fa";
-import { TiCancel } from "react-icons/ti";
+import { FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { handleChangeExercisePriority } from "@/app/trainings/exercises/actions";
+import { Accordion, useAccordionButton } from "react-bootstrap";
+import { HiDotsVertical } from "react-icons/hi";
 
 type Props = {
   exercise: {
@@ -47,6 +47,19 @@ type Props = {
   allExercises: TrainingExercise[];
   noFeedback: boolean;
 };
+
+function ExtraButtonsToggle({ children, eventKey }) {
+  const decoratedOnClick = useAccordionButton(eventKey, () => {
+    // pass
+  });
+
+  return (
+    <button className="btn btn-default" onClick={decoratedOnClick}>
+      {children}
+    </button>
+  );
+}
+
 export function TrainingExecuteCard({
   exercise,
   disabled,
@@ -75,7 +88,7 @@ export function TrainingExecuteCard({
         <ul className="col-lg-6 col-md-12 list-inline mb-0">
           <li
             className={classNames("list-inline-item", {
-              "fw-medium": exercise.startedAt && !exercise.completedAt,
+              "fw-semibold": exercise.startedAt && !exercise.completedAt,
             })}
           >
             {exercise.Action.alias
@@ -90,47 +103,56 @@ export function TrainingExecuteCard({
       </div>
       <div className="card-body">
         {!disabled && (
-          <div className="d-flex justify-content-between mb-2">
-            <div className="d-flex gap-2">
-              {!exercise.startedAt && (
-                <button
-                  className="btn btn-outline-warning d-inline-flex align-items-center"
-                  onClick={pass}
-                  title="Пропустить упражнение"
-                >
-                  Пропустить
-                </button>
-              )}
+          <Accordion className="mb-2">
+            <div className="d-flex justify-content-between">
+              <div className="d-flex gap-2">
+                {!exercise.startedAt && (
+                  <button
+                    className="btn btn-outline-secondary d-inline-flex align-items-center"
+                    onClick={pass}
+                    title="Пропустить упражнение"
+                  >
+                    Пропустить
+                  </button>
+                )}
+              </div>
+              <div className="d-flex gap-2">
+                {!exercise.completedAt && (
+                  <ExtraButtonsToggle eventKey="0">
+                    <HiDotsVertical />
+                  </ExtraButtonsToggle>
+                )}
+                {!exercise.startedAt && (
+                  <button className="btn btn-primary" onClick={start}>
+                    Погнали!
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="d-flex gap-2">
-              <button
-                className="btn btn-default"
-                onClick={up}
-                title="Переместить вверх"
-              >
-                <FaArrowUp />
-              </button>
-              <button
-                className="btn btn-default"
-                onClick={down}
-                title="Переместить вниз"
-              >
-                <FaArrowDown />
-              </button>
-              {!exercise.completedAt && (
+            <Accordion.Collapse eventKey="0">
+              <div className="d-flex justify-content-end gap-2">
+                <button
+                  className="btn btn-default"
+                  onClick={up}
+                  title="Переместить вверх"
+                >
+                  <FaArrowUp />
+                </button>
+                <button
+                  className="btn btn-default"
+                  onClick={down}
+                  title="Переместить вниз"
+                >
+                  <FaArrowDown />
+                </button>
                 <TrainingExerciseReplaceButton
                   exercise={exercise}
                   allExercises={allExercises}
                   disabled={disabled || exercise.completedAt !== null}
                 />
-              )}
-              {!exercise.startedAt && (
-                <button className="btn btn-primary" onClick={start}>
-                  Погнали!
-                </button>
-              )}
-            </div>
-          </div>
+              </div>
+            </Accordion.Collapse>
+          </Accordion>
         )}
         <TrainingExecuteForm
           exercise={exercise}

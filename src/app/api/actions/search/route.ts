@@ -23,14 +23,15 @@ export async function GET(request: NextRequest) {
 
   const term = (params.get("term") as string).trim().toLowerCase();
 
-  // Первое слово — самый широкий подстрочный фильтр, покрывает все варианты "a%b%c", "a%b", "a".
-  // GIN trigram индекс по Action.search обслуживает LIKE '%...%' за один запрос.
-  const contains = term.split(" ")[0];
+  const q: any[] = term.split(" ").map((contains) => {
+    return { search: { contains, mode: "insensitive" } };
+  });
+  q.push({ rig: { in: rigs as ActionRig[] } });
+  q.push({ require: { in: requires as ActionRequire[] } });
+
   const found = await prisma.action.findMany({
     where: {
-      search: { contains },
-      rig: { in: rigs as ActionRig[] },
-      require: { in: requires as ActionRequire[] },
+      AND: q,
     },
     orderBy: { base: "desc" },
     include: {

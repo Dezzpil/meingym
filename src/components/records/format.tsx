@@ -10,13 +10,13 @@ export type RecordLike = RecordValueLike &
 
 // База — первый результат в истории или в периоде; на UI не показывается
 export function isShownRecord(
-  record: Pick<PersonalRecord, "previousValue">,
+  record: Pick<PersonalRecord, "previousValue" | "isAllTime">,
 ): boolean {
-  return record.previousValue !== null;
+  return record.isAllTime ? true : record.previousValue !== null;
 }
 
 export function recordTypeTitle(type: PersonalRecordType): string {
-  return type === PersonalRecordType.MAX_WEIGHT ? "Вес MAX" : "Тоннаж";
+  return type === PersonalRecordType.MAX_WEIGHT ? "MAX" : "Σ";
 }
 
 export function purposeShortTitle(purpose: Purpose): string {

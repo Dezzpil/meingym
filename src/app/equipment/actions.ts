@@ -19,7 +19,6 @@ async function assertOwner(equipmentId: number, userId: string) {
 
 export async function handleEquipmentCreate(data: EquipmentFormFieldsType) {
   const userId = await getCurrentUserId();
-  console.log(data);
   const parsed = EquipmentFormFields.parse(data);
 
   const created = await prisma.$transaction(async (tx) => {
@@ -97,7 +96,6 @@ export async function handleEquipmentUpdate(
         r.step !== undefined,
     );
     if (rigs.length) {
-      console.log(rigs);
       await tx.equipmentRig.createMany({
         data: rigs.map((r) => ({
           equipmentId: id,

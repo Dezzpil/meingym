@@ -28,7 +28,6 @@ export default async function ActionPage({ params }: ItemPageParams) {
       SimilarTo: true,
     },
   });
-  console.log(action.SimilarTo, action.SimilarFrom);
 
   // Fetch all actions for similar exercises dropdown
   const actionGroupIds = action.MusclesAgony.map((ma) => ma.Muscle.groupId);

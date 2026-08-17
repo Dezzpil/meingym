@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Modal from "react-bootstrap/Modal";
 import { TrainingExerciseSearch } from "@/app/trainings/components/TrainingExerciseSearch";
 import { ActionWithMusclesType } from "@/app/actions/types";
 import { handleReplaceExercise } from "@/app/trainings/[id]/execute/actions";
-import { getActionName } from "@/tools/action";
 import { TrainingExercise } from "@prisma/client";
 
 type Props = {
@@ -34,7 +33,6 @@ export function TrainingExerciseReplaceModal({
         similarActions: ActionWithMusclesType[];
       };
       setSimActions(json.similarActions as unknown as ActionWithMusclesType[]);
-      console.log(json, json.similarActions);
     } catch (error) {
       // pass
     }

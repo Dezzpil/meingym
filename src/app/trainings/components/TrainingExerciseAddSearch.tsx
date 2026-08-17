@@ -5,16 +5,10 @@ import { Form, Spinner } from "react-bootstrap";
 import { debounce } from "@/tools/func";
 import { ActionMuscles } from "@/app/actions/components/ActionMuscles";
 import { ActionWithMusclesType } from "@/app/actions/types";
-import {
-  Action,
-  ActionRequire,
-  ActionRig,
-  EquipmentRequire,
-  EquipmentRig,
-  Purpose,
-} from "@prisma/client";
+import { ActionRequire, ActionRig, Purpose } from "@prisma/client";
 import { CurrentPurpose } from "@/core/types";
 import { handleAddExercise } from "@/app/trainings/exercises/actions";
+import { BiPlus } from "react-icons/bi";
 
 type Props = {
   trainingId: number;
@@ -76,6 +70,8 @@ export function TrainingExerciseAddSearch({
       setActions(filteredBase.slice(0, 10));
     }
     setSearching(false);
+
+    console.log(actions);
   };
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -94,6 +90,7 @@ export function TrainingExerciseAddSearch({
 
   const handleSelect = useCallback(
     async (e: any) => {
+      console.log("handling select");
       try {
         setError(null);
         const elem = e.target;
@@ -103,15 +100,20 @@ export function TrainingExerciseAddSearch({
           actionId = Number(elem.dataset["id"]);
           action = actions.find((a) => a.id === actionId);
         }
-        console.log(elem, elem.value, actionId, action);
+        console.log(actionId);
+        console.log(action);
+        console.log(actions);
         if (!actionId) return;
+
         setAddingId(actionId);
+
         // If strength not allowed, fallback from STRENGTH to MASS
         const finalPurpose =
           purpose === Purpose.STRENGTH && action && !action.strengthAllowed
             ? Purpose.MASS
             : purpose;
 
+        console.log("requesting");
         const result = await handleAddExercise(trainingId, {
           actionId: actionId,
           purpose: finalPurpose,
@@ -159,10 +161,9 @@ export function TrainingExerciseAddSearch({
               {actions.slice(0, 50).map((a) => (
                 <li className="list-group-item" key={a.id}>
                   <div className="mb-2">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <span className="fw-bolder">
-                        {a.alias ? a.alias : a.title}
-                        {" "}
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span className="fw-bolder d-inline-flex gap-1 align-items-baseline flex-column">
+                        {a.alias ? a.alias : a.title}{" "}
                         <span className="badge bg-secondary fw-normal">
                           База: {a.base}
                         </span>
@@ -172,23 +173,28 @@ export function TrainingExerciseAddSearch({
                         onClick={handleSelect}
                         data-id={a.id}
                         data-name={a.alias ? a.alias : a.title}
-                        className="d-inline-flex align-items-center gap-2"
+                        className="btn btn-primary rounded-circle d-inline-flex align-items-center justify-content-center"
+                        style={{
+                          width: 44,
+                          height: 44,
+                          right: 3,
+                          bottom: 3,
+                          zIndex: 1050,
+                        }}
                       >
-                        {addingId === a.id && (
+                        {addingId === a.id ? (
                           <span
                             className="spinner-border spinner-border-sm"
                             aria-hidden="true"
                           ></span>
+                        ) : (
+                          <BiPlus size={24} data-id={a.id} />
                         )}
-                        Добавить
                       </a>
                     </div>
-                    {a.search && (
-                      <div className="text-muted small">{a.search}</div>
-                    )}
                   </div>
                   <div>
-                    <ActionMuscles action={a} />
+                    <ActionMuscles action={a} short />
                   </div>
                 </li>
               ))}

@@ -1,11 +1,6 @@
 "use client";
 
 import React, { useTransition } from "react";
-import {
-  handleApplyDifficultyBoost,
-  handleRevertDifficultyBoost,
-} from "@/app/trainings/[id]/difficulty/actions";
-import classNames from "classnames";
 
 type Props = {
   training: { id: number; difficultyScore: number };
@@ -13,6 +8,14 @@ type Props = {
   hasBoostedApproaches: boolean;
 };
 
+/**
+ * Пока спрятать эту логику - возможно пригодится позже, когда автоматически тренировки будем собирать
+ * @param param0
+ * @param param0.training
+ * @param param0.isStarted
+ * @param param0.hasBoostedApproaches
+ * @constructor
+ */
 export function TrainingDifficultyBoost({
   training,
   isStarted,
@@ -20,15 +23,15 @@ export function TrainingDifficultyBoost({
 }: Props) {
   const [isPending, startTransition] = useTransition();
 
-  const handleClick = () => {
-    startTransition(async () => {
-      if (hasBoostedApproaches) {
-        await handleRevertDifficultyBoost(training.id);
-      } else {
-        await handleApplyDifficultyBoost(training.id);
-      }
-    });
-  };
+  // const handleClick = () => {
+  //   startTransition(async () => {
+  //     if (hasBoostedApproaches) {
+  //       await handleRevertDifficultyBoost(training.id);
+  //     } else {
+  //       await handleApplyDifficultyBoost(training.id);
+  //     }
+  //   });
+  // };
 
   return (
     <>
@@ -37,21 +40,21 @@ export function TrainingDifficultyBoost({
         <span>{training.difficultyScore.toFixed(1)}</span>
         {hasBoostedApproaches && <span>⚡</span>}
       </div>
-      <button
-        type="button"
-        className={classNames("btn", {
-          "btn-outline-success": !hasBoostedApproaches,
-          "btn-outline-secondary": hasBoostedApproaches,
-        })}
-        disabled={isStarted || isPending}
-        onClick={handleClick}
-      >
-        {isPending
-          ? "..."
-          : hasBoostedApproaches
-            ? "Проще"
-            : "Сделать сложнее!"}
-      </button>
+      {/*<button*/}
+      {/*  type="button"*/}
+      {/*  className={classNames("btn", {*/}
+      {/*    "btn-outline-success": !hasBoostedApproaches,*/}
+      {/*    "btn-outline-secondary": hasBoostedApproaches,*/}
+      {/*  })}*/}
+      {/*  disabled={isStarted || isPending}*/}
+      {/*  onClick={handleClick}*/}
+      {/*>*/}
+      {/*  {isPending*/}
+      {/*    ? "..."*/}
+      {/*    : hasBoostedApproaches*/}
+      {/*      ? "Проще"*/}
+      {/*      : "Сделать сложнее!"}*/}
+      {/*</button>*/}
     </>
   );
 }

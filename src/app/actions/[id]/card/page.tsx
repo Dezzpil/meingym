@@ -1,21 +1,15 @@
-import Link from "next/link";
-import moment from "moment";
 import { prisma } from "@/tools/db";
 import { ActionTabs } from "@/app/actions/[id]/ActionTabs";
 import { ActionCard } from "@/app/actions/components/ActionCard";
 import { ItemPageParams } from "@/tools/types";
-import { getCurrentUser } from "@/tools/auth";
+import { findUserInfo, getCurrentUser } from "@/tools/auth";
 import { UserRole } from "@prisma/client";
-import { DateFormat } from "@/tools/dates";
-import { RecordMark } from "@/components/records/RecordMark";
-import {
-  formatRecordValue,
-  purposeShortTitle,
-} from "@/components/records/format";
+import { ActionRecords } from "@/app/actions/components/ActionRecords";
 
 export default async function ActionCardPage({ params }: ItemPageParams) {
-  const user = await getCurrentUser();
   const id = parseInt(params.id);
+  const user = await getCurrentUser();
+  const userInfo = await findUserInfo(user.id);
 
   const [action, records] = await Promise.all([
     prisma.action.findUniqueOrThrow({
@@ -83,39 +77,7 @@ export default async function ActionCardPage({ params }: ItemPageParams) {
           <ActionTabs id={id} current={"card"} className={"mb-4"} />
         )}
       </div>
-
-      {records.length > 0 && (
-        <div className="card record-card-alltime mb-3">
-          <div className="card-header">Действующие рекорды</div>
-          <ul className="list-group list-group-flush">
-            {records.map((record) => (
-              <li
-                key={record.id}
-                className="list-group-item d-flex align-items-center justify-content-between flex-wrap"
-              >
-                <div className="d-inline-flex column-gap-2 align-items-baseline">
-                  <RecordMark record={record} withIcon withTitle iconFirst />
-                  <Link
-                    href={`/trainings/${record.trainingId}`}
-                    className="text-decoration-none fw-semibold"
-                  >
-                    {formatRecordValue(record)}
-                  </Link>
-                </div>
-                <div className="d-inline-flex column-gap-2 align-items-baseline">
-                  <span className="badge text-bg-light">
-                    {purposeShortTitle(record.purpose)}
-                  </span>
-                  <small className="text-muted">
-                    {moment(record.achievedAt).format(DateFormat)}
-                  </small>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
+      <ActionRecords records={records} purpose={userInfo.purpose} />
       <div className="row">
         <div className="col">
           <ActionCard action={action} />

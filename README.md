@@ -76,14 +76,20 @@ npm run release:feature  # минорный релиз
 npm run release:breaking # мажорный релиз
 ```
 
-
 ### Импорт дампов БД
 
-1. Скопируйте файл дампа в каталог проекта `PROJECT_DIR/dumps`.
-2. Зайдите в контейнер с БД и восстановите дамп из директории `/dumps`:
+0. Сделать дамп `/usr/lib/postgresql/16/bin/pg_dump -h localhost -U meingym -d meingym -f meingym-DATE-pg-dump.sql`
+1. Скопировать дамп в `PROJECT_DIR/dumps`.
+2. Добавить строчки:
+   ```shell
+   CREATE SCHEMA IF NOT EXISTS public;
+   ALTER SCHEMA public OWNER TO pg_database_owner;
+   ```
+3. Накатить дамп:
    ```bash
    /usr/bin/docker exec -i -t /meingym-db-1 /bin/bash
-   psql --file="/dumps/meingym-2025_10_28_17_34_03.sql" \
+   export PAGER=cat
+   psql --file="/dumps/meingym-2026-08-17-pg-dump.sql" \
         --single-transaction \
         --username=postgres \
         --host=localhost \

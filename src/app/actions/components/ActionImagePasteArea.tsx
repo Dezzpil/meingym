@@ -26,7 +26,6 @@ export function ActionImagePasteArea({
           const file = items[i].getAsFile();
           if (!file) continue;
 
-          console.log(file);
           // Check if it's a GIF or PNG
           if (file.type !== "image/gif" && file.type !== "image/png") {
             setError("Только GIF и PNG изображения разрешены");

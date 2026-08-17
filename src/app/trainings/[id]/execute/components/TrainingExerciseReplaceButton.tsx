@@ -2,9 +2,8 @@
 
 import { useState, useCallback } from "react";
 import { TrainingExercise } from "@prisma/client";
-import { ActionWithMusclesType } from "@/app/actions/types";
 import { TrainingExerciseReplaceModal } from "@/app/trainings/components/TrainingExerciseReplaceModal";
-import { FaExchangeAlt } from "react-icons/fa";
+import { BsTransparency } from "react-icons/bs";
 
 type Props = {
   exercise: { id: number; actionId: number };
@@ -30,12 +29,12 @@ export function TrainingExerciseReplaceButton({
   return (
     <>
       <button
-        className="btn btn-outline-secondary d-inline-flex align-items-center"
+        className="btn btn-default d-inline-flex align-items-center"
         onClick={openModal}
         disabled={disabled}
         title="Заменить упражнение"
       >
-        <FaExchangeAlt />
+        <BsTransparency />
       </button>
 
       <TrainingExerciseReplaceModal

@@ -34,7 +34,7 @@ function printStats(
       <div className="row g-2">
         <div className="col-6 col-md-6">
           <div className="stat-item p-2 rounded bg-light bg-opacity-50">
-            <div className="stat-label text-muted small">Сеты</div>
+            <div className="stat-label text-muted small">Подходы</div>
             <div className="stat-value fw-bold">
               {actionsPurpose[0].CurrentApproachGroup.count}
             </div>
@@ -105,7 +105,7 @@ export function ActionCard({ action }: Props) {
                     }}
                   />
                   <div className="position-absolute bottom-0 start-0 p-3 w-100">
-                    <ActionMuscles action={action} />
+                    {/*<ActionMuscles action={action} />*/}
                   </div>
                 </div>
               </div>
@@ -121,9 +121,10 @@ export function ActionCard({ action }: Props) {
 
           <div className="col-lg-6">
             <div className="mb-3">
-              <span className="badge bg-secondary">
-                База: {action.base}
-              </span>
+              <ActionMuscles action={action} />
+            </div>
+            <div className="mb-3">
+              <span className="badge bg-secondary">База: {action.base}</span>
             </div>
             <div className="mb-4 fw-light">
               {action.isMarkDownInDesc ? (
@@ -147,7 +148,7 @@ export function ActionCard({ action }: Props) {
 
             <div className="mb-3">
               <a
-                className="card mb-3 border-0 shadow-sm"
+                className="card mb-3 border-0 shadow-sm text-decoration-none"
                 href={`/actions/${action.id}/history#MASS`}
               >
                 <div className="card-header">
@@ -166,7 +167,7 @@ export function ActionCard({ action }: Props) {
               </a>
 
               <a
-                className="card mb-3 border-0 shadow-sm"
+                className="card mb-3 border-0 shadow-sm text-decoration-none"
                 href={`/actions/${action.id}/history#STRENGTH`}
               >
                 <div className="card-header">

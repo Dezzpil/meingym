@@ -24,7 +24,6 @@ export function SimilarExercises({
     ...(action.SimilarTo || []).map((item: any) => item.Action),
     ...(action.SimilarFrom || []).map((item: any) => item.SimilarAction),
   ];
-  console.log(similarExercises);
 
   // If no similar exercises, don't render anything
   if (similarExercises.length === 0) {
@@ -33,16 +32,22 @@ export function SimilarExercises({
 
   return (
     <div className={`similar-exercises ${className}`}>
-      <h5 className="mb-0">Похожие упражнения</h5>
-      <ul className="list-group list-group-flush">
+      <h5 className="mb-2">Похожие упражнения</h5>
+      <ul className="list-group">
         {similarExercises.map((similar) => (
-          <li key={similar.id} className="list-group-item px-0 py-0 border-0">
+          <li
+            key={similar.id}
+            className="list-group-item d-flex justify-content-between align-items-center"
+          >
             <Link
               href={`/actions/${similar.id}/card`}
               className="text-decoration-none"
             >
               {similar.alias || similar.title}
             </Link>
+            <span className="badge bg-secondary rounded-pill">
+              {similar.base}
+            </span>
           </li>
         ))}
       </ul>

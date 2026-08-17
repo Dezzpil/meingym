@@ -4,8 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import classNames from "classnames";
 import moment from "moment";
-import { FaTrophy } from "react-icons/fa";
-import { PersonalRecordType } from "@prisma/client";
 import type { Action, PersonalRecord } from "@prisma/client";
 import { DateFormat } from "@/tools/dates";
 import {
@@ -14,7 +12,7 @@ import {
   recordIcon,
   recordTypeTitle,
 } from "./format";
-import { GiWeight } from "react-icons/gi";
+import { PurposeName } from "@/tools/purposes";
 
 export type RecordWithAction = PersonalRecord & {
   Action: Pick<Action, "id" | "title" | "alias">;
@@ -53,10 +51,12 @@ export function RecordCard({ record }: Props) {
         <div className="d-flex justify-content-between align-items-center column-gap-2 mb-1">
           <Link
             href={`/trainings/${record.trainingId}`}
-            className="text-decoration-none fw-semibold"
+            className="text-decoration-none fw-medium"
           >
-            <div>Новый рекорд</div>
-            <div>«{actionTitle}»</div>
+            <div className="text-muted">Новый рекорд</div>
+            <div className="d-inline-flex column-gap-2 align-items-baseline">
+              <span>«{actionTitle}»</span>
+            </div>
           </Link>
           <div className="border border-warning rounded-circle d-inline-flex align-items-center p-4">
             <div
@@ -81,7 +81,14 @@ export function RecordCard({ record }: Props) {
           <div className="record-value">{formatRecordValue(record)}</div>
         </Link>
         <div className="record-delta small">
-          {formatRecordDelta(record)} к прежнему лучшему
+          {record.previousAt ? (
+            <span>{formatRecordDelta(record)} к прежнему лучшему</span>
+          ) : (
+            <span>
+              Первое выполнение{" "}
+              <b>{PurposeName[record.purpose].toLowerCase()}</b>
+            </span>
+          )}
         </div>
         <div className="d-flex justify-content-between align-items-baseline">
           <small className="text-muted">

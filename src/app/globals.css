@@ -5,6 +5,20 @@ body {
     sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
+.alert-success {
+    background-color: #cff0b4;
+    border-color: #cff0b4;
+}
+
+.text-warning {
+    color: rgb(221, 153, 121) !important;
+}
+
+.alert-warning {
+    background-color: #f0ad4e;
+
+}
+
 /***** Components *****/
 .loader {
     border: 10px solid #f3f3f3; /* Light grey */
@@ -120,3 +134,4 @@ body {
 .record-delta {
     color: #198754;
 }
+

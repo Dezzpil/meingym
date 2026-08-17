@@ -7,6 +7,8 @@ import { getCurrentUserId } from "@/tools/auth";
 import { createExercise } from "@/core/exercises";
 import { ServerActionResult } from "@/tools/types";
 import { TrainingTimeAvgScorer } from "@/core/trainingTime/avgScorer";
+import { recalculateTrainingDifficulty } from "@/core/difficulty/recalculate";
+import { recomputeTrainingMuscleStats } from "@/core/trainingMuscles";
 
 export async function handleAddExercise(
   trainingId: number,
@@ -22,23 +24,22 @@ export async function handleAddExercise(
 
     await prisma.$transaction(async (tx) => {
       await createExercise(trainingId, data.actionId, data.purpose, userId, tx);
+
       // Recompute muscles stats for not-started trainings
       const t = await tx.training.findUniqueOrThrow({
         where: { id: trainingId },
         select: { startedAt: true },
       });
-      if (!t.startedAt) {
-        const { recomputeTrainingMuscleStats } = await import(
-          "@/core/trainingMuscles"
-        );
-        await recomputeTrainingMuscleStats(trainingId, tx);
-      }
+
+      await recomputeTrainingMuscleStats(trainingId, tx);
+      await recalculateTrainingDifficulty(trainingId, tx);
     });
 
     new TrainingTimeAvgScorer().score(trainingId).catch((e) => console.log(e));
   } catch (e: any) {
     return { ok: false, error: e.message };
   }
+
   revalidatePath(`/trainings/${trainingId}`);
 }
 
@@ -55,14 +56,13 @@ export async function handleDeleteExercise(id: number) {
     });
     trainingId = ex.trainingId;
     await tx.trainingExercise.delete({ where: { id } });
-    if (!ex.Training?.startedAt) {
-      const { recomputeTrainingMuscleStats } = await import(
-        "@/core/trainingMuscles"
-      );
-      await recomputeTrainingMuscleStats(trainingId, tx);
-    }
+
+    await recomputeTrainingMuscleStats(trainingId, tx);
+    await recalculateTrainingDifficulty(trainingId, tx);
   });
+
   new TrainingTimeAvgScorer().score(trainingId).catch((e) => console.log(e));
+
   revalidatePath(`/trainings/${trainingId}`);
 }
 

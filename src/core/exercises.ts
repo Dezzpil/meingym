@@ -14,6 +14,7 @@ import {
   createMassInitial,
   createStrengthInitial,
 } from "@/core/approaches";
+import { calculateExerciseDifficulty } from "@/core/difficulty";
 
 export const RigsDefault = [
   ActionRig.OTHER,
@@ -134,7 +135,7 @@ export async function createExercise(
     const exercisesCount = await tx.trainingExercise.count({
       where: { trainingId },
     });
-    return tx.trainingExercise.create({
+    const exercise = await tx.trainingExercise.create({
       data: {
         trainingId,
         purposeId: purposeAction.id,
@@ -144,6 +145,27 @@ export async function createExercise(
         actionId: actionId,
       },
     });
+
+    // рассчитать оценку сложности выполнения упражнения при создании
+    const approachGroup = await tx.approachesGroup.findUnique({
+      where: { id: exercise.approachGroupId },
+    });
+    if (approachGroup) {
+      console.log(approachGroup);
+      const difficultyScore = calculateExerciseDifficulty({
+        action,
+        approachGroup,
+        purpose,
+      });
+      console.log(
+        `calc diff score for appgroup ${approachGroup.id}: ${difficultyScore}`,
+      );
+      await tx.trainingExercise.update({
+        where: { id: exercise.id },
+        data: { difficultyScore },
+      });
+    }
+    return exercise;
   } else {
     throw new Error(
       `не удалось выбрать необходимые подходы для цели: ${purpose} для упражнения ${actionId}`,

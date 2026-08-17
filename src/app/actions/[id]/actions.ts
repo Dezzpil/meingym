@@ -1,7 +1,6 @@
 "use server";
 
 import { prisma } from "@/tools/db";
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getCurrentUserId } from "@/tools/auth";
 import {
@@ -10,11 +9,6 @@ import {
   createStrengthInitial,
 } from "@/core/approaches";
 import { ActionRig } from "@prisma/client";
-
-export async function handleRemoveAction(actionId: number) {
-  await prisma.action.delete({ where: { id: actionId } });
-  redirect(`/actions`);
-}
 
 export async function handleCreateStrengthInitial(
   actionId: number,
