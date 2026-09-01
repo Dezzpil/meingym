@@ -64,8 +64,14 @@ export function TrainingExecuteCompletePanel({ training }: Props) {
   return (
     <>
       <div className="mb-3">
+        {training.completedAt && (
+          <div className="alert alert-success">
+            <TrainingCompleteInfo training={training} />
+          </div>
+        )}
         <div className="flex-row d-flex justify-content-end align-items-center">
           <Confetti active={isConfettiActive} config={ConfettiConfig1} />
+
           <div className="d-flex gap-2 justify-content-end align-items-center flex-fill flex-wrap">
             {training.completedAt ? (
               <>
@@ -103,11 +109,6 @@ export function TrainingExecuteCompletePanel({ training }: Props) {
           <Confetti active={isConfettiActive} config={ConfettiConfig2} />
         </div>
       </div>
-      {training.completedAt && (
-        <div className="alert alert-success">
-          <TrainingCompleteInfo training={training} />
-        </div>
-      )}
     </>
   );
 }

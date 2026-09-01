@@ -25,9 +25,6 @@ export function TrainingExecuteTopPanel({ training }: Props) {
       <h4>Тренировка {moment(training.plannedTo).format(DateFormat)}</h4>
       {!training.startedAt && (
         <div className="alert alert-light d-flex justify-content-between align-items-center">
-          <button className="btn btn-primary" onClick={start}>
-            Начать тренировку
-          </button>
           <Link
             className="btn btn-outline-secondary d-flex align-items-center gap-2"
             href={`/trainings/${training.id}`}
@@ -35,6 +32,9 @@ export function TrainingExecuteTopPanel({ training }: Props) {
             <LuSettings2 />
             Настроить
           </Link>
+          <button className="btn btn-primary" onClick={start}>
+            Начать
+          </button>
         </div>
       )}
       {training.startedAt && !training.completedAt && (

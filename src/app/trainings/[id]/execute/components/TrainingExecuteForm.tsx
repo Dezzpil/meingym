@@ -2,11 +2,6 @@
 
 import TrainingExecuteFormItem from "@/app/trainings/[id]/execute/components/TrainingExecuteFormItem";
 import React, { useCallback, useRef, useState } from "react";
-import type {
-  TrainingExerciseExecution,
-  Action,
-  ApproachesGroup,
-} from "@prisma/client";
 import {
   countExerciseNonExecuted,
   handleAddExecutionApproach,
@@ -19,27 +14,10 @@ import { TrainingRating } from "@prisma/client";
 import classNames from "classnames";
 import { TrainingRatingEmoji } from "@/app/trainings/components/TrainingRatingEmoji";
 import { SetsStatsForExecutedExercise } from "@/components/SetsStats";
+import { TrainingExerciseType } from "@/app/trainings/exercises/types";
 
 type Props = {
-  exercise: {
-    id: number;
-    trainingId: number;
-    actionId: number;
-    startedAt: Date | null;
-    completedAt: Date | null;
-    isPassed: boolean;
-    rating: TrainingRating;
-    comment: string | null;
-    liftedSum: number;
-    liftedMean: number;
-    liftedMax: number;
-    liftedCountTotal: number;
-    liftedCountMean: number;
-  } & {
-    Action: Action;
-    ApproachGroup: ApproachesGroup;
-    TrainingExerciseExecution: TrainingExerciseExecution[];
-  };
+  exercise: TrainingExerciseType;
   disabled: boolean;
   noFeedback: boolean;
 };
@@ -120,15 +98,12 @@ export function TrainingExecuteForm({ exercise, disabled, noFeedback }: Props) {
 
         <div>
           {exercise.completedAt && (
-            <div
-              className={classNames(
-                "alert mb-0",
-                exercise.isPassed ? "alert-secondary" : "alert-success",
-              )}
-            >
+            <div className="mb-0">
               <div>
                 {exercise.isPassed ? (
-                  <p>Упражнение пропущено</p>
+                  <small className="text-muted fw-medium">
+                    Упражнение было пропущено ...
+                  </small>
                 ) : (
                   <div className="d-flex align-items-baseline column-gap-2 flex-wrap mb-1">
                     <span>
@@ -164,14 +139,18 @@ export function TrainingExecuteForm({ exercise, disabled, noFeedback }: Props) {
                   </div>
                 )}
               </div>
-              <SetsStatsForExecutedExercise
-                exercise={exercise}
-                className="mb-1"
-              />
-              {exercise.comment && (
-                <div className="text-muted">
-                  Комментарий: {exercise.comment}
-                </div>
+              {!exercise.isPassed && (
+                <>
+                  <SetsStatsForExecutedExercise
+                    exercise={exercise}
+                    className="mb-1"
+                  />
+                  {exercise.comment && (
+                    <div className="text-muted">
+                      Комментарий: {exercise.comment}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}

@@ -5,44 +5,17 @@ import {
   handleTrainingExercisePass,
   handleTrainingExerciseStart,
 } from "@/app/trainings/[id]/execute/actions";
-import {
-  TrainingExercise,
-  Action,
-  TrainingExerciseExecution,
-  ApproachesGroup,
-  Purpose,
-  TrainingRating,
-} from "@prisma/client";
+import { TrainingExercise } from "@prisma/client";
 import { TrainingExecuteForm } from "@/app/trainings/[id]/execute/components/TrainingExecuteForm";
 import { PurposeText } from "@/components/PurposeText";
 import classNames from "classnames";
-import { TrainingExerciseReplaceButton } from "@/app/trainings/[id]/execute/components/TrainingExerciseReplaceButton";
-import { FaArrowDown, FaArrowUp } from "react-icons/fa";
-import { handleChangeExercisePriority } from "@/app/trainings/exercises/actions";
 import { Accordion, useAccordionButton } from "react-bootstrap";
 import { HiDotsVertical } from "react-icons/hi";
+import { TrainingExerciseItemExtraControl } from "@/app/trainings/components/TrainingExerciseItemExtraControl";
+import { TrainingExerciseType } from "@/app/trainings/exercises/types";
 
 type Props = {
-  exercise: {
-    id: number;
-    trainingId: number;
-    actionId: number;
-    startedAt: Date | null;
-    completedAt: Date | null;
-    isPassed: boolean;
-    rating: TrainingRating;
-    comment: string | null;
-    liftedSum: number;
-    liftedMean: number;
-    liftedMax: number;
-    liftedCountTotal: number;
-    liftedCountMean: number;
-    purpose: Purpose;
-  } & {
-    Action: Action;
-    ApproachGroup: ApproachesGroup;
-    TrainingExerciseExecution: TrainingExerciseExecution[];
-  };
+  exercise: TrainingExerciseType;
   disabled: boolean;
   allExercises: TrainingExercise[];
   noFeedback: boolean;
@@ -74,14 +47,6 @@ export function TrainingExecuteCard({
     await handleTrainingExercisePass(exercise.id, exercise.trainingId);
   }, [exercise]);
 
-  const up = useCallback(async () => {
-    await handleChangeExercisePriority(exercise.id, true);
-  }, [exercise.id]);
-
-  const down = useCallback(async () => {
-    await handleChangeExercisePriority(exercise.id, false);
-  }, [exercise.id]);
-
   return (
     <div className="card mb-3" key={exercise.id}>
       <div className="card-header">
@@ -101,58 +66,52 @@ export function TrainingExecuteCard({
         </ul>
         <div className="col-lg-6 col-md-12"></div>
       </div>
+
       <div className="card-body">
         {!disabled && (
-          <Accordion className="mb-2">
-            <div className="d-flex justify-content-between">
-              <div className="d-flex gap-2">
-                {!exercise.startedAt && (
-                  <button
-                    className="btn btn-outline-secondary d-inline-flex align-items-center"
-                    onClick={pass}
-                    title="Пропустить упражнение"
-                  >
-                    Пропустить
-                  </button>
-                )}
-              </div>
-              <div className="d-flex gap-2">
-                {!exercise.completedAt && (
-                  <ExtraButtonsToggle eventKey="0">
-                    <HiDotsVertical />
-                  </ExtraButtonsToggle>
-                )}
-                {!exercise.startedAt && (
-                  <button className="btn btn-primary" onClick={start}>
-                    Погнали!
-                  </button>
-                )}
-              </div>
-            </div>
-            <Accordion.Collapse eventKey="0">
-              <div className="d-flex justify-content-end gap-2">
-                <button
-                  className="btn btn-default"
-                  onClick={up}
-                  title="Переместить вверх"
-                >
-                  <FaArrowUp />
-                </button>
-                <button
-                  className="btn btn-default"
-                  onClick={down}
-                  title="Переместить вниз"
-                >
-                  <FaArrowDown />
-                </button>
-                <TrainingExerciseReplaceButton
+          <>
+            {exercise.startedAt ? (
+              <div className="d-flex justify-content-end mb-2">
+                <TrainingExerciseItemExtraControl
                   exercise={exercise}
                   allExercises={allExercises}
-                  disabled={disabled || exercise.completedAt !== null}
                 />
               </div>
-            </Accordion.Collapse>
-          </Accordion>
+            ) : (
+              <Accordion className="mb-2">
+                <div className="d-flex justify-content-end">
+                  <div className="d-flex gap-2">
+                    {!exercise.completedAt && (
+                      <ExtraButtonsToggle eventKey="0">
+                        <HiDotsVertical />
+                      </ExtraButtonsToggle>
+                    )}
+                    <button className="btn btn-primary" onClick={start}>
+                      Погнали!
+                    </button>
+                  </div>
+                </div>
+
+                {!exercise.completedAt && (
+                  <Accordion.Collapse eventKey="0">
+                    <div className="d-flex justify-content-between alert alert-light p-2 mt-2">
+                      <button
+                        className="btn btn-outline-secondary d-inline-flex align-items-center"
+                        onClick={pass}
+                        title="Пропустить упражнение"
+                      >
+                        Пропустить
+                      </button>
+                      <TrainingExerciseItemExtraControl
+                        exercise={exercise}
+                        allExercises={allExercises}
+                      />
+                    </div>
+                  </Accordion.Collapse>
+                )}
+              </Accordion>
+            )}
+          </>
         )}
         <TrainingExecuteForm
           exercise={exercise}

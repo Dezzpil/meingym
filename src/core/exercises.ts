@@ -37,6 +37,7 @@ export const BASE_SYNERGY_COEF = 0.3;
 export function calcActionBase(
   agonyCount: number,
   synergyCount: number,
+  // TODO учитывать размер мышцы
 ): number {
   return BASE_AGONY_COEF * agonyCount + BASE_SYNERGY_COEF * synergyCount;
 }
