@@ -50,3 +50,4 @@ meingym*.sqlEquipmentRequire
 tsconfig.tsbuildinfo
 
 .zcode/plans
+dumps/*
