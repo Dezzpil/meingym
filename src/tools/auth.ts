@@ -13,7 +13,7 @@ import VkProvider from "next-auth/providers/vk";
 // import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { verifyPassword } from "@/tools/password";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { ActionRequire, ActionRig, User, UserInfo } from "@prisma/client";
 import type { PrismaClient } from "@prisma/client";
 
@@ -154,7 +154,7 @@ export function auth(
 
 export const getCurrentUser = cache(async (): Promise<User | never> => {
   const session = await getServerSession(authOptions);
-  if (!session) redirect(`/404`);
+  if (!session) notFound();
   // @ts-ignore
   return session?.user as User;
 });

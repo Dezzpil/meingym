@@ -79,7 +79,9 @@ export default function RegisterPage() {
         );
         router.push("/login");
       } else {
-        router.push("/");
+        // Полная перезагрузка вместо router.push: роутер-кэш Next.js может
+        // воспроизвести закэшированный до входа редирект на страницу 404.
+        window.location.assign("/");
       }
     } catch {
       setServerError("Произошла ошибка. Попробуйте еще раз.");
