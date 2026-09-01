@@ -6,6 +6,10 @@ import type { LastRecordRef, NewPersonalRecordEntry } from "./types";
 
 const INSERT_BATCH_SIZE = 500;
 
+// Обход всей истории тренировок — долгая интерактивная транзакция,
+// дефолтный таймаут 5с тут легко превышается («Transaction not found»).
+const RECALC_TX_TIMEOUT_MS = 120_000;
+
 function allTimeKey(
   actionId: number,
   purpose: Purpose,
@@ -139,5 +143,5 @@ export async function recalculatePersonalRecordsForUser(
       });
     }
     return entries.length;
-  });
+  }, { timeout: RECALC_TX_TIMEOUT_MS });
 }

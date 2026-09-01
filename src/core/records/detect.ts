@@ -3,6 +3,10 @@ import { evaluateRecord } from "./evaluate";
 import { buildRecordCandidates } from "./engine";
 import type { LastRecordRef, NewPersonalRecordEntry } from "./types";
 
+// Запас таймаута для интерактивной транзакции записи рекордов.
+// Дефолтные 5с легко превышаются при большом числе последовательных запросов.
+const RECORDS_TX_TIMEOUT_MS = 30_000;
+
 /**
  * Фиксирует персональные рекорды по завершённой тренировке.
  * Прежние рекорды ищутся только среди записей PersonalRecord пользователя
@@ -48,64 +52,73 @@ export async function detectPersonalRecordsForTraining(
     throw new Error(`Тренировка ${trainingId} еще не завершена`);
   }
 
-  return prisma.$transaction(async (tx) => {
-    // удаляем записи этой тренировки до поиска previous — иначе найдём саму тренировку
-    await tx.personalRecord.deleteMany({ where: { trainingId } });
+  // Чтение предыдущих рекордов выполняем вне транзакции: интерактивная
+  // транзакция с большим числом последовательных запросов может превысить
+  // таймаут (по умолчанию 5с) и закрыться — тогда следующие запросы падают
+  // с «Transaction not found». Фильтр achievedAt < completedAt исключает
+  // записи самой тренировки, поэтому чтение до удаления даёт тот же результат.
+  const entries: NewPersonalRecordEntry[] = [];
+  for (const exercise of training.TrainingExercise) {
+    const candidates = buildRecordCandidates({
+      userId,
+      trainingId,
+      trainingExerciseId: exercise.id,
+      actionId: exercise.actionId,
+      purpose: exercise.purpose,
+      periodId: training.periodId,
+      achievedAt: training.completedAt as Date,
+      executions: exercise.TrainingExerciseExecution,
+      approaches: exercise.ApproachGroup.Approaches,
+    });
 
-    const entries: NewPersonalRecordEntry[] = [];
-    for (const exercise of training.TrainingExercise) {
-      const candidates = buildRecordCandidates({
-        userId,
-        trainingId,
-        trainingExerciseId: exercise.id,
-        actionId: exercise.actionId,
-        purpose: exercise.purpose,
-        periodId: training.periodId,
-        achievedAt: training.completedAt as Date,
-        executions: exercise.TrainingExerciseExecution,
-        approaches: exercise.ApproachGroup.Approaches,
+    for (const candidate of candidates) {
+      const lastAllTime = await prisma.personalRecord.findFirst({
+        where: {
+          userId,
+          actionId: candidate.actionId,
+          purpose: candidate.purpose,
+          type: candidate.type,
+          isAllTime: true,
+          achievedAt: { lt: training.completedAt as Date },
+        },
+        orderBy: [{ achievedAt: "desc" }, { id: "desc" }],
+        select: { value: true, trainingId: true, achievedAt: true },
       });
 
-      for (const candidate of candidates) {
-        const lastAllTime = await tx.personalRecord.findFirst({
+      let lastInPeriod: LastRecordRef | null = null;
+      if (training.periodId !== null) {
+        lastInPeriod = await prisma.personalRecord.findFirst({
           where: {
             userId,
             actionId: candidate.actionId,
             purpose: candidate.purpose,
             type: candidate.type,
-            isAllTime: true,
+            periodId: training.periodId,
             achievedAt: { lt: training.completedAt as Date },
           },
           orderBy: [{ achievedAt: "desc" }, { id: "desc" }],
           select: { value: true, trainingId: true, achievedAt: true },
         });
+      }
 
-        let lastInPeriod: LastRecordRef | null = null;
-        if (training.periodId !== null) {
-          lastInPeriod = await tx.personalRecord.findFirst({
-            where: {
-              userId,
-              actionId: candidate.actionId,
-              purpose: candidate.purpose,
-              type: candidate.type,
-              periodId: training.periodId,
-              achievedAt: { lt: training.completedAt as Date },
-            },
-            orderBy: [{ achievedAt: "desc" }, { id: "desc" }],
-            select: { value: true, trainingId: true, achievedAt: true },
-          });
-        }
-
-        const entry = evaluateRecord(candidate, lastAllTime, lastInPeriod);
-        if (entry) {
-          entries.push(entry);
-        }
+      const entry = evaluateRecord(candidate, lastAllTime, lastInPeriod);
+      if (entry) {
+        entries.push(entry);
       }
     }
+  }
 
-    if (entries.length) {
-      await tx.personalRecord.createMany({ data: entries });
-    }
-    return entries.length;
-  });
+  // В транзакции — только запись: удаляем старые записи тренировки и вставляем новые.
+  return prisma.$transaction(
+    async (tx) => {
+      // удаляем записи этой тренировки — идемпотентность при ретраях обработки
+      await tx.personalRecord.deleteMany({ where: { trainingId } });
+
+      if (entries.length) {
+        await tx.personalRecord.createMany({ data: entries });
+      }
+      return entries.length;
+    },
+    { timeout: RECORDS_TX_TIMEOUT_MS },
+  );
 }
