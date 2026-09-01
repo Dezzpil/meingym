@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.1](https://github.com/Dezzpil/meingym/compare/v2.2.0...v2.2.1) (2026-09-01)
+
+
+### Features
+
+* визуально доработать интерфейс рекордов, упражнение, поиск и добавление в тренировку ([efc0d8d](https://github.com/Dezzpil/meingym/commits/efc0d8d20ff09cf6f58ff0f385710771257ba280))
+
+
+### Bug Fixes
+
+* исключить папку dumps ([aea8851](https://github.com/Dezzpil/meingym/commits/aea8851077b4b3231142b8aa2381c6dee8e39910))
+* исправить редирект на 404 после авторизации ([7f83460](https://github.com/Dezzpil/meingym/commits/7f83460e562b0f7e88b3831d74c910582d114da9))
+* убрать описание движений из данных для страницы тренировок ([f8b3df7](https://github.com/Dezzpil/meingym/commits/f8b3df7dc14f8024255eedc02ae97cf628d4ae57))
+
 ## [2.2.0](https://github.com/Dezzpil/meingym/compare/v2.1.1...v2.2.0) (2026-08-16)
 
 
