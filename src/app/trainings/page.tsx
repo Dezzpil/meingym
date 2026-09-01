@@ -59,7 +59,9 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
           id: true,
           purpose: true,
           Action: {
-            include: {
+            select: {
+              isMarkDownInDesc: false,
+              desc: false,
               MusclesAgony: {
                 include: {
                   Muscle: {
