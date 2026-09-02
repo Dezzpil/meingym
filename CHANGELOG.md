@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.0](https://github.com/Dezzpil/meingym/compare/v2.2.1...v2.3.0) (2026-09-02)
+
+
+### Features
+
+* не отображать стабилизаторы и антагонисты для упражнений ([72f606b](https://github.com/Dezzpil/meingym/commits/72f606bea1ab41c75d19a2e1c1e085683f6252b4))
+* улучшить отображение страницы выполнения тренировки ([87830f9](https://github.com/Dezzpil/meingym/commits/87830f94e972d80aebfc90b500df31f5148c0a22))
+
+
+### Bug Fixes
+
+* исправить обработку тренировки в части расчета рекордов ([12c89c7](https://github.com/Dezzpil/meingym/commits/12c89c7882a7023b316c7805fef942c1720ba6b2))
+* Не нажимается плюсик при добавлении упражнения в тренировку ([600b9ae](https://github.com/Dezzpil/meingym/commits/600b9ae1d37f0eb870999fe06857cac1378dc6c8))
+
 ### [2.2.1](https://github.com/Dezzpil/meingym/compare/v2.2.0...v2.2.1) (2026-09-01)
 
 

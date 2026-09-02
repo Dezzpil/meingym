@@ -1,6 +1,6 @@
 {
   "name": "meingym",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3005",
@@ -14,6 +14,7 @@
     "release:feature": "standard-version -r minor",
     "release:breaking": "standard-version -r major",
     "test:core": "node --import tsx --test src/tests/core/**/*.test.ts",
+    "test:core:progression": "node --import tsx --test src/tests/core/progression*/**/*.test.ts",
     "test:mobile-auth": "node --experimental-test-module-mocks --import tsx --test src/tests/mobile-auth/*.test.ts",
     "test:mobile": "node --experimental-test-module-mocks --import tsx --test src/tests/mobile/**/*.test.ts",
     "update-actions": "node --import tsx src/scripts/update-actions.ts",
