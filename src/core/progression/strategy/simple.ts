@@ -1,6 +1,7 @@
 import { SetData, SetDataExecuted } from "@/core/types";
 import type { Action } from "@prisma/client";
 import { assert } from "chai";
+import { sort } from "next/dist/build/webpack/loaders/css-loader/src/utils";
 
 /**
  * Простейшая стратегия.
@@ -65,68 +66,174 @@ export class ProgressionStrategySimple {
 
   _upgradeStrengthWorkingSets(
     executedSets: SetData[],
-    weightDelta: number,
+    opts?: ProgressionStrategySimpleOptsType,
   ): SetData[] {
+    opts = opts || this._opts;
+
+    // take only opts.strengthWorkingSetsCount weight with sum of counts!
+    const sortedSetsMap: Record<string, number> = {}; // weight, count
+    for (const set of executedSets.toSorted((a, b) => {
+      return a.weight > b.weight ? -1 : 1;
+    })) {
+      if (set.count === 0) continue;
+
+      if (!(set.weight in sortedSetsMap)) {
+        if (Object.keys(sortedSetsMap).length >= opts.strengthWorkingSetsCount)
+          break;
+        sortedSetsMap[set.weight] = 0;
+      }
+      sortedSetsMap[set.weight] += set.count;
+    }
+
+    console.log("sortedSetsMap", sortedSetsMap);
+
     // will copy objects by value
     const setsCopy: SetData[] = [];
 
-    for (const set of executedSets.slice(
-      -this._opts.strengthWorkingSetsCount,
-    )) {
-      if (set.count !== 0)
-        setsCopy.push({ count: set.count, weight: set.weight });
+    const sortedSets = Object.entries(sortedSetsMap)
+      .map((entry) => {
+        return { weight: +entry[0], count: +entry[1] };
+      })
+      .toSorted((a, b) => {
+        return a.weight > b.weight ? -1 : 1;
+      });
+
+    const bestSet = sortedSets[0];
+    let maxWeight = bestSet.weight;
+    let rebuildLadder = false;
+    if (bestSet.count >= 3) {
+      // TODO вынести в параметры цифру 3
+      maxWeight += opts.strengthWeightDelta;
+      rebuildLadder = true;
     }
-    if (setsCopy.length !== this._opts.strengthWorkingSetsCount) {
-      // какие-то подходы не удалось выполнить, надо перестроить нагрузку
-      // берем последний успешный вес и выстраиваем новую пирамиду весов
-      const setsRebuild: SetData[] = [];
-      let lastSet = setsCopy[setsCopy.length - 1];
-      setsRebuild.unshift({ weight: lastSet.weight, count: 1 });
-      for (let i = 0; i < this._opts.strengthWorkingSetsCount - 1; i++) {
-        lastSet = {
-          weight: lastSet.weight - weightDelta,
-          count: 1 + i,
-        };
-        setsRebuild.unshift(lastSet);
+
+    if (rebuildLadder) {
+      for (let i = 0; i < opts.strengthWorkingSetsCount; i++) {
+        setsCopy.unshift({ weight: maxWeight, count: 1 });
+        maxWeight -= opts.strengthWeightDelta;
       }
-      return setsRebuild;
-    }
+    } else {
+      // выравниваем лестницу
+      let increaseNext = true;
+      for (let i = opts.strengthWorkingSetsCount - 1; i >= 0; i--) {
+        const set = sortedSets[i];
+        if (!set) continue;
+        // console.log("set", set);
+        if (set.count >= 3) {
+          set.count = 3;
+          setsCopy.push({ weight: set.weight, count: set.count });
+          increaseNext = true;
+          continue;
+        }
 
-    // последние подходы были выполнены успешно, увеличиваем нагрузку
+        if (increaseNext) {
+          increaseNext = false;
+          set.count += 1;
+        }
 
-    const maxRep = setsCopy.length;
-
-    let upCounts = false;
-    for (let i = 0; i < setsCopy.length - 1; i++) {
-      if (setsCopy[i].count < maxRep - i) {
-        setsCopy[i].count += 1;
-        upCounts = true;
-        break;
+        setsCopy.push({ weight: set.weight, count: set.count });
       }
     }
 
-    if (!upCounts) {
-      for (let i = 0; i <= setsCopy.length - 1; i++) {
-        setsCopy[i].weight += weightDelta;
-        setsCopy[i].count = Math.max(setsCopy.length - i - 1, 1);
-      }
-    }
+    // let decreasedMaxWeight = maxWeight - opts.strengthWeightDelta;
+    // for (let i = 0; i < opts.strengthWorkingSetsCount - 1; i++) {
+    //   if (rebuildLadder) {
+    //     setsCopy.unshift({ weight: decreasedMaxWeight, count: i + 1 });
+    //   } else {
+    //     const prevWeightSet = sortedSets[i + 1];
+    //     if (prevWeightSet.weight === decreasedMaxWeight) {
+    //       setsCopy.unshift({
+    //         weight: decreasedMaxWeight,
+    //         count: prevWeightSet.count + 1,
+    //       });
+    //     } else {
+    //       setsCopy.unshift({
+    //         weight: decreasedMaxWeight,
+    //         count: i + 1,
+    //       });
+    //     }
+    //   }
+    //   decreasedMaxWeight -= opts.strengthWeightDelta;
+    // }
+
+    // for (const set of executedSets.slice(-opts.strengthWorkingSetsCount)) {
+    //   if (set.count !== 0)
+    //     setsCopy.push({ count: set.count, weight: set.weight });
+    // }
+    //
+    // if (setsCopy.length !== opts.strengthWorkingSetsCount) {
+    //   // какие-то подходы не удалось выполнить, надо перестроить нагрузку
+    //   // берем последний успешный вес и выстраиваем новую пирамиду весов
+    //   const setsRebuild: SetData[] = [];
+    //   let lastSet = setsCopy[setsCopy.length - 1];
+    //   setsRebuild.unshift({ weight: lastSet.weight, count: 1 });
+    //   for (let i = 0; i < opts.strengthWorkingSetsCount - 1; i++) {
+    //     lastSet = {
+    //       weight: lastSet.weight - opts.strengthWeightDelta,
+    //       count: 1 + i,
+    //     };
+    //     setsRebuild.unshift(lastSet);
+    //   }
+    //   return setsRebuild;
+    // }
+    //
+    // // последние подходы были выполнены успешно, увеличиваем нагрузку
+    //
+    // const maxRep = setsCopy.length;
+    //
+    // let upCounts = false;
+    // for (let i = 0; i < setsCopy.length - 1; i++) {
+    //   if (setsCopy[i].count < maxRep - i) {
+    //     setsCopy[i].count += 1;
+    //     upCounts = true;
+    //     break;
+    //   }
+    // }
+    //
+    // if (!upCounts) {
+    //   for (let i = 0; i <= setsCopy.length - 1; i++) {
+    //     setsCopy[i].weight += opts.strengthWeightDelta;
+    //     setsCopy[i].count = Math.max(setsCopy.length - i - 1, 1);
+    //   }
+    // }
 
     return setsCopy;
   }
 
+  _getMinWeightByRig() {
+    switch (this._action.rig) {
+      case "BARBELL":
+        return 10;
+      case "BLOCKS":
+        return 5;
+      case "DUMBBELL":
+        return 2.5;
+      case "KETTLEBELL":
+        return 2;
+      case "OTHER":
+        return 0;
+    }
+    return 0;
+  }
+
   _upgradeStrengthPrepareSets(
     workingSets: SetData[],
-    weightDelta: number,
+    opts?: ProgressionStrategySimpleOptsType,
   ): SetData[] {
+    opts = opts || this._opts;
     const sets: SetData[] = [];
     let set = workingSets[0];
-    for (let i = 0; i < this._opts.strengthPrepareSetsCount; i++) {
-      set = {
-        weight: set.weight - weightDelta * 2,
-        count: Math.min(set.count * 2, 12),
-      };
-      sets.unshift(set);
+    let count = set.count;
+    for (let i = 0; i < opts.strengthPrepareSetsCount; i++) {
+      count = Math.min(count + 2, 12);
+
+      let weight = set.weight - opts.strengthWeightDelta * 2 * (i + 1);
+      if (weight <= this._getMinWeightByRig()) {
+        sets.unshift({ weight: this._getMinWeightByRig(), count });
+        break;
+      }
+
+      sets.unshift({ weight, count });
     }
     return sets;
   }
@@ -139,14 +246,8 @@ export class ProgressionStrategySimple {
   strength(planned: SetData[], executed: SetDataExecuted[]): SetData[] {
     assert.isAbove(executed.length, 0);
 
-    let working = this._upgradeStrengthWorkingSets(
-      executed,
-      this._opts.strengthWeightDelta,
-    );
-    let preparing = this._upgradeStrengthPrepareSets(
-      working,
-      this._opts.strengthWeightDelta * 2,
-    );
+    let working = this._upgradeStrengthWorkingSets(executed);
+    let preparing = this._upgradeStrengthPrepareSets(working);
     let sets = preparing.concat(working);
     if (this._action.oneDumbbell) {
       sets = sets.map((s) => ({

@@ -3,7 +3,10 @@ import { SetData, SetDataExecuted } from "@/core/types";
 import { calculateStats } from "@/core/stats";
 import { assert } from "chai";
 import { test } from "node:test";
-import { ProgressionStrategySimple } from "@/core/progression/strategy/simple";
+import {
+  ProgressionStrategySimple,
+  ProgressionStrategySimpleOptsType,
+} from "@/core/progression/strategy/simple";
 
 const str = (set: SetData): string => `${set.weight}x${set.count}`;
 
@@ -38,10 +41,12 @@ test("_upgradeStrengthWorkingSets", async (context) => {
       { weight: 90, count: 1 },
       { weight: 95, count: 1 },
     ];
-    const sets1 = strategy._upgradeStrengthWorkingSets(sets, 5);
+    const sets1 = strategy._upgradeStrengthWorkingSets(sets);
     assert.lengthOf(sets1, strategy._opts.strengthWorkingSetsCount);
     assert.equal(str(sets1[0]), "80x2");
     assert.equal(str(sets1[1]), "85x1");
+    assert.equal(str(sets1[2]), "90x1");
+    assert.equal(str(sets1[3]), "95x1");
   });
 
   /**
@@ -61,34 +66,38 @@ test("_upgradeStrengthWorkingSets", async (context) => {
       { weight: 90, count: 1 },
     ];
 
-    const add = 5;
+    const sets1 = strategy._upgradeStrengthWorkingSets(sets);
+    assert.equal(str(sets1[0]), "75x3");
+    assert.equal(str(sets1[1]), "80x3");
+    assert.equal(str(sets1[2]), "85x1");
+    assert.equal(str(sets1[3]), "90x1");
 
-    const sets1 = strategy._upgradeStrengthWorkingSets(sets, add);
-    assert.equal(str(sets1[0]), "75x4");
-    assert.equal(str(sets1[1]), "80x2");
-
-    const sets2 = strategy._upgradeStrengthWorkingSets(sets1, add);
-    assert.equal(str(sets2[0]), "75x4");
+    const sets2 = strategy._upgradeStrengthWorkingSets(sets1);
+    assert.equal(str(sets2[0]), "75x3");
     assert.equal(str(sets2[1]), "80x3");
+    assert.equal(str(sets2[2]), "85x2");
+    assert.equal(str(sets2[3]), "90x1");
 
-    const sets3 = strategy._upgradeStrengthWorkingSets(sets2, add);
-    assert.equal(str(sets3[0]), "75x4");
+    const sets3 = strategy._upgradeStrengthWorkingSets(sets2);
+    assert.equal(str(sets3[0]), "75x3");
     assert.equal(str(sets3[1]), "80x3");
-    assert.equal(str(sets3[2]), "85x2");
+    assert.equal(str(sets3[2]), "85x3");
+    assert.equal(str(sets3[3]), "90x1");
 
-    const sets4 = strategy._upgradeStrengthWorkingSets(sets3, add);
-    assert.equal(str(sets4[0]), "80x3");
-    assert.equal(str(sets4[1]), "85x2");
-    assert.equal(str(sets4[2]), "90x1");
-    assert.equal(str(sets4[3]), "95x1");
+    const sets4 = strategy._upgradeStrengthWorkingSets(sets3);
+    assert.equal(str(sets4[0]), "75x3");
+    assert.equal(str(sets4[1]), "80x3");
+    assert.equal(str(sets4[2]), "85x3");
+    assert.equal(str(sets4[3]), "90x2");
 
     const was = calculateStats(sets, ActionRig.BARBELL, 0);
     const now = calculateStats(sets4, ActionRig.BARBELL, 0);
 
-    assert.isAbove(now.weightMean, was.weightMean);
-    assert.equal(now.weightMean - was.weightMean, add);
+    console.log(was, now);
 
     assert.isAbove(now.weightSum, was.weightSum);
+    assert.equal(now.weightMean, was.weightMean);
+    assert.equal(now.weightMax, was.weightMax);
   });
 
   await context.test("should increase data 2", function () {
@@ -101,7 +110,7 @@ test("_upgradeStrengthWorkingSets", async (context) => {
       { weight: 100, count: 1 },
     ];
 
-    const sets1 = strategy._upgradeStrengthWorkingSets(sets, 5);
+    const sets1 = strategy._upgradeStrengthWorkingSets(sets);
     assert.equal(str(sets1[0]), "85x2");
     assert.equal(str(sets1[1]), "90x1");
     assert.equal(str(sets1[2]), "95x1");
@@ -117,26 +126,28 @@ test("_upgradeStrengthWorkingSets", async (context) => {
       { weight: 95, count: 0 },
     ];
 
-    const sets1 = strategy._upgradeStrengthWorkingSets(sets, 5);
-    assert.equal(str(sets1[0]), "70x3");
-    assert.equal(str(sets1[1]), "75x2");
-    assert.equal(str(sets1[2]), "80x1");
-    assert.equal(str(sets1[3]), "85x1");
+    const sets1 = strategy._upgradeStrengthWorkingSets(sets);
+    console.log("sets1", sets1);
+    assert.lengthOf(sets1, 3); // only 3 not null sets in data
+    assert.equal(str(sets1[0]), "75x3");
+    assert.equal(str(sets1[1]), "80x3");
+    assert.equal(str(sets1[2]), "85x1");
   });
 });
 
 test("_upgradeStrengthPrepareSets", async (context) => {
   await context.test("should create prepare sets 1", function () {
     const workingSets: SetData[] = [{ weight: 70, count: 3 }];
-    const prepareSets = strategy._upgradeStrengthPrepareSets(workingSets, 5);
-    assert.equal(str(prepareSets[0]), "50x12");
-    assert.equal(str(prepareSets[1]), "60x6");
+    const prepareSets = strategy._upgradeStrengthPrepareSets(workingSets);
+    assert.equal(str(prepareSets[0]), "50x7");
+    assert.equal(str(prepareSets[1]), "60x5");
   });
   await context.test("should create prepare sets 2", function () {
     const workingSets: SetData[] = [{ weight: 70, count: 4 }];
-    const prepareSets = strategy._upgradeStrengthPrepareSets(workingSets, 5);
-    assert.equal(str(prepareSets[0]), "50x12");
-    assert.equal(str(prepareSets[1]), "60x8");
+    const prepareSets = strategy._upgradeStrengthPrepareSets(workingSets);
+    console.log("prepareSets", prepareSets);
+    assert.equal(str(prepareSets[0]), "50x8");
+    assert.equal(str(prepareSets[1]), "60x6");
   });
 });
 

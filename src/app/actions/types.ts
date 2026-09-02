@@ -36,7 +36,7 @@ export type SimilarExerciseType = {
 
 export type ActionWithMusclesType = Pick<
   Action,
-  "id" | "title" | "alias" | "base"
+  "id" | "title" | "alias" | "base" | "strengthAllowed" | "search"
 > & {
   MusclesAgony: ActionMusclesType[];
   MusclesSynergy: ActionMusclesType[];

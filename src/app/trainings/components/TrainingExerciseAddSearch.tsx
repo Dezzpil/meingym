@@ -108,7 +108,6 @@ export function TrainingExerciseAddSearch({
             ? Purpose.MASS
             : purpose;
 
-        console.log("requesting");
         const result = await handleAddExercise(trainingId, {
           actionId: actionId,
           purpose: finalPurpose,
