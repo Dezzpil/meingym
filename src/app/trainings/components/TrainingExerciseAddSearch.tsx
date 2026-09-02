@@ -90,19 +90,14 @@ export function TrainingExerciseAddSearch({
 
   const handleSelect = useCallback(
     async (e: any) => {
-      console.log("handling select");
       try {
         setError(null);
-        const elem = e.target;
+
         let actionId: number | null = null;
         let action: ActionWithMusclesType | undefined;
-        if (elem instanceof HTMLAnchorElement) {
-          actionId = Number(elem.dataset["id"]);
-          action = actions.find((a) => a.id === actionId);
-        }
-        console.log(actionId);
-        console.log(action);
-        console.log(actions);
+
+        actionId = Number(e.target.dataset["id"]);
+        action = actions.find((a) => a.id === actionId);
         if (!actionId) return;
 
         setAddingId(actionId);
@@ -188,7 +183,16 @@ export function TrainingExerciseAddSearch({
                             aria-hidden="true"
                           ></span>
                         ) : (
-                          <BiPlus size={24} data-id={a.id} />
+                          <span
+                            style={{
+                              fontSize: "2em",
+                              marginTop: "-4px",
+                              fontWeight: "bold",
+                            }}
+                            data-id={a.id}
+                          >
+                            +
+                          </span>
                         )}
                       </a>
                     </div>
