@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/Dezzpil/meingym/compare/v2.3.0...v3.0.0) (2026-09-02)
+
+
+### Features
+
+* доработка расчета прогрессии по силовым упражнениям ([f6b0c04](https://github.com/Dezzpil/meingym/commits/f6b0c04c6e29d79aca1ca1a0ae6ff3887f07c843))
+* убрать ограничение на силу для упражнений ([3b5e9a6](https://github.com/Dezzpil/meingym/commits/3b5e9a60c369439887a15b7eb49b1e55d1b1b61e))
+
+
+### Bug Fixes
+
+* Дублируются упражнения в списке похожих в карточке упражнения ([97c9a7c](https://github.com/Dezzpil/meingym/commits/97c9a7caae7324a9bc76bdf43ed7103af90d76f6))
+* не загружать всю информацию об упражнении для списка ([7360266](https://github.com/Dezzpil/meingym/commits/736026629be22d5d2dd3f2525c5e052a5acbeb8f))
+
 ## [2.3.0](https://github.com/Dezzpil/meingym/compare/v2.2.1...v2.3.0) (2026-09-02)
 
 
