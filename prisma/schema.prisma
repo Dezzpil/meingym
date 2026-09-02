@@ -268,7 +268,7 @@ model Action {
   allowCheating Boolean @default(false)
   oneDumbbell   Boolean @default(false)
 
-  // Базовость упражнения: 0.7 * кол-во агонистов + 0.3 * кол-во синергистов
+  // Базовость упражнения: 0.7 * сумма sizeFactor агонистов + 0.3 * сумма sizeFactor синергистов
   base Float @default(0)
 
   MusclesAgony      ActionsOnMusclesAgony[]

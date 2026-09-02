@@ -58,6 +58,25 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
   // Check if description contains Markdown
   const isMarkDownInDesc = containsMarkdown(data.desc);
 
+  // Запрос sizeFactor для агонистов и синергистов (расчёт базовости)
+  const agonyIds = data.musclesAgonyIds.map((id) => parseInt(id));
+  const synergyIds = data.musclesSynergyIds.map((id) => parseInt(id));
+  const allBaseIds = [...agonyIds, ...synergyIds];
+  const musclesForBase =
+    allBaseIds.length > 0
+      ? await prisma.muscle.findMany({
+          where: { id: { in: allBaseIds } },
+          select: { id: true, sizeFactor: true },
+        })
+      : [];
+
+  const agonySizeFactors = musclesForBase
+    .filter((m) => agonyIds.includes(m.id))
+    .map((m) => m.sizeFactor);
+  const synergySizeFactors = musclesForBase
+    .filter((m) => synergyIds.includes(m.id))
+    .map((m) => m.sizeFactor);
+
   await prisma.$transaction(async (tx) => {
     // Update the action
     await tx.action.update({
@@ -105,10 +124,7 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
         },
         rig: data.rig,
         require: data.require,
-        base: calcActionBase(
-          data.musclesAgonyIds.length,
-          data.musclesSynergyIds.length,
-        ),
+        base: calcActionBase(agonySizeFactors, synergySizeFactors),
         updatedAt: new Date(),
         search: [
           data.title.toLowerCase(),

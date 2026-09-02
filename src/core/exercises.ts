@@ -15,6 +15,7 @@ import {
   createStrengthInitial,
 } from "@/core/approaches";
 import { calculateExerciseDifficulty } from "@/core/difficulty";
+import { prisma } from "@/tools/db";
 
 export const RigsDefault = [
   ActionRig.OTHER,
@@ -34,11 +35,82 @@ export const RequiresDefault = [
 export const BASE_AGONY_COEF = 0.7;
 export const BASE_SYNERGY_COEF = 0.3;
 
+/**
+ * Расчёт базовости упражнения по sizeFactor мышц.
+ * Формула: 0.7 * сумма sizeFactor агонистов + 0.3 * сумма sizeFactor синергистов.
+ */
 export function calcActionBase(
-  agonyCount: number,
-  synergyCount: number,
+  agonistSizeFactors: number[],
+  synergistSizeFactors: number[],
 ): number {
-  return BASE_AGONY_COEF * agonyCount + BASE_SYNERGY_COEF * synergyCount;
+  const agonySum = agonistSizeFactors.reduce((sum, sf) => sum + sf, 0);
+  const synergySum = synergistSizeFactors.reduce((sum, sf) => sum + sf, 0);
+  return BASE_AGONY_COEF * agonySum + BASE_SYNERGY_COEF * synergySum;
+}
+
+/**
+ * Пересчитывает базовость (base) всех упражнений, связанных с мышцей
+ * как агонист или синергист. Вызывается при обновлении sizeFactor мышцы.
+ */
+export async function recalcBaseForMuscle(muscleId: number): Promise<void> {
+  // Находим все ID упражнений, где мышца является агонистом или синергистом
+  const [agonyLinks, synergyLinks] = await Promise.all([
+    prisma.actionsOnMusclesAgony.findMany({
+      where: { muscleId },
+      select: { actionId: true },
+    }),
+    prisma.actionsOnMusclesSynergy.findMany({
+      where: { muscleId },
+      select: { actionId: true },
+    }),
+  ]);
+
+  const affectedActionIds = [
+    ...new Set([
+      ...agonyLinks.map((l) => l.actionId),
+      ...synergyLinks.map((l) => l.actionId),
+    ]),
+  ];
+
+  if (affectedActionIds.length === 0) return;
+
+  // Загружаем все мышцы-агонисты для затронутых упражнений одним запросом
+  const allAgony = await prisma.actionsOnMusclesAgony.findMany({
+    where: { actionId: { in: affectedActionIds } },
+    select: { actionId: true, muscleId: true },
+  });
+
+  // Загружаем все мышцы-синергисты для затронутых упражнений одним запросом
+  const allSynergy = await prisma.actionsOnMusclesSynergy.findMany({
+    where: { actionId: { in: affectedActionIds } },
+    select: { actionId: true, muscleId: true },
+  });
+
+  // Собираем все уникальные ID мышц и загружаем их sizeFactor одним запросом
+  const allMuscleIds = [
+    ...new Set([...allAgony.map((a) => a.muscleId), ...allSynergy.map((s) => s.muscleId)]),
+  ];
+  const muscles = await prisma.muscle.findMany({
+    where: { id: { in: allMuscleIds } },
+    select: { id: true, sizeFactor: true },
+  });
+  const sizeFactorMap = new Map(muscles.map((m) => [m.id, m.sizeFactor]));
+
+  // Группируем по actionId и вычисляем базовость
+  const updates = affectedActionIds.map((actionId) => {
+    const agonistSizeFactors = allAgony
+      .filter((a) => a.actionId === actionId)
+      .map((a) => sizeFactorMap.get(a.muscleId) ?? 0);
+    const synergistSizeFactors = allSynergy
+      .filter((s) => s.actionId === actionId)
+      .map((s) => sizeFactorMap.get(s.muscleId) ?? 0);
+
+    const base = calcActionBase(agonistSizeFactors, synergistSizeFactors);
+    return prisma.action.update({ where: { id: actionId }, data: { base } });
+  });
+
+  // Выполняем все обновления в транзакции
+  await prisma.$transaction(updates);
 }
 
 export async function createExercise(

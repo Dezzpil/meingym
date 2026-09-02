@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/tools/db";
 import { z } from "zod";
 import { ServerActionResult } from "@/tools/types";
+import { recalcBaseForMuscle } from "@/core/exercises";
 
 const MuscleDescFields = z.object({
   text: z.string(),
@@ -91,6 +92,9 @@ export async function handleMuscleUpdate(
       sizeFactor: data.sizeFactor,
     },
   });
+
+  // Пересчитываем базовость всех упражнений, связанных с этой мышцей
+  await recalcBaseForMuscle(id);
 
   revalidatePath(`/muscles/${muscle.id}`);
   return { ok: true, error: null };
