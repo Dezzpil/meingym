@@ -59,7 +59,12 @@ export default async function ActionsPage({ searchParams }: PageParams) {
     orderBy: {
       base: "desc",
     },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      alias: true,
+      base: true,
+      search: true,
       ExerciseImages: {
         where: { isMain: true },
         take: 1,
