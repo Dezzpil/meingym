@@ -31,6 +31,7 @@ npx tsc --noEmit          # проверка типов
 npm run test:core         # тесты core-логики
 npm run test:mobile       # тесты мобильного API (запускается с --experimental-test-module-mocks)
 npm run test:mobile-auth  # тесты мобильной аутентификации
+npm run test:tools        # тесты общих хелперов (src/tools)
 
 npm run prisma:migrate    # миграции (dotenv подставляет .env.local)
 npm run workers           # воркеры фоновых задач (нужен запущенный Redis)

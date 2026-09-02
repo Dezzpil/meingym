@@ -19,6 +19,7 @@
     "test:core:progression2": "node --import tsx --test src/tests/core/progression/strategy/simple2.test.ts",
     "test:mobile-auth": "node --experimental-test-module-mocks --import tsx --test src/tests/mobile-auth/*.test.ts",
     "test:mobile": "node --experimental-test-module-mocks --import tsx --test src/tests/mobile/**/*.test.ts",
+    "test:tools": "node --import tsx --test src/tests/tools/*.test.ts",
     "update-actions": "node --import tsx src/scripts/update-actions.ts",
     "update-training-exercises": "node --import tsx src/scripts/update-training-exercises.ts",
     "update-approaches-groups": "node --import tsx src/scripts/update-approaches-groups.ts",

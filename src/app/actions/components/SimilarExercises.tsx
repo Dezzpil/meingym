@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { Action } from "@prisma/client";
+import { getSimilarActions } from "@/tools/action";
 
 type SimilarExercisesProps = {
   action: any & {
@@ -19,11 +20,8 @@ export function SimilarExercises({
   action,
   className = "",
 }: SimilarExercisesProps) {
-  // Combine similar exercises from both relations
-  const similarExercises = [
-    ...(action.SimilarTo || []).map((item: any) => item.Action),
-    ...(action.SimilarFrom || []).map((item: any) => item.SimilarAction),
-  ];
+  // Combine similar exercises from both relations, deduplicated by id
+  const similarExercises = getSimilarActions<Action>(action);
 
   // If no similar exercises, don't render anything
   if (similarExercises.length === 0) {

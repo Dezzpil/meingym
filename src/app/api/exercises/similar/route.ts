@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "../../../../tools/db";
+import { getSimilarActions } from "../../../../tools/action";
 import { ActionWithMusclesType } from "../../../actions/types";
 import { RequiresDefault, RigsDefault } from "../../../../core/exercises";
 import { ActionRequire, ActionRig } from "@prisma/client";
@@ -68,23 +69,11 @@ export async function GET(request: NextRequest) {
     },
   });
 
-  const similarActions: ActionWithMusclesType[] = [];
-
-  if (action) {
-    for (const similar of action.SimilarTo) {
-      const sa = (similar as any).Action;
-      if (rigs.includes(action.rig) && requires.includes(action.require)) {
-        similarActions.push(sa);
-      }
-    }
-
-    for (const similar of action.SimilarFrom) {
-      const sa = (similar as any).SimilarAction;
-      if (rigs.includes(action.rig) && requires.includes(action.require)) {
-        similarActions.push(sa);
-      }
-    }
-  }
+  // обе направленности ссылок объединяются с удалением дубликатов
+  const similarActions: ActionWithMusclesType[] =
+    action && rigs.includes(action.rig) && requires.includes(action.require)
+      ? getSimilarActions(action)
+      : [];
 
   return NextResponse.json({ similarActions }, { status: 200 });
 }

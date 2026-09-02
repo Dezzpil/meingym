@@ -1,4 +1,5 @@
 import { prisma } from "@/tools/db";
+import { getSimilarActionIds } from "@/tools/action";
 
 const PAGE_SIZE = 20;
 
@@ -72,10 +73,7 @@ export async function getExercisesList(
       stabilizers: action.MusclesStabilizer.map((m) => m.muscleId),
       antagonists: action.MusclesAntagonist.map((m) => m.muscleId),
     },
-    similarActionIds: [
-      ...action.SimilarFrom.map((s) => s.similarActionId),
-      ...action.SimilarTo.map((s) => s.actionId),
-    ],
+    similarActionIds: getSimilarActionIds(action),
     mainImage: action.ExerciseImages[0]?.path ?? null,
   }));
 
