@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/Dezzpil/meingym/compare/v3.0.0...v3.1.0) (2026-09-02)
+
+
+### Features
+
+* учитывать размер мышц для расчета базовости упражнения + пересчитывать базовость упражнения при изменении мышцы ([5914d4f](https://github.com/Dezzpil/meingym/commits/5914d4f8b52e172c7e2f77261c3aad14d966b689))
+
 ## [3.0.0](https://github.com/Dezzpil/meingym/compare/v2.3.0...v3.0.0) (2026-09-02)
 
 
