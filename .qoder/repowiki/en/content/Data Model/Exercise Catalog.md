@@ -145,6 +145,7 @@ API-->>UI : JSON array of actions
   - Antagonist: opposing muscles
 - Each junction includes both actionId and muscleId with composite primary keys.
 - Muscles have group associations and descriptive metadata.
+- **Note**: The former `strengthAllowed` restriction was removed; every exercise/action now supports the STRENGTH ("На силу") purpose.
 
 ```mermaid
 erDiagram
@@ -153,7 +154,6 @@ int id PK
 string title
 string desc
 string alias
-boolean strengthAllowed
 boolean bigCount
 boolean allowCheating
 boolean oneDumbbell

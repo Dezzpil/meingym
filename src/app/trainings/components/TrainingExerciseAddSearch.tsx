@@ -93,24 +93,14 @@ export function TrainingExerciseAddSearch({
       try {
         setError(null);
 
-        let actionId: number | null = null;
-        let action: ActionWithMusclesType | undefined;
-
-        actionId = Number(e.target.dataset["id"]);
-        action = actions.find((a) => a.id === actionId);
+        const actionId: number | null = Number(e.target.dataset["id"]);
         if (!actionId) return;
 
         setAddingId(actionId);
 
-        // If strength not allowed, fallback from STRENGTH to MASS
-        const finalPurpose =
-          purpose === Purpose.STRENGTH && action && !action.strengthAllowed
-            ? Purpose.MASS
-            : purpose;
-
         const result = await handleAddExercise(trainingId, {
           actionId: actionId,
-          purpose: finalPurpose,
+          purpose: purpose,
         } as any);
         if (result && !(result as any).ok) {
           setError((result as any).error);

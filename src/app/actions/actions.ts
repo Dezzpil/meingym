@@ -68,7 +68,6 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
         isMarkDownInDesc,
         alias: data.alias,
         anotherTitles: data.anotherTitles,
-        strengthAllowed: data.strengthAllowed,
         bigCount: data.bigCount,
         allowCheating: data.allowCheating,
         oneDumbbell: data.oneDumbbell,

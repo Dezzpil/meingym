@@ -208,22 +208,6 @@ export default function ActionForm({
               <label className="form-label">Параметры</label>
               <div className="row row-cols-lg-auto g-3 align-items-center">
                 <div className="col-12">
-                  <div className="form-check">
-                    <input
-                      type="checkbox"
-                      id="strengthAllowed"
-                      className="form-check-input"
-                      {...form.register("strengthAllowed", {})}
-                    />
-                    <label
-                      htmlFor="strengthAllowed"
-                      className="form-check-label"
-                    >
-                      Допустимо выполнение на силу?
-                    </label>
-                  </div>
-                </div>
-                <div className="col-12">
                   <div className="form-check col-auto">
                     <input
                       type="checkbox"

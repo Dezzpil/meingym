@@ -10,13 +10,10 @@ import {
 } from "@/core/approaches";
 import { ActionRig } from "@prisma/client";
 
-export async function handleCreateStrengthInitial(
-  actionId: number,
-  actionStrAllowed: boolean,
-) {
+export async function handleCreateStrengthInitial(actionId: number) {
   const userId = await getCurrentUserId();
   await prisma.$transaction(async (tx) => {
-    await createStrengthInitial(userId, actionId, actionStrAllowed, tx);
+    await createStrengthInitial(userId, actionId, tx);
   });
   revalidatePath(`/actions/${actionId}`);
 }

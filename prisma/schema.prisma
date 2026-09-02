@@ -264,10 +264,9 @@ model Action {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
-  strengthAllowed Boolean @default(false)
-  bigCount        Boolean @default(false)
-  allowCheating   Boolean @default(false)
-  oneDumbbell     Boolean @default(false)
+  bigCount      Boolean @default(false)
+  allowCheating Boolean @default(false)
+  oneDumbbell   Boolean @default(false)
 
   // Базовость упражнения: 0.7 * кол-во агонистов + 0.3 * кол-во синергистов
   base Float @default(0)

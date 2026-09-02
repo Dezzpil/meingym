@@ -13,7 +13,6 @@ export const ActionsFormFields = z.object({
   desc: z.string().min(2),
   rig: z.nativeEnum(ActionRig),
   require: z.nativeEnum(ActionRequire),
-  strengthAllowed: z.boolean().default(false),
   bigCount: z.boolean().default(false),
   allowCheating: z.boolean().default(false),
   oneDumbbell: z.boolean().default(false),
@@ -36,7 +35,7 @@ export type SimilarExerciseType = {
 
 export type ActionWithMusclesType = Pick<
   Action,
-  "id" | "title" | "alias" | "base" | "strengthAllowed" | "search"
+  "id" | "title" | "alias" | "base" | "search"
 > & {
   MusclesAgony: ActionMusclesType[];
   MusclesSynergy: ActionMusclesType[];

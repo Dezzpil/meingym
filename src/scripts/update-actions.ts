@@ -33,7 +33,6 @@ async function updateActions() {
           alias: action.alias || "",
           anotherTitles: action.anotherTitles || "",
           rig: action.rig,
-          strengthAllowed: action.strengthAllowed,
           bigCount: action.bigCount,
           allowCheating: action.allowCheating,
           musclesAgonyIds: action.MusclesAgony.map((m) =>

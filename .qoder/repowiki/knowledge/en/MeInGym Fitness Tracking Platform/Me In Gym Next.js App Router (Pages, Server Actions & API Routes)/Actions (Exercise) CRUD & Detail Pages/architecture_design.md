@@ -1,5 +1,5 @@
 Organized as a Next.js App Router route group under `src/app/actions/`:
-- Root `page.tsx` lists all actions with Prisma filters by muscle group and `strengthAllowed`, loading related images, per-user approach groups (Mass/Strength/Loss), and training scores.
+- Root `page.tsx` lists all actions with Prisma filters by muscle group, loading related images, per-user approach groups (Mass/Strength/Loss), and training scores.
 - `[id]/page.tsx` is the admin-only detail page; non-admin users are redirected to `/actions/[id]/card`. It fetches the action with full muscle/similar-exercise relations via Prisma includes and a raw SQL query for similar exercises within the same muscle groups.
 - `create/page.tsx` is an admin-gated create page rendering `ActionCreateForm`.
 - Server mutations live in sibling `actions.ts` files: root `actions.ts` exports `handleCreate` and `handleUpdate` (with duplicate-title validation, muscle reassignment via `deleteMany`+`createMany`, search-index rebuild, and `revalidatePath`); `[id]/actions.ts` exports `handleRemoveAction` and three `handleCreate*Initial` functions that delegate to `@/core/approaches` (`createStrengthInitial`, `createMassInitial`, `createLossInitial`) inside a Prisma transaction.

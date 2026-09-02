@@ -120,7 +120,6 @@ text search
 boolean isMarkDownInDesc
 datetime createdAt
 datetime updatedAt
-boolean strengthAllowed
 boolean bigCount
 boolean allowCheating
 boolean oneDumbbell
@@ -439,7 +438,7 @@ Key relationships:
 - [schema.prisma](file://prisma/schema.prisma)
 
 ### Action (Exercises) and Muscles
-- Action models an exercise with descriptive fields, flags (strengthAllowed, bigCount, allowCheating, oneDumbbell), and a base metric derived from muscle roles.
+- Action models an exercise with descriptive fields, flags (bigCount, allowCheating, oneDumbbell), and a base metric derived from muscle roles.
 - Muscle relationships are modeled via four join tables: Agony, Synergy, Stabilizer, Antagonist. These capture nuanced biomechanical roles per exercise.
 - Search optimization: A GIN trigram index on Action.search enables fast fuzzy searches.
 

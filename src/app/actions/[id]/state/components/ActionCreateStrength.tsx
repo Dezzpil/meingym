@@ -12,13 +12,13 @@ export function ActionCreateStrength({ action }: Props) {
     setError(null);
     setHandling(true);
     try {
-      await handleCreateStrengthInitial(action.id, action.strengthAllowed);
+      await handleCreateStrengthInitial(action.id);
     } catch (e: any) {
       console.error(e);
       setError(e.message);
     }
     setHandling(false);
-  }, [action.id, action.strengthAllowed]);
+  }, [action.id]);
   return (
     <>
       <button

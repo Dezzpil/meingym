@@ -84,23 +84,21 @@ export default async function ActionStatePage({ params }: ItemPageParams) {
           <ActionCreateMass action={action} />
         )}
       </div>
-      {action.strengthAllowed && (
-        <div className="mb-3">
-          <h5 className="mb-3">На силу</h5>
-          {state.strength ? (
-            <ApproachesManagement
-              create={{
-                purpose: "STRENGTH",
-                actionPurposeId: state.strength.id,
-              }}
-              actionId={action.id}
-              approachGroup={state.strength.CurrentApproachGroup}
-            />
-          ) : (
-            <ActionCreateStrength action={action} />
-          )}
-        </div>
-      )}
+      <div className="mb-3">
+        <h5 className="mb-3">На силу</h5>
+        {state.strength ? (
+          <ApproachesManagement
+            create={{
+              purpose: "STRENGTH",
+              actionPurposeId: state.strength.id,
+            }}
+            actionId={action.id}
+            approachGroup={state.strength.CurrentApproachGroup}
+          />
+        ) : (
+          <ActionCreateStrength action={action} />
+        )}
+      </div>
       <div className="mb-3">
         <h5 className="mb-3">На снижение веса</h5>
         {state.loss ? (

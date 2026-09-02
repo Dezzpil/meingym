@@ -8,7 +8,6 @@ const makeExecuted = (arr: Array<[number, number]>): SetDataExecuted[] =>
 
 const actionOneDb = {
   rig: "DUMBBELL" as any,
-  strengthAllowed: true,
   bigCount: false,
   oneDumbbell: true,
 };

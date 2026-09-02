@@ -134,13 +134,8 @@ export async function createMassInitial(
 export async function createStrengthInitial(
   userId: string,
   actionId: number,
-  actionStrAllowed: boolean,
   tx: PrismaTransactionClient,
 ): Promise<ActionStrength> {
-  if (!actionStrAllowed)
-    throw new Error(
-      `Нельзя создать базовые силовые значения для движения, которое не подходит для силовых тренировок`,
-    );
   const newGroup = await createApproachGroup(
     tx,
     ApproachesStrengthDefault,

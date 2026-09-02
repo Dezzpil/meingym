@@ -83,7 +83,6 @@ async function collect() {
     "action_rig",
     "action_cheat",
     "action_bigcount",
-    "action_str_allow",
     "action_muscles_len",
     "exec_length",
     "exec_weight",
@@ -150,7 +149,6 @@ async function collect() {
           action.rig, // action_rig
           action.allowCheating, // action_cheat
           action.bigCount, // action_bigcount
-          action.strengthAllowed, // action_str_allow
           action.MusclesAgony.length, // action_muscles_len
           executions.length, // exec_length
           execution.plannedWeigth, // exec_weight

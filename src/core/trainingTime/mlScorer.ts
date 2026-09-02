@@ -27,7 +27,6 @@ const sql = `SELECT
                      ELSE 0
                      END as action_rig,
                  CAST(a."bigCount" as INTEGER) as action_bigCount,
-                 CAST(a."strengthAllowed" as INTEGER) as action_strengthAllowed,
                  CAST(a."allowCheating" as INTEGER) as action_allowCheating,
                  round(extract(epoch from te."completedAt" - te."startedAt")) as exercise_totalDurationInSec /* target */
              FROM "TrainingExercise" te

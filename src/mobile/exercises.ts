@@ -10,7 +10,6 @@ export type MobileExerciseDTO = {
   alias: string | null;
   anotherTitles: string | null;
   isMarkDownInDesc: boolean;
-  strengthAllowed: boolean;
   bigCount: boolean;
   allowCheating: boolean;
   oneDumbbell: boolean;
@@ -58,7 +57,6 @@ export async function getExercisesList(
     alias: action.alias,
     anotherTitles: action.anotherTitles,
     isMarkDownInDesc: action.isMarkDownInDesc,
-    strengthAllowed: action.strengthAllowed,
     bigCount: action.bigCount,
     allowCheating: action.allowCheating,
     oneDumbbell: action.oneDumbbell,

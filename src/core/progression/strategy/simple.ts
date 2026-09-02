@@ -53,10 +53,7 @@ export const ProgressionStrategySimpleOptsDefaults: ProgressionStrategySimpleOpt
 export class ProgressionStrategySimple {
   public readonly _opts: ProgressionStrategySimpleOptsType;
   constructor(
-    private _action: Pick<
-      Action,
-      "rig" | "strengthAllowed" | "bigCount" | "oneDumbbell"
-    >,
+    private _action: Pick<Action, "rig" | "bigCount" | "oneDumbbell">,
     opts?: ProgressionStrategySimpleOptsType | null,
   ) {
     this._opts = opts

@@ -3,7 +3,7 @@ import { prisma } from "@/tools/db";
 import { getCachedMuscleGroups } from "@/tools/cachedQueries";
 import { getCurrentUser } from "@/tools/auth";
 import { PageParams } from "@/tools/types";
-import { Prisma, UserRole } from "@prisma/client";
+import { UserRole } from "@prisma/client";
 import { ActionListItem } from "@/app/actions/components/ActionListItem";
 import { ActionFilterForm } from "@/app/actions/components/ActionFilterForm";
 import { BiPlus } from "react-icons/bi";
@@ -16,35 +16,21 @@ export default async function ActionsPage({ searchParams }: PageParams) {
   const where: Record<string, any> = {
     MusclesAgony: groupId !== null ? { some: { Muscle: { groupId } } } : {},
   };
-  const strengthAllowed =
-    searchParams.strengthAllowed && searchParams.strengthAllowed === "on"
-      ? true
-      : null;
-  if (strengthAllowed !== null) {
-    where["strengthAllowed"] = strengthAllowed;
-  }
 
   const groups = await getCachedMuscleGroups();
 
   // Агрегирующие запросы выполняем параллельно
-  const strengthFilter =
-    strengthAllowed !== null
-      ? Prisma.sql`WHERE a."strengthAllowed" = ${strengthAllowed}`
-      : Prisma.empty;
-
   const [groupCountRows, allCountRows] = await Promise.all([
     prisma.$queryRaw<{ groupId: number; cnt: bigint }[]>`
       SELECT m."groupId", COUNT(DISTINCT a."id") as cnt
       FROM "Action" a
       JOIN "ActionsOnMusclesAgony" ama ON ama."actionId" = a."id"
       JOIN "Muscle" m ON m."id" = ama."muscleId"
-      ${strengthFilter}
       GROUP BY m."groupId"
     `,
     prisma.$queryRaw<{ cnt: bigint }[]>`
       SELECT COUNT(DISTINCT a."id") as cnt
       FROM "Action" a
-      ${strengthFilter}
     `,
   ]);
 
@@ -65,7 +51,6 @@ export default async function ActionsPage({ searchParams }: PageParams) {
       alias: true,
       base: true,
       search: true,
-      strengthAllowed: true,
       ExerciseImages: {
         where: { isMain: true },
         take: 1,
@@ -83,7 +68,6 @@ export default async function ActionsPage({ searchParams }: PageParams) {
         <ActionFilterForm
           groups={groups}
           initialGroupId={groupId}
-          initialStrengthAllowed={strengthAllowed}
           groupCounts={groupCounts}
           allGroupsCount={allActionsCount}
         />

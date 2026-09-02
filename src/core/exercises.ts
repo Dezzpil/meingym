@@ -37,7 +37,6 @@ export const BASE_SYNERGY_COEF = 0.3;
 export function calcActionBase(
   agonyCount: number,
   synergyCount: number,
-  // TODO учитывать размер мышцы
 ): number {
   return BASE_AGONY_COEF * agonyCount + BASE_SYNERGY_COEF * synergyCount;
 }
@@ -83,10 +82,6 @@ export async function createExercise(
     },
   });
 
-  if (!action.strengthAllowed && purpose === "STRENGTH") {
-    throw new Error(`Нельзя выбрать силовое выполнение для этого движения`);
-  }
-
   let purposeAction: ActionMass | ActionStrength | ActionLoss | undefined =
     undefined;
 
@@ -106,12 +101,7 @@ export async function createExercise(
   }
   if (purpose === "STRENGTH") {
     if (action.ActionStrength?.length === 0) {
-      purposeAction = await createStrengthInitial(
-        userId,
-        actionId,
-        action.strengthAllowed,
-        tx,
-      );
+      purposeAction = await createStrengthInitial(userId, actionId, tx);
     } else {
       // @ts-ignore
       purposeAction = action.ActionStrength[0] as ActionStrength;

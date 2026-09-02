@@ -124,7 +124,9 @@ Strategy-->>App : Next sets for strength/mass/loss
 ## Detailed Component Analysis
 
 ### ProgressionStrategySimple Class
-The class encapsulates all progression logic. It takes an Action subset (rig, strengthAllowed, bigCount, oneDumbbell) and optional overrides for defaults.
+The class encapsulates all progression logic. It takes an Action subset (rig, bigCount, oneDumbbell) and optional overrides for defaults.
+
+> **Note**: The former `strengthAllowed` restriction was removed; every exercise/action now supports the STRENGTH purpose, so the strategy no longer needs that flag.
 
 ```mermaid
 classDiagram
@@ -323,7 +325,7 @@ datetime updatedAt
 ## Dependency Analysis
 - ProgressionStrategySimple depends on:
   - Types: SetData, SetDataExecuted
-  - Action attributes: rig, strengthAllowed, bigCount, oneDumbbell
+  - Action attributes: rig, bigCount, oneDumbbell
 - Data flow:
   - UI updates options -> periods.ts persists via Prisma -> current options fetched -> strategy computes next sets.
 - External dependencies:
