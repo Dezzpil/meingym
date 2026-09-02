@@ -121,7 +121,7 @@ export function ActionCard({ action }: Props) {
 
           <div className="col-lg-6">
             <div className="mb-3">
-              <ActionMuscles action={action} />
+              <ActionMuscles action={action} withSupportGroups />
             </div>
             <div className="mb-3">
               <span className="badge bg-secondary">База: {action.base}</span>
@@ -186,7 +186,7 @@ export function ActionCard({ action }: Props) {
               </a>
 
               <a
-                className="card mb-3 border-0 shadow-sm"
+                className="card mb-3 border-0 shadow-sm text-decoration-none"
                 href={`/actions/${action.id}/history#LOSS`}
               >
                 <div className="card-header">

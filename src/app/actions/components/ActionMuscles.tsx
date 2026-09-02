@@ -11,6 +11,7 @@ import { useEffect, useMemo } from "react";
 type Props = {
   action: ActionWithMusclesType;
   short?: boolean;
+  withSupportGroups?: boolean;
 };
 
 function renderActionMusclesGroupBlock(
@@ -43,15 +44,20 @@ function renderActionMusclesGroupBlock(
   ) : null;
 }
 
-export function ActionMuscles({ action, short }: Props) {
+export function ActionMuscles({ action, short, withSupportGroups }: Props) {
   const muscles = useMemo(() => {
     const results: Record<string, any> = {};
-    for (const entry of Object.entries({
+    let groups = {
       MusclesAgony: action.MusclesAgony,
       MusclesSynergy: action.MusclesSynergy,
-      MusclesStabilizer: action.MusclesStabilizer,
-      MusclesAntagonist: action.MusclesAntagonist,
-    })) {
+    };
+    if (withSupportGroups) {
+      groups = Object.assign(groups, {
+        MusclesStabilizer: action.MusclesStabilizer,
+        MusclesAntagonist: action.MusclesAntagonist,
+      });
+    }
+    for (const entry of Object.entries(groups)) {
       const [key, value] = entry;
       if (short) {
         results[key] = {
