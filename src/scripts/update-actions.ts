@@ -18,6 +18,7 @@ async function updateActions() {
         MusclesAgony: true,
         MusclesSynergy: true,
         MusclesStabilizer: true,
+        MusclesAntagonist: true,
       },
     });
 
@@ -42,6 +43,9 @@ async function updateActions() {
             m.muscleId.toString(),
           ),
           musclesStabilizerIds: action.MusclesStabilizer.map((m) =>
+            m.muscleId.toString(),
+          ),
+          MusclesAntagonistIds: action.MusclesAntagonist.map((m) =>
             m.muscleId.toString(),
           ),
         };

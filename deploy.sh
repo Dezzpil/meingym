@@ -9,7 +9,7 @@ prisma migrate deploy
 npm run build
 
 #echo "Updating data in DB..."
-#npm run update-actions
+npm run update-actions
 #npm run update-training-exercises
 #npm run update-approaches-groups
 #npm run create-equip-for-users
