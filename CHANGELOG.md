@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.0](https://github.com/Dezzpil/meingym/compare/v3.1.0...v3.2.0) (2026-09-03)
+
+
+### Features
+
+* улучшить отображение формы данных о выполнении подхода ([6120687](https://github.com/Dezzpil/meingym/commits/6120687427f0d395b8587f985c10e5b477f8f2ff))
+
 ## [3.1.0](https://github.com/Dezzpil/meingym/compare/v3.0.0...v3.1.0) (2026-09-02)
 
 
