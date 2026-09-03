@@ -1,34 +1,39 @@
 "use client";
 
-import { GiWeight } from "react-icons/gi";
+import { GiBelt, GiWeight } from "react-icons/gi";
 import React, { useCallback, useRef, useState } from "react";
-import type {
-  Action,
-  ExecutionTechnique,
-  TrainingExerciseExecution,
-} from "@prisma/client";
+import type { Action, TrainingExerciseExecution } from "@prisma/client";
 import { GrCheckmark } from "react-icons/gr";
 import classNames from "classnames";
-import { FaSpinner } from "react-icons/fa6";
+import {
+  FaCircleQuestion,
+  FaFireFlameCurved,
+  FaSpinner,
+} from "react-icons/fa6";
 import { postApi } from "@/tools/fetch";
 import Modal from "react-bootstrap/Modal";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Popover from "react-bootstrap/Popover";
-import { FaCircleQuestion } from "react-icons/fa6";
+import SegmentedSlider from "@/components/SegmentedSlider";
+import PlusOneCounter from "@/components/PlusOneCounter";
+import ToggleChip from "@/components/ToggleChip";
 import {
-  BurningOptions,
-  CheatingOptions,
-  RatingOptions,
-  RefusingOptions,
-  TechniqueOptions,
-} from "@/app/trainings/[id]/execute/types";
-import { ExecutionBurning } from "@prisma/client";
-import {
+  ExecutionBurning,
   ExecutionCheating,
   ExecutionRating,
   ExecutionRefusing,
+  ExecutionTechnique,
 } from "@prisma/client";
 import { TrainingsExerciseCompleteDTO } from "@/app/api/trainings/exercise/execution/complete/route";
+import {
+  cheatingSliderOptions,
+  ratingSliderOptions,
+  refusingSliderOptions,
+  techniqueSliderOptions,
+  TechniqueSliderValue,
+} from "@/app/trainings/[id]/execute/components/feedbackOptions";
+
+const EXTRA_COUNT_MAX = 8;
 
 type Props = {
   exec: TrainingExerciseExecution;
@@ -49,15 +54,19 @@ export default function TrainingExecuteFormItem({
   const [liftedWeight, setLiftedWeight] = useState(exec.plannedWeigth);
   const [liftedCount, setLiftedCount] = useState(exec.plannedCount);
 
-  const ratingSelectRef = useRef<HTMLSelectElement | null>(null);
-  const techSelectRef = useRef<HTMLSelectElement | null>(null);
-  const techUpCheckboxRef = useRef<HTMLInputElement | null>(null);
-  const cheatingSelectRef = useRef<HTMLSelectElement | null>(null);
-  const refusingSelectRef = useRef<HTMLSelectElement | null>(null);
-  const burningSelectRef = useRef<HTMLSelectElement | null>(null);
+  const [rating, setRating] = useState<ExecutionRating>(ExecutionRating.OK);
+  const [extraCount, setExtraCount] = useState<number>(exec.extraCount ?? 0);
+  const [techniqueState, setTechniqueState] =
+    useState<TechniqueSliderValue>("OK");
+  const [cheating, setCheating] = useState<ExecutionCheating>(
+    ExecutionCheating.NO,
+  );
+  const [refusing, setRefusing] = useState<ExecutionRefusing>(
+    ExecutionRefusing.NO,
+  );
+  const [useBelt, setUseBelt] = useState<boolean>(false);
+  const [burning, setBurning] = useState<boolean>(false);
   const commentTextareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const useBeltRef = useRef<HTMLInputElement | null>(null);
-  const extraCountRef = useRef<HTMLInputElement | null>(null);
 
   const [modalShowed, setModalShowed] = useState(false);
 
@@ -68,21 +77,18 @@ export default function TrainingExecuteFormItem({
         id: exec.id,
         liftedWeight,
         liftedCount,
-        rating: ratingSelectRef.current?.value as ExecutionRating,
-        technique: techSelectRef.current?.value as ExecutionTechnique,
-        techniqueUpgrade: !!techUpCheckboxRef.current?.value,
-        cheating: action.allowCheating
-          ? (cheatingSelectRef.current?.value as ExecutionCheating)
-          : ExecutionCheating.NO,
-        refusing: refusingSelectRef.current?.value as ExecutionRefusing,
-        burning: action.bigCount
-          ? (burningSelectRef.current?.value as ExecutionBurning)
-          : ExecutionBurning.NO,
+        rating,
+        technique:
+          techniqueState === "WORSE"
+            ? ExecutionTechnique.FLAW
+            : ExecutionTechnique.OK,
+        techniqueUpgrade: techniqueState === "BETTER",
+        cheating: action.allowCheating ? cheating : ExecutionCheating.NO,
+        refusing,
+        burning: burning ? ExecutionBurning.YES : ExecutionBurning.NO,
         comment: commentTextareaRef.current?.value,
-        useBelt: useBeltRef.current?.checked || false,
-        extraCount: extraCountRef.current?.value
-          ? parseInt(extraCountRef.current.value)
-          : 0,
+        useBelt,
+        extraCount,
       },
     )
       .then((data) => {
@@ -94,11 +100,17 @@ export default function TrainingExecuteFormItem({
       });
   }, [
     action.allowCheating,
-    action.bigCount,
+    burning,
+    cheating,
     exec.id,
+    extraCount,
     isCompleted,
     liftedCount,
     liftedWeight,
+    rating,
+    refusing,
+    techniqueState,
+    useBelt,
   ]);
 
   const onComplete = useCallback(() => {
@@ -203,99 +215,89 @@ export default function TrainingExecuteFormItem({
           <Modal.Title>Оценка выполнения подхода</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div>
-            <select className="form-control mb-2" ref={ratingSelectRef}>
-              {Object.entries(RatingOptions).map((entry) => (
-                <option key={entry[0]} value={entry[0]}>
-                  {entry[1]}
-                </option>
-              ))}
-            </select>
-            <div className="input-group mb-2">
-              <span className="input-group-text">Доп. повторений</span>
-              <input
-                type="number"
-                min={0}
-                max={8}
-                step={1}
-                defaultValue={exec.extraCount ?? 0}
-                className="form-control"
-                ref={extraCountRef}
+          <div className="d-flex flex-column gap-3">
+            <div>
+              <div className="exec-field-label">Сложность</div>
+              <SegmentedSlider
+                ariaLabel="Сложность"
+                options={ratingSliderOptions}
+                value={rating}
+                onChange={setRating}
               />
-              <OverlayTrigger
-                trigger="click"
-                rootClose
-                placement="top"
-                overlay={
-                  <Popover id="extraCountPopover">
-                    <Popover.Body>
-                      Если удалось выполнить чуть больше заявленного количества
-                    </Popover.Body>
-                  </Popover>
-                }
-              >
-                <button
-                  type="button"
-                  className="input-group-text"
-                  aria-label="Подсказка"
-                >
-                  <FaCircleQuestion />
-                </button>
-              </OverlayTrigger>
             </div>
-            <select className="form-control mb-2" ref={techSelectRef}>
-              {Object.entries(TechniqueOptions).map((entry) => (
-                <option key={entry[0]} value={entry[0]}>
-                  {entry[1]}
-                </option>
-              ))}
-            </select>
-            <div className="form-check mb-2">
-              <input
-                type="checkbox"
-                id="techniqueUpgrade"
-                className="form-check-input"
-                ref={techUpCheckboxRef}
+            <div>
+              <div className="exec-field-label">Техника</div>
+              <SegmentedSlider
+                ariaLabel="Техника выполнения"
+                options={techniqueSliderOptions}
+                value={techniqueState}
+                onChange={setTechniqueState}
               />
-              <label htmlFor="techniqueUpgrade" className="form-check-label">
-                Улучшение техники?
-              </label>
+            </div>
+            <div>
+              <div className="exec-field-label">Отказ</div>
+              <SegmentedSlider
+                ariaLabel="Отказ"
+                options={refusingSliderOptions}
+                value={refusing}
+                onChange={setRefusing}
+              />
             </div>
             {action.allowCheating && (
-              <select className="form-control mb-2" ref={cheatingSelectRef}>
-                {Object.entries(CheatingOptions).map((entry) => (
-                  <option key={entry[0]} value={entry[0]}>
-                    {entry[1]}
-                  </option>
-                ))}
-              </select>
+              <div>
+                <div className="exec-field-label">Читинг</div>
+                <SegmentedSlider
+                  ariaLabel="Читинг"
+                  options={cheatingSliderOptions}
+                  value={cheating}
+                  onChange={setCheating}
+                />
+              </div>
             )}
-            <select className="form-control mb-2" ref={refusingSelectRef}>
-              {Object.entries(RefusingOptions).map((entry) => (
-                <option key={entry[0]} value={entry[0]}>
-                  {entry[1]}
-                </option>
-              ))}
-            </select>
-            {action.bigCount && (
-              <select className="form-control mb-2" ref={burningSelectRef}>
-                {Object.entries(BurningOptions).map((entry) => (
-                  <option key={entry[0]} value={entry[0]}>
-                    {entry[1]}
-                  </option>
-                ))}
-              </select>
-            )}
-            <div className="form-check mb-2">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                id="useBelt"
-                ref={useBeltRef}
+            <div className="d-flex align-items-center flex-wrap gap-2">
+              <ToggleChip
+                checked={useBelt}
+                onChange={setUseBelt}
+                icon={<GiBelt />}
+                ariaLabel="Использовался ремень"
+                tone="secondary"
               />
-              <label className="form-check-label" htmlFor="useBelt">
-                Использовался ремень
-              </label>
+              <ToggleChip
+                checked={burning}
+                onChange={setBurning}
+                icon={<FaFireFlameCurved />}
+                label="Жжение"
+                tone="warning"
+                celebrate
+              />
+              <div className="d-flex align-items-center gap-2 ms-auto">
+                <PlusOneCounter
+                  value={extraCount}
+                  onChange={setExtraCount}
+                  max={EXTRA_COUNT_MAX}
+                />
+                <OverlayTrigger
+                  trigger="click"
+                  rootClose
+                  placement="top"
+                  overlay={
+                    <Popover id="extraCountPopover">
+                      <Popover.Body>
+                        Если удалось выполнить чуть больше заявленного
+                        количества
+                      </Popover.Body>
+                    </Popover>
+                  }
+                >
+                  <button
+                    type="button"
+                    className="exec-field-icon-btn"
+                    aria-label="Подсказка"
+                  >
+                    <FaCircleQuestion />
+                  </button>
+                </OverlayTrigger>
+              </div>
             </div>
             <textarea
               rows={2}
@@ -306,9 +308,13 @@ export default function TrainingExecuteFormItem({
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <div className="btn btn-success" onClick={closeModal}>
+          <button
+            type="button"
+            className="btn btn-success exec-submit-btn"
+            onClick={closeModal}
+          >
             Выполнено
-          </div>
+          </button>
         </Modal.Footer>
       </Modal>
     </div>

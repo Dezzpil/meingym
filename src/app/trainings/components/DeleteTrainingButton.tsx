@@ -4,7 +4,9 @@ import React from "react";
 import { handleTrainingDelete } from "@/app/trainings/[id]/actions";
 
 export function DeleteTrainingButton({ id }: { id: number }) {
-  const action = handleTrainingDelete.bind(null, id);
+  const action = async () => {
+    await handleTrainingDelete(id);
+  };
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     const ok = window.confirm(
       "Вы действительно хотите удалить тренировку? Это действие нельзя будет отменить.",

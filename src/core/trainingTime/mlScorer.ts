@@ -43,7 +43,7 @@ export class TrainingTimeMLScorer extends TrainingTimeScorer {
     super();
   }
 
-  private async _predict(trainingId: number): Promise<number[]> {
+  private async _predict(trainingId: number): Promise<number[] | null> {
     const result = await prisma.$queryRawUnsafe<any>(sql, trainingId);
     let jsonl = "";
     for (const item of result) {
@@ -63,8 +63,9 @@ export class TrainingTimeMLScorer extends TrainingTimeScorer {
   async score(trainingId: number) {
     let predictions: number[] = [];
     try {
-      predictions = await this._predict(trainingId);
-      if (predictions && predictions.length > 0) {
+      const predicted = await this._predict(trainingId);
+      if (predicted && predicted.length > 0) {
+        predictions = predicted;
         const timeScoreInMins = predictions.reduce((acc, p) => acc + p, 0) / 60;
         await prisma.training.update({
           where: { id: trainingId },

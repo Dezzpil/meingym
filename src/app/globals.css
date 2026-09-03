@@ -135,3 +135,297 @@ body {
     color: #198754;
 }
 
+/***** Execution feedback modal (оценка подхода) *****/
+.exec-field-label {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    margin-bottom: .4rem;
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: #868e96;
+}
+
+.exec-field-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-size: 1.1rem;
+    color: #868e96;
+}
+
+.exec-field-icon-btn:hover {
+    color: #495057;
+}
+
+/* пошаговый ползунок: сегменты с переезжающим бегунком */
+.seg-slider {
+    position: relative;
+    display: flex;
+    padding: .25rem;
+    background-color: #eef0f2;
+    border-radius: .75rem;
+}
+
+.seg-slider-thumb {
+    position: absolute;
+    top: .25rem;
+    bottom: .25rem;
+    left: .25rem;
+    border: 1px solid transparent;
+    border-radius: .55rem;
+    box-shadow: 0 1px 3px rgba(33, 37, 41, .15);
+    transition: transform .25s cubic-bezier(.25, .8, .35, 1.1),
+    background-color .2s ease,
+    border-color .2s ease;
+}
+
+.seg-slider-2 .seg-slider-thumb { width: calc((100% - .5rem) / 2); }
+.seg-slider-3 .seg-slider-thumb { width: calc((100% - .5rem) / 3); }
+.seg-slider-4 .seg-slider-thumb { width: calc((100% - .5rem) / 4); }
+
+.seg-slider[data-selected="0"] .seg-slider-thumb { transform: translateX(0); }
+.seg-slider[data-selected="1"] .seg-slider-thumb { transform: translateX(100%); }
+.seg-slider[data-selected="2"] .seg-slider-thumb { transform: translateX(200%); }
+.seg-slider[data-selected="3"] .seg-slider-thumb { transform: translateX(300%); }
+
+.seg-slider-option {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .35rem;
+    border: 0;
+    background: transparent;
+    border-radius: .55rem;
+    padding: .45rem .25rem;
+    font-size: .9rem;
+    color: #6c757d;
+    transition: color .2s ease;
+}
+
+.seg-slider-icon {
+    display: inline-flex;
+    font-size: .85rem;
+}
+
+/* сегмент только с иконкой (без подписи) */
+.seg-slider-option .seg-slider-icon:only-child {
+    font-size: 1.05rem;
+}
+
+.seg-slider-hint {
+    position: relative;
+    margin-top: .3rem;
+    min-height: 1.1em;
+    font-size: .8rem;
+    color: #868e96;
+}
+
+.seg-slider-hint-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* без max-content абсолютно позиционированный span у правого края
+       сжимается и дробит текст на строки */
+    width: max-content;
+    max-width: 100%;
+    transition: left .25s cubic-bezier(.25, .8, .35, 1.1),
+    transform .25s cubic-bezier(.25, .8, .35, 1.1);
+}
+
+.seg-slider-hint[data-align="center"] .seg-slider-hint-text {
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+.seg-slider-hint[data-align="right"] .seg-slider-hint-text {
+    left: 100%;
+    transform: translateX(-100%);
+    text-align: right;
+}
+
+/* цвет бегунка и активного сегмента по тону выбранного значения:
+   палитра модального окна — серый, оранжевый, зеленый;
+   активный сегмент оформлен как обычная кнопка: яркий фон, светлый текст */
+.seg-tone-success .seg-slider-thumb { background-color: #4e9a2e; border-color: #4e9a2e; }
+.seg-tone-success .seg-slider-option.active { color: #fff; }
+.seg-tone-warning .seg-slider-thumb { background-color: #f0921e; border-color: #f0921e; }
+.seg-tone-warning .seg-slider-option.active { color: #fff; }
+.seg-tone-secondary .seg-slider-thumb { background-color: #6c757d; border-color: #6c757d; }
+.seg-tone-secondary .seg-slider-option.active { color: #fff; }
+
+/* счетчик доп. повторений с всплывающим «+1» */
+.plus-one-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    transition: transform .15s ease;
+}
+
+.plus-one-minus {
+    border: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    color: #495057;
+}
+
+.plus-one-minus:disabled {
+    opacity: .45;
+}
+
+.plus-one-plus {
+    border: 1px solid #4e9a2e;
+    background-color: #4e9a2e;
+    color: #fff;
+}
+
+.plus-one-plus:active:not(:disabled) {
+    transform: scale(.92);
+}
+
+.plus-one-plus:disabled {
+    opacity: .5;
+}
+
+.plus-one-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    border-radius: .75rem;
+    background-color: #f1f3f5;
+    font-size: 1.25rem;
+    font-weight: 700;
+    animation: plus-one-bump .3s ease;
+}
+
+.plus-one-plus-wrap {
+    position: relative;
+    display: inline-flex;
+}
+
+.plus-one-pop {
+    position: absolute;
+    left: 50%;
+    bottom: 90%;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #4e9a2e;
+    text-shadow: 0 1px 0 #fff;
+    pointer-events: none;
+    animation: plus-one-float .9s ease-out forwards;
+}
+
+/* варианты направления полета «+1», чтобы не использовать inline-стили */
+.plus-one-pop-0 { --pop-drift: -18px; --pop-tilt: -14deg; }
+.plus-one-pop-1 { --pop-drift: 14px; --pop-tilt: 10deg; }
+.plus-one-pop-2 { --pop-drift: -6px; --pop-tilt: 6deg; }
+.plus-one-pop-3 { --pop-drift: 22px; --pop-tilt: -8deg; }
+
+@keyframes plus-one-float {
+    0% { opacity: 0; transform: translate(-50%, 8px) scale(.5) rotate(0deg); }
+    20% { opacity: 1; transform: translate(calc(-50% + var(--pop-drift) * .35), -12px) scale(1.2) rotate(calc(var(--pop-tilt) * .5)); }
+    100% { opacity: 0; transform: translate(calc(-50% + var(--pop-drift)), -52px) scale(1) rotate(var(--pop-tilt)); }
+}
+
+@keyframes plus-one-bump {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.18); }
+    100% { transform: scale(1); }
+}
+
+/* чекбоксы-чипы с иконками */
+.toggle-chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    padding: .45rem .95rem;
+    border: 1px solid #dee2e6;
+    border-radius: 2rem;
+    background-color: #fff;
+    color: #6c757d;
+    font-size: .9rem;
+    transition: background-color .2s ease,
+    border-color .2s ease,
+    color .2s ease;
+}
+
+.toggle-chip:hover {
+    border-color: #adb5bd;
+}
+
+.toggle-chip-icon {
+    display: inline-flex;
+    font-size: 1rem;
+}
+
+.toggle-chip-secondary.active { background-color: #e2e3e5; border-color: #c4c8cb; color: #41464b; }
+.toggle-chip-warning.active { background-color: #ffd591; border-color: #f0921e; color: #8a4b0f; }
+
+/* чип только с иконкой (без подписи) */
+.toggle-chip-icon-only {
+    padding: .45rem .75rem;
+}
+
+.toggle-chip-icon-only .toggle-chip-icon {
+    font-size: 1.15rem;
+}
+
+/* огонечки, разлетающиеся при включении чипа */
+.toggle-chip-spark {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: .45rem;
+    height: .45rem;
+    margin: -.225rem 0 0 -.225rem;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: chip-spark .65s ease-out forwards;
+}
+
+.toggle-chip-spark-0 { --spark-x: -30px; --spark-y: -34px; background-color: #ff922b; }
+.toggle-chip-spark-1 { --spark-x: 26px; --spark-y: -40px; background-color: #ffd43b; }
+.toggle-chip-spark-2 { --spark-x: -40px; --spark-y: -8px; background-color: #ff922b; }
+.toggle-chip-spark-3 { --spark-x: 38px; --spark-y: -12px; background-color: #ffa94d; }
+.toggle-chip-spark-4 { --spark-x: -14px; --spark-y: -48px; background-color: #ffd43b; }
+.toggle-chip-spark-5 { --spark-x: 14px; --spark-y: -46px; background-color: #ff922b; }
+
+@keyframes chip-spark {
+    0% { opacity: 0; transform: translate(0, 0) scale(.4); }
+    15% { opacity: 1; transform: translate(calc(var(--spark-x) * .25), calc(var(--spark-y) * .25)) scale(1); }
+    100% { opacity: 0; transform: translate(var(--spark-x), var(--spark-y)) scale(.5); }
+}
+
+/* теплая зелень кнопки подтверждения в модалке оценки подхода */
+.btn.exec-submit-btn {
+    background-color: #4e9a2e;
+    border-color: #4e9a2e;
+}
+
+.btn.exec-submit-btn:hover,
+.btn.exec-submit-btn:focus {
+    background-color: #438627;
+    border-color: #438627;
+}
+
+.seg-slider-option:focus-visible,
+.plus-one-btn:focus-visible,
+.toggle-chip:focus-visible,
+.exec-field-icon-btn:focus-visible {
+    outline: 2px solid #6c757d;
+    outline-offset: 2px;
+}
+
