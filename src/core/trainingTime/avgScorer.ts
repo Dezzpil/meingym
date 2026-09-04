@@ -1,12 +1,6 @@
 import { TrainingTimeScorer } from "@/core/trainingTime/scorer";
+import { estimateExerciseTimeInMins } from "@/core/trainingTime/estimate";
 import { prisma } from "@/tools/db";
-import { Purpose } from "@prisma/client";
-
-const PurposesToMinsMap = {
-  [Purpose.STRENGTH]: 5,
-  [Purpose.MASS]: 3.5,
-  [Purpose.LOSS]: 2,
-};
 
 export class TrainingTimeAvgScorer extends TrainingTimeScorer {
   async score(trainingId: number): Promise<number[]> {
@@ -24,9 +18,10 @@ export class TrainingTimeAvgScorer extends TrainingTimeScorer {
           Approaches: true,
         },
       });
-      let score =
-        (PurposesToMinsMap[exercise.purpose] || 0) *
-          approachesGroup!.Approaches.length || 0;
+      let score = estimateExerciseTimeInMins(
+        exercise.purpose,
+        approachesGroup!.Approaches.length,
+      );
       timeScoreInSecs += score * 60;
       timeScoreInMins += score;
       scores.push(score);

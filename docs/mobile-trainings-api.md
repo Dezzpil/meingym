@@ -500,6 +500,133 @@ POST /api/mobile/v1/trainings
 
 ---
 
+## POST /trainings/scores
+
+Предварительные оценки тренировки — **время** и **сложность** — по упражнениям, которые приложение собирается в неё включить. Метод ничего не создаёт и не изменяет на сервере: это чистый расчёт, чтобы показать оценки до сохранения тренировки.
+
+```
+POST /api/mobile/v1/trainings/scores
+```
+
+### Ограничения
+
+- Массив `exercises` обязателен и не может быть пустым.
+- Максимальный размер: **50 упражнений** за запрос.
+- `id` — это `actionId` из справочника `GET /api/mobile/v1/exercises`; неизвестные ID приводят к ошибке 400.
+- `approaches` не может быть пустым: количество подходов определяет время, веса и повторения — сложность.
+- Оценки считаются по тем же формулам, что и на сервере при сохранении тренировки:
+  - время упражнения = норматив цели (мин на подход) × количество подходов; нормативы: `STRENGTH` — 5, `MASS` — 3.5, `LOSS` — 2;
+  - сложность упражнения = `base` упражнения × предварительная оценка подходов по цели;
+  - оценки тренировки = суммы оценок её упражнений.
+- Для упражнений «на длительность» (`isDurationBased`) цель принудительно берётся как `LOSS` — см. [Упражнения на длительность](#упражнения-на-длительность-duration-based). Переданный `purpose` при этом игнорируется, в ответе возвращается фактическая цель.
+- Для упражнений с собственным весом (`rig = OTHER`) в статистике подходов участвует последняя запись веса пользователя; если записей веса нет, вернётся 400.
+
+### Тело запроса
+
+```json
+{
+  "exercises": [
+    {
+      "id": 42,
+      "purpose": "MASS",
+      "approaches": [
+        { "weight": 60, "count": 10 },
+        { "weight": 70, "count": 8 }
+      ]
+    },
+    {
+      "id": 17,
+      "purpose": "STRENGTH",
+      "approaches": [
+        { "weight": 100, "count": 5 },
+        { "weight": 110, "count": 3 }
+      ]
+    }
+  ]
+}
+```
+
+### Поля Exercise (input)
+
+| Поле        | Тип     | Обязательный | Описание                                        |
+|-------------|---------|--------------|-------------------------------------------------|
+| `id`        | integer | Да           | ID упражнения (`actionId`) из справочника        |
+| `purpose`   | string  | Да           | `MASS`, `STRENGTH`, `LOSS`                       |
+| `approaches`| array   | Да           | Подходы упражнения (минимум один)                |
+
+### Поля Approach (input)
+
+| Поле       | Тип     | Обязательный | Описание                                                                       |
+|------------|---------|--------------|--------------------------------------------------------------------------------|
+| `weight`   | number  | Да           | Вес ≥ 0. Для duration-упражнений — параметр сложности                           |
+| `count`    | integer | Да           | Количество повторений > 0. Для duration-упражнений — длительность в секундах    |
+| `priority` | integer | Нет          | Порядок подхода (на расчёт не влияет)                                           |
+| `isBoost`  | boolean | Нет          | Флаг буст-подхода (на расчёт не влияет)                                         |
+
+### Пример ответа (200 OK)
+
+```json
+{
+  "timeScoreInMins": 17,
+  "timeScoreInSecs": 1020,
+  "difficultyScore": 14.62,
+  "exercises": [
+    {
+      "id": 42,
+      "purpose": "MASS",
+      "approachesCount": 2,
+      "timeScoreInMins": 7,
+      "timeScoreInSecs": 420,
+      "difficultyScore": 8.93
+    },
+    {
+      "id": 17,
+      "purpose": "STRENGTH",
+      "approachesCount": 2,
+      "timeScoreInMins": 10,
+      "timeScoreInSecs": 600,
+      "difficultyScore": 5.69
+    }
+  ]
+}
+```
+
+### Описание полей ответа
+
+| Поле              | Тип    | Описание                                                |
+|-------------------|--------|---------------------------------------------------------|
+| `timeScoreInMins` | number | Оценка времени всей тренировки в минутах                 |
+| `timeScoreInSecs` | number | То же в секундах                                         |
+| `difficultyScore` | number | Оценка сложности всей тренировки                         |
+| `exercises`       | array  | Оценки по каждому упражнению в порядке передачи         |
+
+#### Exercise (scores)
+
+| Поле              | Тип     | Описание                                                             |
+|-------------------|---------|----------------------------------------------------------------------|
+| `id`              | integer | ID упражнения (`actionId`)                                            |
+| `purpose`         | string  | Фактическая цель расчёта (`LOSS` для duration-упражнений)             |
+| `approachesCount` | integer | Количество учтённых подходов                                          |
+| `timeScoreInMins` | number  | Оценка времени упражнения в минутах                                   |
+| `timeScoreInSecs` | number  | То же в секундах                                                      |
+| `difficultyScore` | number  | Оценка сложности упражнения                                           |
+
+### Ошибки
+
+| Статус | Тело ответа                                              | Причина                              |
+|--------|----------------------------------------------------------|--------------------------------------|
+| 401    | `{ "error": "Authorization header with Bearer token is required" }` | Отсутствует заголовок авторизации    |
+| 401    | `{ "error": "Invalid or expired token" }`                | Токен невалиден или истёк            |
+| 400    | `{ "error": "Request body must contain an 'exercises' array" }` | Тело запроса не содержит `exercises` |
+| 400    | `{ "error": "exercises array must not be empty" }`       | Массив `exercises` пуст              |
+| 413    | `{ "error": "Maximum 50 exercises per request" }`        | Превышен лимит упражнений            |
+| 400    | `{ "error": "exercises[0].purpose: Invalid enum value..." }` | Невалидное поле упражнения или подхода (в сообщении — путь к полю и причина) |
+| 400    | `{ "error": "Unknown exercise ids: 42, 17" }`            | Упражнений с такими ID нет в справочнике |
+| 400    | `{ "error": "User has no weight records required for bodyweight exercises" }` | Нет записи веса для упражнений с собственным весом |
+| 500    | `{ "error": "Internal server error" }`                   | Внутренняя ошибка сервера            |
+
+---
+
 ## Упражнения на длительность (duration-based)
 
 Некоторые упражнения измеряются не «вес × повторения», а **длительностью** (беговая дорожка, планка, велосипед и т.п.). Они помечаются флагом `isDurationBased` в справочнике и в ответе `GET /trainings`.
@@ -549,6 +676,7 @@ POST /api/mobile/v1/trainings
 | `POST /api/mobile/v1/auth/register` | Регистрация нового пользователя            |
 | `GET /api/mobile/v1/me`          | Информация о текущем пользователе          |
 | `GET /api/mobile/v1/exercises`   | Справочник упражнений (`actionId`)         |
+| `POST /api/mobile/v1/trainings/scores` | Предварительные оценки времени и сложности тренировки |
 | `GET /api/mobile/v1/weights`     | Список весов пользователя                  |
 | `POST /api/mobile/v1/weights`    | Пакетное добавление весов                   |
 
@@ -556,16 +684,25 @@ POST /api/mobile/v1/trainings
 
 ## Запуск тестов
 
-Тесты эндпоинта находятся в:
+Тесты эндпоинтов находятся в:
 
 ```
-src/tests/mobile/trainings-route.test.ts
+src/tests/mobile/trainings-route.test.ts   # GET/POST /trainings
+src/tests/mobile/syncTrainings.test.ts     # логика синхронизации
+src/tests/mobile/scores-route.test.ts      # POST /trainings/scores (валидация, авторизация)
+src/tests/mobile/scores.test.ts            # POST /trainings/scores (расчёт оценок)
 ```
 
-Запуск (требуется флаг экспериментального мокирования модулей):
+Запуск всех тестов мобильного API (требуется флаг экспериментального мокирования модулей):
 
 ```bash
-node --experimental-test-module-mocks --import tsx --test src/tests/mobile/trainings-route.test.ts
+npm run test:mobile
+```
+
+Запуск отдельного файла:
+
+```bash
+node --experimental-test-module-mocks --import tsx --test src/tests/mobile/scores-route.test.ts
 ```
 
 ---
