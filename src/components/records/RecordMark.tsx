@@ -12,6 +12,7 @@ type Props = {
   withIcon?: boolean;
   withTitle?: boolean;
   iconFirst?: boolean;
+  isDurationBased?: boolean;
 };
 
 export function RecordMark({
@@ -20,14 +21,17 @@ export function RecordMark({
   withTitle,
   iconFirst,
   className,
+  isDurationBased,
 }: Props) {
   const title = record.isAllTime
     ? `Новый рекорд — ${recordTypeTitle(
         record.type,
-      ).toLowerCase()}: ${formatRecordValue(record)}`
+        isDurationBased,
+      ).toLowerCase()}: ${formatRecordValue(record, isDurationBased)}`
     : `Лучший результат за период — ${recordTypeTitle(
         record.type,
-      ).toLowerCase()}: ${formatRecordValue(record)}`;
+        isDurationBased,
+      ).toLowerCase()}: ${formatRecordValue(record, isDurationBased)}`;
   return (
     <div
       className={classNames(
@@ -38,7 +42,7 @@ export function RecordMark({
       {iconFirst && withIcon && recordIcon(record.type)}
       {withTitle && (
         <small className="text-dark" title={title}>
-          {recordTypeTitle(record.type)}
+          {recordTypeTitle(record.type, isDurationBased)}
         </small>
       )}
       {!iconFirst && withIcon && recordIcon(record.type)}

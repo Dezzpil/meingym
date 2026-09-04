@@ -17,6 +17,9 @@ export const ActionsFormFields = z.object({
   allowCheating: z.boolean().default(false),
   oneDumbbell: z.boolean().default(false),
   anotherTitles: z.string().min(2).nullable(),
+  isDurationBased: z.boolean().default(false),
+  durationParamLabel: z.string().nullable(),
+  durationParamUnit: z.string().nullable(),
 });
 
 export type ActionsFormFieldsType = z.infer<typeof ActionsFormFields>;
@@ -35,7 +38,7 @@ export type SimilarExerciseType = {
 
 export type ActionWithMusclesType = Pick<
   Action,
-  "id" | "title" | "alias" | "base" | "search"
+  "id" | "title" | "alias" | "base" | "search" | "isDurationBased"
 > & {
   MusclesAgony: ActionMusclesType[];
   MusclesSynergy: ActionMusclesType[];

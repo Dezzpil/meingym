@@ -77,7 +77,11 @@ export default async function ActionCardPage({ params }: ItemPageParams) {
           <ActionTabs id={id} current={"card"} className={"mb-4"} />
         )}
       </div>
-      <ActionRecords records={records} purpose={userInfo.purpose} />
+      <ActionRecords
+        records={records}
+        purpose={userInfo.purpose}
+        isDurationBased={action.isDurationBased}
+      />
       <div className="row">
         <div className="col">
           <ActionCard action={action} />

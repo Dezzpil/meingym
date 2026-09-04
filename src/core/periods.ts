@@ -23,6 +23,11 @@ export function pickOnlyOptsFromItem(
     lossCountStep: item.lossCountStep,
     lossWeightDelta: item.lossWeightDelta,
     lossMaxSets: item.lossMaxSets,
+    durationSetsCount: item.durationSetsCount,
+    durationStepSec: item.durationStepSec,
+    durationMaxSec: item.durationMaxSec,
+    durationParamStep: item.durationParamStep,
+    durationMaxSets: item.durationMaxSets,
   };
 }
 

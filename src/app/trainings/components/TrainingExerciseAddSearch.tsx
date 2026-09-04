@@ -151,6 +151,11 @@ export function TrainingExerciseAddSearch({
                         <span className="badge bg-secondary fw-normal">
                           База: {a.base}
                         </span>
+                        {a.isDurationBased && (
+                          <span className="badge bg-info fw-normal">
+                            на длительность
+                          </span>
+                        )}
                       </span>
                       <a
                         href="#"

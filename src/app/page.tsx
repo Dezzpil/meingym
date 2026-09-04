@@ -60,7 +60,11 @@ export default async function HomePage() {
       // previousValue: { not: null },
     },
     orderBy: [{ achievedAt: "desc" }, { id: "desc" }],
-    include: { Action: { select: { id: true, title: true, alias: true } } },
+    include: {
+      Action: {
+        select: { id: true, title: true, alias: true, isDurationBased: true },
+      },
+    },
   });
   if (!records.length) {
     records = await prisma.personalRecord.findMany({
@@ -70,7 +74,11 @@ export default async function HomePage() {
       },
       orderBy: [{ achievedAt: "desc" }, { id: "desc" }],
       take: 5,
-      include: { Action: { select: { id: true, title: true, alias: true } } },
+      include: {
+        Action: {
+          select: { id: true, title: true, alias: true, isDurationBased: true },
+        },
+      },
     });
   }
 

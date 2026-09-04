@@ -15,7 +15,7 @@ import {
 import { PurposeName } from "@/tools/purposes";
 
 export type RecordWithAction = PersonalRecord & {
-  Action: Pick<Action, "id" | "title" | "alias">;
+  Action: Pick<Action, "id" | "title" | "alias" | "isDurationBased">;
 };
 
 type Props = {
@@ -78,11 +78,16 @@ export function RecordCard({ record }: Props) {
           href={`/trainings/${record.trainingId}`}
           className="text-decoration-none"
         >
-          <div className="record-value">{formatRecordValue(record)}</div>
+          <div className="record-value">
+            {formatRecordValue(record, record.Action.isDurationBased)}
+          </div>
         </Link>
         <div className="record-delta small">
           {record.previousAt ? (
-            <span>{formatRecordDelta(record)} к прежнему лучшему</span>
+            <span>
+              {formatRecordDelta(record, record.Action.isDurationBased)} к
+              прежнему лучшему
+            </span>
           ) : (
             <span>
               Первое выполнение{" "}
@@ -95,7 +100,7 @@ export function RecordCard({ record }: Props) {
             {moment(record.achievedAt).format(DateFormat)}
           </small>
           <span className="badge text-bg-light">
-            {recordTypeTitle(record.type)}
+            {recordTypeTitle(record.type, record.Action.isDurationBased)}
           </span>
         </div>
       </div>

@@ -159,45 +159,104 @@ export default function TrainingExecuteFormItem({
     setLiftedWeight(parseInt(e.target.value));
   }, []);
 
+  const isDuration = action.isDurationBased;
+
   return (
     <div className="mb-1 d-flex gap-2">
       <div className="input-group">
-        <span className="input-group-text">
-          <GiWeight />
-        </span>
-        <input
-          type="number"
-          step={0.5}
-          className={classNames("form-control", {
-            "text-success":
-              exec.liftedWeight && exec.liftedWeight > exec.plannedWeigth,
-            "text-warning":
-              exec.liftedWeight && exec.liftedWeight < exec.plannedWeigth,
-            "text-muted": exec.isPassed,
-          })}
-          disabled={disabled || isCompleted}
-          onInput={updateLiftedWeight}
-          defaultValue={
-            exec.liftedWeight ? exec.liftedWeight : exec.plannedWeigth
-          }
-          min={0}
-        />
-        <span className="input-group-text">x</span>
-        <input
-          type="number"
-          step="1"
-          className={classNames("form-control", {
-            "text-success":
-              exec.liftedCount && exec.liftedCount > exec.plannedCount,
-            "text-warning":
-              exec.liftedCount && exec.liftedCount < exec.plannedCount,
-            "text-muted": exec.isPassed,
-          })}
-          disabled={disabled || isCompleted}
-          onInput={updateLiftedCount}
-          min={0}
-          defaultValue={exec.liftedCount ? exec.liftedCount : exec.plannedCount}
-        />
+        {isDuration ? (
+          <>
+            {action.durationParamLabel && (
+              <>
+                <span className="input-group-text">
+                  {action.durationParamLabel}
+                </span>
+                <input
+                  type="number"
+                  step={0.5}
+                  className={classNames("form-control", {
+                    "text-success":
+                      exec.liftedWeight && exec.liftedWeight > exec.plannedWeigth,
+                    "text-warning":
+                      exec.liftedWeight && exec.liftedWeight < exec.plannedWeigth,
+                    "text-muted": exec.isPassed,
+                  })}
+                  disabled={disabled || isCompleted}
+                  onInput={updateLiftedWeight}
+                  defaultValue={
+                    exec.liftedWeight ? exec.liftedWeight : exec.plannedWeigth
+                  }
+                  min={0}
+                />
+                {action.durationParamUnit && (
+                  <span className="input-group-text">
+                    {action.durationParamUnit}
+                  </span>
+                )}
+              </>
+            )}
+            <span className="input-group-text">Длительность</span>
+            <input
+              type="number"
+              step="1"
+              className={classNames("form-control", {
+                "text-success":
+                  exec.liftedCount && exec.liftedCount > exec.plannedCount,
+                "text-warning":
+                  exec.liftedCount && exec.liftedCount < exec.plannedCount,
+                "text-muted": exec.isPassed,
+              })}
+              disabled={disabled || isCompleted}
+              onInput={updateLiftedCount}
+              min={0}
+              defaultValue={
+                exec.liftedCount ? exec.liftedCount : exec.plannedCount
+              }
+            />
+            <span className="input-group-text">с</span>
+          </>
+        ) : (
+          <>
+            <span className="input-group-text">
+              <GiWeight />
+            </span>
+            <input
+              type="number"
+              step={0.5}
+              className={classNames("form-control", {
+                "text-success":
+                  exec.liftedWeight && exec.liftedWeight > exec.plannedWeigth,
+                "text-warning":
+                  exec.liftedWeight && exec.liftedWeight < exec.plannedWeigth,
+                "text-muted": exec.isPassed,
+              })}
+              disabled={disabled || isCompleted}
+              onInput={updateLiftedWeight}
+              defaultValue={
+                exec.liftedWeight ? exec.liftedWeight : exec.plannedWeigth
+              }
+              min={0}
+            />
+            <span className="input-group-text">x</span>
+            <input
+              type="number"
+              step="1"
+              className={classNames("form-control", {
+                "text-success":
+                  exec.liftedCount && exec.liftedCount > exec.plannedCount,
+                "text-warning":
+                  exec.liftedCount && exec.liftedCount < exec.plannedCount,
+                "text-muted": exec.isPassed,
+              })}
+              disabled={disabled || isCompleted}
+              onInput={updateLiftedCount}
+              min={0}
+              defaultValue={
+                exec.liftedCount ? exec.liftedCount : exec.plannedCount
+              }
+            />
+          </>
+        )}
       </div>
       <button
         type="button"
@@ -243,7 +302,7 @@ export default function TrainingExecuteFormItem({
                 onChange={setRefusing}
               />
             </div>
-            {action.allowCheating && (
+            {action.allowCheating && !isDuration && (
               <div>
                 <div className="exec-field-label">Читинг</div>
                 <SegmentedSlider
@@ -255,13 +314,15 @@ export default function TrainingExecuteFormItem({
               </div>
             )}
             <div className="d-flex align-items-center flex-wrap gap-2">
-              <ToggleChip
-                checked={useBelt}
-                onChange={setUseBelt}
-                icon={<GiBelt />}
-                ariaLabel="Использовался ремень"
-                tone="secondary"
-              />
+              {!isDuration && (
+                <ToggleChip
+                  checked={useBelt}
+                  onChange={setUseBelt}
+                  icon={<GiBelt />}
+                  ariaLabel="Использовался ремень"
+                  tone="secondary"
+                />
+              )}
               <ToggleChip
                 checked={burning}
                 onChange={setBurning}
@@ -270,34 +331,36 @@ export default function TrainingExecuteFormItem({
                 tone="warning"
                 celebrate
               />
-              <div className="d-flex align-items-center gap-2 ms-auto">
-                <PlusOneCounter
-                  value={extraCount}
-                  onChange={setExtraCount}
-                  max={EXTRA_COUNT_MAX}
-                />
-                <OverlayTrigger
-                  trigger="click"
-                  rootClose
-                  placement="top"
-                  overlay={
-                    <Popover id="extraCountPopover">
-                      <Popover.Body>
-                        Если удалось выполнить чуть больше заявленного
-                        количества
-                      </Popover.Body>
-                    </Popover>
-                  }
-                >
-                  <button
-                    type="button"
-                    className="exec-field-icon-btn"
-                    aria-label="Подсказка"
+              {!isDuration && (
+                <div className="d-flex align-items-center gap-2 ms-auto">
+                  <PlusOneCounter
+                    value={extraCount}
+                    onChange={setExtraCount}
+                    max={EXTRA_COUNT_MAX}
+                  />
+                  <OverlayTrigger
+                    trigger="click"
+                    rootClose
+                    placement="top"
+                    overlay={
+                      <Popover id="extraCountPopover">
+                        <Popover.Body>
+                          Если удалось выполнить чуть больше заявленного
+                          количества
+                        </Popover.Body>
+                      </Popover>
+                    }
                   >
-                    <FaCircleQuestion />
-                  </button>
-                </OverlayTrigger>
-              </div>
+                    <button
+                      type="button"
+                      className="exec-field-icon-btn"
+                      aria-label="Подсказка"
+                    >
+                      <FaCircleQuestion />
+                    </button>
+                  </OverlayTrigger>
+                </div>
+              )}
             </div>
             <textarea
               rows={2}

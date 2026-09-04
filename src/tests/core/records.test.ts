@@ -6,8 +6,10 @@ import {
   buildRecordCandidates,
   evaluateRecord,
   filterRecordableExecutions,
+  filterDurationRecordableExecutions,
   valuateMaxWeight,
   valuateVolume,
+  valuateDurationVolume,
 } from "@/core/records";
 import type {
   LastRecordRef,
@@ -134,6 +136,72 @@ test("Кандидаты на рекорды из упражнения трен�
       achievedAt: new Date("2026-08-01T10:00:00Z"),
       executions: [execution(100, 5, { isPassed: true })],
       approaches: [],
+    });
+    assert.equal(candidates.length, 0);
+  });
+});
+
+test("Кандидаты на рекорды для упражнений на длительность", async (t) => {
+  await t.test("только MAX_VOLUME = Σ секунд, без MAX_WEIGHT", () => {
+    const candidates = buildRecordCandidates({
+      userId: "user-1",
+      trainingId: 10,
+      trainingExerciseId: 100,
+      actionId: 1,
+      purpose: "LOSS" as Purpose,
+      periodId: null,
+      achievedAt: new Date("2026-08-01T10:00:00Z"),
+      // liftedWeight = параметр (может быть 0), liftedCount = секунды
+      executions: [execution(0, 30), execution(0, 40), execution(0, 50)],
+      approaches: [],
+      isDurationBased: true,
+    });
+    assert.equal(candidates.length, 1);
+    assert.equal(candidates[0].type, PersonalRecordType.MAX_VOLUME);
+    assert.equal(candidates[0].value, 120); // 30+40+50 секунд
+    assert.isNull(candidates[0].reps);
+    assert.isUndefined(
+      candidates.find((c) => c.type === PersonalRecordType.MAX_WEIGHT),
+    );
+  });
+
+  await t.test("параметр = 0 не мешает учёту (в отличие от обычной ветки)", () => {
+    // для duration требование liftedWeight > 0 не применяется
+    const executions = [execution(0, 30), execution(0, 45)];
+    const valued = filterDurationRecordableExecutions(executions, []);
+    assert.equal(valued.length, 2);
+    assert.equal(valuateDurationVolume(valued), 75);
+    // обычная ветка отбросила бы эти подходы (liftedWeight = 0)
+    assert.equal(filterRecordableExecutions(executions, []).length, 0);
+  });
+
+  await t.test("пропущенные и boost-подходы не учитываются", () => {
+    const executions = [
+      execution(5, 30),
+      execution(5, 100, { isPassed: true }),
+      execution(5, 200, { approachId: 7 }),
+    ];
+    const approaches = [
+      { id: 7, isBoost: true },
+      { id: 8, isBoost: false },
+    ];
+    const valued = filterDurationRecordableExecutions(executions, approaches);
+    assert.equal(valued.length, 1);
+    assert.equal(valuateDurationVolume(valued), 30);
+  });
+
+  await t.test("нет учтённых подходов — кандидатов нет", () => {
+    const candidates = buildRecordCandidates({
+      userId: "user-1",
+      trainingId: 10,
+      trainingExerciseId: 100,
+      actionId: 1,
+      purpose: "LOSS" as Purpose,
+      periodId: null,
+      achievedAt: new Date("2026-08-01T10:00:00Z"),
+      executions: [execution(0, 30, { isPassed: true })],
+      approaches: [],
+      isDurationBased: true,
     });
     assert.equal(candidates.length, 0);
   });

@@ -139,19 +139,24 @@ export async function processCompletedTrainingCore(
         );
 
         // TODO рефакторинг
-        if (exercise.purpose === Purpose.MASS) {
+        // упражнения «на длительность» всегда имеют purpose LOSS, но прогрессируются
+        // отдельным методом, поэтому проверяем isDurationBased до ветвления по цели
+        if (exercise.Action.isDurationBased) {
+          upgradedSetsData = strategy.duration(
+            plannedSetsData,
+            executedSetsData,
+          ) as ApproachData[];
+        } else if (exercise.purpose === Purpose.MASS) {
           upgradedSetsData = strategy.mass(
             plannedSetsData,
             executedSetsData,
           ) as ApproachData[];
-        }
-        if (exercise.purpose === Purpose.STRENGTH) {
+        } else if (exercise.purpose === Purpose.STRENGTH) {
           upgradedSetsData = strategy.strength(
             plannedSetsData,
             executedSetsData,
           ) as ApproachData[];
-        }
-        if (exercise.purpose === Purpose.LOSS) {
+        } else if (exercise.purpose === Purpose.LOSS) {
           upgradedSetsData = strategy.loss(
             plannedSetsData,
             executedSetsData,

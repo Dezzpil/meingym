@@ -17,6 +17,11 @@ const opts = {
   lossCountMax: 16,
   lossMaxSets: 6,
   lossWeightDelta: 1.25,
+  durationSetsCount: 3,
+  durationStepSec: 10,
+  durationMaxSec: 120,
+  durationParamStep: 1,
+  durationMaxSets: 5,
 };
 
 const strategy = new ProgressionStrategySimple(
@@ -24,6 +29,8 @@ const strategy = new ProgressionStrategySimple(
     rig: "BARBELL",
     bigCount: false,
     oneDumbbell: false,
+    isDurationBased: false,
+    durationParamLabel: null,
   },
   opts,
 );

@@ -124,7 +124,14 @@ export default async function RecordsPage({ searchParams }: RecordsPageProps) {
           orderBy: [{ achievedAt: "desc" }, { id: "desc" }],
           take: 100,
           include: {
-            Action: { select: { id: true, title: true, alias: true } },
+            Action: {
+              select: {
+                id: true,
+                title: true,
+                alias: true,
+                isDurationBased: true,
+              },
+            },
           },
         })
       : [];
@@ -137,7 +144,14 @@ export default async function RecordsPage({ searchParams }: RecordsPageProps) {
           distinct: ["actionId", "purpose", "type"],
           orderBy: [{ achievedAt: "desc" }, { id: "desc" }],
           include: {
-            Action: { select: { id: true, title: true, alias: true } },
+            Action: {
+              select: {
+                id: true,
+                title: true,
+                alias: true,
+                isDurationBased: true,
+              },
+            },
           },
         })
       : [];
@@ -237,7 +251,11 @@ export default async function RecordsPage({ searchParams }: RecordsPageProps) {
               )}
             >
               <div className="card-body d-flex align-items-center column-gap-2 flex-wrap py-2">
-                <RecordMark record={record} withIcon />
+                <RecordMark
+                  record={record}
+                  withIcon
+                  isDurationBased={record.Action.isDurationBased}
+                />
                 <Link
                   href={`/actions/${record.actionId}`}
                   className="text-decoration-none"
@@ -248,10 +266,10 @@ export default async function RecordsPage({ searchParams }: RecordsPageProps) {
                   href={`/trainings/${record.trainingId}`}
                   className="text-decoration-none fw-semibold"
                 >
-                  {formatRecordValue(record)}
+                  {formatRecordValue(record, record.Action.isDurationBased)}
                 </Link>
                 <span className="record-delta small">
-                  {formatRecordDelta(record)}
+                  {formatRecordDelta(record, record.Action.isDurationBased)}
                 </span>
                 <small className="text-muted">
                   {moment(record.achievedAt).format(DateFormat)} ·{" "}
@@ -282,12 +300,16 @@ export default async function RecordsPage({ searchParams }: RecordsPageProps) {
                       key={record.id}
                       className="mb-1 d-flex align-items-center column-gap-2 flex-wrap"
                     >
-                      <RecordMark record={record} withIcon />
+                      <RecordMark
+                        record={record}
+                        withIcon
+                        isDurationBased={record.Action.isDurationBased}
+                      />
                       <Link
                         href={`/trainings/${record.trainingId}`}
                         className="text-decoration-none"
                       >
-                        {formatRecordValue(record)}
+                        {formatRecordValue(record, record.Action.isDurationBased)}
                       </Link>
                       <span className="badge text-bg-light">
                         {purposeShortTitle(record.purpose)}

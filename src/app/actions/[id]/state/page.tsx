@@ -72,45 +72,65 @@ export default async function ActionStatePage({ params }: ItemPageParams) {
       {user.role === UserRole.ADMIN && (
         <ActionTabs id={id} current={"state"} className={"mb-2"} />
       )}
-      <div className="mb-3">
-        <h5 className="mb-3">На массу</h5>
-        {state.mass ? (
-          <ApproachesManagement
-            create={{ purpose: "MASS", actionPurposeId: state.mass.id }}
-            actionId={action.id}
-            approachGroup={state.mass.CurrentApproachGroup}
-          />
-        ) : (
-          <ActionCreateMass action={action} />
-        )}
-      </div>
-      <div className="mb-3">
-        <h5 className="mb-3">На силу</h5>
-        {state.strength ? (
-          <ApproachesManagement
-            create={{
-              purpose: "STRENGTH",
-              actionPurposeId: state.strength.id,
-            }}
-            actionId={action.id}
-            approachGroup={state.strength.CurrentApproachGroup}
-          />
-        ) : (
-          <ActionCreateStrength action={action} />
-        )}
-      </div>
-      <div className="mb-3">
-        <h5 className="mb-3">На снижение веса</h5>
-        {state.loss ? (
-          <ApproachesManagement
-            create={{ purpose: "LOSS", actionPurposeId: state.loss.id }}
-            actionId={action.id}
-            approachGroup={state.loss.CurrentApproachGroup}
-          />
-        ) : (
-          <ActionCreateLoss action={action} />
-        )}
-      </div>
+      {action.isDurationBased ? (
+        <div className="mb-3">
+          <h5 className="mb-3">На длительность</h5>
+          {state.loss ? (
+            <ApproachesManagement
+              create={{ purpose: "LOSS", actionPurposeId: state.loss.id }}
+              actionId={action.id}
+              approachGroup={state.loss.CurrentApproachGroup}
+              isDurationBased
+              durationParamLabel={action.durationParamLabel}
+              durationParamUnit={action.durationParamUnit}
+            />
+          ) : (
+            <ActionCreateLoss action={action} />
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="mb-3">
+            <h5 className="mb-3">На массу</h5>
+            {state.mass ? (
+              <ApproachesManagement
+                create={{ purpose: "MASS", actionPurposeId: state.mass.id }}
+                actionId={action.id}
+                approachGroup={state.mass.CurrentApproachGroup}
+              />
+            ) : (
+              <ActionCreateMass action={action} />
+            )}
+          </div>
+          <div className="mb-3">
+            <h5 className="mb-3">На силу</h5>
+            {state.strength ? (
+              <ApproachesManagement
+                create={{
+                  purpose: "STRENGTH",
+                  actionPurposeId: state.strength.id,
+                }}
+                actionId={action.id}
+                approachGroup={state.strength.CurrentApproachGroup}
+              />
+            ) : (
+              <ActionCreateStrength action={action} />
+            )}
+          </div>
+          <div className="mb-3">
+            <h5 className="mb-3">На снижение веса</h5>
+            {state.loss ? (
+              <ApproachesManagement
+                create={{ purpose: "LOSS", actionPurposeId: state.loss.id }}
+                actionId={action.id}
+                approachGroup={state.loss.CurrentApproachGroup}
+              />
+            ) : (
+              <ActionCreateLoss action={action} />
+            )}
+          </div>
+        </>
+      )}
     </>
   );
 }

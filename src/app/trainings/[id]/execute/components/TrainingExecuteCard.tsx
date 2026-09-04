@@ -61,7 +61,10 @@ export function TrainingExecuteCard({
               : exercise.Action.title}
           </li>
           <li className="list-inline-item">
-            <PurposeText purpose={exercise.purpose} />
+            <PurposeText
+              purpose={exercise.purpose}
+              isDurationBased={exercise.Action.isDurationBased}
+            />
           </li>
         </ul>
         <div className="col-lg-6 col-md-12"></div>

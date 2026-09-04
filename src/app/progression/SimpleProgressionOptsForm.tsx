@@ -26,6 +26,11 @@ export function SimpleProgressionOptsForm({ item }: Props) {
     strengthWeightDelta: item.strengthWeightDelta,
     strengthPrepareSetsCount: item.strengthPrepareSetsCount,
     strengthWorkingSetsCount: item.strengthWorkingSetsCount,
+    durationSetsCount: item.durationSetsCount,
+    durationStepSec: item.durationStepSec,
+    durationMaxSec: item.durationMaxSec,
+    durationParamStep: item.durationParamStep,
+    durationMaxSets: item.durationMaxSets,
   };
   const [formData, setFormData] = useState<ProgressionStrategySimpleOptsType>(
     data || ProgressionStrategySimpleOptsDefaults,
@@ -178,6 +183,63 @@ export function SimpleProgressionOptsForm({ item }: Props) {
           min={1.25}
           max={5}
           step={1.25}
+        />
+      </Form.Group>
+      <hr />
+      <Form.Group className="mb-3">
+        <Form.Label>Количество подходов (длительность)</Form.Label>
+        <Form.Control
+          type="number"
+          name="durationSetsCount"
+          value={formData.durationSetsCount}
+          onChange={handleInputChange}
+          min={1}
+          max={10}
+        />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Шаг увеличения времени, с (длительность)</Form.Label>
+        <Form.Control
+          type="number"
+          name="durationStepSec"
+          value={formData.durationStepSec}
+          onChange={handleInputChange}
+          min={1}
+          max={60}
+        />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Максимум времени, с (длительность)</Form.Label>
+        <Form.Control
+          type="number"
+          name="durationMaxSec"
+          value={formData.durationMaxSec}
+          onChange={handleInputChange}
+          min={10}
+          max={600}
+        />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Шаг увеличения параметра (длительность)</Form.Label>
+        <Form.Control
+          type="number"
+          name="durationParamStep"
+          value={formData.durationParamStep}
+          onChange={handleInputChange}
+          min={0.1}
+          max={10}
+          step={0.1}
+        />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Максимум подходов (длительность)</Form.Label>
+        <Form.Control
+          type="number"
+          name="durationMaxSets"
+          value={formData.durationMaxSets}
+          onChange={handleInputChange}
+          min={1}
+          max={10}
         />
       </Form.Group>
       <div className="d-flex justify-content-end">

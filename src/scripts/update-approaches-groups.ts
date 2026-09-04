@@ -21,7 +21,12 @@ async function updateApproachesGroups() {
     if (group.max === 0 || group.countTotal === 0 || group.countMean === 0) {
       const info = await findInfoForCalculateStatsForApproach(group.id);
       const data = group.Approaches;
-      const stats = calculateStats(data, info.actionrig, info.userweight);
+      const stats = calculateStats(
+        data,
+        info.actionrig,
+        info.userweight,
+        info.isDurationBased,
+      );
       await prisma.approachesGroup.update({
         where: { id: group.id },
         data: {

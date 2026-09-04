@@ -51,6 +51,7 @@ export default async function ActionsPage({ searchParams }: PageParams) {
       alias: true,
       base: true,
       search: true,
+      isDurationBased: true,
       ExerciseImages: {
         where: { isMain: true },
         take: 1,

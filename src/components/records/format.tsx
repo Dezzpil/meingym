@@ -15,7 +15,12 @@ export function isShownRecord(
   return record.isAllTime ? true : record.previousValue !== null;
 }
 
-export function recordTypeTitle(type: PersonalRecordType): string {
+export function recordTypeTitle(
+  type: PersonalRecordType,
+  isDurationBased = false,
+): string {
+  // для упражнений «на длительность» формируется только суммарное время (Σ)
+  if (isDurationBased) return "Σ";
   return type === PersonalRecordType.MAX_WEIGHT ? "MAX" : "Σ";
 }
 
@@ -43,8 +48,14 @@ export function formatNumber(value: number): string {
   return fracPart ? `${spaced}.${fracPart}` : spaced;
 }
 
-// «100 кг × 5» для веса, «2 450 кг» для тоннажа
-export function formatRecordValue(record: RecordValueLike): string {
+// «100 кг × 5» для веса, «2 450 кг» для тоннажа, «300 с» для длительности
+export function formatRecordValue(
+  record: RecordValueLike,
+  isDurationBased = false,
+): string {
+  if (isDurationBased) {
+    return `${formatNumber(record.value)} с`;
+  }
   if (record.type === PersonalRecordType.MAX_WEIGHT) {
     return record.reps !== null
       ? `${formatNumber(record.value)} кг × ${record.reps}`
@@ -53,7 +64,10 @@ export function formatRecordValue(record: RecordValueLike): string {
   return `${formatNumber(record.value)} кг`;
 }
 
-export function formatRecordDelta(record: RecordLike): string {
+export function formatRecordDelta(
+  record: RecordLike,
+  isDurationBased = false,
+): string {
   const delta = record.value - (record.previousValue ?? 0);
-  return `+${formatNumber(delta)} кг`;
+  return `+${formatNumber(delta)} ${isDurationBased ? "с" : "кг"}`;
 }

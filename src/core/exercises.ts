@@ -10,6 +10,7 @@ import {
 import { PrismaTransactionClient } from "@/tools/types";
 import { CurrentPurpose } from "@/core/types";
 import {
+  createDurationInitial,
   createLossInitial,
   createMassInitial,
   createStrengthInitial,
@@ -120,6 +121,14 @@ export async function createExercise(
   userId: string,
   tx: PrismaTransactionClient,
 ): Promise<TrainingExercise> {
+  // упражнения «на длительность» не делятся по цели — всегда выполняются как LOSS.
+  // Нормализуем purpose до include-запроса, чтобы ниже ветвилось уже по LOSS.
+  const { isDurationBased } = await tx.action.findUniqueOrThrow({
+    where: { id: actionId },
+    select: { isDurationBased: true },
+  });
+  if (isDurationBased) purpose = "LOSS";
+
   const action: Action & {
     ActionMass?: ActionMass[] | undefined;
     ActionLoss?: ActionLoss[] | undefined;
@@ -181,13 +190,15 @@ export async function createExercise(
   }
   if (purpose === "LOSS") {
     if (action.ActionLoss?.length === 0) {
-      purposeAction = await createLossInitial(
-        userId,
-        actionId,
-        action.rig,
-        action.bigCount,
-        tx,
-      );
+      purposeAction = isDurationBased
+        ? await createDurationInitial(userId, actionId, tx)
+        : await createLossInitial(
+            userId,
+            actionId,
+            action.rig,
+            action.bigCount,
+            tx,
+          );
     } else {
       // @ts-ignore
       purposeAction = action.ActionLoss[0] as ActionLoss;

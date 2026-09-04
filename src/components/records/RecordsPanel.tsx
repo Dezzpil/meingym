@@ -43,18 +43,21 @@ export function RecordsPanel({ records }: Props) {
                 >
                   <div className="mb-2">
                     {record.Action.alias || record.Action.title}:{" "}
-                    {formatRecordValue(record)}
+                    {formatRecordValue(record, record.Action.isDurationBased)}
                   </div>
                   <div className="d-flex justify-content-between align-items-baseline">
                     <div className="d-inline-flex column-gap-3 align-items-baseline">
                       <span className="record-delta">
-                        {formatRecordDelta(record)}
+                        {formatRecordDelta(record, record.Action.isDurationBased)}
                       </span>
                       <span className="text-muted">
                         {moment(record.achievedAt).format(DateFormat)}
                       </span>
                     </div>
-                    <RecordMark record={record} />
+                    <RecordMark
+                      record={record}
+                      isDurationBased={record.Action.isDurationBased}
+                    />
                   </div>
                 </Link>
               </li>

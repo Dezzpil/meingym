@@ -33,6 +33,12 @@ export type ProgressionStrategySimpleOptsType = {
   lossCountMax: number;
   lossWeightDelta: number;
   lossMaxSets: number;
+  // упражнения «на длительность» (isDurationBased): секунды в count, параметр в weight
+  durationSetsCount: number;
+  durationStepSec: number;
+  durationMaxSec: number;
+  durationParamStep: number;
+  durationMaxSets: number;
 };
 
 export const ProgressionStrategySimpleOptsDefaults: ProgressionStrategySimpleOptsType =
@@ -48,12 +54,24 @@ export const ProgressionStrategySimpleOptsDefaults: ProgressionStrategySimpleOpt
     lossCountMax: 16,
     lossWeightDelta: 1.25,
     lossMaxSets: 6,
+    durationSetsCount: 1,
+    durationStepSec: 30,
+    durationMaxSec: 600,
+    durationParamStep: 1,
+    durationMaxSets: 5,
   };
 
 export class ProgressionStrategySimple {
   public readonly _opts: ProgressionStrategySimpleOptsType;
   constructor(
-    private _action: Pick<Action, "rig" | "bigCount" | "oneDumbbell">,
+    private _action: Pick<
+      Action,
+      | "rig"
+      | "bigCount"
+      | "oneDumbbell"
+      | "isDurationBased"
+      | "durationParamLabel"
+    >,
     opts?: ProgressionStrategySimpleOptsType | null,
   ) {
     this._opts = opts
@@ -357,6 +375,53 @@ export class ProgressionStrategySimple {
           weight: executed[0].weight + this._opts.lossWeightDelta,
         });
       }
+    }
+
+    return sets;
+  }
+
+  /**
+   * Прогрессия для упражнений «на длительность» (isDurationBased).
+   * count = секунды, weight = параметр сложности (0 если параметра нет).
+   *
+   * Логика «сначала время, потом параметр»:
+   *  - растим среднее время на durationStepSec, пока не достигнем durationMaxSec;
+   *  - по достижении потолка сбрасываем время и повышаем сложность:
+   *    при наличии параметра увеличиваем его на durationParamStep,
+   *    иначе добавляем ещё один подход (не превышая durationMaxSets).
+   */
+  duration(planned: SetData[], executed: SetDataExecuted[]): SetData[] {
+    assert.isAbove(executed.length, 0);
+
+    let totalSec = 0;
+    let param = 0;
+    for (const set of executed) {
+      totalSec += set.count;
+      param = Math.max(param, set.weight);
+    }
+    let sec = Math.floor(totalSec / executed.length);
+
+    const hasParam = this._action.durationParamLabel != null;
+    let addSet = false;
+    if (sec >= this._opts.durationMaxSec) {
+      sec = this._opts.durationMaxSec - 2 * this._opts.durationStepSec;
+      if (hasParam) {
+        param += this._opts.durationParamStep;
+      } else {
+        addSet = true;
+      }
+    } else {
+      sec += this._opts.durationStepSec;
+    }
+
+    const setsCount =
+      planned.length > 0 ? planned.length : this._opts.durationSetsCount;
+    const sets: SetData[] = [];
+    for (let i = 0; i < setsCount; i++) {
+      sets.push({ count: sec, weight: param });
+    }
+    if (addSet && sets.length < this._opts.durationMaxSets) {
+      sets.push({ count: sec, weight: param });
     }
 
     return sets;

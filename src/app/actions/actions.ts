@@ -90,6 +90,14 @@ export async function handleUpdate(id: number, data: ActionsFormFieldsType) {
         bigCount: data.bigCount,
         allowCheating: data.allowCheating,
         oneDumbbell: data.oneDumbbell,
+        isDurationBased: data.isDurationBased,
+        // параметр сложности имеет смысл только для упражнений «на длительность»
+        durationParamLabel: data.isDurationBased
+          ? data.durationParamLabel?.trim() || null
+          : null,
+        durationParamUnit: data.isDurationBased
+          ? data.durationParamUnit?.trim() || null
+          : null,
         MusclesAgony: {
           deleteMany: { actionId: id },
           createMany: {

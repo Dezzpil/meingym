@@ -61,3 +61,29 @@ export function valuateVolume(
   // округляем до сотых, чтобы не таскать погрешность float в БД и сравнения
   return Math.round(sum * 100) / 100;
 }
+
+// Учётные подходы для упражнений «на длительность»: не пропущенные, с секундами > 0,
+// не boost. Параметр (liftedWeight) может быть 0, поэтому требование liftedWeight > 0
+// здесь не применяется.
+export function filterDurationRecordableExecutions(
+  executions: RecordableExecution[],
+  approaches: { id: number; isBoost: boolean }[],
+): RecordableExecution[] {
+  const boostIds = new Set(
+    approaches.filter((a) => a.isBoost).map((a) => a.id),
+  );
+  return executions.filter(
+    (e) =>
+      !e.isPassed &&
+      e.liftedCount > 0 &&
+      !(e.approachId !== null && boostIds.has(e.approachId)),
+  );
+}
+
+// Объём для упражнений «на длительность» = суммарное время (Σ секунд), а не тоннаж.
+export function valuateDurationVolume(
+  executions: RecordableExecution[],
+): number | null {
+  if (!executions.length) return null;
+  return executions.reduce((acc, e) => acc + e.liftedCount, 0);
+}

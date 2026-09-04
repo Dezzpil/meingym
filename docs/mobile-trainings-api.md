@@ -102,6 +102,7 @@ curl -X GET "https://meingym.online/api/mobile/v1/trainings?since=2026-07-01T00:
           "actionId": 42,
           "priority": 1,
           "isPassed": false,
+          "isDurationBased": false,
           "rating": "OK",
           "planned": {
             "approaches": [
@@ -185,6 +186,7 @@ curl -X GET "https://meingym.online/api/mobile/v1/trainings?since=2026-07-01T00:
 | `actionId`      | integer | ID упражнения (связь со справочником `/api/mobile/v1/exercises`) |
 | `priority`      | integer | Порядок упражнения в тренировке                            |
 | `isPassed`      | boolean | Помечено ли упражнение как пройденное                      |
+| `isDurationBased` | boolean | Упражнение «на длительность» — см. раздел [Упражнения на длительность](#упражнения-на-длительность-duration-based). Для таких упражнений `weight`/`count` в подходах и выполнениях имеют другой смысл |
 | `rating`        | string \| null | Оценка упражнения: `EASY`, `OK`, `HARD`, `IMPOSSIBLE` |
 | `planned`       | object  | Запланированные подходы и метрики                          |
 | `executed`      | object \| null | Выполненные подходы (пройденные и пропущенные)    |
@@ -196,8 +198,8 @@ curl -X GET "https://meingym.online/api/mobile/v1/trainings?since=2026-07-01T00:
 |------------|---------|---------------------------------------|
 | `id`       | integer | ID подхода                            |
 | `priority` | integer | Порядок подхода                       |
-| `weight`   | number  | Вес                                   |
-| `count`    | integer | Количество повторений                 |
+| `weight`   | number  | Вес. Для duration-упражнений — значение параметра сложности (`0`, если параметра нет) |
+| `count`    | integer | Количество повторений. Для duration-упражнений — длительность в секундах |
 | `isBoost`  | boolean | Флаг буст-подхода                     |
 
 #### Execution (executed)
@@ -206,10 +208,10 @@ curl -X GET "https://meingym.online/api/mobile/v1/trainings?since=2026-07-01T00:
 |------------------|----------------|--------------------------------------------------------------------------|
 | `id`             | integer        | ID выполнения                                                            |
 | `priority`       | integer        | Порядок выполнения                                                       |
-| `plannedWeight`  | number         | Запланированный вес                                                      |
-| `plannedCount`   | integer        | Запланированное количество повторений                                    |
-| `liftedWeight`   | number         | Фактический вес                                                          |
-| `liftedCount`    | integer        | Фактическое количество повторений                                        |
+| `plannedWeight`  | number         | Запланированный вес. Для duration — запланированный параметр сложности    |
+| `plannedCount`   | integer        | Запланированное количество повторений. Для duration — planned длительность, с |
+| `liftedWeight`   | number         | Фактический вес. Для duration — фактический параметр сложности            |
+| `liftedCount`    | integer        | Фактическое количество повторений. Для duration — фактическая длительность, с |
 | `isPassed`       | boolean        | Подход пройден                                                           |
 | `rating`         | string         | `EASY`, `OK`, `TENSION`, `HARD`                                          |
 | `technique`      | string         | `OK`, `FLAW`                                                             |
@@ -419,6 +421,47 @@ POST /api/mobile/v1/trainings
 | 400    | `{ "error": "trainings array must not be empty" }`       | Массив `trainings` пуст              |
 | 413    | `{ "error": "Maximum 20 trainings per request" }`        | Превышен лимит батча                 |
 | 500    | `{ "error": "Internal server error" }`                   | Внутренняя ошибка сервера            |
+
+---
+
+## Упражнения на длительность (duration-based)
+
+Некоторые упражнения измеряются не «вес × повторения», а **длительностью** (беговая дорожка, планка, велосипед и т.п.). Они помечаются флагом `isDurationBased` в справочнике и в ответе `GET /trainings`.
+
+### Семантика полей
+
+Для duration-упражнений колонки `weight`/`count` переиспользуются:
+
+| Поле     | Обычное упражнение    | Duration-упражнение                                             |
+|----------|-----------------------|-----------------------------------------------------------------|
+| `count`  | количество повторений | **длительность в секундах**                                      |
+| `weight` | вес (кг)              | **параметр сложности** (наклон/скорость/режим); `0`, если параметра нет |
+
+Правило действует для подходов (`planned.approaches`), выполнений (`executed.approaches`, `executed.skipped`) и для тела `POST /trainings` (`approaches`, `executions`, включая `plannedWeight`/`plannedCount`/`liftedWeight`/`liftedCount`).
+
+Метрики (`metrics`) для duration-упражнений:
+
+- `countSum` — суммарная длительность, с;
+- `countMean` — средняя длительность, с;
+- `weightMax` — максимальный параметр сложности;
+- `weightMean` — средний параметр сложности;
+- `weightSum` — Σ (параметр × длительность).
+
+### Поля справочника `GET /api/mobile/v1/exercises`
+
+| Поле                 | Тип            | Описание                                                             |
+|----------------------|----------------|----------------------------------------------------------------------|
+| `isDurationBased`    | boolean        | `true`, если упражнение измеряется длительностью                       |
+| `durationParamLabel` | string \| null | Название параметра сложности (например, «Наклон»); `null`, если параметра нет |
+| `durationParamUnit`  | string \| null | Единицы параметра (например, «%», «км/ч»); `null`, если параметра нет   |
+
+Наличие параметра определяется как `durationParamLabel != null`.
+
+### Синхронизация (`POST /trainings`)
+
+- Цель (`purpose`) duration-упражнений на сервере принудительно устанавливается в `LOSS`; переданное значение `purpose` игнорируется.
+- Структура подходов/выполнений не меняется: длительность передаётся в `count`, параметр — в `weight`.
+- Поля обратной связи `cheating`, `useBelt`, `extraCount` для duration-упражнений не несут смысла (допустимо передавать значения по умолчанию).
 
 ---
 

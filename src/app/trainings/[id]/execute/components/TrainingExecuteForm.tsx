@@ -144,6 +144,8 @@ export function TrainingExecuteForm({ exercise, disabled, noFeedback }: Props) {
                   <SetsStatsForExecutedExercise
                     exercise={exercise}
                     className="mb-1"
+                    isDurationBased={exercise.Action.isDurationBased}
+                    durationParamLabel={exercise.Action.durationParamLabel}
                   />
                   {exercise.comment && (
                     <div className="text-muted">

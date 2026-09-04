@@ -479,4 +479,56 @@ describe("syncTrainingsBatch", () => {
     );
     expect(approachGroupUpdates).to.have.lengthOf(0);
   });
+
+  // ─── Test 11: Duration-based exercise transport (count = seconds) ────
+  it("should sync a duration-based exercise preserving count=seconds and weight=param", async () => {
+    const createExerciseArgs: any[] = [];
+    createExerciseImpl = async (...args: any[]) => {
+      createExerciseArgs.push(args);
+      return { id: 100 };
+    };
+
+    const input = makeTrainingInput();
+    // Приложение шлёт purpose=LOSS для duration-упражнений; сервер дополнительно
+    // принудительно нормализует цель внутри createExercise (здесь он замокан).
+    input.exercises[0].actionId = 42;
+    input.exercises[0].purpose = "LOSS";
+    input.exercises[0].approaches = [
+      { priority: 0, weight: 5, count: 30 }, // параметр 5, 30 секунд
+      { priority: 1, weight: 5, count: 30 },
+    ];
+    input.exercises[0].executions = [
+      {
+        priority: 0,
+        plannedWeight: 5,
+        plannedCount: 30,
+        liftedWeight: 5,
+        liftedCount: 40, // фактически 40 секунд
+      },
+    ];
+
+    const results = await syncTrainingsBatch(USER_ID, [input]);
+    expect(results).to.have.lengthOf(1);
+    expect(results[0].status).to.equal("created");
+
+    // createExercise вызвана с actionId и purpose из payload
+    expect(createExerciseArgs).to.have.lengthOf(1);
+    expect(createExerciseArgs[0][1]).to.equal(42); // actionId
+    expect(createExerciseArgs[0][2]).to.equal("LOSS"); // purpose
+
+    // подходы: count = секунды, weight = параметр
+    expect(createApproachGroupCalls).to.have.lengthOf(1);
+    const [, approachesArg, actionIdArg] = createApproachGroupCalls[0];
+    expect(actionIdArg).to.equal(42);
+    expect(approachesArg[0]).to.deep.include({ weight: 5, count: 30 });
+    expect(approachesArg[1]).to.deep.include({ weight: 5, count: 30 });
+
+    // выполнения: liftedCount = секунды, liftedWeight = параметр
+    expect(txExecCreateManyCalls).to.have.lengthOf(1);
+    const executionData = txExecCreateManyCalls[0].data[0];
+    expect(executionData.liftedCount).to.equal(40);
+    expect(executionData.liftedWeight).to.equal(5);
+    expect(executionData.plannedWeigth).to.equal(5);
+    expect(executionData.plannedCount).to.equal(30);
+  });
 });

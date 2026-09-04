@@ -4,6 +4,7 @@ import { prisma } from "@/tools/db";
 import { revalidatePath } from "next/cache";
 import { getCurrentUserId } from "@/tools/auth";
 import {
+  createDurationInitial,
   createLossInitial,
   createMassInitial,
   createStrengthInitial,
@@ -38,7 +39,12 @@ export async function handleCreateLossInitial(
 ) {
   const userId = await getCurrentUserId();
   await prisma.$transaction(async (tx) => {
-    await createLossInitial(userId, actionId, actionRig, actionBigCount, tx);
+    const action = await tx.action.findUniqueOrThrow({ where: { id: actionId } });
+    if (action.isDurationBased) {
+      await createDurationInitial(userId, actionId, tx);
+    } else {
+      await createLossInitial(userId, actionId, actionRig, actionBigCount, tx);
+    }
   });
   revalidatePath(`/actions/${actionId}`);
 }

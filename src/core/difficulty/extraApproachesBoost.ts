@@ -77,7 +77,12 @@ export class ExtraApproachesBoostStrategy
       priority: a.priority,
       isBoost: a.isBoost,
     }));
-    const stats = calculateStats(data, info.actionrig, info.userweight);
+    const stats = calculateStats(
+      data,
+      info.actionrig,
+      info.userweight,
+      info.isDurationBased,
+    );
 
     await prisma.approachesGroup.update({
       where: { id: groupId },

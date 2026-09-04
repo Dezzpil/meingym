@@ -106,6 +106,8 @@ export default function ActionForm({
     setHandling(false);
   });
 
+  const isDurationBased = form.watch("isDurationBased");
+
   return (
     <>
       <Toaster position="top-right" />
@@ -246,7 +248,47 @@ export default function ActionForm({
                     </label>
                   </div>
                 </div>
+                <div className="col-12">
+                  <div className="form-check col-auto">
+                    <input
+                      type="checkbox"
+                      id="isDurationBased"
+                      className="form-check-input"
+                      {...form.register("isDurationBased", {})}
+                    />
+                    <label
+                      htmlFor="isDurationBased"
+                      className="form-check-label"
+                    >
+                      Упражнение на длительность?
+                    </label>
+                  </div>
+                </div>
               </div>
+              {isDurationBased && (
+                <div className="d-flex flex-column flex-md-row gap-3 mt-3">
+                  <div className="flex-fill">
+                    <label className="form-label">Название параметра</label>
+                    <input
+                      className="form-control"
+                      placeholder="напр. Скорость, Наклон, Уровень"
+                      {...form.register("durationParamLabel", {
+                        required: false,
+                      })}
+                    />
+                  </div>
+                  <div className="flex-fill">
+                    <label className="form-label">Единицы параметра</label>
+                    <input
+                      className="form-control"
+                      placeholder="напр. км/ч, %, уровень"
+                      {...form.register("durationParamUnit", {
+                        required: false,
+                      })}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="mb-3">

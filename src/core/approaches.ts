@@ -1,5 +1,6 @@
 import { PrismaTransactionClient } from "@/tools/types";
 import type {
+  ActionLoss,
   ActionMass,
   ActionStrength,
   ApproachesGroup,
@@ -38,6 +39,13 @@ export const ApproachesLossDefault: ApproachData[] = [
   { weight: 10, count: 8, priority: 4 },
 ];
 
+// упражнения «на длительность»: count = секунды, weight = параметр сложности (0 если параметра нет)
+export const ApproachesDurationDefault: ApproachData[] = [
+  { weight: 0, count: 30, priority: 0 },
+  { weight: 0, count: 30, priority: 1 },
+  { weight: 0, count: 30, priority: 2 },
+];
+
 export async function createApproachGroup(
   tx: PrismaTransactionClient,
   approaches: ApproachData[],
@@ -47,7 +55,12 @@ export async function createApproachGroup(
   const info = await findInfoForCalculationStatsForAction(actionId, userId, tx);
   const given = approaches.length ? approaches : ApproachesStrengthDefault;
   const { len, weightSum, weightMean, weightMax, countSum, countMean } =
-    calculateStats(given, info.actionrig, info.userweight);
+    calculateStats(
+      given,
+      info.actionrig,
+      info.userweight,
+      info.isDurationBased,
+    );
   return tx.approachesGroup.create({
     data: {
       count: len,
@@ -172,6 +185,29 @@ export async function createLossInitial(
     defaults.push(copy);
   }
   const newGroup = await createApproachGroup(tx, defaults, actionId, userId);
+  await tx.actionLoss.deleteMany({ where: { userId, actionId } });
+  return tx.actionLoss.create({
+    data: {
+      actionId,
+      userId,
+      currentApproachGroupId: newGroup.id,
+    },
+  });
+}
+
+// упражнения «на длительность»: цель всегда LOSS, поэтому создаём связку ActionLoss.
+// count = секунды, weight = параметр сложности; значения по умолчанию не зависят от rig/bigCount.
+export async function createDurationInitial(
+  userId: string,
+  actionId: number,
+  tx: PrismaTransactionClient,
+): Promise<ActionLoss> {
+  const newGroup = await createApproachGroup(
+    tx,
+    ApproachesDurationDefault,
+    actionId,
+    userId,
+  );
   await tx.actionLoss.deleteMany({ where: { userId, actionId } });
   return tx.actionLoss.create({
     data: {

@@ -4,8 +4,10 @@ export { buildRecordCandidates } from "./engine";
 export { evaluateRecord } from "./evaluate";
 export {
   filterRecordableExecutions,
+  filterDurationRecordableExecutions,
   valuateMaxWeight,
   valuateVolume,
+  valuateDurationVolume,
   type RecordableExecution,
 } from "./valuation";
 export type {

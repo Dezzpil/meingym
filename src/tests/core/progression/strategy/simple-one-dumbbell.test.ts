@@ -10,6 +10,8 @@ const actionOneDb = {
   rig: "DUMBBELL" as any,
   bigCount: false,
   oneDumbbell: true,
+  isDurationBased: false,
+  durationParamLabel: null,
 };
 
 const opts = {
@@ -24,6 +26,11 @@ const opts = {
   lossCountMax: 16,
   lossMaxSets: 6,
   lossWeightDelta: 1.25,
+  durationSetsCount: 3,
+  durationStepSec: 10,
+  durationMaxSec: 120,
+  durationParamStep: 1,
+  durationMaxSets: 5,
 };
 
 const isEven = (n: number) => n % 2 === 0;

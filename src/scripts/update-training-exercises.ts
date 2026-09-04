@@ -43,7 +43,12 @@ async function updateTrainingExercises() {
           exercise.Training.userId,
           tx,
         );
-        const stats = calculateStats(sets, info.actionrig, info.userweight);
+        const stats = calculateStats(
+          sets,
+          info.actionrig,
+          info.userweight,
+          info.isDurationBased,
+        );
         liftedMax = stats.weightMax;
         liftedCountMean = stats.countMean;
 

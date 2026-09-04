@@ -13,6 +13,9 @@ export type MobileExerciseDTO = {
   bigCount: boolean;
   allowCheating: boolean;
   oneDumbbell: boolean;
+  isDurationBased: boolean;
+  durationParamLabel: string | null;
+  durationParamUnit: string | null;
   base: number;
   rig: string;
   require: string;
@@ -60,6 +63,9 @@ export async function getExercisesList(
     bigCount: action.bigCount,
     allowCheating: action.allowCheating,
     oneDumbbell: action.oneDumbbell,
+    isDurationBased: action.isDurationBased,
+    durationParamLabel: action.durationParamLabel,
+    durationParamUnit: action.durationParamUnit,
     base: action.base,
     rig: action.rig,
     require: action.require,

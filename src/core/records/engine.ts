@@ -1,7 +1,9 @@
 import { PersonalRecordType, type Purpose } from "@prisma/client";
 import type { RecordCandidate } from "./types";
 import {
+  filterDurationRecordableExecutions,
   filterRecordableExecutions,
+  valuateDurationVolume,
   valuateMaxWeight,
   valuateVolume,
   type RecordableExecution,
@@ -10,6 +12,10 @@ import {
 /**
  * Оценивает выполнения упражнения тренировки и возвращает кандидатов
  * на рекорды обоих типов (MAX_WEIGHT и MAX_VOLUME).
+ *
+ * Для упражнений «на длительность» (isDurationBased) формируется только
+ * MAX_VOLUME = суммарное время (Σ секунд); MAX_WEIGHT не формируется,
+ * так как веса как такового нет (в liftedWeight — параметр сложности).
  */
 export function buildRecordCandidates(params: {
   userId: string;
@@ -21,13 +27,8 @@ export function buildRecordCandidates(params: {
   achievedAt: Date;
   executions: RecordableExecution[];
   approaches: { id: number; isBoost: boolean }[];
+  isDurationBased?: boolean;
 }): RecordCandidate[] {
-  const valued = filterRecordableExecutions(
-    params.executions,
-    params.approaches,
-  );
-  if (!valued.length) return [];
-
   const base = {
     userId: params.userId,
     actionId: params.actionId,
@@ -37,6 +38,32 @@ export function buildRecordCandidates(params: {
     periodId: params.periodId,
     achievedAt: params.achievedAt,
   };
+
+  if (params.isDurationBased) {
+    const durationValued = filterDurationRecordableExecutions(
+      params.executions,
+      params.approaches,
+    );
+    if (!durationValued.length) return [];
+
+    const candidates: RecordCandidate[] = [];
+    const totalSec = valuateDurationVolume(durationValued);
+    if (totalSec !== null) {
+      candidates.push({
+        ...base,
+        type: PersonalRecordType.MAX_VOLUME,
+        value: totalSec,
+        reps: null,
+      });
+    }
+    return candidates;
+  }
+
+  const valued = filterRecordableExecutions(
+    params.executions,
+    params.approaches,
+  );
+  if (!valued.length) return [];
 
   const candidates: RecordCandidate[] = [];
 

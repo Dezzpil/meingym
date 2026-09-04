@@ -23,6 +23,9 @@ type Props = {
   };
   actionId: number;
   approachGroup: ApproachesGroup & { Approaches: Approach[] };
+  isDurationBased?: boolean;
+  durationParamLabel?: string | null;
+  durationParamUnit?: string | null;
 };
 
 function _pickApproachData(a: Approach) {
@@ -39,6 +42,9 @@ export function ApproachesManagement({
   update,
   actionId,
   approachGroup,
+  isDurationBased,
+  durationParamLabel,
+  durationParamUnit,
 }: Props) {
   const currentData = useMemo(() => {
     const data: ApproachData[] = [];
@@ -61,7 +67,12 @@ export function ApproachesManagement({
   const add = useCallback(() => {
     const last = data.length > 0 ? data[data.length - 1] : null;
     let newOne = { count: 1, weight: 0, priority: 0 };
-    if (last) {
+    if (isDurationBased) {
+      // для длительности копируем секунды и параметр как есть (без «вес+5 / повторы-4»)
+      newOne = last
+        ? { count: last.count, weight: last.weight, priority: last.priority + 1 }
+        : { count: 30, weight: 0, priority: 0 };
+    } else if (last) {
       newOne = {
         count: Math.max(last.count - 4, 1),
         weight: last.weight + 5,
@@ -74,7 +85,7 @@ export function ApproachesManagement({
       newData.push(item);
     }
     setData(newData);
-  }, [data]);
+  }, [data, isDurationBased]);
 
   const remove = useCallback(
     (priority: number) => {
@@ -136,6 +147,9 @@ export function ApproachesManagement({
                   elem={d}
                   onChange={() => {}}
                   onRemove={remove}
+                  isDurationBased={isDurationBased}
+                  durationParamLabel={durationParamLabel}
+                  durationParamUnit={durationParamUnit}
                 />
               </div>
             ))}
@@ -144,6 +158,8 @@ export function ApproachesManagement({
             <SetsStatsForApproachGroup
               group={approachGroup}
               className="col-lg-6 col-md-12 mb-3"
+              isDurationBased={isDurationBased}
+              durationParamLabel={durationParamLabel}
             />
             <div className="col-lg-6 col-md-12 d-flex gap-3 justify-content-end">
               <button className="btn btn-primary" disabled={handling}>

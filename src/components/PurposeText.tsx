@@ -5,6 +5,7 @@ type Props = {
   purpose: CurrentPurpose;
   firstUp?: boolean;
   brackets?: boolean;
+  isDurationBased?: boolean;
 };
 const map: Record<CurrentPurpose, string> = {
   STRENGTH: "на развитие силы",
@@ -15,7 +16,9 @@ export function PurposeText({
   purpose,
   firstUp = false,
   brackets = true,
+  isDurationBased = false,
 }: Props) {
+  const text = isDurationBased ? "на длительность" : map[purpose];
   return (
     <span
       className={classNames("text-muted", {
@@ -23,7 +26,7 @@ export function PurposeText({
       })}
     >
       {brackets && "("}
-      {map[purpose]}
+      {text}
       {brackets && ")"}
     </span>
   );

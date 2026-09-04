@@ -30,6 +30,7 @@ export async function detectPersonalRecordsForTraining(
           id: true,
           actionId: true,
           purpose: true,
+          Action: { select: { isDurationBased: true } },
           TrainingExerciseExecution: {
             orderBy: { priority: "asc" },
             select: {
@@ -69,6 +70,7 @@ export async function detectPersonalRecordsForTraining(
       achievedAt: training.completedAt as Date,
       executions: exercise.TrainingExerciseExecution,
       approaches: exercise.ApproachGroup.Approaches,
+      isDurationBased: exercise.Action.isDurationBased,
     });
 
     for (const candidate of candidates) {

@@ -194,7 +194,12 @@ export async function handleTrainingExerciseExecuted(
         countSum: liftedCountTotal,
         weightMax,
         countMean: liftedCountMean,
-      } = calculateStats(sets, info.actionrig, info.userweight);
+      } = calculateStats(
+        sets,
+        info.actionrig,
+        info.userweight,
+        info.isDurationBased,
+      );
 
       await tx.trainingExercise.update({
         where: { id: exercise.id },

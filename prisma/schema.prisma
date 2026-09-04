@@ -268,6 +268,13 @@ model Action {
   allowCheating Boolean @default(false)
   oneDumbbell   Boolean @default(false)
 
+  // Упражнения «на длительность» (беговая дорожка, планка, вело): без веса и повторов,
+  // только длительность и опциональный числовой параметр сложности. Длительность хранится
+  // в Approach.count (секунды), параметр — в Approach.weight. Цель выполнения всегда LOSS.
+  isDurationBased    Boolean @default(false)
+  durationParamLabel String? // напр. «Скорость», «Наклон», «Уровень»; null — параметра нет
+  durationParamUnit  String? // напр. «км/ч», «%», «уровень»
+
   // Базовость упражнения: 0.7 * сумма sizeFactor агонистов + 0.3 * сумма sizeFactor синергистов
   base Float @default(0)
 
@@ -704,6 +711,13 @@ model ProgressionStrategySimpleOpts {
   lossCountMax    Int   @default(16)
   lossWeightDelta Float @default(1.25)
   lossMaxSets     Int   @default(6)
+
+  // упражнения «на длительность» (isDurationBased): секунды в count, параметр в weight
+  durationSetsCount Int   @default(1)
+  durationStepSec   Int   @default(30)
+  durationMaxSec    Int   @default(600)
+  durationParamStep Float @default(1)
+  durationMaxSets   Int   @default(5)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

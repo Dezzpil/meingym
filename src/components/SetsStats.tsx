@@ -4,11 +4,19 @@ import type { ApproachesGroup, TrainingExercise } from "@prisma/client";
 import { NumberDiffViz } from "@/components/NumberDiffViz";
 import classNames from "classnames";
 
-type Props = { current: SetsStats; prev?: SetsStats; className?: string };
+type Props = {
+  current: SetsStats;
+  prev?: SetsStats;
+  className?: string;
+  isDurationBased?: boolean;
+  durationParamLabel?: string | null;
+};
 type PropsForApproachGroup = {
   group: ApproachesGroup;
   prev?: SetsStats;
   className?: string;
+  isDurationBased?: boolean;
+  durationParamLabel?: string | null;
 };
 type ExerciseForStats = {
   id: number;
@@ -24,9 +32,57 @@ type PropsForExercise = {
     TrainingExerciseExecution: any[];
   };
   className?: string;
+  isDurationBased?: boolean;
+  durationParamLabel?: string | null;
 };
 
-export function SetsStatsBase({ current, prev, className }: Props) {
+export function SetsStatsBase({
+  current,
+  prev,
+  className,
+  isDurationBased,
+  durationParamLabel,
+}: Props) {
+  // упражнения «на длительность»: count = секунды, weight = параметр сложности
+  if (isDurationBased) {
+    return (
+      <ul className={classNames("text-muted small list-inline", className)}>
+        <li className="list-inline-item d-inline-flex gap-1">
+          <b>Σ с:</b>
+          <NumberDiffViz
+            prev={prev ? prev.countSum : undefined}
+            current={current.countSum}
+            toFixed={false}
+          />
+        </li>
+        <li className="list-inline-item d-inline-flex gap-1">
+          <b>÷ с:</b>
+          <NumberDiffViz
+            prev={prev ? prev.countMean : undefined}
+            current={current.countMean}
+          />
+        </li>
+        {durationParamLabel && (
+          <>
+            <li className="list-inline-item d-inline-flex gap-1">
+              <b>MAX {durationParamLabel}:</b>
+              <NumberDiffViz
+                prev={prev ? prev.weightMax : undefined}
+                current={current.weightMax}
+              />
+            </li>
+            <li className="list-inline-item d-inline-flex gap-1">
+              <b>÷ {durationParamLabel}:</b>
+              <NumberDiffViz
+                prev={prev ? prev.weightMean : undefined}
+                current={current.weightMean}
+              />
+            </li>
+          </>
+        )}
+      </ul>
+    );
+  }
   return (
     <ul className={classNames("text-muted small list-inline", className)}>
       <li className="list-inline-item d-inline-flex gap-1">
@@ -73,6 +129,8 @@ export function SetsStatsForApproachGroup({
   group,
   prev,
   className,
+  isDurationBased,
+  durationParamLabel,
 }: PropsForApproachGroup) {
   const current: SetsStats = {
     len: group.count,
@@ -82,12 +140,22 @@ export function SetsStatsForApproachGroup({
     countSum: group.countTotal,
     countMean: group.countMean,
   };
-  return <SetsStatsBase current={current} prev={prev} className={className} />;
+  return (
+    <SetsStatsBase
+      current={current}
+      prev={prev}
+      className={className}
+      isDurationBased={isDurationBased}
+      durationParamLabel={durationParamLabel}
+    />
+  );
 }
 
 export function SetsStatsForExecutedExercise({
   exercise,
   className,
+  isDurationBased,
+  durationParamLabel,
 }: PropsForExercise) {
   const prev: SetsStats = {
     len: exercise.ApproachGroup.count,
@@ -105,5 +173,13 @@ export function SetsStatsForExecutedExercise({
     countSum: exercise.liftedCountTotal,
     countMean: exercise.liftedCountMean,
   };
-  return <SetsStatsBase current={current} prev={prev} className={className} />;
+  return (
+    <SetsStatsBase
+      current={current}
+      prev={prev}
+      className={className}
+      isDurationBased={isDurationBased}
+      durationParamLabel={durationParamLabel}
+    />
+  );
 }

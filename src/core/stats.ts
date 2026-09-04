@@ -4,7 +4,7 @@ import { prisma } from "@/tools/db";
 import { PrismaTransactionClient } from "@/tools/types";
 
 export function getRawQueryForApproachGroup(groupId: number): string {
-  return `SELECT W.value userWeight, A.rig actionRig
+  return `SELECT W.value userWeight, A.rig actionRig, A."isDurationBased" as "isDurationBased"
     FROM "ApproachesGroup" AG
     LEFT JOIN "Action" A ON AG."actionId" = A.id
     LEFT JOIN "Weight" W ON AG."userId" = W."userId"
@@ -16,6 +16,7 @@ export function getRawQueryForApproachGroup(groupId: number): string {
 export type InfoForCalculatingStats = {
   userweight: number;
   actionrig: ActionRig;
+  isDurationBased: boolean;
 };
 
 export async function findInfoForCalculateStatsForApproach(
@@ -35,7 +36,8 @@ export async function findInfoForCalculationStatsForAction(
 ): Promise<InfoForCalculatingStats> {
   const action = await tx.action.findUniqueOrThrow({ where: { id: actionId } });
   let userweight = 0;
-  if (action.rig === ActionRig.OTHER) {
+  // для упражнений «на длительность» вес тела не участвует в расчёте статистики
+  if (action.rig === ActionRig.OTHER && !action.isDurationBased) {
     const weight = await tx.weight.findFirst({
       where: { userId },
       orderBy: { createdAt: "desc" },
@@ -45,13 +47,18 @@ export async function findInfoForCalculationStatsForAction(
     userweight = weight.value;
   }
 
-  return { actionrig: action.rig, userweight };
+  return {
+    actionrig: action.rig,
+    userweight,
+    isDurationBased: action.isDurationBased,
+  };
 }
 
 export function calculateStats(
   setsData: Array<SetData>,
   actionRig: ActionRig,
   userWeight: number,
+  isDurationBased = false,
 ): SetsStats {
   const count = setsData.length;
   let sum = 0,
@@ -60,6 +67,18 @@ export function calculateStats(
     countMean = 0,
     maxWeight = 0;
   for (const set of setsData) {
+    if (isDurationBased) {
+      // длительность: count = секунды, weight = параметр сложности (0 если параметра нет);
+      // вес тела не прибавляем, накапливаем при наличии секунд
+      const param = set.weight;
+      if (set.count > 0) {
+        countTotal += set.count;
+        sum += param * set.count;
+        mean += param;
+        maxWeight = Math.max(maxWeight, param);
+      }
+      continue;
+    }
     const weight =
       actionRig === ActionRig.OTHER ? userWeight + set.weight : set.weight;
     if (weight * set.count > 0) {

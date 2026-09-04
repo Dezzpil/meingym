@@ -53,6 +53,7 @@ export type MobileExerciseDTO = {
   actionId: number;
   priority: number;
   isPassed: boolean;
+  isDurationBased: boolean;
   rating: string | null;
   planned: {
     approaches: MobileApproachDTO[];
@@ -172,7 +173,7 @@ export async function getTrainingsList(
         TrainingExercise: {
           orderBy: { priority: "asc" },
           include: {
-            Action: { select: { id: true } },
+            Action: { select: { id: true, isDurationBased: true } },
             ApproachGroup: {
               include: { Approaches: { orderBy: { priority: "asc" } } },
             },
@@ -290,6 +291,7 @@ export async function getTrainingsList(
         actionId: ex.Action.id,
         priority: ex.priority,
         isPassed: ex.isPassed,
+        isDurationBased: ex.Action.isDurationBased,
         rating: rating ? String(rating) : null,
         planned: { approaches: plannedApproaches, metrics: plannedMetrics },
         executed,

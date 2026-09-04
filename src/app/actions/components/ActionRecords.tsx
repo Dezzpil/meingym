@@ -13,9 +13,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 type Props = {
   records: PersonalRecord[];
   purpose: CurrentPurpose;
+  isDurationBased?: boolean;
 };
 
-export function ActionRecords({ records, purpose }: Props) {
+export function ActionRecords({
+  records,
+  purpose,
+  isDurationBased,
+}: Props) {
   const [currentPurpose, setCurrentPurpose] = useState<Purpose>(purpose);
 
   const showOnlyMass = useCallback(() => {
@@ -74,11 +79,16 @@ export function ActionRecords({ records, purpose }: Props) {
                 href={`/trainings/${record.trainingId}`}
                 className="text-decoration-none fw-medium"
               >
-                {formatRecordValue(record)}
+                {formatRecordValue(record, isDurationBased)}
               </Link>
             </div>
             <div className="d-inline-flex column-gap-1 align-items-baseline">
-              <RecordMark record={record} withIcon withTitle />
+              <RecordMark
+                record={record}
+                withIcon
+                withTitle
+                isDurationBased={isDurationBased}
+              />
               <small className="text-muted">
                 {moment(record.achievedAt).format(DateFormat)}
               </small>

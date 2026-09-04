@@ -25,7 +25,12 @@ export async function handleUpdateApproachGroup(
   trainingId?: number,
 ) {
   const info = await findInfoForCalculateStatsForApproach(groupId);
-  const stats = calculateStats(data, info.actionrig, info.userweight);
+  const stats = calculateStats(
+    data,
+    info.actionrig,
+    info.userweight,
+    info.isDurationBased,
+  );
   await prisma.$transaction(async (tx) => {
     const approachesData = data.map((d) => Object.assign(d, { groupId }));
     await tx.approach.deleteMany({ where: { groupId } });

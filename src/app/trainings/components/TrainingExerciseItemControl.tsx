@@ -73,7 +73,10 @@ export default function TrainingExerciseItemControl({
               ? exercise.Action.alias
               : exercise.Action.title}
           </Link>{" "}
-          <PurposeText purpose={exercise.purpose} />
+          <PurposeText
+            purpose={exercise.purpose}
+            isDurationBased={exercise.Action.isDurationBased}
+          />
           <span
             className="badge bg-secondary text-light ms-2"
             title="Оценка нагрузки"
@@ -86,19 +89,42 @@ export default function TrainingExerciseItemControl({
               record={record}
               withIcon
               className="ms-2"
+              isDurationBased={exercise.Action.isDurationBased}
             />
           ))}
         </div>
         <div className="d-flex column-gap-2 flex-wrap mb-1">
           {exercise.ApproachGroup.Approaches.map((a) => (
             <div key={a.id}>
-              <NumberDiffViz current={a.weight} tooltip={false} />
-              x
-              <NumberDiffViz
-                current={a.count}
-                toFixed={false}
-                tooltip={false}
-              />
+              {exercise.Action.isDurationBased ? (
+                <>
+                  <NumberDiffViz
+                    current={a.count}
+                    toFixed={false}
+                    tooltip={false}
+                  />
+                  {" с"}
+                  {exercise.Action.durationParamLabel && (
+                    <>
+                      {" · "}
+                      <NumberDiffViz current={a.weight} tooltip={false} />
+                      {exercise.Action.durationParamUnit
+                        ? ` ${exercise.Action.durationParamUnit}`
+                        : ""}
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <NumberDiffViz current={a.weight} tooltip={false} />
+                  x
+                  <NumberDiffViz
+                    current={a.count}
+                    toFixed={false}
+                    tooltip={false}
+                  />
+                </>
+              )}
             </div>
           ))}
         </div>
@@ -106,6 +132,8 @@ export default function TrainingExerciseItemControl({
           group={exercise.ApproachGroup}
           prev={exercise.prevSetsStats ?? undefined}
           className="mb-2"
+          isDurationBased={exercise.Action.isDurationBased}
+          durationParamLabel={exercise.Action.durationParamLabel}
         />
         {showCompare && (
           <div className="mb-2 opacity-75">
@@ -113,6 +141,8 @@ export default function TrainingExerciseItemControl({
               <SetsStatsBase
                 current={exercise.prevSetsStats}
                 className="mb-2"
+                isDurationBased={exercise.Action.isDurationBased}
+                durationParamLabel={exercise.Action.durationParamLabel}
               />
             ) : (
               <div className="text-muted small">Нет данных для сравнения</div>
@@ -182,24 +212,53 @@ export default function TrainingExerciseItemControl({
             <div className="d-flex column-gap-2 flex-wrap mb-1 fw-semibold">
               {exercise.TrainingExerciseExecution.map((execution) => (
                 <div key={execution.id}>
-                  <NumberDiffViz
-                    prev={execution.plannedWeigth}
-                    current={execution.liftedWeight}
-                    tooltip={false}
-                  />
-                  x
-                  <NumberDiffViz
-                    prev={execution.plannedCount}
-                    current={execution.liftedCount}
-                    toFixed={false}
-                    tooltip={false}
-                  />
+                  {exercise.Action.isDurationBased ? (
+                    <>
+                      <NumberDiffViz
+                        prev={execution.plannedCount}
+                        current={execution.liftedCount}
+                        toFixed={false}
+                        tooltip={false}
+                      />
+                      {" с"}
+                      {exercise.Action.durationParamLabel && (
+                        <>
+                          {" · "}
+                          <NumberDiffViz
+                            prev={execution.plannedWeigth}
+                            current={execution.liftedWeight}
+                            tooltip={false}
+                          />
+                          {exercise.Action.durationParamUnit
+                            ? ` ${exercise.Action.durationParamUnit}`
+                            : ""}
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <NumberDiffViz
+                        prev={execution.plannedWeigth}
+                        current={execution.liftedWeight}
+                        tooltip={false}
+                      />
+                      x
+                      <NumberDiffViz
+                        prev={execution.plannedCount}
+                        current={execution.liftedCount}
+                        toFixed={false}
+                        tooltip={false}
+                      />
+                    </>
+                  )}
                 </div>
               ))}
             </div>
             <SetsStatsForExecutedExercise
               exercise={exercise as any}
               className="mb-2"
+              isDurationBased={exercise.Action.isDurationBased}
+              durationParamLabel={exercise.Action.durationParamLabel}
             />
             {exercise.comment && (
               <div className="text-muted small mb-2">
@@ -219,6 +278,9 @@ export default function TrainingExerciseItemControl({
           }}
           approachGroup={exercise.ApproachGroup}
           actionId={exercise.actionId}
+          isDurationBased={exercise.Action.isDurationBased}
+          durationParamLabel={exercise.Action.durationParamLabel}
+          durationParamUnit={exercise.Action.durationParamUnit}
         />
       </div>
     </div>
