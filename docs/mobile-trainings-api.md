@@ -679,6 +679,7 @@ POST /api/mobile/v1/trainings/scores
 | `POST /api/mobile/v1/trainings/scores` | Предварительные оценки времени и сложности тренировки |
 | `GET /api/mobile/v1/weights`     | Список весов пользователя                  |
 | `POST /api/mobile/v1/weights`    | Пакетное добавление весов                   |
+| `GET /api/mobile/v1/records`     | Персональные рекорды пользователя           |
 
 ---
 
@@ -691,6 +692,8 @@ src/tests/mobile/trainings-route.test.ts   # GET/POST /trainings
 src/tests/mobile/syncTrainings.test.ts     # логика синхронизации
 src/tests/mobile/scores-route.test.ts      # POST /trainings/scores (валидация, авторизация)
 src/tests/mobile/scores.test.ts            # POST /trainings/scores (расчёт оценок)
+src/tests/mobile/records-route.test.ts     # GET /records (авторизация, валидация параметров)
+src/tests/mobile/records.test.ts           # GET /records (выборка, пагинация, маппинг)
 ```
 
 Запуск всех тестов мобильного API (требуется флаг экспериментального мокирования модулей):
@@ -838,3 +841,119 @@ POST /api/mobile/v1/weights
 | 400    | `{ "error": "weights[i].createdAt must be a valid ISO 8601 datetime" }` | Невалидный формат даты |
 | 400    | `{ "error": "weights[i].createdAt must not be in the future" }` | Дата в будущем |
 | 500    | `{ "error": "Internal server error" }`                   | Внутренняя ошибка сервера            |
+
+---
+
+## GET /records
+
+Получение персональных рекордов пользователя с пагинацией.
+
+```
+GET /api/mobile/v1/records?cursor=<cursor>&since=<since>
+```
+
+Рекорды — производные данные: сервер фиксирует их после завершения тренировки и пересчитывает при изменении истории. Метод отдаёт **все** записи пользователя — абсолютные (`isAllTime = true`) и периодические, включая «базу» (первый результат в истории или в периоде, `previousValue = null`). Нужные записи клиент отбирает сам — см. [Действующие рекорды на клиенте](#действующие-рекорды-на-клиенте).
+
+### Query параметры
+
+| Параметр | Тип      | Обязательный | Описание                                                                 |
+|----------|----------|--------------|--------------------------------------------------------------------------|
+| `cursor` | integer  | Нет          | ID последней полученной записи. Следующая страница начнётся после него.   |
+| `since`  | ISO 8601 | Нет          | Нижняя граница по `achievedAt` (момент завершения тренировки, в которой установлен рекорд). По умолчанию — 31 день назад. Ограничения по давности нет: для полной истории передайте раннюю дату, например `1970-01-01T00:00:00.000Z`. |
+
+Размер страницы — **50 записей**; признак следующей страницы — `meta.nextCursor !== null`.
+
+### Пример запроса
+
+```bash
+curl -X GET "https://meingym.online/api/mobile/v1/records?since=2026-07-01T00:00:00.000Z&cursor=120" \
+  -H "Authorization: Bearer <token>"
+```
+
+### Пример ответа (200 OK)
+
+```json
+{
+  "meta": {
+    "total": 63,
+    "nextCursor": 170
+  },
+  "items": [
+    {
+      "id": 121,
+      "actionId": 42,
+      "purpose": "MASS",
+      "type": "MAX_WEIGHT",
+      "isAllTime": true,
+      "value": 100,
+      "reps": 5,
+      "periodId": null,
+      "trainingId": 247,
+      "trainingExerciseId": 1832,
+      "achievedAt": "2026-08-06T11:15:00.000Z",
+      "previousValue": 95,
+      "previousTrainingId": 231,
+      "previousAt": "2026-07-20T10:40:00.000Z",
+      "createdAt": "2026-08-06T11:16:02.000Z"
+    },
+    {
+      "id": 122,
+      "actionId": 42,
+      "purpose": "MASS",
+      "type": "MAX_VOLUME",
+      "isAllTime": true,
+      "value": 2450,
+      "reps": null,
+      "periodId": null,
+      "trainingId": 247,
+      "trainingExerciseId": 1832,
+      "achievedAt": "2026-08-06T11:15:00.000Z",
+      "previousValue": null,
+      "previousTrainingId": null,
+      "previousAt": null,
+      "createdAt": "2026-08-06T11:16:02.000Z"
+    }
+  ]
+}
+```
+
+### Описание полей
+
+| Поле                 | Тип              | Описание                                                                 |
+|----------------------|------------------|--------------------------------------------------------------------------|
+| `id`                 | integer          | Внутренний ID записи рекорда; используется как `cursor`. Меняется при пересчёте — см. примечание ниже |
+| `actionId`           | integer          | ID упражнения (связь со справочником `GET /api/mobile/v1/exercises`)     |
+| `purpose`            | string           | Цель: `MASS`, `STRENGTH`, `LOSS`                                          |
+| `type`               | string           | `MAX_WEIGHT` — максимальный вес одного подхода; `MAX_VOLUME` — тоннаж (Σ вес × повторы за упражнение) |
+| `isAllTime`          | boolean          | `true` — абсолютный рекорд за всё время, `false` — лучший результат периода |
+| `value`              | number           | Значение рекорда в кг. Для упражнений «на длительность» — секунды         |
+| `reps`               | integer \| null  | Повторы рекордного подхода — только для `MAX_WEIGHT` (показ «100 × 5»)     |
+| `periodId`           | integer \| null  | ID тренировочного периода для периодических рекордов                      |
+| `trainingId`         | integer          | ID тренировки, в которой установлен рекорд                                |
+| `trainingExerciseId` | integer          | ID упражнения внутри тренировки                                           |
+| `achievedAt`         | ISO 8601         | Когда установлен рекорд (= `completedAt` тренировки)                      |
+| `previousValue`      | number \| null   | Прежний лучший результат той же связки; `null` — «база» (первый результат) |
+| `previousTrainingId` | integer \| null  | Тренировка прежнего рекорда                                               |
+| `previousAt`         | ISO 8601 \| null | Дата прежнего рекорда                                                     |
+| `createdAt`          | ISO 8601         | Дата создания записи на сервере; меняется при пересчёте                   |
+
+> **Важно про стабильность записей.** При пересчёте рекордов записи тренировки удаляются и создаются заново, поэтому `id` и `createdAt` конкретного рекорда могут меняться. Устойчивый «адрес» рекорда — связка `actionId` + `purpose` + `type` + `isAllTime` + `periodId` + `achievedAt`. Инкрементальную синхронизацию рекомендуется вести по `achievedAt`, а при получении записи с неизвестной связкой — заменять локальную, а не добавлять ещё одну.
+
+### Действующие рекорды на клиенте
+
+Сервер отдаёт сырой набор записей; представления веб-приложения получаются так:
+
+- **действующие рекорды**: `isAllTime = true`, по одной последней записи (максимум `achievedAt`, при равенстве — больший `id`) на связку `actionId` + `purpose` + `type`;
+- **история улучшений**: `previousValue !== null`, прирост = `value - previousValue`;
+- **«база»** (`previousValue = null`) — первый результат в истории или в периоде, служебная запись: обычно не показывается;
+- упражнения «на длительность» (`isDurationBased` из справочника) дают только `MAX_VOLUME`, где `value` — суммарная длительность в секундах, см. [Упражнения на длительность](#упражнения-на-длительность-duration-based).
+
+### Ошибки
+
+| Статус | Тело ответа                                            | Причина                              |
+|--------|--------------------------------------------------------|--------------------------------------|
+| 401    | `{ "error": "Authorization header with Bearer token is required" }` | Отсутствует заголовок авторизации    |
+| 401    | `{ "error": "Invalid or expired token" }`              | Токен невалиден или истёк            |
+| 400    | `{ "error": "cursor must be a positive integer" }`     | `cursor` не положительное целое число |
+| 400    | `{ "error": "since must be a valid ISO 8601 datetime" }` | Невалидный формат даты               |
+| 500    | `{ "error": "Internal server error" }`                 | Внутренняя ошибка сервера            |
