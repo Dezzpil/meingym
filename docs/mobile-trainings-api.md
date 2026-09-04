@@ -45,6 +45,82 @@ const signature = crypto
 
 ---
 
+## GET /me
+
+Полная информация о текущем пользователе и его профиле.
+
+```
+GET /api/mobile/v1/me
+```
+
+### Пример запроса
+
+```bash
+curl -X GET "https://meingym.online/api/mobile/v1/me" \
+  -H "Authorization: Bearer <token>"
+```
+
+### Пример ответа (200 OK)
+
+```json
+{
+  "id": "clxxxxxxxxxxxxxxxxxxxxx",
+  "email": "user@example.com",
+  "name": "Иван",
+  "role": "USER",
+  "image": null,
+  "emailVerified": null,
+  "createdAt": "2026-01-10T12:00:00.000Z",
+  "updatedAt": "2026-08-06T09:30:00.000Z",
+  "userInfo": {
+    "sex": "MALE",
+    "height": 175,
+    "purpose": "STRENGTH",
+    "trainingProgression": "SIMPLE",
+    "trainingProgressionParams": {},
+    "collectExerciseExecutionFeedback": false
+  }
+}
+```
+
+### Описание полей
+
+| Поле            | Тип              | Описание                                                        |
+|-----------------|------------------|-----------------------------------------------------------------|
+| `id`            | string           | Внутренний ID пользователя                                       |
+| `email`         | string           | Email (нормализован: trim + нижний регистр)                      |
+| `name`          | string \| null   | Имя пользователя                                                 |
+| `role`          | string           | Роль: `USER`, `ADMIN`                                            |
+| `image`         | string \| null   | URL аватара                                                      |
+| `emailVerified` | ISO 8601 \| null | Дата подтверждения email                                         |
+| `createdAt`     | ISO 8601         | Дата создания пользователя                                       |
+| `updatedAt`     | ISO 8601         | Дата последнего обновления                                       |
+| `userInfo`      | object \| null   | Профиль пользователя (`null`, если профиль ещё не создан)        |
+
+#### userInfo
+
+| Поле                              | Тип     | Описание                                                       |
+|-----------------------------------|---------|----------------------------------------------------------------|
+| `sex`                             | string  | Пол: `MALE`, `FEMALE`                                           |
+| `height`                          | integer | Рост в сантиметрах                                              |
+| `purpose`                         | string  | Глобальная цель: `MASS`, `STRENGTH`, `LOSS`                     |
+| `trainingProgression`             | string  | Стратегия прогрессии: `NONE`, `SIMPLE`                          |
+| `trainingProgressionParams`       | object  | Параметры прогрессии (JSON)                                     |
+| `collectExerciseExecutionFeedback`| boolean | Собирать ли обратную связь по выполнениям упражнений            |
+
+> Поле `password` намеренно исключено из ответа и никогда не отдаётся через API.
+
+### Ошибки
+
+| Статус | Тело ответа                                            | Причина                              |
+|--------|--------------------------------------------------------|--------------------------------------|
+| 401    | `{ "error": "Authorization header with Bearer token is required" }` | Отсутствует заголовок авторизации    |
+| 401    | `{ "error": "Invalid or expired token" }`              | Токен невалиден или истёк            |
+| 404    | `{ "error": "User not found" }`                        | Пользователь не найден               |
+| 500    | `{ "error": "Internal server error" }`                 | Внутренняя ошибка сервера            |
+
+---
+
 ## GET /trainings
 
 Получение списка тренировок пользователя с пагинацией.
