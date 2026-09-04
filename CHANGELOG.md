@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.3.0](https://github.com/Dezzpil/meingym/compare/v3.2.0...v3.3.0) (2026-09-04)
+
+
+### Features
+
+* добавить поддержку упражнений на длительность ([577bd88](https://github.com/Dezzpil/meingym/commits/577bd8851a82641149e7aaf510b6e7e10c60ec60))
+
 ## [3.2.0](https://github.com/Dezzpil/meingym/compare/v3.1.0...v3.2.0) (2026-09-03)
 
 
