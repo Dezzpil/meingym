@@ -17,15 +17,15 @@
 </cite>
 
 ## Table of Contents
-1. Introduction
-2. Project Structure
-3. Core Components
-4. Architecture Overview
-5. Detailed Component Analysis
-6. Dependency Analysis
-7. Performance Considerations
-8. Troubleshooting Guide
-9. Conclusion
+1. [Introduction](#introduction)
+2. [Project Structure](#project-structure)
+3. [Core Components](#core-components)
+4. [Architecture Overview](#architecture-overview)
+5. [Detailed Component Analysis](#detailed-component-analysis)
+6. [Dependency Analysis](#dependency-analysis)
+7. [Performance Considerations](#performance-considerations)
+8. [Troubleshooting Guide](#troubleshooting-guide)
+9. [Conclusion](#conclusion)
 
 ## Introduction
 This document explains the per-user equipment sets feature with rig capabilities and weight constraints. It covers how users define equipment sets, associate required equipment types, configure rig-specific weight ranges (min, step, max), and link a selected set to their training sessions. It also documents the isDefault flag behavior and cascade delete semantics for related records.
