@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.4.0](https://github.com/Dezzpil/meingym/compare/v3.3.0...v3.4.0) (2026-09-05)
+
+
+### Features
+
+* добавить метод для получения оценок для тренировки в Mobile API ([5e21052](https://github.com/Dezzpil/meingym/commits/5e21052bcca7df346cbac50543ee073c571115f2))
+* добавить метод для получения рекордов пользователя в Mobile API ([4628b75](https://github.com/Dezzpil/meingym/commits/4628b75caf23a8e94a751dfb046a094779d3a52e))
+* передавать всю информацию о пользователе mobile API ([e0e993b](https://github.com/Dezzpil/meingym/commits/e0e993bfbc0860ce75ccecf059b0ed40afce242a))
+
 ## [3.3.0](https://github.com/Dezzpil/meingym/compare/v3.2.0...v3.3.0) (2026-09-04)
 
 
