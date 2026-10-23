@@ -57,11 +57,22 @@ test("Расчёт значений рекордов из выполнений �
   await t.test("максимальный вес: при равенстве веса берём больше повторов", () => {
     const executions = [
       execution(100, 5),
+      execution(102.5, 2),
       execution(102.5, 3),
-      execution(102.5, 4),
       execution(90, 10),
     ];
-    assert.deepEqual(valuateMaxWeight(executions), { value: 102.5, reps: 4 });
+    assert.deepEqual(valuateMaxWeight(executions), { value: 102.5, reps: 3 });
+  });
+
+  await t.test("высокоповторные подходы не участвуют в MAX_WEIGHT", () => {
+    assert.isNull(valuateMaxWeight([execution(100, 5), execution(90, 8)]));
+  });
+
+  await t.test("порядок подходов не влияет на MAX_WEIGHT", () => {
+    const a = [execution(100, 5), execution(90, 2)];
+    const b = [execution(90, 2), execution(100, 5)];
+    assert.deepEqual(valuateMaxWeight(a), { value: 90, reps: 2 });
+    assert.deepEqual(valuateMaxWeight(b), { value: 90, reps: 2 });
   });
 
   await t.test("пустой список — null", () => {
@@ -80,7 +91,7 @@ test("Расчёт значений рекордов из выполнений �
     "пропущенные, нулевые и boost-подходы не учитываются",
     () => {
       const executions = [
-        execution(100, 5),
+        execution(100, 2),
         execution(200, 1, { isPassed: true }),
         execution(150, 2, { liftedCount: 0 }),
         execution(150, 2, { liftedWeight: 0 }),
@@ -107,7 +118,7 @@ test("Кандидаты на рекорды из упражнения трен�
       purpose: "MASS" as Purpose,
       periodId: 2,
       achievedAt: new Date("2026-08-01T10:00:00Z"),
-      executions: [execution(100, 5), execution(95, 8)],
+      executions: [execution(100, 3), execution(95, 2)],
       approaches: [],
     });
     assert.equal(candidates.length, 2);
@@ -116,12 +127,12 @@ test("Кандидаты на рекорды из упражнения трен�
       (c) => c.type === PersonalRecordType.MAX_WEIGHT,
     )!;
     assert.equal(maxWeight.value, 100);
-    assert.equal(maxWeight.reps, 5);
+    assert.equal(maxWeight.reps, 3);
 
     const volume = candidates.find(
       (c) => c.type === PersonalRecordType.MAX_VOLUME,
     )!;
-    assert.equal(volume.value, 1260);
+    assert.equal(volume.value, 490);
     assert.isNull(volume.reps);
   });
 

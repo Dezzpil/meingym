@@ -25,19 +25,18 @@ export function filterRecordableExecutions(
   );
 }
 
-// Максимальный вес одного подхода; при равенстве веса — подход с большим числом повторов
+// Максимальный вес одного подхода; при равенстве веса — подход с большим числом повторов.
+// Учитываются только подходы с числом повторов ≤ MAX_WEIGHT_MAX_COUNT_FOR_RECORD:
+// высокоповторные подходы — это работа на объём, а не на абсолютный максимум.
 export function valuateMaxWeight(
   executions: RecordableExecution[],
 ): { value: number; reps: number } | null {
-  if (!executions.length) return null;
-  let best = executions[0];
-  for (const e of executions) {
-    if (e.liftedCount > MAX_WEIGHT_MAX_COUNT_FOR_RECORD) {
-      console.log(
-        `skip execution for max weight because > ${MAX_WEIGHT_MAX_COUNT_FOR_RECORD}: ${e.liftedCount}`,
-      );
-      continue;
-    }
+  const eligible = executions.filter(
+    (e) => e.liftedCount <= MAX_WEIGHT_MAX_COUNT_FOR_RECORD,
+  );
+  if (!eligible.length) return null;
+  let best = eligible[0];
+  for (const e of eligible.slice(1)) {
     if (
       e.liftedWeight > best.liftedWeight ||
       (e.liftedWeight === best.liftedWeight && e.liftedCount > best.liftedCount)
@@ -45,7 +44,6 @@ export function valuateMaxWeight(
       best = e;
     }
   }
-  if (best.liftedCount > MAX_WEIGHT_MAX_COUNT_FOR_RECORD) return null;
   return { value: best.liftedWeight, reps: best.liftedCount };
 }
 
