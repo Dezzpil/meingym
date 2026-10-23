@@ -1,1 +1,1 @@
-Pure business logic for workout training: approach groups, exercise creation per purpose (MASS/STRENGTH/LOSS), scoring coefficients, difficulty calculation, progression strategies, and muscle/statistics recomputation.
+Pure business logic for workout training: approach groups, exercise creation per purpose (MASS/STRENGTH/LOSS), scoring coefficients, difficulty calculation, progression strategies (including duration-based exercises), personal records, training time estimation, and the completed-training processing pipeline shared by web and mobile.

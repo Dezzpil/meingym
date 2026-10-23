@@ -1,1 +1,1 @@
-TypeScript with Prisma Client (singleton from `@/tools/db`), Chai assertions for strategy tests, axios for calling an external ML prediction service (localhost:5001). Path alias `@/*` used throughout.
+TypeScript with Prisma Client (singleton from `@/tools/db`), Chai assertions for strategy tests. `axios` is used only by `trainingTime/mlScorer.ts`, which is not wired into the application; the active training-time estimation (`TrainingTimeAvgScorer`) needs no HTTP client. Path alias `@/*` used throughout.

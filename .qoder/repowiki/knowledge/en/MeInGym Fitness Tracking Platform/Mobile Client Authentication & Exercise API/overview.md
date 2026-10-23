@@ -1,1 +1,1 @@
-Server-side endpoints for mobile clients to authenticate via HMAC-signed email exchange and register new users, plus a paginated exercise catalog endpoint backed by Prisma.
+Server-side endpoints for mobile clients: authentication (HMAC-signed email exchange and registration), user profile, the paginated exercise catalog, training synchronization, preliminary training scores, body weight batches, and personal records — all backed by Prisma and reusing `src/core` business logic.

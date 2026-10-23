@@ -310,7 +310,7 @@ Equipment --> EquipmentRig : "has many"
 
 ### Search Capabilities and GIN Trigram Index
 - The search endpoint accepts a term and optional rigs/requires filters.
-- The first word of the term is used for a fast substring match against Action.search.
+- The term is lowercased and split on whitespace; **every** word must match `Action.search`, since each word becomes a `{ search: { contains, mode: "insensitive" } }` predicate combined with `AND`. A multi-word query therefore narrows results instead of broadening them.
 - PostgreSQL pg_trgm extension enables GIN trigram indexing for efficient LIKE '%...%' queries.
 - Results include full muscle mappings grouped by role.
 
@@ -319,7 +319,7 @@ flowchart TD
 Start(["GET /api/actions/search"]) --> ParseParams["Parse query params<br/>term, rigs, requires"]
 ParseParams --> TermCheck{"Has 'term'?"}
 TermCheck --> |No| ReturnEmpty["Return []"]
-TermCheck --> |Yes| BuildWhere["Build where clause:<br/>search.contains(firstWord), rig IN rigs, require IN requires"]
+TermCheck --> |Yes| BuildWhere["Build where clause:<br/>search.contains(each term word, AND),<br/>rig IN rigs, require IN requires"]
 BuildWhere --> QueryDB["Query Prisma with includes for all muscle roles"]
 QueryDB --> SortByBase["Order by base score desc"]
 SortByBase --> ReturnResults["Return JSON array of actions"]

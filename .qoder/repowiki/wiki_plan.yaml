@@ -14,14 +14,17 @@ repowiki:
   template: "architecture"
   
   notes:
-    - text: "MeinGym is a Next.js 14 App Router application for workout planning, execution tracking, and progress visualization with periodization support."
+    - text: "MeinGym is a Next.js 14 App Router application for workout planning, execution tracking, and progress visualization with periodization support, plus a mobile client that shares the same src/core business logic."
     - text: "The application uses PostgreSQL 16 with Prisma ORM for data persistence, and Redis + Bull for background job processing."
-    - text: "Authentication is handled by NextAuth.js with GitHub and Google OAuth providers."
-    - text: "The dev server runs on port 3004 (pnpm dev). Background workers are started separately with pnpm workers."
+    - text: "Web authentication uses NextAuth.js CredentialsProvider (email + bcryptjs password) with JWT sessions. GitHub/Google OAuth providers are commented out behind ENABLE_OAUTH = false in src/tools/auth.ts and must not be removed; Prisma Account/Session/VerificationToken models are currently unused."
+    - text: "The mobile API under /api/mobile/v1/* has its own authentication, independent from NextAuth: email + HMAC-SHA256 signature of the timestamp is exchanged for an HS256 JWT (MOBILE_HMAC_SECRET, MOBILE_JWT_SECRET, MOBILE_APP_TOKEN for registration). Endpoints: auth/exchange, auth/register, me, exercises, trainings (GET/POST), trainings/scores, weights (GET/POST), records. Spec: docs/mobile-trainings-api.md."
+    - text: "The dev server runs on port 3005 via npm run dev (NEXTAUTH_URL in .env.local must match). Background workers are started separately with npm run workers. There is no npm test script — use npm run test:core, test:mobile, test:mobile-auth, test:tools."
     - text: "Path alias @/* maps to ./src/* as configured in tsconfig.json."
-    - text: "Docker Compose provides PostgreSQL on port 5435 and Redis on port 6379 for local development."
+    - text: "Docker Compose provides PostgreSQL on host port 5435 and Redis on 6379 for local development."
     - text: "Server Actions are co-located in actions.ts files within each route directory, marked with 'use server' directive."
-    - text: "The core business logic in src/core/ is pure TypeScript with minimal external dependencies, focused on scoring, progression strategies, and statistics."
+    - text: "The core business logic in src/core/ is pure TypeScript with minimal external dependencies, focused on scoring, progression strategies, records, and statistics."
+    - text: "Training time estimation uses TrainingTimeAvgScorer with per-purpose minute norms (STRENGTH 5, MASS 3.5, LOSS 2). TrainingTimeMLScorer and src/scripts/collect-exercise-time.ts are an abandoned experiment and are not wired into the app."
+    - text: "npm is the package manager actually used: README and deploy.sh run `npm ci` and package-lock.json is the freshest lockfile. pnpm-lock.yaml is a leftover, so do not describe pnpm as the primary tooling. Both lockfiles are committed."
   
   documents:
     - title: "Architecture Overview"
@@ -45,14 +48,14 @@ repowiki:
       hints: "Cover Training lifecycle states (plannedTo → startedAt → completedAt → processedAt), how executions link to approaches, warm-up tracking, and the feedback model (rating, technique, cheating, refusing, burning)."
     
     - title: "Background Job System"
-      goal: "Bull queue architecture for asynchronous processing of scores, period checks, and image cleanup."
+      goal: "Bull queue architecture for asynchronous processing of training completion, exercise scores, period checks, and image cleanup."
       parent: ""
-      hints: "Document the three queues (scores, periods, images), their processors, retry strategy (3 attempts, exponential backoff), and how they integrate with training completion events."
+      hints: "Document the four queues (scores, periods, images, trainings) defined in src/jobs/config.ts and src/jobs/queues.ts, their processors, the retry strategy (3 attempts, exponential backoff, removeOnComplete), the daily cron jobs registered as an import side effect in src/jobs/index.ts, and the monitoring gap in GET /api/jobs (it reports only scores and periods)."
     
     - title: "Authentication and Authorization"
-      goal: "NextAuth.js integration with GitHub/Google OAuth, session management, and role-based access control."
+      goal: "Web authentication with NextAuth CredentialsProvider and JWT sessions, plus the independent HMAC-to-JWT scheme used by the mobile API."
       parent: ""
-      hints: "Cover the auth flow, session retrieval in tools/auth.ts, and how server actions access user context. Note the UserRole enum (USER/ADMIN) and any protected routes."
+      hints: "Cover the auth flow in src/tools/auth.ts, the POST /api/auth/register route (CSRF double-submit check, bcryptjs hashing, setupNewUser seeding), session retrieval helpers (auth, getCurrentUser, getCurrentUserId, findUserInfo), and how server actions access user context. Note the UserRole enum (USER/ADMIN) and protected routes. State that OAuth providers are temporarily disabled behind ENABLE_OAUTH = false, not deleted."
     
     - title: "Progression Strategies"
       goal: "Detailed documentation of the simple progression strategy for strength, mass, and loss training goals."
@@ -77,7 +80,12 @@ repowiki:
     - title: "App Pages and Routes"
       goal: "Complete route map covering all page routes, server actions, and API endpoints."
       parent: "Architecture Overview"
-      hints: "List all routes: /actions (catalog), /trainings (workout management), /muscles, /equipment, /profile, /weights, /progression, /admin/jobs. Document the server actions pattern and API routes under /api/."
+      hints: "List all page routes: /actions (exercise catalog), /approaches, /trainings (list, create, [id] with execute and difficulty sub-pages, exercises, periods), /muscles, /musclesgroups, /equipment, /profile, /progression, /records, /weights, /login, /register, /admin/jobs. Document the co-located server actions pattern and the API routes under /api/: auth/[...nextauth], auth/register, actions/scores, actions/search, exercises/similar, images, muscle-images, jobs, trainings/exercise/execution/complete, trainings/exercise/execution/uncomplete, and mobile/v1. Keep the mobile API described on its own page."
+    
+    - title: "Mobile API System"
+      goal: "The /api/mobile/v1 surface: HMAC-to-JWT authentication, training synchronization, scores, records and weights, and how it reuses src/core."
+      parent: "Architecture Overview"
+      hints: "Document all eight endpoints (auth/exchange, auth/register, me, exercises, trainings GET/POST, trainings/scores, weights GET/POST, records), the request/response contracts from docs/mobile-trainings-api.md, cursor pagination, zod validation at the boundary, and the fact that POST /trainings ends by scheduling the trainings Bull job so mobile data converges on the web scoring and records pipeline."
     
     - title: "Shared Components"
       goal: "Reusable UI components in src/components/ including Layout, AuthProvider, and feature-specific components."
@@ -86,13 +94,14 @@ repowiki:
 
 knowledgecard:
   notes:
-    - text: "Module boundaries: src/core (business logic), src/app (pages/actions/API), src/jobs (background workers), src/tools (utilities), src/components (shared UI), prisma (schema/migrations)."
+    - text: "Module boundaries: src/core (business logic), src/app (pages/actions/API), src/mobile (mobile API services), src/jobs (background workers), src/tools (utilities), src/components (shared UI), prisma (schema/migrations)."
     - text: "The core module is dependency-light: only Prisma Client and Chai assertions. It should remain pure and testable without HTTP context."
     - text: "Server Actions in src/app/*/actions.ts are the primary mutation pattern, replacing traditional API routes for form submissions."
-    - text: "Background jobs use Bull 4.12.2 with Redis. Three queues: scores (on training complete), periods (scheduled), images (scheduled cleanup)."
-    - text: "Prisma singleton pattern: tools/db.ts exports a single PrismaClient instance used throughout the application."
+    - text: "Background jobs use Bull with Redis. Four queues defined in src/jobs/config.ts: scores (calculate-scores), periods (check-inactive-periods, daily cron), images (cleanup-orphaned-images, daily cron), trainings (process-completed-training, scheduled after mobile sync)."
+    - text: "The mobile API (src/app/api/mobile/v1) delegates to src/mobile services (exchange, register, exercises, trainings, syncTrainings, scores, records, weights, tools), which reuse src/core; authentication is HMAC-to-JWT, not NextAuth."
+    - text: "Prisma singleton pattern: src/tools/db.ts exports a single PrismaClient instance used throughout the application."
     - text: "Path alias @/* is configured in tsconfig.json and used consistently across all imports."
-    - text: "Testing uses node:test runner with tsx for TypeScript execution. Core tests are in src/tests/core/."
-    - text: "The application supports three training purposes (MASS/STRENGTH/LOSS) which drive scoring coefficients and progression behavior."
+    - text: "Testing uses the node:test runner with tsx, split by source layer: src/tests/core, src/tests/mobile, src/tests/mobile-auth, src/tests/tools, each with its own npm run test:* script. There is no combined npm test script."
+    - text: "The application supports three training purposes (MASS/STRENGTH/LOSS) which drive scoring coefficients and progression behavior; duration-based exercises are handled inside ProgressionStrategySimple, the single active progression strategy."
     - text: "Execution feedback model captures detailed per-set data: rating, technique, cheating, refusing, burning, belt usage, extra reps."
-    - text: "Docker services: PostgreSQL 16 on :5435, Redis Alpine on :6379. Both use persistent volumes under ./data/."
+    - text: "Docker services: PostgreSQL 16 on host port :5435, Redis Alpine on :6379. Both use persistent volumes under ./data/."

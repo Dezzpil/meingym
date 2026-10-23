@@ -607,7 +607,7 @@ The Mobile API System provides a robust, secure, and scalable mechanism for exch
 ## Appendices
 - Full API documentation for every mobile endpoint — auth, `/me`, trainings, scores, weights, records and duration-based exercises — is available in docs/mobile-trainings-api.md.
 - Tests for mobile routes and services are located under `src/tests/mobile` (`trainings-route`, `syncTrainings`, `records`, `records-route`, `scores`, `scores-route`) and `src/tests/mobile-auth` (`exchange`, `register`, `hmac`, `jwt`). Run them with `npm run test:mobile` and `npm run test:mobile-auth`.
-- Core-side tests covering the same behaviour live in `src/tests/core` (`records.test.ts`, `stats.test.ts`, `duration.test.ts`, `exercises.test.ts`) and run with `npm run test:core`.
+- Core-side tests covering the same behaviour live in `src/tests/core` (`records.test.ts`, `stats.test.ts`, `scores.test.ts`, `difficulty.test.ts`, `periods.test.ts`, `exercises.test.ts`) and `src/tests/core/progression/strategy/` (`simple.test.ts`, `simple1.test.ts`, `simple2.test.ts`, `simple-one-dumbbell.test.ts`, `duration.test.ts`), and run with `npm run test:core`. Helpers from `src/tools` are covered by `src/tests/tools` (`npm run test:tools`).
 
 **Section sources**
 - [mobile-trainings-api.md:1-959](file://docs/mobile-trainings-api.md#L1-L959)

@@ -23,7 +23,7 @@ The MeInGym application uses a straightforward environment-variable-based config
 
 **Where configuration is consumed:**
 - Database: `DATABASE_PRISMA_URL` and `DATABASE_URL_NON_POOLING` are used by Prisma client initialization in `src/tools/db.ts`.
-- Authentication: GitHub/Google OAuth credentials (`GITHUB_APP_ID`, `GITHUB_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`) are consumed in `src/tools/auth.ts` when constructing NextAuth providers.
+- Authentication: web login uses NextAuth `CredentialsProvider` (email + bcryptjs password hash) with JWT sessions, so no OAuth credentials are needed at runtime. `GITHUB_APP_ID`, `GITHUB_SECRET`, `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are only read when the commented-out GitHub/Google providers are restored behind the `ENABLE_OAUTH = false` flag in `src/tools/auth.ts`. `NEXTAUTH_URL` and `NEXTAUTH_SECRET` are required and must point at the dev port (3005).
 - Mobile API: HMAC/JWT secrets and timing windows (`MOBILE_HMAC_SECRET`, `MOBILE_JWT_SECRET`, `MOBILE_JWT_EXPIRES_IN_SECONDS`, `MOBILE_TIMESTAMP_WINDOW_SECONDS`, `MOBILE_APP_TOKEN`) are read in `src/mobile/tools/hmac.ts` and `src/mobile/tools/jwt.ts`.
 - Jobs subsystem: Redis host/port in `src/jobs/config.ts`; queue/job name constants are defined inline as string literals.
 - Tests: Test files set `process.env` values directly at the top of test suites to mock secrets and timing parameters.
@@ -36,6 +36,6 @@ The MeInGym application uses a straightforward environment-variable-based config
 
 **Rules developers should follow:**
 - Add new environment variables to `.env.dist` with clear comments so teammates know what needs to be configured.
-- Always provide sensible defaults in code using `||` fallbacks rather than failing fast — the codebase consistently uses this pattern.
+- Always provide sensible defaults in code using `||` fallbacks rather than failing fast — the codebase mostly uses this pattern (Redis port, JWT lifetime, timestamp window). Exceptions fail fast by design: `src/mobile/tools/hmac.ts` and `src/mobile/tools/jwt.ts` throw when `MOBILE_HMAC_SECRET` / `MOBILE_JWT_SECRET` are missing, because signing without a configured secret is a security bug.
 - Do not create a separate config module; instead, read `process.env` directly in the module that needs the value, keeping configuration close to usage.
 - When adding new services (e.g., external APIs), document their required env vars in `.env.dist` and add corresponding `|| default` handling in the consuming code.

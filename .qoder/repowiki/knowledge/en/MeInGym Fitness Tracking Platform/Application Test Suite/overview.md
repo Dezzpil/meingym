@@ -1,1 +1,1 @@
-Node:test-based unit tests for core progression strategies, scoring/difficulty calculations, mobile authentication (JWT/HMAC/exchange/register), and shared tool utilities, using Chai assertions against pure business logic.
+Node:test-based unit tests for core progression strategies (including duration-based exercises), scoring/difficulty/records calculations, the mobile API services and route handlers, mobile authentication (JWT/HMAC/exchange/register), and shared tool utilities, using Chai assertions against pure business logic.

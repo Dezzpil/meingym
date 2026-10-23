@@ -25,7 +25,7 @@
 
 ## Update Summary
 **Changes Made**
-- Documented that OAuth is **disabled at runtime**: `ENABLE_OAUTH = false` in `src/tools/auth.ts` gates the GitHub/Google/VK providers, which are commented out and must not be deleted (the switch back is planned).
+- Documented that OAuth is **disabled at runtime**: `ENABLE_OAUTH = false` in `src/tools/auth.ts` gates the GitHub/Google providers, whose import lines and provider bodies are commented out and must not be deleted (the switch back is planned). `VkProvider` is a separate live import that is never used.
 - Documented that the **Prisma adapter is commented out** and sessions use the **JWT strategy** with a 30-day `maxAge`; the `Account`, `Session` and `VerificationToken` models remain in `schema.prisma` but are never written to.
 - Corrected the registration and login sequence diagrams (no adapter participant) and the `getCurrentUser` flow (it calls `notFound()`, not `redirect("/404")`).
 - Expanded the mobile section: the HMAC-SHA256 timestamp exchange (`POST /api/mobile/v1/auth/exchange`), the app-token-protected mobile registration (`POST /api/mobile/v1/auth/register`) and the per-route Bearer verification repeated by every `/api/mobile/v1/*` handler.
@@ -129,7 +129,7 @@ MUSER --> DB
 ## Core Components
 - **NextAuth route handler**: Exposes `GET`/`POST` for all NextAuth flows by delegating to `NextAuth(authOptions)`.
 - **Credentials provider**: Looks the user up by email, rejects accounts with a null `password` (OAuth-era users cannot sign in), verifies the hash with `bcryptjs`, and returns the user **with the password field stripped**.
-- **`ENABLE_OAUTH` flag**: A module-level constant that spreads an empty array into `providers` while it is `false`. The commented-out GitHub/Google/VK providers live inside that branch.
+- **`ENABLE_OAUTH` flag**: A module-level constant that spreads an empty array into `providers` while it is `false`. The commented-out GitHub/Google providers live inside that branch; the `VkProvider` import sits outside it and is never referenced.
 - **JWT session strategy**: `session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 }`. The `jwt` callback copies `user.id` into the token; the `session` callback re-reads the `User` row from the database and removes `password` before exposing it.
 - **`createUser` event and `setupNewUser`**: On registration the event seeds a `UserInfo` row and a default "Тренажерный зал" `Equipment` with four rigs (barbell 10/5/200, blocks 5/1/200, dumbbell 5/2.5/50, kettlebell 6/2/30) and three requirements (bench, upbar, simulator).
 - **Registration endpoint**: Validates the CSRF double-submit cookie, enforces the password policy, rejects duplicates with 409, and creates the user plus its seed data inside a single transaction.

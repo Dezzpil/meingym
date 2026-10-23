@@ -407,7 +407,7 @@ TRAINING ||--o{ PERSONAL_RECORD : "produces"
 TRAINING_PERIOD ||--o{ PERSONAL_RECORD : "scopes"
 EQUIPMENT ||--o{ EQUIPMENT_REQUIRE : "requires"
 EQUIPMENT ||--o{ EQUIPMENT_RIG : "configured_with"
-MUSCLE ||--o{ EXERCISE_IMAGE : "has"
+MUSCLE ||--o{ MUSCLE_IMAGE : "has"
 ```
 
 **Diagram sources**

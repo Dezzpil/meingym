@@ -1,175 +1,73 @@
-# Background Jobs System for MeinGym
+# Фоновые задачи (Bull + Redis)
 
-This directory contains the implementation of a background job processing system for MeinGym using Bull and Redis.
+Асинхронные вычисления MeinGym: пересчёт оценок упражнений, обработка завершённых тренировок, закрытие неактивных периодов и чистка неиспользуемых изображений. Брокер — Redis, потребитель — отдельный процесс воркера.
 
-## Overview
+## Запуск
 
-The background job system allows you to run time-consuming tasks asynchronously, without blocking the main application thread. This is particularly useful for tasks like:
+```bash
+npm run workers        # node --import tsx src/jobs/index.ts, нужен запущенный Redis
+```
 
-- Updating large sets of data
-- Processing user data
-- Generating reports
-- Sending emails
-- Any other task that might take a significant amount of time
+Redis берётся из `REDIS_HOST` / `REDIS_PORT` (по умолчанию `localhost:6379`, в docker-compose.yml порт 6379).
 
-## Architecture
-
-The system consists of the following components:
-
-1. **Redis**: Used as the message broker and storage for job data
-2. **Bull**: A Node.js library for creating and managing job queues
-3. **Queue Definitions**: Define different queues for different types of jobs
-4. **Job Processors**: Process jobs from the queues
-5. **API**: Endpoints for monitoring and managing jobs
-6. **UI**: A simple dashboard for monitoring job status
-
-## Directory Structure
+## Структура
 
 ```
 src/jobs/
-├── index.ts              # Main entry point and helper functions
-├── queues.ts             # Queue definitions
-├── config.ts             # Configuration for queues and jobs
-├── processors/           # Job processors
-│   └── scores.ts         # Processors for training exercise scores jobs
-└── README.md             # This file
+├── index.ts              # импорт процессоров (side effect), хелперы schedule*, регистрация cron-задач
+├── queues.ts             # создание очередей Bull и привязка процессоров к job names
+├── config.ts             # redisConfig, queueNames, jobNames, defaultJobOptions
+└── processors/
+    ├── scores.ts
+    ├── trainings.ts
+    ├── periods.ts
+    └── images.ts
 ```
 
-## How to Use
+Направления зависимостей строгие: процессоры знают только про `@/tools/db` и `@/core/*`, но не про `src/app`. Вся бизнес-логика живёт в `src/core`, процессор лишь распаковывает payload и вызывает её.
 
-### Starting the Workers
+## Очереди и задачи
 
-To start the job processors (workers), run:
+| Очередь | Job name | Процессор | Payload | Что делает |
+|---|---|---|---|---|
+| `scores` | `calculate-scores` | `calculationScoreProcessor` | `{ trainingId }` | Для всех `TrainingExercise` тренировки пересчитывает оценки через `createScore` (`src/core/scores.ts`) |
+| `trainings` | `process-completed-training` | `trainingProcessingProcessor` | `{ trainingId, userId }` | Вызывает `processCompletedTrainingCore` (`src/core/trainingProcessing.ts`): рекорды, мышцы, статистика, затем ставит job в очередь `scores` |
+| `periods` | `check-inactive-periods` | `checkInactivePeriodsProcessor` | `{}` | Текущие `TrainingPeriod` без завершённых тренировок за последние 7 дней закрывает через `endCurrentTrainingPeriod` |
+| `images` | `cleanup-orphaned-images` | `cleanupImagesProcessor` | `{}` | Удаляет из `public/uploads` файлы, на которые нет ссылки в `ExerciseImage` |
 
-```bash
-npm run workers
-```
+### Как задачи попадают в очередь
 
-This will start all job processors defined in the `src/jobs/processors/` directory.
+| Задача | Источник |
+|---|---|
+| `trainings` | `POST /api/mobile/v1/trainings` — после записи синхронизации (`src/mobile/syncTrainings.ts:217`) |
+| `scores` | из `processCompletedTrainingCore` (`src/core/trainingProcessing.ts:184`), то есть цепочкой после `trainings` |
+| `periods` | cron `0 0 * * *` — ежедневно в полночь |
+| `images` | cron `0 3 * * *` — ежедневно в 03:00 |
 
-### Scheduling Jobs
+Оба cron-задания регистрируются сами при импорте `@/jobs` (`src/jobs/index.ts:59-62`). Это побочный эффект: модуль импортируют не только воркеры, но и `src/core`, и API-роуты, поэтому повторная регистрация repeat-job происходит при старте каждого процесса.
 
-You can schedule jobs in two ways:
+Хелперы для вызова из кода приложения: `scheduleScoreCalculation(trainingId)`, `scheduleTrainingProcessing(trainingId, userId)`, `scheduleCheckInactivePeriods()`, `scheduleCleanupOrphanedImages()` — все возвращают `{ jobId }`.
 
-1. **Using the API**:
-   ```http
-   POST /api/jobs
-   Content-Type: application/json
+## Опции задач
 
-   {
-     "action": "update-all-actions"  // This value comes from jobNames.actions.updateAllActions
-   }
-   ```
+Единые для всех очередей — `defaultJobOptions` в `src/jobs/config.ts:34`:
 
-2. **Using the helper functions**:
-   ```typescript
-   import { scheduleActionsUpdate } from '@/jobs';
+- `attempts: 3` с экспоненциальным backoff (задержка от 5 с);
+- `removeOnComplete: true` — выполненная задача удаляется из Redis, поэтому истории задач нет: разбирать инциденты нужно по логам воркера.
 
-   // Schedule a job to update all actions
-   const { jobId } = await scheduleActionsUpdate();
-   console.log(`Job scheduled with ID: ${jobId}`);
-   ```
+Каждый процессор в `finally` вызывает `prisma.$disconnect()`, так как воркеры — долгоживущие, но независимые от веб-процесса Node-процессы.
 
-3. **Using the CLI script**:
-   ```bash
-   npm run update-actions:bull
-   ```
+## Мониторинг
 
-### Monitoring Jobs
+- `GET /api/jobs` (`src/app/api/jobs/route.ts`) — счётчики и активные задачи. Метод один, POST-задач этот роут не ставит.
+- Дашборд `/admin/jobs` — интерфейс над этим же GET-роутом.
 
-You can monitor jobs in two ways:
+Роут опрашивает только очереди `scores` и `periods`. Состояние `trainings` и `images` в мониторинге не видно — при разборе проблем с обработкой тренировки или чисткой изображений читайте вывод `npm run workers`.
 
-1. **Using the API**:
-   ```http
-   GET /api/jobs
-   ```
+## Как добавить новый тип задачи
 
-2. **Using the UI Dashboard**:
-   Navigate to `/admin/jobs` in your browser to see the job monitoring dashboard.
-
-## Available Queues
-
-All queue and job names are defined in `src/jobs/config.ts`:
-
-1. **actionsQueue** (`queueNames.actions`): For processing action-related jobs
-   - `jobNames.actions.updateAllActions`: Updates all actions in the database
-
-2. **usersQueue** (`queueNames.users`): For processing user-related jobs
-   - `jobNames.users.processUserData`: Processes data for a specific user
-
-## Adding New Job Types
-
-To add a new job type:
-
-1. Create a new processor in the appropriate file in `src/jobs/processors/`
-2. Add a helper function in `src/jobs/index.ts` to schedule the job
-3. Update the API and UI if needed
-
-Example:
-
-```typescript
-// First, add the new job name to the config file (src/jobs/config.ts)
-export const jobNames = {
-  scores: {
-    updateAllActions: 'update-all-actions'
-  },
-  users: {
-    processUserData: 'process-user-data',
-    sendWelcomeEmail: 'send-welcome-email'  // Add this line
-  }
-};
-```
-
-## Configuration
-
-All configuration for the background job system is centralized in `src/jobs/config.ts`. This includes:
-
-1. **Redis Connection Settings**:
-   ```typescript
-   export const redisConfig = {
-     host: process.env.REDIS_HOST || 'localhost',
-     port: parseInt(process.env.REDIS_PORT || '6379')
-   };
-   ```
-
-2. **Queue Names**:
-   ```typescript
-   export const queueNames = {
-     actions: 'actions-processing',
-     users: 'users-processing'
-   };
-   ```
-
-3. **Job Names**:
-   ```typescript
-   export const jobNames = {
-     actions: {
-       updateAllActions: 'update-all-actions'
-     },
-     users: {
-       processUserData: 'process-user-data'
-     }
-   };
-   ```
-
-4. **Default Job Options**:
-   ```typescript
-   export const defaultJobOptions = {
-     attempts: 3,
-     backoff: {
-       type: 'exponential' as const,
-       delay: 5000
-     },
-     removeOnComplete: true
-   };
-   ```
-
-You can override the Redis connection settings by setting the `REDIS_HOST` and `REDIS_PORT` environment variables.
-
-## Best Practices
-
-1. **Keep jobs small and focused**: Each job should do one thing well
-2. **Handle errors gracefully**: Jobs should handle errors and not crash the worker
-3. **Use appropriate retry strategies**: Configure retry attempts and backoff strategies based on the job type
-4. **Monitor job queues**: Regularly check for failed jobs and address issues
-5. **Clean up completed jobs**: Use `removeOnComplete` to prevent the queue from growing too large
+1. В `src/jobs/config.ts` добавить имя очереди в `queueNames` и имя задачи в `jobNames`.
+2. В `src/jobs/processors/` создать процессор: payload из `job.data`, бизнес-логика — вызов функции из `@/core`, `$disconnect()` в `finally`, ошибки не глотать (Bull сам повторит попытку).
+3. В `src/jobs/queues.ts` создать очередь и вызвать `queue.process(jobName, processor)`.
+4. В `src/jobs/index.ts` добавить импорт процессора и хелпер `schedule…`, при необходимости — `repeat: { cron }`.
+5. Если задачу нужно видеть в мониторинге — расширить `src/app/api/jobs/route.ts`.

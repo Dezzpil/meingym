@@ -492,16 +492,18 @@ JobsIndex --> JobProcessor : enqueues calculate-scores
 Record detection runs at the end of every processed training, independently of the progression setting. `detectPersonalRecordsForTraining(trainingId, userId)` is idempotent: it deletes the training's own records before re-detecting them, so a retry is safe as long as `processedAt` has not yet been stamped.
 
 Two record types are tracked per `(user, action, purpose, type)` tuple, in both an all-time and a current-period flavour:
-- `MAX_WEIGHT` — the heaviest single set, with `reps` recorded so the UI can show "100 kg × 5";
+- `MAX_WEIGHT` — the heaviest single set, with `reps` recorded for the UI. Sets above `MAX_WEIGHT_MAX_COUNT_FOR_RECORD = 3` reps are skipped by `valuateMaxWeight`, so a record is never "100 kg × 5" — high-rep sets count only towards volume; when two sets weigh the same, the one with more reps wins;
 - `MAX_VOLUME` — the exercise tonnage, i.e. Σ(weight × reps).
 
 For duration-based exercises the value semantics change to seconds, and the UI renders the type title as "Σ" regardless of the enum.
 
-Each record stores a historical snapshot of what it beat: `previousValue`, `previousTrainingId` and `previousAt`. A record with `previousValue = null` is a *base* — the first result in history or in the period — and is deliberately hidden from the UI by `isShownRecord`. The read filter uses `achievedAt < completedAt` so that the training's own rows are excluded without needing the delete to happen first.
+Each record stores a historical snapshot of what it beat: `previousValue`, `previousTrainingId` and `previousAt`. A record with `previousValue = null` is a *base* — the first result in history or in the period. `isShownRecord` hides only **period** bases: every all-time record is shown, because the check is `record.isAllTime ? true : record.previousValue !== null`. The read filter uses `achievedAt < completedAt` so that the training's own rows are excluded without needing the delete to happen first.
 
 **Section sources**
 - [records/index.ts:1-17](file://src/core/records/index.ts#L1-L17)
 - [records/detect.ts:18-126](file://src/core/records/detect.ts#L18-L126)
+- [records/valuation.ts:1-50](file://src/core/records/valuation.ts#L1-L50)
+- [records/format.tsx:11-16](file://src/components/records/format.tsx#L11-L16)
 - [schema.prisma:619-671](file://prisma/schema.prisma#L619-L671)
 
 ### Replacing an Exercise

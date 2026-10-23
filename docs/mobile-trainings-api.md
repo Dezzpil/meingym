@@ -41,7 +41,50 @@ const signature = crypto
 }
 ```
 
-В ответе придут `token` и `expiresIn` (секунды).
+В ответе придут `token` и `expiresIn` (секунды). Это HS256 JWT с `sub = userId`; проверка — в `src/mobile/tools/jwt.ts`.
+
+### POST /auth/register
+
+Регистрация нового пользователя с тем же HMAC-подписанием. Требует серверный токен приложения: заголовок `x-app-token` (или поле `appToken` в теле) должен совпадать с `MOBILE_APP_TOKEN`.
+
+```
+POST /api/mobile/v1/auth/register
+```
+
+```json
+{
+  "email": "user@example.com",
+  "timestamp": 1722945600,
+  "signature": "...",
+  "name": "Иван"
+}
+```
+
+`name` необязателен. Успешный ответ — `201` с `{ token, expiresIn, userId }`: пользователь создаётся вместе с профилем и набором оборудования по умолчанию, токен выдаётся сразу. Если `email` уже занят — `409` с `{ "error": "USER_ALREADY_EXISTS" }`.
+
+### Переменные окружения
+
+| Переменная | Назначение | Если не задана |
+|---|---|---|
+| `MOBILE_HMAC_SECRET` | ключ HMAC-SHA256-подписи `email:timestamp` | запросы `exchange`/`register` падают с 500 |
+| `MOBILE_JWT_SECRET` | ключ подписи и проверки JWT | ошибки авторизации с 500 |
+| `MOBILE_JWT_EXPIRES_IN_SECONDS` | время жизни токена | 3600 |
+| `MOBILE_TIMESTAMP_WINDOW_SECONDS` | допустимое отклонение timestamp | 300 |
+| `MOBILE_APP_TOKEN` | ожидаемый `x-app-token` при регистрации | `register` отвечает 403 `INVALID_APP_TOKEN` |
+
+### Ошибки
+
+Ответ всегда содержит поле `error`:
+
+| Код | HTTP | Когда |
+|---|---|---|
+| `TIMESTAMP_EXPIRED` | 401 | timestamp вне окна `MOBILE_TIMESTAMP_WINDOW_SECONDS` |
+| `INVALID_SIGNATURE` | 401 | подпись не совпала с HMAC от `email:timestamp` |
+| `USER_NOT_FOUND` | 401 | пользователя с таким email нет (для `exchange`) |
+| `USER_ALREADY_EXISTS` | 409 | email уже зарегистрирован (для `register`) |
+| `INVALID_APP_TOKEN` | 403 | `x-app-token` не задан или не совпал |
+
+Ошибки проверки JWT роуты отдают сообщением, а не кодом: `Authorization header with Bearer token is required` (401, заголовка нет) и `Invalid or expired token` (401, токен просрочен или подписан другим ключом).
 
 ---
 
