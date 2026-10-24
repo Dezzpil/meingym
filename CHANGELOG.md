@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.5.0](https://github.com/Dezzpil/meingym/compare/v3.4.0...v3.5.0) (2026-10-24)
+
+
+### Features
+
+* добавить онбоардинг для новых пользователей ([a34386d](https://github.com/Dezzpil/meingym/commits/a34386d3984cdc7e664d33beb2d4741adc29bfb7))
+
+
+### Bug Fixes
+
+* считать рекорд MAX_WEIGHT только среди подходов до 3 повторов ([11a3292](https://github.com/Dezzpil/meingym/commits/11a3292fadb6779ab7c6551e731f6e30732374c6))
+
 ## [3.4.0](https://github.com/Dezzpil/meingym/compare/v3.3.0...v3.4.0) (2026-09-05)
 
 
