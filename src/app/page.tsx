@@ -10,9 +10,16 @@ import { WeightsChart } from "@/app/profile/components/WeightsChart";
 import { RecordsPanel } from "@/components/records/RecordsPanel";
 import React from "react";
 import { TrainingTimeScore } from "@/app/trainings/components/TrainingTimeScore";
+import { redirect } from "next/navigation";
 
 export default async function HomePage() {
   const userId = await getCurrentUserId();
+
+  const userInfo = await prisma.userInfo.findFirst({ where: { userId } });
+  if (userInfo && userInfo.trainingExperience === null) {
+    redirect("/onboarding");
+  }
+
   const { gte, lt } = getCurrentDayBorders();
 
   const trainings = await prisma.training.findMany({

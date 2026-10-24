@@ -8,6 +8,8 @@ export type MobileUserInfoDTO = {
   trainingProgression: string;
   trainingProgressionParams: unknown;
   collectExerciseExecutionFeedback: boolean;
+  trainingExperience: string | null;
+  onboardingCompleted: boolean;
 };
 
 export type MobileUserDTO = {
@@ -41,6 +43,8 @@ const USER_INFO_SELECT = {
   trainingProgression: true,
   trainingProgressionParams: true,
   collectExerciseExecutionFeedback: true,
+  trainingExperience: true,
+  onboardingCompleted: true,
 } as const;
 
 const USER_SELECT = {
@@ -70,6 +74,8 @@ function mapMobileUser(user: RawMobileUser): MobileUserDTO {
           trainingProgression: info.trainingProgression,
           trainingProgressionParams: info.trainingProgressionParams,
           collectExerciseExecutionFeedback: info.collectExerciseExecutionFeedback,
+          trainingExperience: info.trainingExperience,
+          onboardingCompleted: info.onboardingCompleted,
         }
       : null,
   };

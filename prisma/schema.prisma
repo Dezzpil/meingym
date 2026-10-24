@@ -99,6 +99,14 @@ enum Sex {
   FEMALE
 }
 
+enum TrainingExperience {
+  NONE           // нет опыта
+  LESS_THAN_1    // менее 1 года
+  ONE_TO_TWO     // 1-2 года
+  THREE_TO_FIVE  // 3-5 лет
+  MORE_THAN_FIVE // более 5 лет
+}
+
 model UserInfo {
   id     Int    @id @default(autoincrement())
   userId String
@@ -110,6 +118,10 @@ model UserInfo {
   purpose                   Purpose             @default(STRENGTH)
   trainingProgression       TrainingProgression @default(NONE)
   trainingProgressionParams Json                @default("{}")
+
+  // Onboarding
+  trainingExperience  TrainingExperience?
+  onboardingCompleted Boolean             @default(false)
 
   // Settings
   collectExerciseExecutionFeedback Boolean @default(false)

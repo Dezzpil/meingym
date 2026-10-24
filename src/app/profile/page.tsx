@@ -45,7 +45,10 @@ export default async function ProfilePage() {
       <TrainingPeriodManager currentPeriod={currentPeriod} userId={userId} />
       <div>
         <h5>Управление</h5>
-        <div className="mb-3 d-flex justify-content-start">
+        <div className="mb-3 d-flex gap-2 justify-content-start">
+          <Link className="btn btn-outline-primary" href="/onboarding">
+            Пройти онбоардинг
+          </Link>
           <Link className="btn btn-outline-danger" href={"/api/auth/signout"}>
             Выйти
           </Link>
