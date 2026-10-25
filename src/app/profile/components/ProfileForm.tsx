@@ -76,6 +76,30 @@ export function ProfileForm({ userInfo }: Props) {
         </label>
       </div>
 
+      <div className="form-check mb-2">
+        <input
+          id="checkupsEnabled"
+          className="form-check-input"
+          type="checkbox"
+          {...form.register("checkupsEnabled")}
+        />
+        <label className="form-check-label" htmlFor="checkupsEnabled">
+          Чекапы перед тренировкой
+        </label>
+      </div>
+
+      <div className="form-check mb-2">
+        <input
+          id="isEmployed"
+          className="form-check-input"
+          type="checkbox"
+          {...form.register("isEmployed")}
+        />
+        <label className="form-check-label" htmlFor="isEmployed">
+          Показывать вопросы про выгорание
+        </label>
+      </div>
+
       <div className="mb-2 d-flex justify-content-end">
         <button className="btn btn-primary" disabled={handling}>
           Сохранить

@@ -16,6 +16,12 @@ enum UserRole {
   ADMIN
 }
 
+enum DifficultyChoice {
+  BOOST
+  NORMAL
+  EASY
+}
+
 model User {
   id            String     @id @default(cuid())
   name          String?
@@ -43,6 +49,8 @@ model User {
   PersonalRecords               PersonalRecord[]
 
   Equipment Equipment[]
+
+  Checkup Checkup[]
 }
 
 model Equipment {
@@ -125,6 +133,10 @@ model UserInfo {
 
   // Settings
   collectExerciseExecutionFeedback Boolean @default(false)
+
+  // Checkups
+  checkupsEnabled Boolean @default(true)
+  isEmployed      Boolean @default(false)
 }
 
 model Account {
@@ -457,6 +469,8 @@ model Training {
 
   externalId       String?
   syncedFromMobile Boolean @default(false)
+
+  Checkup Checkup?
 
   @@unique([userId, externalId])
 }
@@ -834,4 +848,34 @@ model TrainingWarmUp {
   isSkipped   Boolean   @default(false)
   completedAt DateTime?
   durationSec Int?
+}
+
+model Checkup {
+  id Int @id @default(autoincrement())
+
+  userId String
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  trainingId Int       @unique
+  Training   Training  @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+
+  // Basic wellness (1–5)
+  sleep     Int
+  nutrition Int
+  preWorkout Int
+  stress    Int
+
+  // BAT-4 burnout screening (1–5, nullable — skipped if user is not employed)
+  burnoutExhaustion Int?
+  burnoutDistance   Int?
+  burnoutCognitive  Int?
+  burnoutEmotional  Int?
+  burnoutScore      Float?
+
+  // User's difficulty decision
+  difficultyChoice DifficultyChoice?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
 }

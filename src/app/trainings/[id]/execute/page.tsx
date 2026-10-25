@@ -15,6 +15,7 @@ import { TrainingExecuteTopPanel } from "@/app/trainings/[id]/execute/components
 import { TrainingExecuteCard } from "@/app/trainings/[id]/execute/components/TrainingExecuteCard";
 import { TrainingExecuteCompletePanel } from "@/app/trainings/[id]/execute/components/TrainingExecuteCompletePanel";
 import { TrainingWarmUpCard } from "@/app/trainings/[id]/execute/components/TrainingWarmUpCard";
+import { CheckupPanel } from "@/app/checkup/components/CheckupPanel";
 
 type TrainingExerciseType = TrainingExercise & {
   Action: Action;
@@ -104,6 +105,7 @@ export default async function TrainingExecutePage({ params }: ItemPageParams) {
 
   return (
     <div>
+      <CheckupPanel trainingId={training.id} trainingStarted={!!training.startedAt} />
       <TrainingExecuteTopPanel training={training} />
       {training.WarmUp && (
         <TrainingWarmUpCard

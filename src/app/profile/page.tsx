@@ -16,6 +16,7 @@ import {
   getCurrentTrainingPeriodWithOptions,
 } from "@/core/periods";
 import { SimpleProgressionOptsForm } from "@/app/progression/SimpleProgressionOptsForm";
+import { CheckupChart } from "./components/CheckupChart";
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -37,12 +38,27 @@ export default async function ProfilePage() {
       })
     : null;
 
+  const checkups = await prisma.checkup.findMany({
+    where: { userId },
+    orderBy: { createdAt: "asc" },
+    take: 50,
+    select: {
+      createdAt: true,
+      sleep: true,
+      nutrition: true,
+      preWorkout: true,
+      stress: true,
+      burnoutScore: true,
+    },
+  });
+
   return (
     <>
       <h1>Профиль </h1>
       <ProfileForm userInfo={userInfo} />
       {progressionOpts && <SimpleProgressionOptsForm item={progressionOpts} />}
       <TrainingPeriodManager currentPeriod={currentPeriod} userId={userId} />
+      {checkups.length > 0 && <CheckupChart checkups={checkups} />}
       <div>
         <h5>Управление</h5>
         <div className="mb-3 d-flex gap-2 justify-content-start">

@@ -16,6 +16,8 @@ export async function handleProfileUpdate(data: ProfileFormFieldsType) {
       trainingProgression: data.trainingProgression,
       trainingProgressionParams: JSON.stringify(data.trainingProgressionParams),
       collectExerciseExecutionFeedback: data.collectExerciseExecutionFeedback ?? false,
+      checkupsEnabled: data.checkupsEnabled ?? true,
+      isEmployed: data.isEmployed ?? false,
     },
   });
   // return { ok: true, error: null };

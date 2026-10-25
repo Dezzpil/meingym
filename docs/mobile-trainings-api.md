@@ -1000,3 +1000,131 @@ curl -X GET "https://meingym.online/api/mobile/v1/records?since=2026-07-01T00:00
 | 400    | `{ "error": "cursor must be a positive integer" }`     | `cursor` не положительное целое число |
 | 400    | `{ "error": "since must be a valid ISO 8601 datetime" }` | Невалидный формат даты               |
 | 500    | `{ "error": "Internal server error" }`                 | Внутренняя ошибка сервера            |
+
+---
+
+## Чекапы (Checkups)
+
+Пре-тренировочные чекапы: оценка сна, питания, предтреника, стресса и опциональный скрининг проф. выгорания (BAT-4).
+
+### GET /checkup/settings
+
+Получить настройки чекапов пользователя.
+
+**Ответ (200):**
+
+```json
+{
+  "checkupsEnabled": true,
+  "isEmployed": false
+}
+```
+
+| Поле              | Тип       | Описание                                 |
+|-------------------|-----------|------------------------------------------|
+| `checkupsEnabled` | `boolean` | Показывать чекапы перед тренировкой      |
+| `isEmployed`      | `boolean` | Показывать вопросы про выгорание (BAT-4) |
+
+### PUT /checkup/settings
+
+Обновить настройки чекапов. Оба поля опциональны — обновляются только переданные.
+
+**Тело запроса:**
+
+```json
+{
+  "checkupsEnabled": true,
+  "isEmployed": true
+}
+```
+
+**Ответ (200):** актуальные настройки (см. GET).
+
+### GET /checkup
+
+Получить историю чекапов с курсорной пагинацией.
+
+**Параметры запроса:**
+
+| Параметр | Тип | Обязательный | Описание                         |
+|----------|-----|--------------|----------------------------------|
+| `cursor` | int | нет          | ID последнего полученного чекапа |
+
+**Ответ (200):**
+
+```json
+{
+  "meta": { "total": 42, "nextCursor": 123 },
+  "items": [
+    {
+      "id": 1,
+      "trainingId": 100,
+      "sleep": 4,
+      "nutrition": 3,
+      "preWorkout": 5,
+      "stress": 2,
+      "burnoutExhaustion": 3,
+      "burnoutDistance": 2,
+      "burnoutCognitive": 4,
+      "burnoutEmotional": 1,
+      "burnoutScore": 2.5,
+      "difficultyChoice": "NORMAL",
+      "createdAt": "2026-10-24T15:00:00.000Z"
+    }
+  ]
+}
+```
+
+### GET /checkup/:trainingId
+
+Получить чекап для конкретной тренировки.
+
+**Ответ (200):** объект чекапа (см. выше).  
+**Ответ (404):** `{ "error": "Checkup not found" }`
+
+### POST /checkup
+
+Создать или обновить чекап для тренировки.
+
+**Тело запроса:**
+
+```json
+{
+  "trainingId": 100,
+  "sleep": 4,
+  "nutrition": 3,
+  "preWorkout": 5,
+  "stress": 2,
+  "burnoutExhaustion": 3,
+  "burnoutDistance": 2,
+  "burnoutCognitive": 4,
+  "burnoutEmotional": 1,
+  "difficultyChoice": "BOOST"
+}
+```
+
+| Поле                | Тип                                         | Обязательный | Описание                      |
+|---------------------|---------------------------------------------|--------------|-------------------------------|
+| `trainingId`        | int (>0)                                    | да           | ID тренировки                 |
+| `sleep`             | int (1–5)                                   | да           | Качество сна                  |
+| `nutrition`         | int (1–5)                                   | да           | Качество питания              |
+| `preWorkout`        | int (1–5)                                   | да           | Предтренировочное состояние   |
+| `stress`            | int (1–5)                                   | да           | Уровень стресса               |
+| `burnoutExhaustion` | int (1–5) \| null                           | нет          | BAT-4: ментальное истощение   |
+| `burnoutDistance`   | int (1–5) \| null                           | нет          | BAT-4: дистанция              |
+| `burnoutCognitive`  | int (1–5) \| null                           | нет          | BAT-4: когнитивное снижение   |
+| `burnoutEmotional`  | int (1–5) \| null                           | нет          | BAT-4: эмоциональное снижение |
+| `difficultyChoice`  | `"BOOST"` \| `"NORMAL"` \| `"EASY"` \| null | нет          | Выбор сложности тренировки    |
+
+**Ответ (200):** созданный/обновлённый чекап.
+
+### Ошибки чекапов
+
+| Статус | Тело ответа                                                | Причина                             |
+|--------|------------------------------------------------------------|-------------------------------------|
+| 401    | `{ "error": "Authorization header with Bearer token is required" }` | Отсутствует заголовок авторизации |
+| 401    | `{ "error": "Invalid or expired token" }`                  | Токен невалиден или истёк           |
+| 400    | `{ "error": "trainingId must be a positive integer" }`     | `trainingId` не положительное целое |
+| 400    | `{ "error": "sleep must be an integer between 1 and 5" }`  | Значение вне диапазона 1–5          |
+| 404    | `{ "error": "Checkup not found" }`                         | Чекап не найден                     |
+| 500    | `{ "error": "Internal server error" }`                     | Внутренняя ошибка сервера           |
