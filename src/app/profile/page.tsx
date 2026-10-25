@@ -17,6 +17,7 @@ import {
 } from "@/core/periods";
 import { SimpleProgressionOptsForm } from "@/app/progression/SimpleProgressionOptsForm";
 import { CheckupChart } from "./components/CheckupChart";
+import { SorenessChart, SorenessChartData } from "./components/SorenessChart";
 
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
@@ -52,6 +53,57 @@ export default async function ProfilePage() {
     },
   });
 
+  // Крепатура: последние 20 записей с данными по мышцам
+  const sorenessRecords = await prisma.muscleSoreness.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    take: 20,
+    include: {
+      Entries: {
+        include: {
+          Muscle: {
+            select: { groupId: true, Group: { select: { title: true } } },
+          },
+        },
+      },
+    },
+  });
+
+  // Агрегируем по группам мышц: средняя интенсивность
+  const groupMap = new Map<number, { title: string; intensities: number[] }>();
+  for (const record of sorenessRecords) {
+    for (const entry of record.Entries) {
+      const groupId = entry.Muscle.groupId;
+      const existing = groupMap.get(groupId);
+      const intensityValue =
+        entry.intensity === "NONE"
+          ? 0
+          : entry.intensity === "LIGHT"
+            ? 1
+            : entry.intensity === "MODERATE"
+              ? 2
+              : 3;
+      if (existing) {
+        existing.intensities.push(intensityValue);
+      } else {
+        groupMap.set(groupId, {
+          title: entry.Muscle.Group.title,
+          intensities: [intensityValue],
+        });
+      }
+    }
+  }
+
+  const sorenessChartData: SorenessChartData[] = Array.from(
+    groupMap.entries(),
+  ).map(([groupId, data]) => ({
+    muscleGroupId: groupId,
+    groupTitle: data.title,
+    avgIntensity:
+      data.intensities.reduce((a, b) => a + b, 0) / data.intensities.length,
+    count: data.intensities.length,
+  }));
+
   return (
     <>
       <h1>Профиль </h1>
@@ -59,6 +111,12 @@ export default async function ProfilePage() {
       {progressionOpts && <SimpleProgressionOptsForm item={progressionOpts} />}
       <TrainingPeriodManager currentPeriod={currentPeriod} userId={userId} />
       {checkups.length > 0 && <CheckupChart checkups={checkups} />}
+      {sorenessChartData.length > 0 && (
+        <>
+          <hr className="my-4" />
+          <SorenessChart data={sorenessChartData} />
+        </>
+      )}
       <div>
         <h5>Управление</h5>
         <div className="mb-3 d-flex gap-2 justify-content-start">

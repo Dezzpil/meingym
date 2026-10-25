@@ -11,6 +11,7 @@ import { RecordsPanel } from "@/components/records/RecordsPanel";
 import React from "react";
 import { TrainingTimeScore } from "@/app/trainings/components/TrainingTimeScore";
 import { redirect } from "next/navigation";
+import { SorenessPrompt } from "@/app/soreness/components/SorenessPrompt";
 
 export default async function HomePage() {
   const userId = await getCurrentUserId();
@@ -123,6 +124,7 @@ export default async function HomePage() {
           <TrainingCreateForm btnTitle="Назначить" />
         </div>
       )}
+      <SorenessPrompt />
       {weight ? <WeightPanel weight={weight} /> : <WeightsForm />}
       {weights && <WeightsChart weights={weights} />}
       <RecordsPanel records={records} />

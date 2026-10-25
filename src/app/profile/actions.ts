@@ -18,6 +18,7 @@ export async function handleProfileUpdate(data: ProfileFormFieldsType) {
       collectExerciseExecutionFeedback: data.collectExerciseExecutionFeedback ?? false,
       checkupsEnabled: data.checkupsEnabled ?? true,
       isEmployed: data.isEmployed ?? false,
+      sorenessEnabled: data.sorenessEnabled ?? true,
     },
   });
   // return { ok: true, error: null };

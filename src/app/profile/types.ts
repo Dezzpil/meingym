@@ -10,6 +10,7 @@ export const ProfileFormFields = z.object({
   collectExerciseExecutionFeedback: z.boolean().default(false),
   checkupsEnabled: z.boolean().default(true),
   isEmployed: z.boolean().default(false),
+  sorenessEnabled: z.boolean().default(true),
 });
 
 export type ProfileFormFieldsType = z.infer<typeof ProfileFormFields>;

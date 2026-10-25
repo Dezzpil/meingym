@@ -15,6 +15,8 @@ import { NameOfTheDay } from "@/components/NameOfTheDay";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { TrainingTimeScore } from "@/app/trainings/components/TrainingTimeScore";
 import { TrainingMuscleStats } from "@/app/trainings/components/TrainingMuscleStats";
+import { TrainingSorenessStats } from "@/app/trainings/components/TrainingSorenessStats";
+import { SorenessSuggestions } from "@/app/trainings/components/SorenessSuggestions";
 import {
   TrainingExecTimeChart,
   ExecTimeItem,
@@ -44,7 +46,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
   ]);
 
   // Batch 2: запросы, зависящие от training и userId
-  const [originalTraining, userInfo, exercises, muscleStats, equipments] =
+  const [originalTraining, userInfo, exercises, muscleStats, equipments, sorenessData] =
     await Promise.all([
       training.repeatedFromId
         ? prisma.training.findUnique({
@@ -71,6 +73,18 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         orderBy: { createdAt: "desc" },
         include: { Rigs: true, Requires: true },
       }),
+      training.completedAt
+        ? prisma.muscleSoreness.findUnique({
+            where: { trainingId: training.id },
+            include: {
+              Entries: {
+                include: {
+                  Muscle: { select: { title: true, Group: { select: { title: true } } } },
+                },
+              },
+            },
+          })
+        : Promise.resolve(null),
     ]);
 
   // Подгрузим предыдущие метрики по каждому действию для этого пользователя
@@ -270,6 +284,20 @@ export default async function TrainingPage({ params }: ItemPageParams) {
               className={"alert alert-light"}
             />
           </div>
+          {/* Крепатура после тренировки */}
+          {sorenessData && sorenessData.Entries.length > 0 && (
+            <div className="mb-3">
+              <TrainingSorenessStats
+                stats={sorenessData.Entries.map((e) => ({
+                  muscleId: e.muscleId,
+                  muscleTitle: e.Muscle.title,
+                  groupTitle: e.Muscle.Group.title,
+                  intensity: e.intensity,
+                }))}
+                className="alert alert-light"
+              />
+            </div>
+          )}
           <div className="alert alert-light d-flex align-items-center justify-content-between flex-wrap">
             <TrainingDifficultyBoost
               training={training}
@@ -293,14 +321,21 @@ export default async function TrainingPage({ params }: ItemPageParams) {
         </div>
       )}
       {!training.completedAt && (
-        <TrainingExerciseFloatingAdd
-          training={training}
-          actions={[]}
-          exercises={prevExercisesStats as any}
-          defaultPurpose={userInfo.purpose}
-          equipmentRigs={equipmentRigs}
-          equipmentRequires={equipmentRequires}
-        />
+        <>
+          <SorenessSuggestions
+            trainingId={training.id}
+            defaultPurpose={userInfo.purpose}
+            excludeActionIds={prevExercisesStats.map((e: any) => e.actionId)}
+          />
+          <TrainingExerciseFloatingAdd
+            training={training}
+            actions={[]}
+            exercises={prevExercisesStats as any}
+            defaultPurpose={userInfo.purpose}
+            equipmentRigs={equipmentRigs}
+            equipmentRequires={equipmentRequires}
+          />
+        </>
       )}
       <div className="mb-3">
         {moment(training.plannedTo).isSame(moment(), "day") && (

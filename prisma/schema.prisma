@@ -22,6 +22,13 @@ enum DifficultyChoice {
   EASY
 }
 
+enum SorenessIntensity {
+  NONE
+  LIGHT
+  MODERATE
+  SEVERE
+}
+
 model User {
   id            String     @id @default(cuid())
   name          String?
@@ -51,6 +58,8 @@ model User {
   Equipment Equipment[]
 
   Checkup Checkup[]
+
+  MuscleSoreness MuscleSoreness[]
 }
 
 model Equipment {
@@ -137,6 +146,9 @@ model UserInfo {
   // Checkups
   checkupsEnabled Boolean @default(true)
   isEmployed      Boolean @default(false)
+
+  // Soreness tracking
+  sorenessEnabled Boolean @default(true)
 }
 
 model Account {
@@ -224,6 +236,8 @@ model Muscle {
   MuscleDesc MuscleDesc[]
 
   MuscleImages MuscleImage[]
+
+  MuscleSorenessEntry MuscleSorenessEntry[]
 }
 
 model MuscleDesc {
@@ -471,6 +485,8 @@ model Training {
   syncedFromMobile Boolean @default(false)
 
   Checkup Checkup?
+
+  MuscleSoreness MuscleSoreness?
 
   @@unique([userId, externalId])
 }
@@ -878,4 +894,36 @@ model Checkup {
   createdAt DateTime @default(now())
 
   @@index([userId, createdAt])
+}
+
+model MuscleSoreness {
+  id Int @id @default(autoincrement())
+
+  userId String
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  trainingId Int      @unique
+  Training   Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+
+  daysAfter Int
+
+  createdAt DateTime @default(now())
+
+  Entries MuscleSorenessEntry[]
+
+  @@index([userId, createdAt])
+}
+
+model MuscleSorenessEntry {
+  id Int @id @default(autoincrement())
+
+  sorenessId Int
+  Soreness   MuscleSoreness @relation(fields: [sorenessId], references: [id], onDelete: Cascade)
+
+  muscleId  Int
+  Muscle    Muscle @relation(fields: [muscleId], references: [id])
+
+  intensity SorenessIntensity @default(NONE)
+
+  @@unique([sorenessId, muscleId])
 }

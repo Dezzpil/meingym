@@ -100,6 +100,18 @@ export function ProfileForm({ userInfo }: Props) {
         </label>
       </div>
 
+      <div className="form-check mb-2">
+        <input
+          id="sorenessEnabled"
+          className="form-check-input"
+          type="checkbox"
+          {...form.register("sorenessEnabled")}
+        />
+        <label className="form-check-label" htmlFor="sorenessEnabled">
+          Отслеживать крепатуру мышц
+        </label>
+      </div>
+
       <div className="mb-2 d-flex justify-content-end">
         <button className="btn btn-primary" disabled={handling}>
           Сохранить
