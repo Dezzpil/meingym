@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.6.0](https://github.com/Dezzpil/meingym/compare/v3.5.0...v3.6.0) (2026-10-25)
+
+
+### Features
+
+* Пре-тренировочные чекапы с экраном выгорания ([953fdc4](https://github.com/Dezzpil/meingym/commits/953fdc4fdc2998d55ab93f280497dca2879fdf97))
+
 ## [3.5.0](https://github.com/Dezzpil/meingym/compare/v3.4.0...v3.5.0) (2026-10-24)
 
 
