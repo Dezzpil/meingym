@@ -76,6 +76,63 @@ body {
     font-weight: 800;
 }
 
+/***** Training list *****/
+/* Подпись и значение одним элементом: раздельные flex-узлы распадаются
+   при переносе, и двоеточие остаётся в конце строки без значения */
+.stat-chip {
+    display: inline-flex;
+    align-items: baseline;
+    column-gap: .35rem;
+    padding: .2rem .6rem;
+    border: 1px solid #dee2e6;
+    border-radius: .5rem;
+    background-color: #f8f9fa;
+    font-size: .875rem;
+    white-space: nowrap;
+}
+
+.tag-chip {
+    display: inline-flex;
+    align-items: baseline;
+    column-gap: .3rem;
+    padding: .15rem .55rem;
+    border: 1px solid #e9ecef;
+    border-radius: 2rem;
+    background-color: #fff;
+    color: #6c757d;
+    font-size: .85rem;
+    white-space: nowrap;
+}
+
+.tag-chip-strong {
+    border-color: #adb5bd;
+    background-color: #eef0f2;
+    color: #41464b;
+    font-weight: 700;
+}
+
+.chip-label {
+    color: #6c757d;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+    margin-bottom: .5rem;
+}
+
+.clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 /***** Personal records *****/
 .record-mark {
     display: inline-flex;

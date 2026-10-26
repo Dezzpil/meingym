@@ -27,7 +27,8 @@
     "collect-exercise-time": "node --import tsx src/scripts/collect-exercise-time.ts",
     "create-equip-for-users": "node --import tsx src/scripts/create-equipments-for-users.ts",
     "mobile-auth-test": "node --import tsx src/scripts/mobile-auth-test.ts",
-    "update-personal-records": "node --import tsx src/scripts/update-personal-records.ts"
+    "update-personal-records": "node --import tsx src/scripts/update-personal-records.ts",
+    "update-muscle-loads": "node --import tsx src/scripts/update-muscle-loads.ts"
   },
   "dependencies": {
     "@commitlint/cli": "^19.2.2",

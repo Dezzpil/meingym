@@ -7,6 +7,8 @@ import { PageParams } from "@/tools/types";
 import { TrainingsPicker } from "@/components/TrainingsPicker";
 import TrainingCreateForm from "@/app/trainings/components/TrainingCreateForm";
 import { BiCalendarPlus } from "react-icons/bi";
+import { computeBatchDynamics } from "@/core/dynamics";
+import Link from "next/link";
 
 type TrainingId = number;
 export type MuscleGroupTitleToExercisesCnt = Record<string, number>;
@@ -35,7 +37,12 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 1);
 
+  // Для динамики нужен контекст: последние 3 месяца без фильтров
+  const dynamicsStartDate = new Date(year, month - 4, 1);
+
   const groups = await getCachedMuscleGroups();
+  
+  // Тренировки для отображения (с фильтрами)
   const trainings = await prisma.training.findMany({
     where: {
       plannedTo: {
@@ -79,6 +86,26 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
     orderBy: { plannedTo: "desc" },
   });
 
+  // Тренировки для расчёта динамики (последние 3 месяца, без фильтров)
+  const trainingsForDynamics = await prisma.training.findMany({
+    where: {
+      plannedTo: {
+        gte: dynamicsStartDate,
+        lt: endDate,
+      },
+      userId,
+    },
+    select: {
+      id: true,
+      difficultyScore: true,
+      muscleSignature: true,
+      plannedTo: true,
+    },
+    orderBy: { plannedTo: "asc" },
+  });
+
+  const dynamicsMap = computeBatchDynamics(trainingsForDynamics);
+
   const groupsToTrainingsMap = new Map<
     TrainingId,
     MuscleGroupTitleToExercisesCnt
@@ -113,6 +140,12 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
 
   return (
     <>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h1 className="h3 mb-0">Тренировки</h1>
+        <Link href="/trainings/dynamics" className="btn btn-outline-primary btn-sm">
+          Динамика →
+        </Link>
+      </div>
       <div className="mb-3 hstack gap-5">
         <form
           method="GET"
@@ -161,6 +194,7 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
               groupsToTrainingsMap.get(t.id) as MuscleGroupTitleToExercisesCnt
             }
             purposeCounts={purposeToTrainingMap.get(t.id)}
+            dynamics={dynamicsMap.get(t.id)}
           />
         ))
       ) : isFiltered ? (

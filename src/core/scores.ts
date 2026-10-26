@@ -25,7 +25,12 @@ export function normLogFn(val: number): number {
   return val > 0 ? Math.log(val) : 0;
 }
 
-export const norm = (item: TrainingExercise): ActionHistoryDataNormalized => {
+export const norm = (
+  item: Pick<
+    TrainingExercise,
+    "liftedSum" | "liftedMean" | "liftedMax" | "liftedCountTotal" | "liftedCountMean"
+  >,
+): ActionHistoryDataNormalized => {
   return {
     liftedMaxNorm: normLogFn(item.liftedMax),
     liftedSumNorm: normLogFn(item.liftedSum),

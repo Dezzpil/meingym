@@ -8,6 +8,7 @@ import { createExercise } from "@/core/exercises";
 import { ServerActionResult } from "@/tools/types";
 import { TrainingTimeAvgScorer } from "@/core/trainingTime/avgScorer";
 import { recalculateTrainingDifficulty } from "@/core/difficulty/recalculate";
+import { recomputeTrainingMuscleLoad } from "@/core/muscleLoad/recalculate";
 import { recomputeTrainingMuscleStats } from "@/core/trainingMuscles";
 
 export async function handleAddExercise(
@@ -33,6 +34,7 @@ export async function handleAddExercise(
 
       await recomputeTrainingMuscleStats(trainingId, tx);
       await recalculateTrainingDifficulty(trainingId, tx);
+      await recomputeTrainingMuscleLoad(trainingId, tx);
     });
 
     new TrainingTimeAvgScorer().score(trainingId).catch((e) => console.log(e));
@@ -59,6 +61,7 @@ export async function handleDeleteExercise(id: number) {
 
     await recomputeTrainingMuscleStats(trainingId, tx);
     await recalculateTrainingDifficulty(trainingId, tx);
+    await recomputeTrainingMuscleLoad(trainingId, tx);
   });
 
   new TrainingTimeAvgScorer().score(trainingId).catch((e) => console.log(e));

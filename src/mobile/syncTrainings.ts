@@ -2,7 +2,13 @@ import { prisma } from "@/tools/db";
 import { createExercise } from "@/core/exercises";
 import { createApproachGroup } from "@/core/approaches";
 import type { ApproachData } from "@/core/approaches";
-import { CurrentPurpose } from "@/core/types";
+import { calculateStats, findInfoForCalculationStatsForAction } from "@/core/stats";
+import {
+  recalculateExerciseDifficulty,
+  recalculateTrainingDifficulty,
+} from "@/core/difficulty/recalculate";
+import { recomputeTrainingMuscleLoad } from "@/core/muscleLoad/recalculate";
+import { CurrentPurpose, SetData } from "@/core/types";
 import { scheduleTrainingProcessing } from "@/jobs";
 
 export type MobileSyncExecutionInput = {
@@ -138,6 +144,7 @@ export async function syncTrainingsBatch(
         }
 
         // Create exercises and executions
+        const exerciseIds: number[] = [];
         for (const exercise of input.exercises) {
           const createdExercise = await createExercise(
             trainingId,
@@ -146,6 +153,7 @@ export async function syncTrainingsBatch(
             userId,
             tx,
           );
+          exerciseIds.push(createdExercise.id);
 
           // Update exercise with payload fields
           await tx.trainingExercise.update({
@@ -201,8 +209,44 @@ export async function syncTrainingsBatch(
                 comment: e.comment ?? null,
               })),
             });
+
+            // Агрегаты подъёмов пишет веб-поток при завершении упражнения; синку с телефона
+            // их неоткуда взять, а без них нет ни фактической сложности, ни нагрузки по мышцам
+            const sets: SetData[] = exercise.executions
+              .filter((e) => !e.isPassed)
+              .map((e) => ({ weight: e.liftedWeight, count: e.liftedCount }));
+            if (sets.length) {
+              const info = await findInfoForCalculationStatsForAction(
+                exercise.actionId,
+                userId,
+                tx,
+              );
+              const stats = calculateStats(
+                sets,
+                info.actionrig,
+                info.userweight,
+                info.isDurationBased,
+              );
+              await tx.trainingExercise.update({
+                where: { id: createdExercise.id },
+                data: {
+                  liftedSum: stats.weightSum,
+                  liftedMean: stats.weightMean,
+                  liftedMax: stats.weightMax,
+                  liftedCountTotal: stats.countSum,
+                  liftedCountMean: stats.countMean,
+                },
+              });
+            }
           }
         }
+
+        // Подходы подменяются уже после createExercise, поэтому сложность пересчитываем по итоговой группе
+        for (const exerciseId of exerciseIds) {
+          await recalculateExerciseDifficulty(exerciseId, tx);
+        }
+        await recalculateTrainingDifficulty(trainingId, tx);
+        await recomputeTrainingMuscleLoad(trainingId, tx);
 
         return trainingId;
       });

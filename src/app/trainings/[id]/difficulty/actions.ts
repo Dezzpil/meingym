@@ -10,6 +10,7 @@ import {
   recalculateTrainingDifficulty,
 } from "@/core/difficulty/recalculate";
 import type { TrainingExerciseWithApproaches } from "@/core/difficulty/boostStrategy";
+import { recomputeTrainingMuscleLoad } from "@/core/muscleLoad/recalculate";
 
 /**
  * Применить усложнение тренировки (добавить доп. подходы с isBoost=true)
@@ -51,6 +52,7 @@ export async function handleApplyDifficultyBoost(trainingId: number): Promise<vo
     await recalculateExerciseDifficulty(ex.id);
   }
   await recalculateTrainingDifficulty(trainingId);
+  await recomputeTrainingMuscleLoad(trainingId);
 
   revalidatePath(`/trainings/${trainingId}`);
 }
@@ -95,6 +97,7 @@ export async function handleRevertDifficultyBoost(trainingId: number): Promise<v
     await recalculateExerciseDifficulty(ex.id);
   }
   await recalculateTrainingDifficulty(trainingId);
+  await recomputeTrainingMuscleLoad(trainingId);
 
   revalidatePath(`/trainings/${trainingId}`);
 }

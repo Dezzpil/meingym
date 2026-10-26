@@ -11,6 +11,7 @@ import {
   recalculateExerciseDifficulty,
   recalculateTrainingDifficulty,
 } from "@/core/difficulty/recalculate";
+import { recomputeTrainingMuscleLoad } from "@/core/muscleLoad/recalculate";
 import type { TrainingExerciseWithApproaches } from "@/core/difficulty/boostStrategy";
 import { DifficultyChoice } from "@prisma/client";
 
@@ -106,6 +107,7 @@ async function applyDifficultyBoost(
     await recalculateExerciseDifficulty(ex.id);
   }
   await recalculateTrainingDifficulty(trainingId);
+  await recomputeTrainingMuscleLoad(trainingId);
 }
 
 export async function getCheckupForTraining(trainingId: number) {

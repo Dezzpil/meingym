@@ -10,8 +10,10 @@ import type { PrismaTransactionClient } from "@/tools/types";
  */
 export async function recalculateExerciseDifficulty(
   exerciseId: number,
+  tx?: PrismaTransactionClient,
 ): Promise<number> {
-  const exercise = await prisma.trainingExercise.findUniqueOrThrow({
+  const db = tx ?? prisma;
+  const exercise = await db.trainingExercise.findUniqueOrThrow({
     where: { id: exerciseId },
     include: {
       Action: { select: { base: true } },
@@ -25,7 +27,7 @@ export async function recalculateExerciseDifficulty(
     purpose: exercise.purpose,
   });
 
-  await prisma.trainingExercise.update({
+  await db.trainingExercise.update({
     where: { id: exerciseId },
     data: { difficultyScore: difficulty },
   });

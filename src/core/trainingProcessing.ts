@@ -17,6 +17,7 @@ import type { TrainingExercise } from "@prisma/client";
 import { findUserInfo } from "@/tools/auth";
 import { ProgressionStrategySimple } from "@/core/progression/strategy/simple";
 import { detectPersonalRecordsForTraining } from "@/core/records";
+import { recomputeTrainingMuscleLoad } from "@/core/muscleLoad/recalculate";
 import { scheduleScoreCalculation } from "@/jobs";
 
 function isBoostExecution(
@@ -186,6 +187,9 @@ export async function processCompletedTrainingCore(
 
   // 2) Зафиксируем персональные рекорды (не зависит от настройки прогрессии)
   await detectPersonalRecordsForTraining(trainingId, userId);
+
+  // 3) Нагрузка по группам мышц и фактическая сложность — по выполненным подъёмам
+  await recomputeTrainingMuscleLoad(trainingId);
 
   await prisma.training.update({
     where: { id: trainingId },

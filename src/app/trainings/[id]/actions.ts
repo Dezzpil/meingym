@@ -13,6 +13,8 @@ import moment from "moment";
 import { createTrainingPeriod, getCurrentTrainingPeriod } from "@/core/periods";
 import { findUserInfo } from "@/tools/auth";
 import { TrainingTimeAvgScorer } from "@/core/trainingTime/avgScorer";
+import { recalculateTrainingDifficulty } from "@/core/difficulty/recalculate";
+import { recomputeTrainingMuscleLoad } from "@/core/muscleLoad/recalculate";
 
 export async function handleRepeatTraining(
   id: number,
@@ -58,6 +60,8 @@ export async function handleRepeatTraining(
       "@/core/trainingMuscles"
     );
     await recomputeTrainingMuscleStats(nextTraining.id, tx);
+    await recalculateTrainingDifficulty(nextTraining.id, tx);
+    await recomputeTrainingMuscleLoad(nextTraining.id, tx);
     return nextTraining;
   });
 

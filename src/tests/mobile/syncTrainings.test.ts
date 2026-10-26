@@ -36,6 +36,10 @@ let txDeleteManyCalls: any[];
 let txExecCreateManyCalls: any[];
 let createApproachGroupCalls: any[];
 let txExerciseUpdateCalls: any[];
+let findInfoCalls: any[];
+let recalcExerciseDifficultyCalls: any[];
+let recalcTrainingDifficultyCalls: any[];
+let recomputeMuscleLoadCalls: any[];
 
 const USER_ID = "test-user-123";
 
@@ -155,6 +159,47 @@ describe("syncTrainingsBatch", () => {
       },
     });
 
+    // Mock @/core/stats: агрегаты подъёмов считаются по данным из БД
+    (mock as any).module("@/core/stats", {
+      namedExports: {
+        findInfoForCalculationStatsForAction: async (...args: any[]) => {
+          findInfoCalls.push(args);
+          return { actionrig: "OTHER", userweight: 80, isDurationBased: false };
+        },
+        calculateStats: () => ({
+          len: 1,
+          weightSum: 800,
+          weightMean: 80,
+          weightMax: 80,
+          countSum: 10,
+          countMean: 10,
+        }),
+      },
+    });
+
+    // Mock пересчёт сложности и нагрузки — у них свои обращения к БД
+    (mock as any).module("@/core/difficulty/recalculate", {
+      namedExports: {
+        recalculateExerciseDifficulty: async (...args: any[]) => {
+          recalcExerciseDifficultyCalls.push(args);
+          return 1;
+        },
+        recalculateTrainingDifficulty: async (...args: any[]) => {
+          recalcTrainingDifficultyCalls.push(args);
+          return 1;
+        },
+      },
+    });
+
+    (mock as any).module("@/core/muscleLoad/recalculate", {
+      namedExports: {
+        recomputeTrainingMuscleLoad: async (...args: any[]) => {
+          recomputeMuscleLoadCalls.push(args);
+          return { executedDifficulty: 1, groups: 1 };
+        },
+      },
+    });
+
     // Dynamically import AFTER mocks are registered
     const mod = await import("@/mobile/syncTrainings");
     syncTrainingsBatch = mod.syncTrainingsBatch;
@@ -172,6 +217,10 @@ describe("syncTrainingsBatch", () => {
     txExecCreateManyCalls = [];
     createApproachGroupCalls = [];
     txExerciseUpdateCalls = [];
+    findInfoCalls = [];
+    recalcExerciseDifficultyCalls = [];
+    recalcTrainingDifficultyCalls = [];
+    recomputeMuscleLoadCalls = [];
 
     // Default mock implementations
     createExerciseImpl = async () => ({ id: 100 });
@@ -232,6 +281,11 @@ describe("syncTrainingsBatch", () => {
 
     // No scheduling since completedAt is null
     expect(scheduleCalls).to.have.lengthOf(0);
+
+    // Агрегаты тренировки пересчитываются и для синка с телефона
+    expect(recalcExerciseDifficultyCalls).to.have.lengthOf(1);
+    expect(recalcTrainingDifficultyCalls).to.have.lengthOf(1);
+    expect(recomputeMuscleLoadCalls).to.have.lengthOf(1);
   });
 
   // ─── Test 2: Skip already-completed training ──────────────────────────

@@ -18,6 +18,7 @@ import {
   recalculateExerciseDifficulty,
   recalculateTrainingDifficulty,
 } from "@/core/difficulty/recalculate";
+import { recomputeTrainingMuscleLoad } from "@/core/muscleLoad/recalculate";
 
 export async function handleUpdateApproachGroup(
   groupId: number,
@@ -59,6 +60,7 @@ export async function handleUpdateApproachGroup(
       await recalculateExerciseDifficulty(exercise.id);
     }
     await recalculateTrainingDifficulty(trainingId);
+    await recomputeTrainingMuscleLoad(trainingId);
 
     revalidatePath(`/trainings/${trainingId}`);
   }

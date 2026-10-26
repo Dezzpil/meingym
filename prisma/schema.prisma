@@ -60,6 +60,8 @@ model User {
   Checkup Checkup[]
 
   MuscleSoreness MuscleSoreness[]
+
+  TrainingMuscleLoad TrainingMuscleLoad[]
 }
 
 model Equipment {
@@ -199,6 +201,8 @@ model MuscleGroup {
   MuscleGroupDesc MuscleGroupDesc[]
 
   TrainingMuscleStat TrainingMuscleStat[]
+
+  TrainingMuscleLoad TrainingMuscleLoad[]
 }
 
 model MuscleGroupDesc {
@@ -472,9 +476,18 @@ model Training {
 
   difficultyScore Float @default(0)
 
+  // Сложность по фактическим подъёмам (те же формулы, что и для плановой).
+  // 0 означает «данных о выполнении нет», а не «тренировка была лёгкой».
+  executedDifficultyScore Float @default(0)
+
+  // Подпись тренировки по agonist-группам мышц: связывает между собой тренировки «про одно и то же»
+  muscleSignature String?
+
   ExerciseExecutionDuration TrainingExerciseExecutionDuration[]
 
   TrainingMuscleStat TrainingMuscleStat[]
+
+  MuscleLoad TrainingMuscleLoad[]
 
   PersonalRecords PersonalRecord[]
 
@@ -489,6 +502,7 @@ model Training {
   MuscleSoreness MuscleSoreness?
 
   @@unique([userId, externalId])
+  @@index([userId, muscleSignature, plannedTo])
 }
 
 model TrainingExercise {
@@ -815,6 +829,36 @@ model TrainingMuscleStat {
 
   @@unique([trainingId, muscleId])
   @@index([trainingId])
+}
+
+// Нагрузка на группу мышц в конкретной тренировке — основа «нити» динамики.
+// Сумма plannedLoad по группам равна Training.difficultyScore, сумма executedLoad —
+// Training.executedDifficultyScore: графики нити и линии процесса сходятся в одно число.
+model TrainingMuscleLoad {
+  id Int @id @default(autoincrement())
+
+  trainingId Int
+  Training   Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+
+  muscleGroupId Int
+  MuscleGroup   MuscleGroup @relation(fields: [muscleGroupId], references: [id])
+
+  // денормализация: недельные агрегации фильтруются по пользователю без join с Training
+  userId String
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  plannedLoad  Float @default(0)
+  executedLoad Float @default(0)
+
+  // сколько упражнений тренировало группу в этой роли — для подписей и отладки
+  agonyCnt   Int @default(0)
+  synergyCnt Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([trainingId, muscleGroupId])
+  @@index([userId, muscleGroupId])
 }
 
 model SimilarExercises {
