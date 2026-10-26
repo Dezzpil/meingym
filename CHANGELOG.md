@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.8.1](https://github.com/Dezzpil/meingym/compare/v3.8.0...v3.8.1) (2026-10-26)
+
+
+### Bug Fixes
+
+* доработки по интерфейсу ([cfb729a](https://github.com/Dezzpil/meingym/commits/cfb729acd4b7cd2856853f0b3b7294cb30466960))
+* потерялась миграция ([5b8403e](https://github.com/Dezzpil/meingym/commits/5b8403e61c1c8021bc28ab95f4564c065a592843))
+
 ## [3.8.0](https://github.com/Dezzpil/meingym/compare/v3.7.0...v3.8.0) (2026-10-26)
 
 
