@@ -16,6 +16,7 @@ import { FaLongArrowAltRight } from "react-icons/fa";
 import { TrainingTimeScore } from "@/app/trainings/components/TrainingTimeScore";
 import { TrainingMuscleStats } from "@/app/trainings/components/TrainingMuscleStats";
 import { TrainingSorenessStats } from "@/app/trainings/components/TrainingSorenessStats";
+import { CheckupSummary } from "@/app/checkup/components/CheckupSummary";
 import { SorenessSuggestions } from "@/app/trainings/components/SorenessSuggestions";
 import {
   TrainingExecTimeChart,
@@ -46,7 +47,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
   ]);
 
   // Batch 2: запросы, зависящие от training и userId
-  const [originalTraining, userInfo, exercises, muscleStats, equipments, sorenessData] =
+  const [originalTraining, userInfo, exercises, muscleStats, equipments, sorenessData, checkupData] =
     await Promise.all([
       training.repeatedFromId
         ? prisma.training.findUnique({
@@ -82,6 +83,19 @@ export default async function TrainingPage({ params }: ItemPageParams) {
                   Muscle: { select: { title: true, Group: { select: { title: true } } } },
                 },
               },
+            },
+          })
+        : Promise.resolve(null),
+      training.completedAt
+        ? prisma.checkup.findUnique({
+            where: { trainingId: id },
+            select: {
+              sleep: true,
+              nutrition: true,
+              preWorkout: true,
+              stress: true,
+              burnoutScore: true,
+              difficultyChoice: true,
             },
           })
         : Promise.resolve(null),
@@ -255,6 +269,18 @@ export default async function TrainingPage({ params }: ItemPageParams) {
             </span>
           )}
         </div>
+      )}
+      {checkupData && (
+        <CheckupSummary
+          checkup={{
+            sleep: checkupData.sleep,
+            nutrition: checkupData.nutrition,
+            preWorkout: checkupData.preWorkout,
+            stress: checkupData.stress,
+            burnoutScore: checkupData.burnoutScore,
+            difficultyChoice: checkupData.difficultyChoice,
+          }}
+        />
       )}
       {prevExercisesStats.length ? (
         <>

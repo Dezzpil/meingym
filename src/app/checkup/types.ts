@@ -15,3 +15,9 @@ export const CheckupFormFields = z.object({
 });
 
 export type CheckupFormFieldsType = z.infer<typeof CheckupFormFields>;
+
+export const DifficultyChoiceName: Record<DifficultyChoice, string> = {
+  [DifficultyChoice.BOOST]: "Ебашить",
+  [DifficultyChoice.NORMAL]: "Как есть",
+  [DifficultyChoice.EASY]: "Пощадить",
+};

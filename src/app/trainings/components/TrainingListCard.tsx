@@ -72,9 +72,10 @@ export function TrainingListCard({
           </span>
         )}
         {training.difficultyScore > 0 && (
-          <span
-            className="stat-chip ms-auto"
-            title="Сложность: сумма базовости упражнений, взвешенная по плановой нагрузке"
+          <Link
+            href="/trainings/dynamics"
+            className="stat-chip ms-auto text-decoration-none"
+            title="Сложность: сумма базовости упражнений, взвешенная по плановой нагрузке. Нажмите для просмотра динамики"
           >
             <LuGauge className="text-muted" />
             <span className="chip-label">Сложность</span>
@@ -95,7 +96,7 @@ export function TrainingListCard({
                 )}
               </>
             )}
-          </span>
+          </Link>
         )}
       </div>
       <div className="card-body">
@@ -110,48 +111,52 @@ export function TrainingListCard({
             <span className="chip-label">Упражнений</span>
             <b>{exercisesCnt}</b>
           </span>
-          {plannedMins > 0 && (
-            <span
-              className="stat-chip"
-              title="Оценочная длительность тренировки"
-            >
+          {(plannedMins > 0 || realMins !== null) && (
+            <span className="stat-chip" title="Длительность тренировки">
               <FaClock className="text-muted" />
-              <span className="chip-label">План</span>~
-              {plannedMins.toFixed(0)} мин.
-            </span>
-          )}
-          {realMins !== null && (
-            <span className="stat-chip" title="Фактическая длительность">
-              <span className="chip-label">Факт</span>
-              <span className="text-success">{realMins} мин.</span>
+              {plannedMins > 0 && (
+                <>
+                  <span className="chip-label">План</span>~{plannedMins.toFixed(0)} мин.
+                </>
+              )}
+              {realMins !== null && (
+                <>
+                  {plannedMins > 0 && <span className="mx-1">/</span>}
+                  <span className="chip-label">Факт</span>
+                  <span className="text-success">{realMins} мин.</span>
+                </>
+              )}
             </span>
           )}
         </div>
 
         <div className="chip-row">
-          <span className="chip-label">Мышцы:</span>
-          {muscleGroups.length ? (
-            muscleGroups.map(([title, cnt]) => (
-              <span className="tag-chip" key={title}>
-                {title} <b>{cnt}</b>
-              </span>
-            ))
-          ) : (
-            <span className="tag-chip">не заданы</span>
-          )}
+          <span className="tag-chip">
+            <span className="chip-label">Мышцы:</span>
+            {muscleGroups.length ? (
+              muscleGroups.map(([title, cnt], idx) => (
+                <span key={title}>
+                  {idx > 0 && ", "}
+                  {title} <b>{cnt}</b>
+                </span>
+              ))
+            ) : (
+              <span>не заданы</span>
+            )}
+          </span>
         </div>
 
         {purposeShares.length > 0 && (
           <div className="chip-row">
-            <span className="chip-label">Цели:</span>
-            {purposeShares.map(({ title, share, isMain }) => (
-              <span
-                className={isMain ? "tag-chip tag-chip-strong" : "tag-chip"}
-                key={title}
-              >
-                {title} {share}%
-              </span>
-            ))}
+            <span className="tag-chip">
+              <span className="chip-label">Цели:</span>
+              {purposeShares.map(({ title, share, isMain }, idx) => (
+                <span key={title} className={isMain ? "fw-semibold" : ""}>
+                  {idx > 0 && ", "}
+                  {title} {share}%
+                </span>
+              ))}
+            </span>
           </div>
         )}
 

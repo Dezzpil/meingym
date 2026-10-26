@@ -27,6 +27,42 @@ async function updateActions() {
     // Process each action
     for (const action of actions) {
       try {
+        // Проверка, что связи загрузились
+        if (!action.MusclesAgony || !Array.isArray(action.MusclesAgony)) {
+          console.error(
+            `Action ${action.id} (${action.title}): MusclesAgony is not an array`,
+            action.MusclesAgony,
+          );
+          continue;
+        }
+        if (!action.MusclesSynergy || !Array.isArray(action.MusclesSynergy)) {
+          console.error(
+            `Action ${action.id} (${action.title}): MusclesSynergy is not an array`,
+            action.MusclesSynergy,
+          );
+          continue;
+        }
+        if (
+          !action.MusclesStabilizer ||
+          !Array.isArray(action.MusclesStabilizer)
+        ) {
+          console.error(
+            `Action ${action.id} (${action.title}): MusclesStabilizer is not an array`,
+            action.MusclesStabilizer,
+          );
+          continue;
+        }
+        if (
+          !action.MusclesAntagonist ||
+          !Array.isArray(action.MusclesAntagonist)
+        ) {
+          console.error(
+            `Action ${action.id} (${action.title}): MusclesAntagonist is not an array`,
+            action.MusclesAntagonist,
+          );
+          continue;
+        }
+
         // Prepare data in the format expected by handleUpdate
         const data = {
           title: action.title,
@@ -34,6 +70,7 @@ async function updateActions() {
           alias: action.alias || "",
           anotherTitles: action.anotherTitles || "",
           rig: action.rig,
+          require: action.require,
           bigCount: action.bigCount,
           allowCheating: action.allowCheating,
           musclesAgonyIds: action.MusclesAgony.map((m) =>
@@ -45,9 +82,10 @@ async function updateActions() {
           musclesStabilizerIds: action.MusclesStabilizer.map((m) =>
             m.muscleId.toString(),
           ),
-          MusclesAntagonistIds: action.MusclesAntagonist.map((m) =>
+          musclesAntagonistIds: action.MusclesAntagonist.map((m) =>
             m.muscleId.toString(),
           ),
+          similarExerciseIds: [],
         };
 
         // @ts-ignore

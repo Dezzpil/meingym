@@ -10,6 +10,7 @@ import { PageParams } from "@/tools/types";
 import { DateFormat } from "@/tools/dates";
 import moment from "moment";
 import Link from "next/link";
+import { DynamicsPeriodSelector } from "./DynamicsPeriodSelector";
 
 export default async function DynamicsPage({ searchParams }: PageParams) {
   const userId = await getCurrentUserId();
@@ -70,26 +71,7 @@ export default async function DynamicsPage({ searchParams }: PageParams) {
     <div className="container-fluid">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h3 mb-0">Динамика тренировок</h1>
-        <div className="d-flex gap-2">
-          <Link href="/trainings" className="btn btn-outline-secondary btn-sm">
-            ← К списку
-          </Link>
-          <select
-            className="form-select form-select-sm"
-            style={{ width: "auto" }}
-            defaultValue={monthsBack}
-            onChange={(e) => {
-              const url = new URL(window.location.href);
-              url.searchParams.set("months", e.target.value);
-              window.location.href = url.toString();
-            }}
-          >
-            <option value={1}>1 месяц</option>
-            <option value={3}>3 месяца</option>
-            <option value={6}>6 месяцев</option>
-            <option value={12}>12 месяцев</option>
-          </select>
-        </div>
+        <DynamicsPeriodSelector monthsBack={monthsBack} />
       </div>
 
       {trainings.length === 0 ? (

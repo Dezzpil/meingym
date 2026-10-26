@@ -105,7 +105,11 @@ export default async function TrainingExecutePage({ params }: ItemPageParams) {
 
   return (
     <div>
-      <CheckupPanel trainingId={training.id} trainingStarted={!!training.startedAt} />
+      <CheckupPanel
+        trainingId={training.id}
+        trainingStarted={!!training.startedAt}
+        plannedTo={training.plannedTo}
+      />
       <TrainingExecuteTopPanel training={training} />
       {training.WarmUp && (
         <TrainingWarmUpCard
