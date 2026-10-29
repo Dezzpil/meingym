@@ -12,9 +12,11 @@ export function pickOnlyOptsFromItem(
   item: ProgressionStrategySimpleOpts | ProgressionStrategySimpleOptsType,
 ): ProgressionStrategySimpleOptsType {
   return {
+    equipmentStep: item.equipmentStep,
     strengthPrepareSetsCount: item.strengthPrepareSetsCount,
     strengthWorkingSetsCount: item.strengthWorkingSetsCount,
     strengthWeightDelta: item.strengthWeightDelta,
+    strengthRepThreshold: item.strengthRepThreshold,
     massSetsCount: item.massSetsCount,
     massBigCountCoef: item.massBigCountCoef,
     massWeightDelta: item.massWeightDelta,
@@ -23,6 +25,7 @@ export function pickOnlyOptsFromItem(
     lossCountStep: item.lossCountStep,
     lossWeightDelta: item.lossWeightDelta,
     lossMaxSets: item.lossMaxSets,
+    resetMultiplier: item.resetMultiplier,
     durationSetsCount: item.durationSetsCount,
     durationStepSec: item.durationStepSec,
     durationMaxSec: item.durationMaxSec,

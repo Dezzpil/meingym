@@ -15,6 +15,7 @@ type Props = {
 
 export function SimpleProgressionOptsForm({ item }: Props) {
   const data: ProgressionStrategySimpleOptsType = {
+    equipmentStep: item.equipmentStep,
     lossCountMax: item.lossCountMax,
     lossCountStep: item.lossCountStep,
     lossMaxSets: item.lossMaxSets,
@@ -23,8 +24,10 @@ export function SimpleProgressionOptsForm({ item }: Props) {
     massBigCountCoef: item.massBigCountCoef,
     massSetsCount: item.massSetsCount,
     massWeightDelta: item.massWeightDelta,
+    resetMultiplier: item.resetMultiplier,
     strengthWeightDelta: item.strengthWeightDelta,
     strengthPrepareSetsCount: item.strengthPrepareSetsCount,
+    strengthRepThreshold: item.strengthRepThreshold,
     strengthWorkingSetsCount: item.strengthWorkingSetsCount,
     durationSetsCount: item.durationSetsCount,
     durationStepSec: item.durationStepSec,
@@ -59,6 +62,22 @@ export function SimpleProgressionOptsForm({ item }: Props) {
     <Form className="mb-3">
       <h5>Параметры прогрессии нагрузок</h5>
       <Form.Group className="mb-3">
+        <Form.Label>Шаг блинов (кг)</Form.Label>
+        <Form.Control
+          type="number"
+          name="equipmentStep"
+          value={formData.equipmentStep}
+          onChange={handleInputChange}
+          min={0.25}
+          max={10}
+          step={0.25}
+        />
+        <Form.Text className="text-muted">
+          Минимальный шаг веса в тренажёрах. Веса прогрессии округляются до кратного этого шага.
+        </Form.Text>
+      </Form.Group>
+      <hr />
+      <Form.Group className="mb-3">
         <Form.Label>Количество рабочих подходов (сила)</Form.Label>
         <Form.Control
           type="number"
@@ -91,6 +110,20 @@ export function SimpleProgressionOptsForm({ item }: Props) {
           max={5}
           step={1.25}
         />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Порог повторов для повышения (сила)</Form.Label>
+        <Form.Control
+          type="number"
+          name="strengthRepThreshold"
+          value={formData.strengthRepThreshold}
+          onChange={handleInputChange}
+          min={1}
+          max={10}
+        />
+        <Form.Text className="text-muted">
+          Когда лучший подход достиг этого числа повторов, лестница весов сдвигается вверх.
+        </Form.Text>
       </Form.Group>
       <hr />
       <Form.Group className="mb-3">
@@ -138,6 +171,21 @@ export function SimpleProgressionOptsForm({ item }: Props) {
           max={5}
           step={1.25}
         />
+      </Form.Group>
+      <hr />
+      <Form.Group className="mb-3">
+        <Form.Label>Множитель отката при достижении потолка</Form.Label>
+        <Form.Control
+          type="number"
+          name="resetMultiplier"
+          value={formData.resetMultiplier}
+          onChange={handleInputChange}
+          min={1}
+          max={5}
+        />
+        <Form.Text className="text-muted">
+          На сколько шагов откатиться назад при достижении максимума (повторы для «снижение веса», секунды для «длительность»).
+        </Form.Text>
       </Form.Group>
       <hr />
       <Form.Group className="mb-3">

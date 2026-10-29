@@ -22,9 +22,11 @@ import { sort } from "next/dist/build/webpack/loaders/css-loader/src/utils";
  */
 
 export type ProgressionStrategySimpleOptsType = {
+  equipmentStep: number;
   strengthWorkingSetsCount: number;
   strengthPrepareSetsCount: number;
   strengthWeightDelta: number;
+  strengthRepThreshold: number;
   massSetsCount: number;
   massAddDropSet: boolean;
   massBigCountCoef: number;
@@ -33,6 +35,7 @@ export type ProgressionStrategySimpleOptsType = {
   lossCountMax: number;
   lossWeightDelta: number;
   lossMaxSets: number;
+  resetMultiplier: number;
   // упражнения «на длительность» (isDurationBased): секунды в count, параметр в weight
   durationSetsCount: number;
   durationStepSec: number;
@@ -43,9 +46,11 @@ export type ProgressionStrategySimpleOptsType = {
 
 export const ProgressionStrategySimpleOptsDefaults: ProgressionStrategySimpleOptsType =
   {
+    equipmentStep: 2.5,
     strengthWorkingSetsCount: 4,
     strengthPrepareSetsCount: 2,
     strengthWeightDelta: 5,
+    strengthRepThreshold: 3,
     massSetsCount: 4,
     massAddDropSet: true,
     massBigCountCoef: 1.8,
@@ -54,6 +59,7 @@ export const ProgressionStrategySimpleOptsDefaults: ProgressionStrategySimpleOpt
     lossCountMax: 16,
     lossWeightDelta: 1.25,
     lossMaxSets: 6,
+    resetMultiplier: 2,
     durationSetsCount: 1,
     durationStepSec: 30,
     durationMaxSec: 600,
@@ -72,18 +78,24 @@ export class ProgressionStrategySimple {
       | "isDurationBased"
       | "durationParamLabel"
     >,
-    opts?: ProgressionStrategySimpleOptsType | null,
+    opts?: Partial<ProgressionStrategySimpleOptsType> | null,
   ) {
     this._opts = opts
-      ? Object.assign(ProgressionStrategySimpleOptsDefaults, opts)
-      : ProgressionStrategySimpleOptsDefaults;
+      ? { ...ProgressionStrategySimpleOptsDefaults, ...opts }
+      : { ...ProgressionStrategySimpleOptsDefaults };
+  }
+
+  _snapWeight(weight: number): number {
+    const step = this._opts.equipmentStep;
+    if (step <= 0) return weight;
+    return Math.round(weight / step) * step;
   }
 
   _upgradeStrengthWorkingSets(
     executedSets: SetData[],
-    opts?: ProgressionStrategySimpleOptsType,
+    opts?: Partial<ProgressionStrategySimpleOptsType>,
   ): SetData[] {
-    opts = opts || this._opts;
+    const o = { ...this._opts, ...opts } as ProgressionStrategySimpleOptsType;
 
     // take only opts.strengthWorkingSetsCount weight with sum of counts!
     const sortedSetsMap: Record<string, number> = {}; // weight, count
@@ -93,7 +105,7 @@ export class ProgressionStrategySimple {
       if (set.count === 0) continue;
 
       if (!(set.weight in sortedSetsMap)) {
-        if (Object.keys(sortedSetsMap).length >= opts.strengthWorkingSetsCount)
+        if (Object.keys(sortedSetsMap).length >= o.strengthWorkingSetsCount)
           break;
         sortedSetsMap[set.weight] = 0;
       }
@@ -116,26 +128,24 @@ export class ProgressionStrategySimple {
     const bestSet = sortedSets[0];
     let maxWeight = bestSet.weight;
     let rebuildLadder = false;
-    if (bestSet.count >= 3) {
-      // TODO вынести в параметры цифру 3
-      maxWeight += opts.strengthWeightDelta;
+    if (bestSet.count >= o.strengthRepThreshold) {
+      maxWeight = this._snapWeight(maxWeight + o.strengthWeightDelta);
       rebuildLadder = true;
     }
 
     if (rebuildLadder) {
-      for (let i = 0; i < opts.strengthWorkingSetsCount; i++) {
+      for (let i = 0; i < o.strengthWorkingSetsCount; i++) {
         setsCopy.unshift({ weight: maxWeight, count: 1 });
-        maxWeight -= opts.strengthWeightDelta;
+        maxWeight = this._snapWeight(maxWeight - o.strengthWeightDelta);
       }
     } else {
       // выравниваем лестницу
       let increaseNext = true;
-      for (let i = opts.strengthWorkingSetsCount - 1; i >= 0; i--) {
+      for (let i = o.strengthWorkingSetsCount - 1; i >= 0; i--) {
         const set = sortedSets[i];
         if (!set) continue;
-        // console.log("set", set);
-        if (set.count >= 3) {
-          set.count = 3;
+        if (set.count >= o.strengthRepThreshold) {
+          set.count = o.strengthRepThreshold;
           setsCopy.push({ weight: set.weight, count: set.count });
           increaseNext = true;
           continue;
@@ -233,16 +243,16 @@ export class ProgressionStrategySimple {
 
   _upgradeStrengthPrepareSets(
     workingSets: SetData[],
-    opts?: ProgressionStrategySimpleOptsType,
+    opts?: Partial<ProgressionStrategySimpleOptsType>,
   ): SetData[] {
-    opts = opts || this._opts;
+    const o = { ...this._opts, ...opts } as ProgressionStrategySimpleOptsType;
     const sets: SetData[] = [];
     let set = workingSets[0];
     let count = set.count;
-    for (let i = 0; i < opts.strengthPrepareSetsCount; i++) {
+    for (let i = 0; i < o.strengthPrepareSetsCount; i++) {
       count = Math.min(count + 2, 12);
 
-      let weight = set.weight - opts.strengthWeightDelta * 2 * (i + 1);
+      let weight = this._snapWeight(set.weight - o.strengthWeightDelta * 2 * (i + 1));
       if (weight <= this._getMinWeightByRig()) {
         sets.unshift({ weight: this._getMinWeightByRig(), count });
         break;
@@ -270,7 +280,7 @@ export class ProgressionStrategySimple {
         count: s.count % 2 === 0 ? s.count : s.count + 1,
       }));
     }
-    return sets;
+    return sets.map((s) => ({ ...s, weight: this._snapWeight(s.weight) }));
   }
 
   mass(planned: SetData[], executed: SetDataExecuted[]): SetData[] {
@@ -313,10 +323,11 @@ export class ProgressionStrategySimple {
     }
 
     for (let i = 0; i < sets.length; i++) {
-      if (sets[i].count >= transitions[i].above) {
+      const transition = transitions[i];
+      if (transition && sets[i].count >= transition.above) {
         sets[i] = {
-          weight: sets[i].weight + this._opts.massWeightDelta,
-          count: transitions[i].to,
+          weight: this._snapWeight(sets[i].weight + this._opts.massWeightDelta),
+          count: transition.to,
         };
       } else {
         sets[i].count += 1;
@@ -335,7 +346,7 @@ export class ProgressionStrategySimple {
       sets.push(dropSet);
     }
 
-    return sets;
+    return sets.map((s) => ({ ...s, weight: this._snapWeight(s.weight) }));
   }
 
   loss(planned: SetData[], executed: SetDataExecuted[]): SetData[] {
@@ -348,8 +359,7 @@ export class ProgressionStrategySimple {
     let addSet = false;
     let mean = Math.floor(cnt / executed.length);
     if (mean >= this._opts.lossCountMax) {
-      // TODO надо вынести это 2 в параметры нагрузки!
-      mean = this._opts.lossCountMax - 2 * this._opts.lossCountStep;
+      mean = this._opts.lossCountMax - this._opts.resetMultiplier * this._opts.lossCountStep;
       addSet = true;
     } else {
       mean += this._opts.lossCountStep;
@@ -372,12 +382,12 @@ export class ProgressionStrategySimple {
       for (let i = 0; i < this._opts.lossMaxSets - 2; i++) {
         sets.push({
           count: mean,
-          weight: executed[0].weight + this._opts.lossWeightDelta,
+          weight: this._snapWeight(executed[0].weight + this._opts.lossWeightDelta),
         });
       }
     }
 
-    return sets;
+    return sets.map((s) => ({ ...s, weight: this._snapWeight(s.weight) }));
   }
 
   /**
@@ -404,7 +414,7 @@ export class ProgressionStrategySimple {
     const hasParam = this._action.durationParamLabel != null;
     let addSet = false;
     if (sec >= this._opts.durationMaxSec) {
-      sec = this._opts.durationMaxSec - 2 * this._opts.durationStepSec;
+      sec = this._opts.durationMaxSec - this._opts.resetMultiplier * this._opts.durationStepSec;
       if (hasParam) {
         param += this._opts.durationParamStep;
       } else {

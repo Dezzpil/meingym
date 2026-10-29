@@ -754,9 +754,14 @@ model ProgressionStrategySimpleOpts {
   trainingPeriodId Int            @unique
   TrainingPeriod   TrainingPeriod @relation(fields: [trainingPeriodId], references: [id], onDelete: Cascade)
 
+  // шаг блинов/дисков в тренажёрах, к которому округляются веса
+  equipmentStep Float @default(2.5)
+
   strengthWorkingSetsCount Int   @default(4)
   strengthPrepareSetsCount Int   @default(2)
   strengthWeightDelta      Float @default(5)
+  // порог повторов, при котором лестница strength перестраивается вверх
+  strengthRepThreshold       Int   @default(3)
 
   massSetsCount    Int     @default(4)
   massBigCountCoef Float   @default(1.8)
@@ -767,6 +772,9 @@ model ProgressionStrategySimpleOpts {
   lossCountMax    Int   @default(16)
   lossWeightDelta Float @default(1.25)
   lossMaxSets     Int   @default(6)
+
+  // множитель отката при достижении потолка (loss: сброс mean, duration: сброс sec)
+  resetMultiplier Int @default(2)
 
   // упражнения «на длительность» (isDurationBased): секунды в count, параметр в weight
   durationSetsCount Int   @default(1)
