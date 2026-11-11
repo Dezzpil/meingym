@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.8.4](https://github.com/Dezzpil/meingym/compare/v3.8.3...v3.8.4) (2026-11-11)
+
+
+### Bug Fixes
+
+* доработать отображения списка тренировок ([68509ea](https://github.com/Dezzpil/meingym/commits/68509eaa08e2dc0aa063181e4f367d71927e0855))
+
 ### [3.8.3](https://github.com/Dezzpil/meingym/compare/v3.8.2...v3.8.3) (2026-11-11)
 
 
