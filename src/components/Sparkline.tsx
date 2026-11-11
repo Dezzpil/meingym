@@ -21,12 +21,7 @@ export function Sparkline({ data, width = 60, height = 20, color = "#6c757d" }: 
   });
 
   return (
-    <svg
-      width={width}
-      height={height}
-      className="d-inline-block align-middle"
-      style={{ verticalAlign: "middle" }}
-    >
+    <svg width={width} height={height} className="sparkline">
       <polyline
         points={points.join(" ")}
         fill="none"

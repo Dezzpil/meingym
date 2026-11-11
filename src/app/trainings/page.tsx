@@ -1,6 +1,5 @@
 import { prisma } from "@/tools/db";
 import { getCachedMuscleGroups } from "@/tools/cachedQueries";
-import { Purpose } from "@prisma/client";
 import { getCurrentUserId } from "@/tools/auth";
 import { TrainingListCard } from "@/app/trainings/components/TrainingListCard";
 import { PageParams } from "@/tools/types";
@@ -12,7 +11,6 @@ import Link from "next/link";
 
 type TrainingId = number;
 export type MuscleGroupTitleToExercisesCnt = Record<string, number>;
-export type ActionPurposeCnt = Record<"MASS" | "STRENGTH" | "LOSS", number>;
 
 export default async function TrainingsPage({ searchParams }: PageParams) {
   const userId = await getCurrentUserId();
@@ -65,8 +63,11 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
         select: {
           id: true,
           purpose: true,
+          liftedSum: true,
+          liftedCountTotal: true,
           Action: {
             select: {
+              title: true,
               isMarkDownInDesc: false,
               desc: false,
               MusclesAgony: {
@@ -82,6 +83,15 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
           },
         },
       },
+      MuscleLoad: {
+        select: {
+          plannedLoad: true,
+          executedLoad: true,
+          agonyCnt: true,
+          MuscleGroup: { select: { title: true } },
+        },
+      },
+      PersonalRecords: { select: { id: true } },
     },
     orderBy: { plannedTo: "desc" },
   });
@@ -110,22 +120,9 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
     TrainingId,
     MuscleGroupTitleToExercisesCnt
   >();
-  const purposeToTrainingMap = new Map<TrainingId, ActionPurposeCnt>();
   for (const t of trainings) {
     const groupCounter: MuscleGroupTitleToExercisesCnt = {};
-    const purposeCounter = { MASS: 0, STRENGTH: 0, LOSS: 0 };
     for (const e of t.TrainingExercise) {
-      switch (e.purpose) {
-        case Purpose.MASS:
-          purposeCounter.MASS += 1;
-          break;
-        case Purpose.STRENGTH:
-          purposeCounter.STRENGTH += 1;
-          break;
-        case Purpose.LOSS:
-          purposeCounter.LOSS += 1;
-          break;
-      }
       for (const m of e.Action.MusclesAgony) {
         const group = m.Muscle.Group.title;
         if (!(group in groupCounter)) {
@@ -133,9 +130,8 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
         }
         groupCounter[group] += 1;
       }
-      groupsToTrainingsMap.set(t.id, groupCounter);
-      purposeToTrainingMap.set(t.id, purposeCounter);
     }
+    groupsToTrainingsMap.set(t.id, groupCounter);
   }
 
   return (
@@ -193,8 +189,8 @@ export default async function TrainingsPage({ searchParams }: PageParams) {
             muscleGroupsCounts={
               groupsToTrainingsMap.get(t.id) as MuscleGroupTitleToExercisesCnt
             }
-            purposeCounts={purposeToTrainingMap.get(t.id)}
             dynamics={dynamicsMap.get(t.id)}
+            now={now}
           />
         ))
       ) : isFiltered ? (

@@ -15,6 +15,7 @@ import { NameOfTheDay } from "@/components/NameOfTheDay";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { TrainingTimeScore } from "@/app/trainings/components/TrainingTimeScore";
 import { TrainingMuscleStats } from "@/app/trainings/components/TrainingMuscleStats";
+import { TrainingPurposeStats } from "@/app/trainings/components/TrainingPurposeStats";
 import { TrainingSorenessStats } from "@/app/trainings/components/TrainingSorenessStats";
 import { CheckupSummary } from "@/app/checkup/components/CheckupSummary";
 import { SorenessSuggestions } from "@/app/trainings/components/SorenessSuggestions";
@@ -23,6 +24,7 @@ import {
   ExecTimeItem,
 } from "@/app/trainings/components/TrainingExecTimeChart";
 import { fetchTrainingMuscleStats } from "@/core/trainingMuscles";
+import { computeTrainingDynamics } from "@/core/dynamics";
 import { TrainingDifficultyBoost } from "@/app/trainings/components/TrainingDifficultyBoost";
 import {
   ActionRequire,
@@ -47,7 +49,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
   ]);
 
   // Batch 2: запросы, зависящие от training и userId
-  const [originalTraining, userInfo, exercises, muscleStats, equipments, sorenessData, checkupData] =
+  const [originalTraining, userInfo, exercises, muscleStats, equipments, sorenessData, checkupData, threadTrainings] =
     await Promise.all([
       training.repeatedFromId
         ? prisma.training.findUnique({
@@ -99,7 +101,25 @@ export default async function TrainingPage({ params }: ItemPageParams) {
             },
           })
         : Promise.resolve(null),
+      training.muscleSignature
+        ? prisma.training.findMany({
+            where: {
+              userId: training.userId,
+              muscleSignature: training.muscleSignature,
+              difficultyScore: { gt: 0 },
+            },
+            select: {
+              id: true,
+              difficultyScore: true,
+              muscleSignature: true,
+              plannedTo: true,
+            },
+            orderBy: { plannedTo: "asc" },
+          })
+        : Promise.resolve([]),
     ]);
+
+  const dynamics = computeTrainingDynamics(training, threadTrainings);
 
   // Подгрузим предыдущие метрики по каждому действию для этого пользователя
   const prevExercisesStats = await Promise.all(
@@ -310,6 +330,13 @@ export default async function TrainingPage({ params }: ItemPageParams) {
               className={"alert alert-light"}
             />
           </div>
+          {/* Доли целей тренировки */}
+          <div className="mb-3">
+            <TrainingPurposeStats
+              purposes={exercises.map((e) => e.purpose)}
+              className="alert alert-light"
+            />
+          </div>
           {/* Крепатура после тренировки */}
           {sorenessData && sorenessData.Entries.length > 0 && (
             <div className="mb-3">
@@ -329,6 +356,7 @@ export default async function TrainingPage({ params }: ItemPageParams) {
               training={training}
               isStarted={!!training.startedAt}
               hasBoostedApproaches={hasBoostedApproaches}
+              dynamics={dynamics}
             />
           </div>
           <div className="alert alert-light d-flex align-items-center justify-content-between flex-wrap">

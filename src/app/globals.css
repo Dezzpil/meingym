@@ -133,6 +133,352 @@ body {
     overflow: hidden;
 }
 
+.clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* высота графика ~1.1em от текста: при таком выносе его центр
+   приходится на центр цифр соседнего числа */
+.sparkline {
+    display: inline-block;
+    vertical-align: -.18em;
+}
+
+/***** Compact training card *****/
+/* Плоский блок без скруглений и цветных кромок. Каждая строка — один смысл:
+   что за тренировка и зачем / когда и сколько / сложность / нагрузка по группам /
+   объём и рекорды / заметка. */
+.training-card {
+    --tc-strength: #1c6dd0;
+    --tc-mass: #d97706;
+    --tc-loss: #2e9e4f;
+    --tc-record: #c8901a;
+    --tc-up: #2e9e4f;
+    --tc-down: #8a94a6;
+    border-radius: 0;
+    transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+    animation: training-card-in .26s ease-out both;
+}
+
+@keyframes training-card-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.training-card:hover {
+    border-color: #adb5bd;
+    box-shadow: 0 1px 6px rgba(33, 37, 41, .07);
+}
+
+.training-card:active {
+    background-color: #f8f9fa;
+}
+
+.training-card .card-body {
+    padding: .6rem .75rem;
+}
+
+.training-card-head {
+    display: flex;
+    align-items: baseline;
+    column-gap: .45rem;
+}
+
+.training-card-title {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: #212529;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.training-card-title:hover {
+    color: #0d6efd;
+}
+
+/* Иконки сидят на базовой линии текста, а не центрируются по line-box:
+   центр line-box смещён относительно центра цифр, отсюда «пляска» на глаз.
+   -.17em подобрано под иконку 1.1em при высоте цифр ~.72em. */
+.training-card-circuit,
+.training-card-score-icon,
+.training-card-stat-icon {
+    font-size: 1.1em;
+    vertical-align: -.17em;
+}
+
+.training-card-circuit {
+    margin-left: .35rem;
+    color: #6c757d;
+}
+
+.training-card-purpose {
+    flex: 0 0 auto;
+    font-size: .82rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.training-card-purpose-strength {
+    color: #17569e;
+}
+
+.training-card-purpose-mass {
+    color: #9a5606;
+}
+
+.training-card-purpose-loss {
+    color: #237a3c;
+}
+
+.training-card-purpose-share {
+    margin-left: .25rem;
+    font-size: .9em;
+    font-variant-numeric: tabular-nums;
+    opacity: .7;
+}
+
+.training-card-status {
+    flex: 0 0 auto;
+    display: inline-block;
+    padding: .19em .45rem .11em;
+    border-radius: .25rem;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    line-height: 1.35;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.training-card-status-active {
+    background-color: var(--tc-strength);
+    color: #fff;
+}
+
+.training-card-status-planned {
+    background-color: #edf0f3;
+    color: #4a5568;
+}
+
+.training-card-status-missed {
+    background-color: #fbeade;
+    color: #8a4b12;
+}
+
+.training-card-meta {
+    display: flex;
+    align-items: baseline;
+    column-gap: .4rem;
+    margin-top: .25rem;
+    color: #6c757d;
+    font-size: .82rem;
+    line-height: 1.35;
+}
+
+.training-card-meta-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.training-card-meta-strong {
+    color: #495057;
+    font-weight: 600;
+}
+
+.training-card-comment {
+    margin-top: .35rem;
+    color: #868e96;
+    font-size: .82rem;
+}
+
+.training-card-preview {
+    margin-top: .4rem;
+    color: #868e96;
+    font-size: .8rem;
+}
+
+/* ссылка на динамику должна лежать поверх stretched-link заголовка,
+   иначе тап по сложности уведёт в тренировку */
+.training-card-score {
+    position: relative;
+    z-index: 2;
+    display: block;
+    margin-top: .35rem;
+    color: #212529;
+    font-size: .95rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.training-card-score:hover {
+    color: #0d6efd;
+}
+
+.training-card-score-icon {
+    margin-right: .4rem;
+    color: #6c757d;
+}
+
+.training-card-score-plan {
+    color: #6c757d;
+}
+
+.training-card-score-arrow {
+    margin: 0 .3rem;
+    color: #adb5bd;
+    font-size: .85em;
+}
+
+.training-card-score-fact {
+    font-weight: 700;
+}
+
+.training-card-score-delta {
+    margin-left: .7rem;
+    font-size: .8rem;
+    font-weight: 700;
+}
+
+.training-card-score-delta .sparkline {
+    margin-left: .35rem;
+}
+
+.training-card-delta-up {
+    color: var(--tc-up);
+}
+
+.training-card-delta-down {
+    color: var(--tc-down);
+}
+
+.training-card-load {
+    margin-top: .45rem;
+}
+
+.muscle-load-bar {
+    display: block;
+    width: 100%;
+    /* на широком экране полоса не должна превращаться в разделитель на всю ширину */
+    max-width: 26rem;
+    height: 7px;
+}
+
+.muscle-load-bar-fill {
+    transform-origin: left center;
+    animation: muscle-load-sweep .5s cubic-bezier(.22, .61, .36, 1) .08s both;
+}
+
+@keyframes muscle-load-sweep {
+    from {
+        transform: scaleX(0);
+    }
+
+    to {
+        transform: scaleX(1);
+    }
+}
+
+.training-card-load-legend {
+    display: flex;
+    align-items: baseline;
+    column-gap: .5rem;
+    margin-top: .3rem;
+    overflow: hidden;
+    color: #6c757d;
+    font-size: .72rem;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.training-card-load-dot {
+    width: .6em;
+    height: .6em;
+    margin-right: .22rem;
+    vertical-align: .06em;
+}
+
+.training-card-load-share {
+    color: #495057;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.training-card-load-rest {
+    color: #adb5bd;
+    font-weight: 700;
+}
+
+.training-card-load-basis {
+    margin-left: auto;
+    color: #adb5bd;
+    font-style: italic;
+}
+
+.training-card-stats {
+    display: flex;
+    align-items: baseline;
+    column-gap: .7rem;
+    margin-top: .45rem;
+    font-size: .82rem;
+}
+
+.training-card-stat {
+    color: #495057;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.training-card-stat-icon {
+    margin-right: .28rem;
+    color: #8a94a6;
+}
+
+.training-card-stat-volume {
+    color: #1f2937;
+}
+
+.training-card-stat-volume .training-card-stat-icon {
+    color: var(--tc-strength);
+}
+
+/* иконка с выносом вниз растягивает строку, поэтому верхний отступ больше
+   нижнего — иначе содержимое визуально прилипает к верхнему краю */
+.training-card-stat-record {
+    padding: .22em .4rem .08em;
+    border-radius: .25rem;
+    background-color: #fdf4e0;
+    color: #8a6209;
+}
+
+.training-card-stat-record .training-card-stat-icon {
+    color: var(--tc-record);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .training-card,
+    .muscle-load-bar-fill {
+        animation: none;
+    }
+}
+
 /***** Personal records *****/
 .record-mark {
     display: inline-flex;

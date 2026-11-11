@@ -5,3 +5,9 @@ export const PurposeName = {
   [Purpose.STRENGTH]: "На силу",
   [Purpose.LOSS]: "На снижение веса",
 };
+
+export const PurposeShortName = {
+  [Purpose.MASS]: "Масса",
+  [Purpose.STRENGTH]: "Сила",
+  [Purpose.LOSS]: "Рельеф",
+};

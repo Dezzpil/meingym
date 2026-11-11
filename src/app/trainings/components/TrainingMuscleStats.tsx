@@ -5,6 +5,7 @@ import {
   MuscleStabilizerBackground,
   MuscleSynergyBackground,
 } from "@/app/actions/colors";
+import { topMuscleGroups } from "@/core/trainingSummary";
 
 type Stat = {
   muscleId: number;
@@ -27,6 +28,21 @@ export function TrainingMuscleStats({ stats, className }: Props) {
   );
   const [open, setOpen] = useState(false);
 
+  const groupCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const s of stats) {
+      if (s.asAgonyCnt <= 0) continue;
+      const title = s.Muscle.Group.title;
+      counts[title] = (counts[title] ?? 0) + s.asAgonyCnt;
+    }
+    return counts;
+  }, [stats]);
+
+  const orderedGroups = useMemo(
+    () => topMuscleGroups(groupCounts, Object.keys(groupCounts).length),
+    [groupCounts],
+  );
+
   return !stats || stats.length === 0 ? null : (
     <div className={className}>
       <div className="d-flex align-items-center justify-content-between">
@@ -46,6 +62,16 @@ export function TrainingMuscleStats({ stats, className }: Props) {
           {open ? "Скрыть" : "Показать"}
         </button>
       </div>
+
+      {orderedGroups.length > 0 && (
+        <div className="chip-row mb-0 mt-1">
+          {orderedGroups.map((title) => (
+            <span key={title} className="tag-chip">
+              {title} <b>{groupCounts[title]}</b>
+            </span>
+          ))}
+        </div>
+      )}
 
       {open && (
         <ul id="training-muscles-list" className="list-inline m-0 mt-1">
